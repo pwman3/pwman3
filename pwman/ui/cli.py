@@ -217,6 +217,8 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
+    def do_e(self, arg):
+        self.do_edit(arg)
 
     def do_edit(self, arg):
         ids = self.get_ids(arg)
@@ -296,6 +298,12 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
+    def do_h(self, arg):
+        self.do_help(arg)
+
+    def do_n(self, arg):
+        self.do_new(arg)
+
     def do_new(self, arg):
         try:
             username = self.get_username()
@@ -309,6 +317,9 @@ class PwmanCli(cmd.Cmd):
             print "Password ID: %d" % (node.get_id())
         except Exception, e:
             self.error(e)
+
+    def do_p(self, arg):
+        self.do_print(arg)
 
     def do_print(self, arg):
         for i in self.get_ids(arg):
@@ -333,6 +344,9 @@ class PwmanCli(cmd.Cmd):
                      print "%s@%s deleted" % (n.get_username(), n.get_url())
          except Exception, e:
              self.error(e)
+
+    def do_l(self, args):
+        self.do_list(args)
 
     def do_ls(self, args):
         self.do_list(args)
@@ -445,10 +459,25 @@ class PwmanCli(cmd.Cmd):
         print "Deletes nodes. rm is an alias."
         self._mult_id_help()
 
+    def help_h(self):
+        self.help_help()
+
     def help_help(self):
         self.usage("help [topic]")
         print "Prints a help message for a command."
-    
+
+    def help_e(self):
+        self.help_edit()
+
+    def help_n(self):
+        self.help_new()
+
+    def help_p(self):
+        self.help_print()
+
+    def help_l(self):
+        self.help_list()
+
     def help_edit(self):
         self.usage("edit <ID> ... ")
         print "Edits a nodes."
