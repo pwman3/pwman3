@@ -1,0 +1,10 @@
+== Installing ==
+
+Pwman3 requires the following debian packages:
+	python-pysqlite2
+	python-celementtree
+	python-crypto
+
+To install:
+
+$ python setup.py install
