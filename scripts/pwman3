@@ -49,7 +49,7 @@ try:
     
     config_file = os.path.join(config_dir, "config")
     
-    default_config = {'Global': {'umask': '0077'},
+    default_config = {'Global': {'umask': '0077', 'colors' : 'yes'},
                       'Database':{'type':'SQLite',
                                   'filename':os.path.join(config_dir, "pwman.db")},
                       'Encryption':{'algorithm': 'Blowfish'},

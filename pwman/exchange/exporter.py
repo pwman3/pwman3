@@ -17,7 +17,11 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-from cElementTree import Element, SubElement, dump, ElementTree
+try:
+    from xml.etree.cElementTree import Element, SubElement, dump, ElementTree
+except ImportError:
+    from cElementTree import Element, SubElement, dump, ElementTree
+
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
 

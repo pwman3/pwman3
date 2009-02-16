@@ -103,7 +103,7 @@ class PwmanCli(cmd.Cmd):
         return getinput("Username: ", default)
 
     def get_password(self, default=""):
-        password = getpassword("Password (Blank to generate): ", _defaultwidth, True)
+        password = getpassword("Password (Blank to generate): ", _defaultwidth, False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
@@ -438,7 +438,7 @@ class PwmanCli(cmd.Cmd):
         print "List nodes that match current filter. ls is an alias."
 
     def help_EOF(self):
-        self.help_quit()
+        self.help_exit()
 
     def help_delete(self):
         self.usage("delete <ID> ...")
@@ -538,14 +538,11 @@ class PwmanCli(cmd.Cmd):
             readline.read_history_file(self._historyfile)
         except Exception, e:
             pass
-        
-        _colors = True
 
         self.prompt = "pwman> "
 
 
 _defaultwidth = 10
-_colors = True
 
 def getonechar(question, width=_defaultwidth):
     question = "%s " % (question)
@@ -601,10 +598,18 @@ def getpassword(question, width=_defaultwidth, echo=False):
         print question.ljust(width),
         return sys.stdin.readline().rstrip()
     else:
-        return getpass.getpass(question.ljust(width))
+        
+        while 1:
+            a1 = getpass.getpass(question.ljust(width))
+            a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
+            if a1 == a2:
+                return a1
+            else:
+                print "Passwords don't match. Try again."
+        
         
 def typeset(text, color, bold=False, underline=False):
-    if (not _colors):
+    if not config.get_value("Global", "colors") == 'yes':
         return text
     if (bold):
         bold = "%d;" %(ANSI.Bold)

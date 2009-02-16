@@ -17,7 +17,11 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-import cElementTree as ET
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import cElementTree as ET
+
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
 
