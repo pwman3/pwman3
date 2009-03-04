@@ -107,7 +107,14 @@ class PwmanCli(cmd.Cmd):
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
-            (password, dumpme) = generator.generate_password(length, length)
+
+            print "hoge"
+
+            if config.get_value("Generator", "numerics") == 'true' :
+                (password, dumpme) = generator.generate_password(length, length, True, False, True)
+            else:
+                (password, dumpme) = generator.generate_password(length, length)
+
             print "New password: %s" % (password)
             return password
         else:

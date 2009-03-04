@@ -37,12 +37,14 @@ class PasswordGenerationException(Exception):
     def __str__(self):
         return self.message
 
-def generate_password(minlen, maxlen, capitals = True, symbols = False):
+def generate_password(minlen, maxlen, capitals = True, symbols = False, numerics = False):
     (password, hyphenated) = generate_password_shazel(minlen, maxlen)
     if (capitals):
         password = randomly_capitalize(password)
     if (symbols):
         password = leetify(password)
+    elif (numerics):
+        password = change_numerics(password)
     return (password, hyphenated)
 
 def randomly_capitalize(password):
@@ -61,6 +63,13 @@ def leetify(password):
         newpassword = newpassword + l
     return newpassword
 
+def change_numerics(password):
+    newpassword = str()
+    for l in password:
+        if (random.random() >= 0.5):
+            l = change_numerics_char(l)
+        newpassword = newpassword + l
+    return newpassword
 #
 # Dictionary of mappings for leetness
 #
@@ -76,7 +85,18 @@ def leetify_char(l):
         return leetlist[l]
     except KeyError:
         return l
-    
+
+numericlist = {
+    'e': '3', 'E': '3', 'T': '7',
+    'i': '1', 'I': '1', 'o': '0', 'O': '0', 'A': '4', 's': '5', 'S': '5',
+    'g': '9', 'q': '9', 'l': '1'
+    }
+
+def change_numerics_char(l):
+    try:
+        return numericlist[l]
+    except KeyError:
+        return l
 #
 # Beyond this point layeth Steve Hazel's code
 # Steven Hazel <sah@mosuki.com>
