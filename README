@@ -8,3 +8,14 @@ Pwman3 requires the following debian packages:
 To install:
 
 $ python setup.py install
+
+== ikegam's function ==
+
+ * making a password from the numeric character and the alphabet character ([A-Za-z0-9]).
+
+   You can add a parametor for making the password to the config(~/.pwman/config).
+
+   For Example)
+     [Generator]
+     numerics = true
+
