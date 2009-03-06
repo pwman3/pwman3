@@ -18,4 +18,9 @@ $ python setup.py install
    For Example)
      [Generator]
      numerics = true
+     
+ * Passwords can be l33tified similarly using the following.
+     [Generator]
+     leetify = true
+
 

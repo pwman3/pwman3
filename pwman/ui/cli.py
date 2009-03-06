@@ -108,12 +108,9 @@ class PwmanCli(cmd.Cmd):
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
 
-            print "hoge"
-
-            if config.get_value("Generator", "numerics") == 'true' :
-                (password, dumpme) = generator.generate_password(length, length, True, False, True)
-            else:
-                (password, dumpme) = generator.generate_password(length, length)
+            numerics = config.get_value("Generator", "numerics") == 'true';
+            leetify = config.get_value("Generator", "leetify") == 'true';
+            (password, dumpme) = generator.generate_password(length, length, True, leetify, numerics)
 
             print "New password: %s" % (password)
             return password
@@ -637,6 +634,8 @@ def getpassword(question, width=_defaultwidth, echo=False):
         
         while 1:
             a1 = getpass.getpass(question.ljust(width))
+            if len(a1) == 0:
+                return a1;
             a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
             if a1 == a2:
                 return a1
