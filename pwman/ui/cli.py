@@ -90,7 +90,12 @@ class PwmanCli(cmd.Cmd):
         for i in idstrs:
             m = rx.match(i)
             if m == None:
-                ids.append(int(i))
+                try:
+                    ids.append(int(i))
+                except ValueError, e:
+                    self._db.clearfilter()
+                    self._db.filter([Tag(i)])
+                    ids += self._db.listnodes()
             else:
                 ids += range(int(m.group(1)),
                              int(m.group(2))+1)
@@ -356,7 +361,9 @@ class PwmanCli(cmd.Cmd):
         self.do_list(args)
         
     def do_list(self, args):
-        self.do_filter('')
+        if len(args.split()) > 0:
+            self.do_clear('')
+            self.do_filter(args)
         try:
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
@@ -452,14 +459,14 @@ class PwmanCli(cmd.Cmd):
         self.help_list()
         
     def help_list(self):
-        self.usage("list")
-        print "List nodes that match current filter. ls is an alias."
+        self.usage("list <tag> ...")
+        print "List nodes that match current or specified filter. ls is an alias."
 
     def help_EOF(self):
         self.help_exit()
 
     def help_delete(self):
-        self.usage("delete <ID> ...")
+        self.usage("delete <ID|tag> ...")
         print "Deletes nodes. rm is an alias."
         self._mult_id_help()
 
@@ -483,7 +490,7 @@ class PwmanCli(cmd.Cmd):
         self.help_list()
 
     def help_edit(self):
-        self.usage("edit <ID> ... ")
+        self.usage("edit <ID|tag> ... ")
         print "Edits a nodes."
         self._mult_id_help()
     
@@ -492,8 +499,8 @@ class PwmanCli(cmd.Cmd):
         print "Imports a nodes from a file."
 
     def help_export(self):
-        self.usage("export <ID> ... ")
-        print "Exports a list of ids to an external format. If no IDs are specified, then all nodes under the current filter are exported."
+        self.usage("export <ID|tag> ... ")
+        print "Exports a list of ids to an external format. If no IDs or tags are specified, then all nodes under the current filter are exported."
         self._mult_id_help()
         
     def help_new(self):
@@ -504,12 +511,12 @@ class PwmanCli(cmd.Cmd):
         self.help_delete()
     
     def help_print(self):
-        self.usage("print <ID> ...")
+        self.usage("print <ID|tag> ...")
         print "Displays a node. ",
         self._mult_id_help()
 
     def _mult_id_help(self):
-        print "Multiple ids can be specified, separated by a space. A range of ids can be specified in the format n-N. e.g. 10-20 would specify all ids from 10 to 20 inclusive."
+        print "Multiple ids and nodes can be specified, separated by a space. A range of ids can be specified in the format n-N. e.g. '10-20' would specify all nodes having ids from 10 to 20 inclusive. Tags are considered one-by-one. e.g. 'foo 2 bar' would yield to all nodes with tag 'foo', node 2 and all nodes with tag 'bar'."
     
     def help_exit(self):
         self.usage("exit")
