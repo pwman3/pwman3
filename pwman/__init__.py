@@ -18,8 +18,8 @@
 #============================================================================
 
 appname = "Pwman3"
-version = "0.0.7"
-website = "http://pwman.bleurgh.com/"
+version = "0.0.8"
+website = "http://github.com/ivankelly/pwman3"
 author = "Ivan Kelly"
 authoremail = "pwman@bleurgh.com"
 description = "Pwman is a password management application."
