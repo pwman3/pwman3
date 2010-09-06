@@ -33,6 +33,9 @@ import re
 import sys
 import tty
 import os
+import struct
+import termios
+import fcntl
 import getpass
 import cmd
 import traceback
@@ -365,8 +368,10 @@ class PwmanCli(cmd.Cmd):
             self.do_clear('')
             self.do_filter(args)
         try:
+            rows, cols = gettermsize()
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
+            cols -= 8
             i = 0
             for n in nodes:
                 tags=n.get_tags()
@@ -379,15 +384,19 @@ class PwmanCli(cmd.Cmd):
                         first=False
                     tagstring += t.get_name()
                 name = "%s@%s" % (n.get_username(), n.get_url())
-                if len(name) > 30:
-                    name = name[:27] + "..."
-                if len(tagstring) > 20:
-                    tagstring = tagstring[:17] + "..."
-                    
-                print typeset("%5d. %-30s %-20s" % (n.get_id(), name, tagstring),
+
+                name_len = cols * 2 / 3
+                tagstring_len = cols / 3
+                if len(name) > name_len:
+                    name = name[:name_len-3] + "..."
+                if len(tagstring) > tagstring_len:
+                    tagstring = tagstring[:tagstring_len-3] + "..."
+
+                fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
+                print typeset(fmt % (n.get_id(), name, tagstring),
                               ANSI.Yellow, False)
                 i += 1
-                if i > 23:
+                if i > rows-2:
                     i = 0
                     c = getonechar("Press <Space> for more, or 'Q' to cancel")
                     if c == 'q':
@@ -617,6 +626,12 @@ def getyesno(question, defaultyes=False, width=_defaultwidth):
     else:
         return getyesno(question, defaultyes, width)
 
+def gettermsize():
+    s = struct.pack("HHHH", 0, 0, 0, 0)
+    f = sys.stdout.fileno()
+    x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
+    rows, cols, width, height = struct.unpack("HHHH", x)
+    return rows, cols
 
 def getinput(question, default="", completer=None, width=_defaultwidth):
     if (not _readline_available):
