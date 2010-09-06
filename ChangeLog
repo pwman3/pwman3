@@ -1,0 +1,23 @@
+2009-09-06 Ivan Kelly <ivan@ivankelly.net>
+	* pwman/__init__.py: Version 0.0.8
+	
+2010-09-06 Emmanuel Bouthenot <kolter@openics.org>
+	* pwman/ui/cli.py: Improved list output (patch from Emmanuel Bouthenot)
+
+2009-09-05 Tero Tilus <tero@tilus.net>
+	* pwman/ui/cli.py: list accepts tag parameters and resets filter
+	* pwman/ui/cli.py: self.get_ids(arg) (print, edit, ... commands) now accepts tag params
+
+2009-03-06 Ivan Kelly <ivan@ivankelly.net>
+	* pwman/ui/cli.py: Made leetify configurable
+
+2009-03-05 IKEGAMI Hiroyuki <ikegam@mixallow.net>
+	* pwman/util/generator.py, pwman/ui/cli.py: Added numerous password generation options.
+    
+2009-02-16 Ivan Kelly <ivan@ivankelly.net>
+	* pwman/__init__.py: Version 0.0.7
+	
+2009-02-16 Ivan Kelly <ivan@ivankelly.net>
+	* pwman/ui/cli.py: Added short commands
+	* pwman/exchange/exporter.py, pwman/exchange/importer.py, pwman/ui/cli.py, scripts/pwman3: Added patches that usually go in debian package. Removed echo on password input
+
