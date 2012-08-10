@@ -458,12 +458,18 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
     
+    def do_cls(self,args):
+        os.system('clear')
     ##
     ## Help functions
     ##
     def usage(self, string):
         print "Usage: %s" % (string)
-        
+    
+    def help_cls(self):
+        self.usage("cls")
+        print "Clear the Screen from information."
+
     def help_ls(self):
         self.help_list()
         
