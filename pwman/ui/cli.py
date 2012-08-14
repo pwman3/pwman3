@@ -39,6 +39,10 @@ import fcntl
 import getpass
 import cmd
 import traceback
+import select
+import time
+import select
+
 
 try:
     import readline
@@ -179,6 +183,25 @@ class PwmanCli(cmd.Cmd):
             print "%s " % t.get_name(),
         print
 
+        def heardEnter():
+            #import select
+            i,o,e = select.select([sys.stdin],[],[],0.0001)
+            for s in i:
+                if s == sys.stdin:
+                   input = sys.stdin.readline()
+                        return True
+                return False
+        
+        def waituntil_enter(somepredicate,timeout, period=0.25):
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                  if somepredicate():
+                     break
+                  time.sleep(period)
+                  self.do_cls('')
+        print "Type Enter to flush screen (autoflash in 5 sec.)"
+        waituntil_enter(heardEnter(), 5)
+
     def do_tags(self, arg):
         tags = self._db.listtags()
         if len(tags) > 0:
@@ -189,6 +212,28 @@ class PwmanCli(cmd.Cmd):
         for t in tags:
             print "%s " % (t.get_name()),
         print
+
+        def heardEnter():
+            i,o,e = select.select([sys.stdin],[],[],0.0001)
+            for s in i:
+                if s == sys.stdin:
+                    input = sys.stdin.readline()
+                return True
+            return False
+        
+        def waituntil_enter(somepredicate,timeout, period=0.25):
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                if somepredicate():
+                    print 'Will call cls'
+                    self.do_cls("")
+                    break
+                time.sleep(period)
+            return False        
+        #print "Flushing in 5 sec., Enter to flush before, or 'h' to hold".
+        #self.do_cls("")
+        waituntil_enter(heardEnter, 5)        
+
 
     def complete_filter(self, text, line, begidx, endidx):
         strings = []
