@@ -39,9 +39,8 @@ import fcntl
 import getpass
 import cmd
 import traceback
-import select
 import time
-import select
+import select as uselect
 
 
 try:
@@ -184,8 +183,7 @@ class PwmanCli(cmd.Cmd):
         print
 
         def heardEnter():
-            #import select
-            i,o,e = select.select([sys.stdin],[],[],0.0001)
+            i,o,e = uselect.select([sys.stdin],[],[],0.0001)
             for s in i:
                 if s == sys.stdin:
                    input = sys.stdin.readline()
