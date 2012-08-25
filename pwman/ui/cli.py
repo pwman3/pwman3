@@ -23,25 +23,24 @@ import pwman.exchange.exporter as exporter
 import pwman.util.generator as generator
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
-
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException, \
      CryptoPasswordMismatchException
 from pwman.util.callback import Callback
 import pwman.util.config as config
-
 import re
 import sys
-import tty
 import os
 import struct
-import termios
-import fcntl
 import getpass
 import cmd
 import traceback
 import time
 import select as uselect
 
+if sys.platform != 'win32':
+    import tty
+    import termios
+    import fcntl
 
 try:
     import readline
@@ -114,14 +113,16 @@ class PwmanCli(cmd.Cmd):
         return getinput("Username: ", default)
 
     def get_password(self, default=""):
-        password = getpassword("Password (Blank to generate): ", _defaultwidth, False)
+        password = getpassword("Password (Blank to generate): ", _defaultwidth,\
+            False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
 
-            numerics = config.get_value("Generator", "numerics") == 'true';
-            leetify = config.get_value("Generator", "leetify") == 'true';
-            (password, dumpme) = generator.generate_password(length, length, True, leetify, numerics)
+            numerics = config.get_value("Generator", "numerics") == 'true'
+            leetify = config.get_value("Generator", "leetify") == 'true'
+            (password, dumpme) = generator.generate_password(length, length, \
+                True, leetify, numerics)
 
             print "New password: %s" % (password)
             return password
@@ -186,19 +187,34 @@ class PwmanCli(cmd.Cmd):
             i,o,e = uselect.select([sys.stdin],[],[],0.0001)
             for s in i:
                 if s == sys.stdin:
-                   input = sys.stdin.readline()
-                        return True
+                    input = sys.stdin.readline()
+                    return True
                 return False
+
+        def heardEnterWin():
+            import msvcrt
+            c = msvcrt.kbhit()
+            if c == 1:
+                ret = msvcrt.getch()
+                if ret is not None:
+                    return True
+            return False
         
         def waituntil_enter(somepredicate,timeout, period=0.25):
             mustend = time.time() + timeout
             while time.time() < mustend:
-                  if somepredicate():
-                     break
-                  time.sleep(period)
-                  self.do_cls('')
-        print "Type Enter to flush screen (autoflash in 5 sec.)"
-        waituntil_enter(heardEnter(), 5)
+                cond = somepredicate()
+                if cond:
+                    break
+                time.sleep(period)
+            self.do_cls('')
+        
+        if sys.platform != 'win32':
+            print "Type Enter to flush screen (autoflash in 5 sec.)"
+            waituntil_enter(heardEnter(), 5)
+        else:
+            print "Press any key to flush screen (autoflash in 5 sec.)"
+            waituntil_enter(heardEnterWin, 5) 
 
     def do_tags(self, arg):
         tags = self._db.listtags()
@@ -367,17 +383,17 @@ class PwmanCli(cmd.Cmd):
         self.do_delete(arg)
         
     def do_delete(self, arg):
-         ids = self.get_ids(arg)
-         try:
-             nodes = self._db.getnodes(ids)
-             for n in nodes:
-                 b = getyesno("Are you sure you want to delete '%s@%s'?"
+        ids = self.get_ids(arg)
+        try:
+            nodes = self._db.getnodes(ids)
+            for n in nodes:
+                b = getyesno("Are you sure you want to delete '%s@%s'?"
                               % (n.get_username(), n.get_url()), False)
-                 if b == True:
-                     self._db.removenodes([n])
-                     print "%s@%s deleted" % (n.get_username(), n.get_url())
-         except Exception, e:
-             self.error(e)
+                if b == True:
+                    self._db.removenodes([n])
+                    print "%s@%s deleted" % (n.get_username(), n.get_url())
+        except Exception, e:
+            self.error(e)
 
     def do_l(self, args):
         self.do_list(args)
@@ -390,7 +406,10 @@ class PwmanCli(cmd.Cmd):
             self.do_clear('')
             self.do_filter(args)
         try:
-            rows, cols = gettermsize()
+            if sys.platform != 'win32':
+                rows, cols = gettermsize()
+            else:
+                rows,cols = 18, 80 # fix this !
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
             cols -= 8
