@@ -61,7 +61,6 @@ def get_value(section, name):
         value = _defaults[section][name]
         set_value(section, name, value)
         return value
-    
     except KeyError, e:
         pass
     
@@ -83,13 +82,13 @@ def load(filename):
     global _conf, _file
 
     _file = filename
-    
+        
     parser = ConfigParser()
 
     fp = None
     try:
         try:
-            fp = file(filename, "r")
+            fp = open(filename, "r")
             res = parser.readfp(fp)
         except ParsingError,e:
             raise ConfigException(e)
