@@ -509,21 +509,22 @@ class PwmanCli(cmd.Cmd):
         os.system('clear')
 
     def do_copy(self,args):
-        ids= self.get_ids(args)
-        if len(ids) > 1:
-            print "Can only 1 password at a time..."
-        try:
-            node = self._db.getnodes(ids)
-            node[0].get_password()
-            text_to_clipboards(node[0].get_password())
-            print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
-            (node[0].get_username(), node[0].get_url()) 
-            time.sleep(10)
-            text_to_clipboards("")
-
-        except Exception, e:
-            self.error(e)
-
+        if self.hasxsel:
+            ids= self.get_ids(args)
+            if len(ids) > 1:
+                print "Can only 1 password at a time..."
+            try:
+                node = self._db.getnodes(ids)
+                node[0].get_password()
+                text_to_clipboards(node[0].get_password())
+                print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+                (node[0].get_username(), node[0].get_url()) 
+                time.sleep(10)
+                text_to_clipboards("")
+            except Exception, e:
+                self.error(e)
+        else:
+            print "Can't copy to clipboard, no xsel found in the system!"
 
     def do_cp(self,args):
         self.do_copy(args)
@@ -649,12 +650,12 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             pass
     
-    def __init__(self, db):
+    def __init__(self, db, hasxsel):
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) %s <%s>" % (pwman.appname, pwman.version,
                                             pwman.author, pwman.authoremail)
         self._historyfile = config.get_value("Readline", "history")
-
+        self.hasxsel = hasxsel
         try:
             enc = CryptoEngine.get()
             enc.set_callback(CLICallback())
@@ -774,11 +775,16 @@ def text_to_clipboards(text):
     https://pythonadventures.wordpress.com/tag/xclip/
     """
     # "primary":
-    xsel_proc = sp.Popen(['xsel', '-pi'], stdin=sp.PIPE)
-    xsel_proc.communicate(text)
-    # "clipboard":
-    xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
-    xsel_proc.communicate(text) 
+    try:
+        xsel_proc = sp.Popen(['xsel', '-pi'], stdin=sp.PIPE)
+        xsel_proc.communicate(text)
+        # "clipboard":
+        xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
+        xsel_proc.communicate(text) 
+    except OSError, e:
+        print e, "\nExecuting xsel failed, is it installed ?"
+        
+        
 
 class CliMenu(object):
     def __init__(self):
