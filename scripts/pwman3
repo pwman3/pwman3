@@ -39,7 +39,7 @@ def print_help():
                          CAST, DES, DES3, IDEA, RC5
  -h, --help             Display this help and exit
 
-Please report bugs at http://pwman.bleurgh.com
+Please report bugs at https://github.com/oz124/pwman3
 """ % (sys.argv[0])
     
 try:
@@ -49,7 +49,7 @@ try:
     
     config_file = os.path.join(config_dir, "config")
     
-    default_config = {'Global': {'umask': '0077', 'colors' : 'yes'},
+    default_config = {'Global': {'umask': '0100', 'colors' : 'yes', 'xclip': 'yes'},
                       'Database':{'type':'SQLite',
                                   'filename':os.path.join(config_dir, "pwman.db")},
                       'Encryption':{'algorithm': 'Blowfish'},

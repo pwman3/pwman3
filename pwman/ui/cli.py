@@ -14,6 +14,8 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -36,6 +38,7 @@ import cmd
 import traceback
 import time
 import select as uselect
+import subprocess as sp
 
 if sys.platform != 'win32':
     import tty
@@ -83,6 +86,7 @@ class PwmanCli(cmd.Cmd):
     def do_exit(self, args):
         print
         try:
+            print "goodbye"
             self._db.close()
         except Exception, e:
             self.error(e)
@@ -211,7 +215,7 @@ class PwmanCli(cmd.Cmd):
         
         if sys.platform != 'win32':
             print "Type Enter to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnter(), 5)
+            waituntil_enter(heardEnter, 5)
         else:
             print "Press any key to flush screen (autoflash in 5 sec.)"
             waituntil_enter(heardEnterWin, 5) 
@@ -402,6 +406,7 @@ class PwmanCli(cmd.Cmd):
         self.do_list(args)
         
     def do_list(self, args):
+        
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
@@ -442,6 +447,7 @@ class PwmanCli(cmd.Cmd):
                     c = getonechar("Press <Space> for more, or 'Q' to cancel")
                     if c == 'q':
                         break
+        
         except Exception, e:
             self.error(e)
 
@@ -501,12 +507,40 @@ class PwmanCli(cmd.Cmd):
     
     def do_cls(self,args):
         os.system('clear')
+
+    def do_copy(self,args):
+        ids= self.get_ids(args)
+        if len(ids) > 1:
+            print "Can only 1 password at a time..."
+        try:
+            node = self._db.getnodes(ids)
+            node[0].get_password()
+            text_to_clipboards(node[0].get_password())
+            print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+            (node[0].get_username(), node[0].get_url()) 
+            time.sleep(10)
+            text_to_clipboards("")
+
+        except Exception, e:
+            self.error(e)
+
+
+    def do_cp(self,args):
+        self.do_copy(args)
+        
     ##
     ## Help functions
     ##
     def usage(self, string):
         print "Usage: %s" % (string)
-    
+   
+    def help_copy(self):
+        self.usage("copy <ID>")
+        print "Copy password to X clipboard (xsel required)"
+
+    def help_cp(self):
+        self.help_copy()
+
     def help_cls(self):
         self.usage("cls")
         print "Clear the Screen from information."
@@ -733,7 +767,19 @@ def select(question, possible):
         input = getonechar(question)
         if input.isdigit() and int(input) in range(1, len(possible)+1):
             return possible[int(input)-1]
-        
+
+def text_to_clipboards(text):
+    """
+    credit:
+    https://pythonadventures.wordpress.com/tag/xclip/
+    """
+    # "primary":
+    xsel_proc = sp.Popen(['xsel', '-pi'], stdin=sp.PIPE)
+    xsel_proc.communicate(text)
+    # "clipboard":
+    xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
+    xsel_proc.communicate(text) 
+
 class CliMenu(object):
     def __init__(self):
         self.items = []
