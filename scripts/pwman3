@@ -17,7 +17,6 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
-
 from pwman.util.crypto import CryptoEngine
 from pwman.ui.cli import PwmanCli
 import pwman.util.config as config
@@ -25,7 +24,7 @@ import pwman.data.factory
 import getopt,sys
 import os
 import os.path
-
+import subprocess as sp
 _saveconfig = True
 
 def print_help():
@@ -39,9 +38,23 @@ def print_help():
                          CAST, DES, DES3, IDEA, RC5
  -h, --help             Display this help and exit
 
-Please report bugs at http://pwman.bleurgh.com
+Please report bugs at https://github.com/oz124/pwman3
 """ % (sys.argv[0])
-    
+
+
+def find_xsel():
+    """
+    look for xsel in the system
+    """
+    try:
+        print "inside"
+        xsel_proc = sp.Popen(['which', 'xsel'], stdin=sp.PIPE, stdout=sp.PIPE)
+        path, err = xsel_proc.communicate()
+        return path
+    except OSError, e:
+        print e, "\nExecuting xsel failed, is it installed ?"
+        return None
+
 try:
     config_dir = os.path.expanduser("~/.pwman")
     if not os.path.isdir(config_dir):
@@ -49,7 +62,7 @@ try:
     
     config_file = os.path.join(config_dir, "config")
     
-    default_config = {'Global': {'umask': '0077', 'colors' : 'yes'},
+    default_config = {'Global': {'umask': '0100', 'colors' : 'yes'},
                       'Database':{'type':'SQLite',
                                   'filename':os.path.join(config_dir, "pwman.db")},
                       'Encryption':{'algorithm': 'Blowfish'},
@@ -67,10 +80,14 @@ try:
         if o[0] == '-h' or o[0] == "--help":
             print_help()
             sys.exit(0)
-
+    # if no config exists yet, look for xsel
     if os.path.exists(config_file):
         config.load(config_file)
-        
+        xselpath=config.get_value("Global","xselpath")
+    else:
+        xselpath=find_xsel()
+        set_value("Global", "xsel", xselpath)     
+
     for o in opts:
         if o[0] == '-d' or o[0] == "--database":
             config.set_value("Database", "filename",
@@ -79,7 +96,8 @@ try:
         if o[0] == '-e' or o[0] == "--encryption":
             config.set_value("Encryption", "algorithm", o[1])
             _saveconfig=False
-
+    
+        
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
@@ -88,7 +106,7 @@ try:
 
     type = config.get_value("Database", "type")
     db = pwman.data.factory.create(type)
-    cli = PwmanCli(db)
+    cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
 except Exception, e:

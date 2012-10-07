@@ -1,0 +1,24 @@
+Source: pwman3
+Section: utils
+Priority: optional
+Maintainer: Oz Nahum <nahumoz@gmail.com>
+Build-Depends-Indep: python-support (>= 0.4)
+Build-Depends: debhelper (>= 7.0.50)
+Standards-Version: 3.9.3
+Homepage: http://pwman.bleurgh.com
+Vcs-Git: https://github.com/oz123/pwman3.git
+Vcs-Browser: https://github.com/oz123/pwman3.git
+
+Package: pwman3
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-crypto
+Recommends: python-mysqldb, python-pygresql, xsel
+Suggests: mysql-server | postgresql
+Description: console password management application
+ Pwman3 aims to provide a simple but powerful command line interface for
+ password management. It allows one to store passwords in a sqlite database
+ locked by a master password which can be encrypted with different algorithms
+ (e.g Blowfish, AES, DES3).
+ .
+ It is also possible to tag them to ease searches in a large amount of
+ passwords

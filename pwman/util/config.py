@@ -14,6 +14,9 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -58,7 +61,6 @@ def get_value(section, name):
         value = _defaults[section][name]
         set_value(section, name, value)
         return value
-    
     except KeyError, e:
         pass
     
@@ -80,13 +82,13 @@ def load(filename):
     global _conf, _file
 
     _file = filename
-    
+        
     parser = ConfigParser()
 
     fp = None
     try:
         try:
-            fp = file(filename, "r")
+            fp = open(filename, "r")
             res = parser.readfp(fp)
         except ParsingError,e:
             raise ConfigException(e)

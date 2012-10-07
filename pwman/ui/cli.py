@@ -14,6 +14,8 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -23,22 +25,25 @@ import pwman.exchange.exporter as exporter
 import pwman.util.generator as generator
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
-
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException, \
      CryptoPasswordMismatchException
 from pwman.util.callback import Callback
 import pwman.util.config as config
-
 import re
 import sys
-import tty
 import os
 import struct
-import termios
-import fcntl
 import getpass
 import cmd
 import traceback
+import time
+import select as uselect
+import subprocess as sp
+
+if sys.platform != 'win32':
+    import tty
+    import termios
+    import fcntl
 
 try:
     import readline
@@ -81,6 +86,7 @@ class PwmanCli(cmd.Cmd):
     def do_exit(self, args):
         print
         try:
+            print "goodbye"
             self._db.close()
         except Exception, e:
             self.error(e)
@@ -111,14 +117,16 @@ class PwmanCli(cmd.Cmd):
         return getinput("Username: ", default)
 
     def get_password(self, default=""):
-        password = getpassword("Password (Blank to generate): ", _defaultwidth, False)
+        password = getpassword("Password (Blank to generate): ", _defaultwidth,\
+            False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
 
-            numerics = config.get_value("Generator", "numerics") == 'true';
-            leetify = config.get_value("Generator", "leetify") == 'true';
-            (password, dumpme) = generator.generate_password(length, length, True, leetify, numerics)
+            numerics = config.get_value("Generator", "numerics") == 'true'
+            leetify = config.get_value("Generator", "leetify") == 'true'
+            (password, dumpme) = generator.generate_password(length, length, \
+                True, leetify, numerics)
 
             print "New password: %s" % (password)
             return password
@@ -179,6 +187,39 @@ class PwmanCli(cmd.Cmd):
             print "%s " % t.get_name(),
         print
 
+        def heardEnter():
+            i,o,e = uselect.select([sys.stdin],[],[],0.0001)
+            for s in i:
+                if s == sys.stdin:
+                    input = sys.stdin.readline()
+                    return True
+                return False
+
+        def heardEnterWin():
+            import msvcrt
+            c = msvcrt.kbhit()
+            if c == 1:
+                ret = msvcrt.getch()
+                if ret is not None:
+                    return True
+            return False
+        
+        def waituntil_enter(somepredicate,timeout, period=0.25):
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                cond = somepredicate()
+                if cond:
+                    break
+                time.sleep(period)
+            self.do_cls('')
+        
+        if sys.platform != 'win32':
+            print "Type Enter to flush screen (autoflash in 5 sec.)"
+            waituntil_enter(heardEnter, 5)
+        else:
+            print "Press any key to flush screen (autoflash in 5 sec.)"
+            waituntil_enter(heardEnterWin, 5) 
+
     def do_tags(self, arg):
         tags = self._db.listtags()
         if len(tags) > 0:
@@ -189,6 +230,7 @@ class PwmanCli(cmd.Cmd):
         for t in tags:
             print "%s " % (t.get_name()),
         print
+
 
     def complete_filter(self, text, line, begidx, endidx):
         strings = []
@@ -345,17 +387,17 @@ class PwmanCli(cmd.Cmd):
         self.do_delete(arg)
         
     def do_delete(self, arg):
-         ids = self.get_ids(arg)
-         try:
-             nodes = self._db.getnodes(ids)
-             for n in nodes:
-                 b = getyesno("Are you sure you want to delete '%s@%s'?"
+        ids = self.get_ids(arg)
+        try:
+            nodes = self._db.getnodes(ids)
+            for n in nodes:
+                b = getyesno("Are you sure you want to delete '%s@%s'?"
                               % (n.get_username(), n.get_url()), False)
-                 if b == True:
-                     self._db.removenodes([n])
-                     print "%s@%s deleted" % (n.get_username(), n.get_url())
-         except Exception, e:
-             self.error(e)
+                if b == True:
+                    self._db.removenodes([n])
+                    print "%s@%s deleted" % (n.get_username(), n.get_url())
+        except Exception, e:
+            self.error(e)
 
     def do_l(self, args):
         self.do_list(args)
@@ -364,11 +406,15 @@ class PwmanCli(cmd.Cmd):
         self.do_list(args)
         
     def do_list(self, args):
+        
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
         try:
-            rows, cols = gettermsize()
+            if sys.platform != 'win32':
+                rows, cols = gettermsize()
+            else:
+                rows,cols = 18, 80 # fix this !
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
             cols -= 8
@@ -401,6 +447,7 @@ class PwmanCli(cmd.Cmd):
                     c = getonechar("Press <Space> for more, or 'Q' to cancel")
                     if c == 'q':
                         break
+        
         except Exception, e:
             self.error(e)
 
@@ -458,12 +505,47 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
     
+    def do_cls(self,args):
+        os.system('clear')
+
+    def do_copy(self,args):
+        if self.hasxsel:
+            ids= self.get_ids(args)
+            if len(ids) > 1:
+                print "Can only 1 password at a time..."
+            try:
+                node = self._db.getnodes(ids)
+                node[0].get_password()
+                text_to_clipboards(node[0].get_password())
+                print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+                (node[0].get_username(), node[0].get_url()) 
+                time.sleep(10)
+                text_to_clipboards("")
+            except Exception, e:
+                self.error(e)
+        else:
+            print "Can't copy to clipboard, no xsel found in the system!"
+
+    def do_cp(self,args):
+        self.do_copy(args)
+        
     ##
     ## Help functions
     ##
     def usage(self, string):
         print "Usage: %s" % (string)
-        
+   
+    def help_copy(self):
+        self.usage("copy <ID>")
+        print "Copy password to X clipboard (xsel required)"
+
+    def help_cp(self):
+        self.help_copy()
+
+    def help_cls(self):
+        self.usage("cls")
+        print "Clear the Screen from information."
+
     def help_ls(self):
         self.help_list()
         
@@ -568,12 +650,12 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             pass
     
-    def __init__(self, db):
+    def __init__(self, db, hasxsel):
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) %s <%s>" % (pwman.appname, pwman.version,
                                             pwman.author, pwman.authoremail)
         self._historyfile = config.get_value("Readline", "history")
-
+        self.hasxsel = hasxsel
         try:
             enc = CryptoEngine.get()
             enc.set_callback(CLICallback())
@@ -686,7 +768,24 @@ def select(question, possible):
         input = getonechar(question)
         if input.isdigit() and int(input) in range(1, len(possible)+1):
             return possible[int(input)-1]
+
+def text_to_clipboards(text):
+    """
+    credit:
+    https://pythonadventures.wordpress.com/tag/xclip/
+    """
+    # "primary":
+    try:
+        xsel_proc = sp.Popen(['xsel', '-pi'], stdin=sp.PIPE)
+        xsel_proc.communicate(text)
+        # "clipboard":
+        xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
+        xsel_proc.communicate(text) 
+    except OSError, e:
+        print e, "\nExecuting xsel failed, is it installed ?"
         
+        
+
 class CliMenu(object):
     def __init__(self):
         self.items = []
