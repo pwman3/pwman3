@@ -31,12 +31,14 @@ $ python setup.py install
      [Generator]
      leetify = true
  
- * Copying password to X11 clipbord:
-     Specify the path to `xsel` if you already have `~/.pwman/config` 
+ * Copying password to X11 or Mac clipbord:
+  - On Mac OSX systems copying utilizes `pbcopy`  
+  - On X11 Systems  Specify the path to `xsel` if you already have `~/.pwman/config` 
       [Global]
       xsel = yes
       xselpath = /usr/bin/xsel
-     
+
+ 
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
 
