@@ -1,10 +1,17 @@
 == Installing ==
 
 Pwman3 requires the following debian packages:
-	python-pysqlite2
+	
+when using python 2.4    
+    python-pysqlite2
 	python-celementtree
-	python-crypto
+    python-crypto
+when using python 2.5 
+    python-crypto
+
+for nicer functionality:
     xsel - to copy password to clipboard on Linux
+
 To install:
 
 $ python setup.py install
@@ -22,5 +29,14 @@ $ python setup.py install
  * Passwords can be l33tified similarly using the following.
      [Generator]
      leetify = true
+ 
+ * Copying password to X11 clipbord:
+     Specify the path to `xsel` if you already have `~/.pwman/config` 
+      [Global]
+      xsel = yes
+      xselpath = /usr/bin/xsel
+     
+     When launching `pwman` for the first time, it will try and look for 
+     `xsel` and write the configuration properly. 
 
 
