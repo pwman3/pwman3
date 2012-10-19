@@ -14,14 +14,16 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
 appname = "Pwman3"
-version = "0.0.8"
-website = "http://github.com/ivankelly/pwman3"
-author = "Ivan Kelly"
-authoremail = "pwman@bleurgh.com"
+version = "0.1.0"
+website = "http://github.com/oz123/pwman3"
+author = "Oz Nahum"
+authoremail = "nahumoz@gmail.com"
 description = "Pwman is a password management application."
 keywords = "password management sqlite crypto"
 

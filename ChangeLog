@@ -1,3 +1,8 @@
+2012-10-06 Oz Nahum <nahumoz@gmail.com>
+	* pwman/__init__.py: Version 0.1.0
+	* pwman/ui/cli.py: Added copy of password to clipboard.
+    * pwman/ui/cli.py: Added autoflushing of printed output.
+
 2009-09-06 Ivan Kelly <ivan@ivankelly.net>
 	* pwman/__init__.py: Version 0.0.8
 	

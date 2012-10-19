@@ -1,0 +1,32 @@
+.TH PWMAN3 1 "30 November 2006"
+.SH NAME
+pwman3 \- command line password manager
+.SH SYNOPSIS
+
+\fBpwman3\fP [\fIoptions\fP]
+
+.SH DESCRIPTION
+
+.TP
+\fB\-c, \-\-config\fP FILE
+Read the configuration from \fBFILE\fP instead of the default
+\fB~/.pwman3/config\fP.
+
+.TP
+\fB\-d, \-\-database\fP FILE
+When using the default sqlite backend, use \fBFILE\fP to read/store passwords.
+
+.TP
+\fB\-e, \-\-encryption\fP ALGO
+Use \fBALGO\fP to encrypt data. Possible values are: AES, ARC2, ARC4, Blowfish,
+CAST, DES, DES3, IDEA, RC5
+The default encryption algorithm used is Blowfish.
+
+.TP
+\fB\-h, \-\-help\fP
+Display help and exit.
+
+.SH AUTHOR
+
+This manpage has been written by Julien Louis <ptitlouis@sysif.net> for the Debian
+GNU/Linux system but may be used by the others.

@@ -14,6 +14,9 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -22,7 +25,15 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
 
-from pysqlite2 import dbapi2 as sqlite
+import sys
+if sys.version_info > (2, 5):
+    import sqlite3 as sqlite
+else:
+    try:
+        from pysqlite2 import dbapi2 as sqlite
+    except ImportError:
+        raise DatabaseException("python-sqlite2 not installed")
+
 import pwman.util.config as config
 import cPickle
 
@@ -67,7 +78,7 @@ class SQLiteDatabase(Database):
                 else:
                     first = False
                     
-                sql += ("SELECT NODE FROM LOOKUP OUTER JOIN TAGS ON TAG = TAGS.ID "
+                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = TAGS.ID "
                         + " WHERE TAGS.DATA = ?")
                 params.append(cPickle.dumps(t))
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
@@ -164,7 +175,7 @@ class SQLiteDatabase(Database):
                     sql += " INTERSECT "
                 else:
                     first = False
-                sql += ("SELECT NODE FROM LOOKUP OUTER JOIN TAGS ON TAG = TAGS.ID"
+                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = TAGS.ID"
                         + " WHERE TAGS.DATA = ? ")
 
                 params.append(cPickle.dumps(t))

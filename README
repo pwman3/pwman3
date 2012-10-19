@@ -4,7 +4,7 @@ Pwman3 requires the following debian packages:
 	python-pysqlite2
 	python-celementtree
 	python-crypto
-
+    xsel - to copy password to clipboard on Linux
 To install:
 
 $ python setup.py install
