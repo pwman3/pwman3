@@ -18,10 +18,14 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 from pwman.util.crypto import CryptoEngine
-from pwman.ui.cli import PwmanCli
+import getopt,sys
+if 'darwin' in sys.platform:
+     from pwman.ui.cli import PwmanCliMac
+else:
+    from pwman.ui.cli import PwmanCli
+
 import pwman.util.config as config
 import pwman.data.factory
-import getopt,sys
 import os
 import os.path
 import subprocess as sp

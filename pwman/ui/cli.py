@@ -673,6 +673,42 @@ class PwmanCli(cmd.Cmd):
         self.prompt = "pwman> "
 
 
+
+class PwmanCliMac(PwmanCli):
+    """
+    inherit from PwmanCli, override the right functions...
+    """
+    def do_copy(self,args):
+        ids= self.get_ids(args)
+        if len(ids) > 1:
+            print "Can only 1 password at a time..."
+        try:
+            node = self._db.getnodes(ids)
+            node[0].get_password()
+            text_to_mcclipboard(node[0].get_password())
+            print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+            (node[0].get_username(), node[0].get_url()) 
+            time.sleep(10)
+            text_to_clipboards("")
+        except Exception, e:
+            self.error(e)
+
+    def do_cp(self,args):
+        self.do_copy(args)
+        
+    ##
+    ## Help functions
+    ##
+    def usage(self, string):
+        print "Usage: %s" % (string)
+   
+    def help_copy(self):
+        self.usage("copy <ID>")
+        print "Copy password to X clipboard (xsel required)"
+
+    def help_cp(self):
+        self.help_copy()
+
 _defaultwidth = 10
 
 def getonechar(question, width=_defaultwidth):
@@ -785,6 +821,18 @@ def text_to_clipboards(text):
         print e, "\nExecuting xsel failed, is it installed ?"
         
         
+def text_to_mcclipboards(text):
+    """
+    credit:
+    https://pythonadventures.wordpress.com/tag/xclip/
+    """
+    # "primary":
+    try:
+        pbcopy_proc = sp.Popen(['pbcopy'], stdin=sp.PIPE)
+        pbcopy_proc.communicate(text)
+    except OSError, e:
+        print e, "\nExecuting pbcoy failed..."
+
 
 class CliMenu(object):
     def __init__(self):
