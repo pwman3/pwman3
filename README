@@ -6,8 +6,9 @@ when using python 2.4
     python-pysqlite2
 	python-celementtree
     python-crypto
-when using python 2.5 
+when using python >= 2.5 
     python-crypto
+
 
 for nicer functionality:
     xsel - to copy password to clipboard on Linux
