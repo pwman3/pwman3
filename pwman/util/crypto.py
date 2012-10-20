@@ -227,11 +227,25 @@ class CryptoEngine:
             raise CryptoNoCallbackException("No Callback exception")
         if (self._keycrypted == None):
             raise CryptoNoKeyException("Encryption key has not been generated")
-        
-        password = self._callback.getsecret("Please enter your password")
-        tmpcipher = self._getcipher_real(password, self._algo)
-        plainkey = tmpcipher.decrypt(str(self._keycrypted).decode('base64'))
-        key = self._retrievedata(plainkey)
+
+        maxTries = 5
+        tries = 0
+
+        key = None
+
+        while tries < maxTries:
+            try:
+                password = self._callback.getsecret("Please enter your password")
+                tmpcipher = self._getcipher_real(password, self._algo)
+                plainkey = tmpcipher.decrypt(str(self._keycrypted).decode('base64'))
+                key = self._retrievedata(plainkey)
+                break
+            except CryptoBadKeyException, e:
+                print "Wrong password."
+                tries += 1
+
+        if not key:
+            raise Exception("Wrong password entered %s times; giving up" % maxTries)
         
         self._cipher = self._getcipher_real(str(key).decode('base64'), self._algo)
 
