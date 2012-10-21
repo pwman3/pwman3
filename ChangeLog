@@ -1,3 +1,8 @@
+2012-10-06 Oz Nahumn <nahumoz@gmail.com>
+	* added Debian patches.
+    * Merge pull request from David North.
+	* Add copy to clipboard on Mac OSX
+
 2012-10-06 Oz Nahum <nahumoz@gmail.com>
 	* pwman/__init__.py: Version 0.1.0
 	* pwman/ui/cli.py: Added copy of password to clipboard.
