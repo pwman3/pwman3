@@ -1,16 +1,16 @@
 #!/usr/bin/python
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -18,9 +18,10 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 from pwman.util.crypto import CryptoEngine
-import getopt,sys
+import getopt
+import sys
 if 'darwin' in sys.platform:
-     from pwman.ui.cli import PwmanCliMac
+    from pwman.ui.cli import PwmanCliMac
 else:
     from pwman.ui.cli import PwmanCli
 
@@ -30,6 +31,7 @@ import os
 import os.path
 import subprocess as sp
 _saveconfig = True
+
 
 def print_help():
     print """Syntax: %s [options]
@@ -63,49 +65,51 @@ try:
     config_dir = os.path.expanduser("~/.pwman")
     if not os.path.isdir(config_dir):
         os.mkdir(config_dir)
-    
+
     config_file = os.path.join(config_dir, "config")
-    
-    default_config = {'Global': {'umask': '0100', 'colors' : 'yes'},
-                      'Database':{'type':'SQLite',
-                                  'filename':os.path.join(config_dir, "pwman.db")},
-                      'Encryption':{'algorithm': 'Blowfish'},
-                      'Readline': {'history':os.path.join(config_dir, "history")}
+
+    default_config = {'Global': {'umask': '0100', 'colors': 'yes'},
+                      'Database': {'type': 'SQLite',
+                                   'filename': os.path.join(config_dir,
+                                                            "pwman.db")},
+                      'Encryption': {'algorithm': 'Blowfish'},
+                      'Readline': {'history': os.path.join(config_dir,
+                                                           "history")}
                       }
     config.set_defaults(default_config)
 
-    opts, args =  getopt.getopt(sys.argv[1:], 'c:d:e:h',
-                                ["config=", "database=", "encryption=", "help"])
-    
+    opts, args = getopt.getopt(sys.argv[1:], 'c:d:e:h',
+                               ["config=", "database=",
+                               "encryption=", "help"])
+
     for o in opts:
         if o[0] == '-c' or o[0] == "--config":
             config_file = os.path.expanduser(o[1])
-    
+
         if o[0] == '-h' or o[0] == "--help":
             print_help()
             sys.exit(0)
     # if no config exists yet, look for xsel
     if os.path.exists(config_file):
         config.load(config_file)
-        xselpath=config.get_value("Global","xselpath")
+        xselpath = config.get_value("Global", "xselpath")
     else:
-        xselpath=find_xsel()
-        config.set_value("Global", "xsel", xselpath)      
+        xselpath = find_xsel()
+        config.set_value("Global", "xsel", xselpath)
 
     for o in opts:
         if o[0] == '-d' or o[0] == "--database":
             config.set_value("Database", "filename",
                              os.path.expanduser(o[1]))
-            _saveconfig=False
+            _saveconfig = False
         if o[0] == '-e' or o[0] == "--encryption":
             config.set_value("Encryption", "algorithm", o[1])
-            _saveconfig=False
-    
-        
+            _saveconfig = False
+
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
-    
+
     enc = CryptoEngine.get()
 
     type = config.get_value("Database", "type")
@@ -121,7 +125,7 @@ try:
     try:
         cli.cmdloop()
     except KeyboardInterrupt, e:
-        print 
+        print
 finally:
     try:
         if _saveconfig:
