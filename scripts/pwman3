@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 #============================================================================
 # This file is part of Pwman3.
 #
@@ -48,18 +48,15 @@ Please report bugs at https://github.com/pwman3/pwman3
 """ % (sys.argv[0])
 
 
-def find_xsel():
-    """
-    look for xsel in the system
-    """
-    try:
-        print "inside"
-        xsel_proc = sp.Popen(['which', 'xsel'], stdin=sp.PIPE, stdout=sp.PIPE)
-        path, err = xsel_proc.communicate()
-        return path
-    except OSError, e:
-        print e, "\nExecuting xsel failed, is it installed ?"
-        return None
+def which(cmd):
+    _, cmdname = os.path.split(cmd)
+
+    for path in os.environ["PATH"].split(os.pathsep):
+        cmd = os.path.join(path, cmdname)
+        if os.path.isfile(cmd) and os.access(cmd, X_OK):
+            return cmd
+
+    return None
 
 try:
     config_dir = os.path.expanduser("~/.pwman")
@@ -94,7 +91,7 @@ try:
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
     else:
-        xselpath = find_xsel()
+        xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
 
     for o in opts:
