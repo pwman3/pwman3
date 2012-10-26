@@ -90,7 +90,7 @@ try:
         xselpath=config.get_value("Global","xselpath")
     else:
         xselpath=find_xsel()
-        set_value("Global", "xsel", xselpath)     
+        config.set_value("Global", "xsel", xselpath)      
 
     for o in opts:
         if o[0] == '-d' or o[0] == "--database":
