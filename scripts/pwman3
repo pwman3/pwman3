@@ -42,7 +42,7 @@ def print_help():
                          CAST, DES, DES3, IDEA, RC5
  -h, --help             Display this help and exit
 
-Please report bugs at https://github.com/oz124/pwman3
+Please report bugs at https://github.com/pwman3/pwman3
 """ % (sys.argv[0])
 
 
