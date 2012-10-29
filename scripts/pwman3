@@ -94,13 +94,8 @@ try:
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
     else:
-<<<<<<< HEAD
-        xselpath=find_xsel()
-        set_value("Global", "xsel", xselpath)     
-=======
         xselpath = find_xsel()
         config.set_value("Global", "xsel", xselpath)
->>>>>>> 12e226a... PEP8 correct
 
     for o in opts:
         if o[0] == '-d' or o[0] == "--database":
