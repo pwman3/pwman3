@@ -56,7 +56,7 @@ class SQLiteDatabase(Database):
             self._cur = self._con.cursor()
             self._checktables()
         except sqlite.DatabaseError, e:
-            raise DatabaseException("SQLite: %s" % (s))
+            raise DatabaseException("SQLite: %s" % (e))
 
     def close(self):
         self._cur.close()
