@@ -6,7 +6,7 @@ some typing.
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
 
 
-== Installing ==
+## Installing 
 
 Pwman3 requires the following debian packages:
 	
@@ -25,7 +25,7 @@ To install:
 
 $ python setup.py install
 
-== ikegam's function ==
+## ikegam's function 
 
  * making a password from the numeric character and the alphabet character ([A-Za-z0-9]).
 
@@ -50,4 +50,13 @@ $ python setup.py install
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
 
+## Password leetifying
 
+If you choose to leetify your passwords when generating passwords, 
+e.g. `leetify = true` in `~/.pwman/config`, password lengths may exceed the length chosen. 
+This is because certain letters will be replaced with 2 or more characters. 
+That is, if an initial random password was generated as : `Murkahm1` it will eventually be
+set to: `|\/|ur|<ham1`. To see to full leet list checkout line 79 in `pwman/util/generator.py`
+or issue in your terminal: 
+
+     python -c'from pwman.util import generator; print generator.leetlist'
