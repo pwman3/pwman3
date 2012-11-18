@@ -10,11 +10,14 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
 
 Pwman3 requires the following debian packages:
 	
-when using python 2.4    
+when using python 2.4:    
+    
     python-pysqlite2
 	python-celementtree
     python-crypto
+
 when using python >= 2.5 
+    
     python-crypto
 
 
