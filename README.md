@@ -16,17 +16,29 @@ when using python 2.4:
 	python-celementtree
     python-crypto
 
+
+
 when using python >= 2.5 
     
     python-crypto
 
-
 for nicer functionality:
     xsel - to copy password to clipboard on Linux
 
+Pwman now uses argparse, which is only
+available in Python 2.7. Therefore, if you intend to use
+pwman3 with an older version of Python, please do so before
+installing:
+
+    $ cp scripts/pwman3 scripts/pwman3_bkup
+    $ cp scripts/pwman3_old scripts/pwman3
+
+Note that the old startup script of pwman3 might have limited
+functionality compared to the newer version. 
+
 To install:
 
-$ python setup.py install
+    $ python setup.py install
 
 ## ikegam's function 
 
