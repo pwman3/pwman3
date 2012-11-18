@@ -109,8 +109,8 @@ try:
 
     enc = CryptoEngine.get()
 
-    type = config.get_value("Database", "type")
-    db = pwman.data.factory.create(type)
+    dbtype = config.get_value("Database", "type")
+    db = pwman.data.factory.create(dbtype)
     cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
