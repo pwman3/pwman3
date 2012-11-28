@@ -50,7 +50,8 @@ from pwman.util.crypto import CryptoEngine
 import getopt
 import sys
 if 'darwin' in sys.platform:
-    from pwman.ui.cli import PwmanCliMac
+    from pwman.ui.cli import PwmanCliMac as PwmanCli
+    OSX=True
 else:
     from pwman.ui.cli import PwmanCli
 
@@ -91,14 +92,16 @@ try:
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
-    else:
+    elif not OSX :
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
-
+    elif OSX:
+        pbcopypath = which("pbcopy")
+        config.set_value("Global", "xsel", pbcopypath)
+        
     if args.dbase !=  config.get_value('Database', "filename"):
         config.set_value("Database", "filename", args.dbase)
         _saveconfig = False
-    import ipdb; ipdb.set_trace()
     if args.algo != "Blowfish":
             config.set_value("Encryption", "algorithm", args.algo)
             _saveconfig = False
@@ -122,7 +125,7 @@ try:
     try:
         cli.cmdloop()
     except KeyboardInterrupt, e:
-        print
+        print e
 finally:
     try:
         if _saveconfig:
