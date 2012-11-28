@@ -4,7 +4,7 @@ A nice command line password manager, which is smart enough to use different SQL
 Pwman3 can also copy passwords to the clipboard (on Mac and Linux) without exposing them, so you save
 some typing. 
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
-## Nice Feature in pwman3:
+## Nice Features in pwman3:
 
  * copying of passwords to clipboard
  * lauching specific uri's with default browser
