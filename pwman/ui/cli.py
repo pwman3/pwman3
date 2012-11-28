@@ -512,10 +512,10 @@ class PwmanCli(cmd.Cmd):
         if self.hasxsel:
             ids= self.get_ids(args)
             if len(ids) > 1:
-                print "Can only 1 password at a time..."
+                print "Can copy only 1 password at a time..."
+                return None
             try:
                 node = self._db.getnodes(ids)
-                node[0].get_password()
                 text_to_clipboards(node[0].get_password())
                 print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
                 (node[0].get_username(), node[0].get_url()) 
@@ -528,13 +528,35 @@ class PwmanCli(cmd.Cmd):
 
     def do_cp(self,args):
         self.do_copy(args)
-        
+    
+    def do_open(self, args):
+        ids = self.get_ids(args)
+        if len(ids) > 1:
+            print "Can open only 1 link at a time ..."
+            return None
+        try:
+            node = self._db.getnodes(ids)
+            url = node[0].get_url()
+            open_url(url)
+        except Exception, e:
+            self.error(e)
+
+    def do_o(self, args):
+        self.do_open(args)
     ##
     ## Help functions
     ##
     def usage(self, string):
         print "Usage: %s" % (string)
-   
+    
+    def help_open(self):
+        self.usage("open <ID>")
+        print "Launch default browser with 'xdg-open url',\n\
+the url must contain http:// or https://."
+    
+    def help_o(self):
+        self.help_open()
+
     def help_copy(self):
         self.usage("copy <ID>")
         print "Copy password to X clipboard (xsel required)"
@@ -696,15 +718,35 @@ class PwmanCliMac(PwmanCli):
     def do_cp(self,args):
         self.do_copy(args)
         
+    def do_open(self, args):
+        ids = self.get_ids(args)
+        if len(ids) > 1:
+            print "Can open only 1 link at a time ..."
+            return None
+        try:
+            node = self._db.getnodes(ids)
+            url = node[0].get_url()
+            open_url(url,MacOS=True)
+        except Exception, e:
+            self.error(e)
+
+    def do_o(self, args):
+        self.do_open(args)
+    
     ##
     ## Help functions
     ##
-    def usage(self, string):
-        print "Usage: %s" % (string)
-   
+    def help_open(self):
+        self.usage("open <ID>")
+        print "Launch default browser with 'open url',\n\
+the url must contain http:// or https://."
+    
+    def help_o(self):
+        self.help_open()
+
     def help_copy(self):
         self.usage("copy <ID>")
-        print "Copy password to X clipboard (xsel required)"
+        print "Copy password to Cocoa clipboard using pbcopy)"
 
     def help_cp(self):
         self.help_copy()
@@ -771,7 +813,6 @@ def getpassword(question, width=_defaultwidth, echo=False):
         print question.ljust(width),
         return sys.stdin.readline().rstrip()
     else:
-        
         while 1:
             a1 = getpass.getpass(question.ljust(width))
             if len(a1) == 0:
@@ -807,6 +848,7 @@ def select(question, possible):
 
 def text_to_clipboards(text):
     """
+    copy text to clipboard
     credit:
     https://pythonadventures.wordpress.com/tag/xclip/
     """
@@ -818,11 +860,13 @@ def text_to_clipboards(text):
         xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
         xsel_proc.communicate(text) 
     except OSError, e:
-        print e, "\nExecuting xsel failed, is it installed ?"
+        print e, "\nExecuting xsel failed, is it installed ?\n \
+please check your configuration file ... "
         
         
 def text_to_mcclipboards(text):
     """
+    copy text to mac os x clip board
     credit:
     https://pythonadventures.wordpress.com/tag/xclip/
     """
@@ -833,6 +877,19 @@ def text_to_mcclipboards(text):
     except OSError, e:
         print e, "\nExecuting pbcoy failed..."
 
+
+def open_url(link, MacOS=False):
+    """
+    launch xdg-open or open in MacOSX with url
+    """
+    uopen="xdg-open"
+    if MacOS:
+        uopen="open"
+    try:
+       sp.Popen([uopen, link], stdin=sp.PIPE)
+    except OSError, e:
+        print "Executing open_url failed with:\n", e
+    
 
 class CliMenu(object):
     def __init__(self):
