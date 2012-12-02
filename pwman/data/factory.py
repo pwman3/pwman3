@@ -16,15 +16,15 @@
 #============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-"""Factory to create Database instances
-
+"""
+Factory to create Database instances
+A Generic interface for all DB engines.
 Usage:
 
-import pwlib.db.DatabaseFactory as DBFactory
+import pwman.data.factory as DBFactory
 
 db = DBFactory.create(params)
 db.open()
