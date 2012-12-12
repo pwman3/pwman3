@@ -130,7 +130,7 @@ class CryptoEngine:
         if len(algo) > 0:
             self._algo = algo
         else:
-            raise CryptoException("Parameters missing [%s]" % (e) )
+            raise CryptoException("Parameters missing, no algorithm given")
 
         callback = config.get_value("Encryption", "callback")
         if isinstance(callback, Callback):
@@ -209,19 +209,23 @@ class CryptoEngine:
         password for the database.
         If oldKeyCrypted is none, then a new password is generated."""
         if (self._callback == None):
-            raise CryptoNoCallbackException("No call back class has been specified")
+            raise CryptoNoCallbackException("No call back class has been \
+specified")
         if (self._keycrypted == None):
             # Generate a new key, 32 bits in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
             random = RandomPool()
             key = str(random.get_bytes(32)).encode('base64')
         else:
-            password = self._callback.getsecret("Please enter your current password")
+            password = self._callback.getsecret("Please enter your current \
+password")
             cipher = self._getcipher_real(password, self._algo)
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
-        newpassword1 = self._callback.getsecret("Please enter your new password")
-        newpassword2 = self._callback.getsecret("Please enter your new password again")
+        newpassword1 = self._callback.getsecret("Please enter your new \
+password")
+        newpassword2 = self._callback.getsecret("Please enter your new \
+password again")
         if (newpassword1 != newpassword2):
             raise CryptoPasswordMismatchException("Passwords do not match")
         newcipher = self._getcipher_real(newpassword1, self._algo)
@@ -238,6 +242,9 @@ class CryptoEngine:
         return self._keycrypted
 
     def alive(self):
+        """
+        check if we have cipher
+        """
         if (self._cipher != None):
             return True
         else:
@@ -255,7 +262,7 @@ class CryptoEngine:
         """
         if (self._cipher != None
             and (self._timeout == -1
-                 or (time.time() - CryptoEngine._timeoutcount) < self._timeout)):
+            or (time.time() - CryptoEngine._timeoutcount) < self._timeout)):
             print "I already have cypher"
             print self._cipher
             return self._cipher
@@ -272,13 +279,14 @@ class CryptoEngine:
 
         while tries < max_tries:
             try:
-                password = self._callback.getsecret("Please enter your password")
+                password = self._callback.getsecret("Please enter your\
+password")
                 tmpcipher = self._getcipher_real(password, self._algo)
                 plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
                     'base64'))
                 key = self._retrievedata(plainkey)
                 break
-            except CryptoBadKeyException, e:
+            except CryptoBadKeyException:
                 print "Wrong password."
                 tries += 1
 
@@ -308,18 +316,13 @@ class CryptoEngine:
         elif (algo == 'Blowfish'):
             cipher = cBlowfish.new(key, cBlowfish.MODE_ECB)
         elif (algo == 'CAST'):
-            cipher = Cipher.CAST.new(key, Cipher.CAST.MODE_ECB)
+            cipher = cCAST.new(key, cCAST.MODE_ECB)
         elif (algo == 'DES'):
             self._padkey(key, [8])
             cipher = cDES.new(key, cDES.MODE_ECB)
         elif (algo == 'DES3'):
             key = self._padkey(key, [16, 24])
             cipher =  cDES3.new(key, cDES3.MODE_ECB)
-        #elif (algo == 'IDEA'):
-        #    key = self._padkey(key, [16])
-        #    cipher = cIDEA.new(key, cIDEA.MODE_ECB)
-        #elif (algo == 'RC5'):
-        #    cipher = cRC5.new(key, cRC5.MODE_ECB)
         elif (algo == 'XOR'):
             raise CryptoUnsupportedException("XOR is currently unsupported")
         else:
@@ -327,6 +330,9 @@ class CryptoEngine:
         return cipher
 
     def _padkey(self, key, acceptable_lengths):
+        """
+        pad key with extra string
+        """
         maxlen = max(acceptable_lengths)
         keylen = len(key)
         if (keylen > maxlen):
@@ -341,6 +347,9 @@ class CryptoEngine:
         return key.ljust(newkeylen)
 
     def _preparedata(self, obj, blocksize):
+        """
+        prepare data before encrypting
+        """
         plaintext = cPickle.dumps(obj)
         plaintext = _TAG + plaintext
         numblocks = (len(plaintext)/blocksize) + 1
@@ -348,6 +357,9 @@ class CryptoEngine:
         return plaintext.ljust(newdatasize)
 
     def _retrievedata(self, plaintext):
+        """
+        retrieve encrypted data
+        """
         if (plaintext.startswith(_TAG)):
             plaintext = plaintext[len(_TAG):]
         else:
