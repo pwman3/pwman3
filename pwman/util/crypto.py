@@ -101,6 +101,7 @@ class CryptoEngine:
     _instance = None
     _callback = None
 
+    @classmethod
     def get(cls):
         """
         get() -> CryptoEngine
@@ -114,7 +115,7 @@ class CryptoEngine:
             else:
                 CryptoEngine._instance = CryptoEngine()
         return CryptoEngine._instance
-    get = classmethod(get)
+    #get = classmethod(get)
 
     def __init__(self):
         """Initialise the Cryptographic Engine
@@ -263,8 +264,6 @@ password again")
         if (self._cipher != None
             and (self._timeout == -1
             or (time.time() - CryptoEngine._timeoutcount) < self._timeout)):
-            print "I already have cypher"
-            print self._cipher
             return self._cipher
         if (self._callback == None):
             raise CryptoNoCallbackException("No Callback exception")
@@ -274,7 +273,6 @@ password again")
         max_tries = 5
         tries = 0
 
-        print "I don't have cypher"
         key = None
 
         while tries < max_tries:
