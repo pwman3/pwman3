@@ -49,8 +49,6 @@ from Crypto.Cipher import ARC4 as cARC2
 from Crypto.Cipher import CAST as cCAST
 from Crypto.Cipher import DES as cDES
 from Crypto.Cipher import DES3 as cDES3
-from Crypto.Cipher import IDEA as cIDEA
-
 
 from Crypto.Util.randpool import RandomPool
 
@@ -317,9 +315,9 @@ class CryptoEngine:
         elif (algo == 'DES3'):
             key = self._padkey(key, [16, 24])
             cipher =  cDES3.new(key, cDES3.MODE_ECB)
-        elif (algo == 'IDEA'):
-            key = self._padkey(key, [16])
-            cipher = cIDEA.new(key, cIDEA.MODE_ECB)
+        #elif (algo == 'IDEA'):
+        #    key = self._padkey(key, [16])
+        #    cipher = cIDEA.new(key, cIDEA.MODE_ECB)
         #elif (algo == 'RC5'):
         #    cipher = cRC5.new(key, cRC5.MODE_ECB)
         elif (algo == 'XOR'):
