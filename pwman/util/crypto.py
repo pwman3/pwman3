@@ -1,31 +1,32 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-"""Encryption Module used by PwmanDatabase
+"""
+Encryption Module used by PwmanDatabase
 
 Supports AES, ARC2, Blowfish, CAST, DES, DES3, IDEA, RC5.
 
 Usage:
 import pwman.util.crypto.CryptoEngine as CryptoEngine
+from pwman.util.crypto import CryptoEngine
 
 class myCallback(CryptoEngine.Callback):
     def execute(self):
@@ -41,14 +42,24 @@ ciphertext = crypto.encrypt("plaintext")
 plaintext = cyypto.decrypt(ciphertext)
 
 """
-from Crypto.Cipher import *
+from Crypto.Cipher import Blowfish as cBlowfish
+from Crypto.Cipher import AES as cAES
+from Crypto.Cipher import ARC2 as cARC2
+from Crypto.Cipher import ARC4 as cARC2
+from Crypto.Cipher import CAST as cCAST
+from Crypto.Cipher import DES as cDES
+from Crypto.Cipher import DES3 as cDES3
+from Crypto.Cipher import IDEA as cIDEA
+
+
 from Crypto.Util.randpool import RandomPool
+
 from pwman.util.callback import Callback
 import pwman.util.config as config
 import cPickle
 import time
 
-_instance = None
+_INSTANCE = None
 
 # Use this to tell if crypto is successful or not
 _TAG = "PWMANCRYPTO"
@@ -84,14 +95,14 @@ class CryptoPasswordMismatchException(CryptoException):
     """Entered passwords do not match."""
     def __str__(self):
         return "CryptoPasswordMismatchException: " + self.message
-    
+
 
 class CryptoEngine:
     """Cryptographic Engine"""
     _timeoutcount = 0
     _instance = None
     _callback = None
-    
+
     def get(cls):
         """
         get() -> CryptoEngine
@@ -128,20 +139,20 @@ class CryptoEngine:
             self._callback = callback
         else:
             self._callback = None
-        
+
         keycrypted = config.get_value("Encryption", "keycrypted")
         if len(keycrypted) > 0:
             self._keycrypted = keycrypted
         else:
             self._keycrypted = None
-            
+
         timeout = config.get_value("Encryption", "timeout")
         if timeout.isdigit():
             self._timeout = timeout
         else:
             self._timeout = -1
         self._cipher = None
-    
+
     def encrypt(self, obj):
         """
         encrypt(obj) -> ciphertext
@@ -150,31 +161,48 @@ class CryptoEngine:
         cipher = self._getcipher()
         plaintext = self._preparedata(obj, cipher.block_size)
         ciphertext = cipher.encrypt(plaintext)
+
         return str(ciphertext).encode('base64')
-        
+
     def decrypt(self, ciphertext):
         """
         decrypt(ciphertext) -> obj
         Decrypt ciphertext and returns the obj that was encrypted.
         If key is bad, a CryptoBadKeyException is raised
         Can also raise a CryptoException and CryptoUnsupportedException"""
+        print ciphertext
         cipher = self._getcipher()
         ciphertext = str(ciphertext).decode('base64')
         plaintext = cipher.decrypt(ciphertext)
+        print plaintext
+        #import pdb
+        #pdb.set_trace()
         return self._retrievedata(plaintext)
 
     def set_cryptedkey(self, key):
+        """
+        hold _keycrypted
+        """
         self._keycrypted = key
 
     def get_cryptedkey(self):
+        """
+        return _keycrypted
+        """
         return self._keycrypted
 
     def set_callback(self, callback):
+        """
+        set the callback function
+        """
         self._callback = callback
 
     def get_callback(self):
+        """
+        return call back function
+        """
         return self._callback
-    
+
     def changepassword(self):
         """
         Creates a new key. The key itself is actually stored in
@@ -194,19 +222,21 @@ class CryptoEngine:
             cipher = self._getcipher_real(password, self._algo)
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
-        newpassword1 = self._callback.getsecret("Please enter your new password");
-        newpassword2 = self._callback.getsecret("Please enter your new password again");
+        newpassword1 = self._callback.getsecret("Please enter your new password")
+        newpassword2 = self._callback.getsecret("Please enter your new password again")
         if (newpassword1 != newpassword2):
             raise CryptoPasswordMismatchException("Passwords do not match")
         newcipher = self._getcipher_real(newpassword1, self._algo)
-        self._keycrypted = str(newcipher.encrypt(self._preparedata(key, newcipher.block_size))).encode('base64')
-        
+        self._keycrypted = str(newcipher.encrypt(self._preparedata(key,
+                           newcipher.block_size))).encode('base64')
+
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
         if (self._cipher == None):
-            self._cipher = self._getcipher_real(str(key).decode('base64'), self._algo)
-            CryptoEngine._timeoutcount = time.time()        
-            
+            self._cipher = self._getcipher_real(str(key).decode('base64'),
+                                                self._algo)
+            CryptoEngine._timeoutcount = time.time()
+
         return self._keycrypted
 
     def alive(self):
@@ -216,28 +246,38 @@ class CryptoEngine:
             return False
 
     def forget(self):
+        """
+        discard cipher
+        """
         self._cipher = None
-        
+
     def _getcipher(self):
+        """
+        get cypher from user, to decrypt DB
+        """
         if (self._cipher != None
             and (self._timeout == -1
                  or (time.time() - CryptoEngine._timeoutcount) < self._timeout)):
+            print "I already have cypher"
+            print self._cipher
             return self._cipher
         if (self._callback == None):
             raise CryptoNoCallbackException("No Callback exception")
         if (self._keycrypted == None):
             raise CryptoNoKeyException("Encryption key has not been generated")
 
-        maxTries = 5
+        max_tries = 5
         tries = 0
 
+        print "I don't have cypher"
         key = None
 
-        while tries < maxTries:
+        while tries < max_tries:
             try:
                 password = self._callback.getsecret("Please enter your password")
                 tmpcipher = self._getcipher_real(password, self._algo)
-                plainkey = tmpcipher.decrypt(str(self._keycrypted).decode('base64'))
+                plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
+                    'base64'))
                 key = self._retrievedata(plainkey)
                 break
             except CryptoBadKeyException, e:
@@ -245,41 +285,47 @@ class CryptoEngine:
                 tries += 1
 
         if not key:
-            raise Exception("Wrong password entered %s times; giving up" % maxTries)
-        
-        self._cipher = self._getcipher_real(str(key).decode('base64'), self._algo)
+            raise Exception("Wrong password entered %s times; giving up" \
+                    % max_tries)
+
+        self._cipher = self._getcipher_real(str(key).decode('base64'),
+                self._algo)
 
         CryptoEngine._timeoutcount = time.time()
         return self._cipher
-        
+
 
     def _getcipher_real(self, key, algo):
+        """
+        do the real job of decrypting using functions
+        form PyCrypto
+        """
         if (algo == "AES"):
             key = self._padkey(key, [16, 24, 32])
-            cipher = AES.new(key, AES.MODE_ECB)
+            cipher = cAES.new(key, cAES.MODE_ECB)
         elif (algo == 'ARC2'):
-            cipher = ARC2.new(key, ARC2.MODE_ECB)
+            cipher = cARC2.new(key, cARC2.MODE_ECB)
         elif (algo == 'ARC4'):
             raise CryptoUnsupportedException("ARC4 is currently unsupported")
         elif (algo == 'Blowfish'):
-            cipher = Blowfish.new(key, Blowfish.MODE_ECB)
+            cipher = cBlowfish.new(key, cBlowfish.MODE_ECB)
         elif (algo == 'CAST'):
-            cipher = CAST.new(key, CAST.MODE_ECB)
+            cipher = Cipher.CAST.new(key, Cipher.CAST.MODE_ECB)
         elif (algo == 'DES'):
             self._padkey(key, [8])
-            cipher = DES.new(key, DES.MODE_ECB)
+            cipher = cDES.new(key, cDES.MODE_ECB)
         elif (algo == 'DES3'):
             key = self._padkey(key, [16, 24])
-            cipher = DES3.new(key, DES3.MODE_ECB)
+            cipher =  cDES3.new(key, cDES3.MODE_ECB)
         elif (algo == 'IDEA'):
             key = self._padkey(key, [16])
-            cipher = IDEA.new(key, IDEA.MODE_ECB)
-        elif (algo == 'RC5'):
-            cipher = RC5.new(key, RC5.MODE_ECB)
+            cipher = cIDEA.new(key, cIDEA.MODE_ECB)
+        #elif (algo == 'RC5'):
+        #    cipher = cRC5.new(key, cRC5.MODE_ECB)
         elif (algo == 'XOR'):
             raise CryptoUnsupportedException("XOR is currently unsupported")
         else:
-            raise CryptoException("Invalid algorithm specified")        
+            raise CryptoException("Invalid algorithm specified")
         return cipher
 
     def _padkey(self, key, acceptable_lengths):
@@ -316,7 +362,7 @@ class DummyCryptoEngine(CryptoEngine):
     Only for testing and debugging the DB drivers really."""
     def __init__(self):
         pass
-    
+
     def encrypt(self, obj):
         """Return the object pickled."""
         return cPickle.dumps(obj)
