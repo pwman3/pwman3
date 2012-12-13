@@ -63,6 +63,7 @@ To install:
  * Copying password to X11 or Mac clipbord:
   - On Mac OSX systems copying utilizes `pbcopy`  
   - On X11 Systems  Specify the path to `xsel` if you already have `~/.pwman/config` 
+      
       [Global]
       xsel = yes
       xselpath = /usr/bin/xsel
