@@ -16,7 +16,6 @@
 #============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -58,9 +57,9 @@ class Database:
         return self._filtertags
     
     def filter(self, tags):
-        for t in tags:
-            if not (t in self._filtertags):
-                self._filtertags.append(t)
+        for tag in tags:
+            if not (tag in self._filtertags):
+                self._filtertags.append(tag)
 
     def clearfilter(self):
         self._filtertags = []

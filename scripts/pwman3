@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 #============================================================================
 # This file is part of Pwman3.
 #
@@ -15,37 +15,54 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
+#============================================================================
+# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+import os
+import os.path
+import subprocess as sp
+
+_saveconfig = True
+
+import argparse
+
+
+parser = argparse.ArgumentParser(description='pwman3 - a command line password'\
++'manager.')
+parser.add_argument('-c','--config', dest='cfile', 
+                    default=os.path.expanduser("~/.pwman/config"),
+                    help='cofiguretion file to read')
+parser.add_argument('-d', '--database', dest='dbase',
+                    default=os.path.expanduser("~/.pwman/pwman.db"))
+
+parser.add_argument('-e', '--encryption', dest="algo", default="Blowfish",
+                help="Possible options are: AES, ARC2, ARC4, "\
+                +"Blowfish(default) CAST, DES, DES3, IDEA, RC5")
+
+parser.add_argument('-t','--test',  help="Run pwman from current directory \
+without installation", action="store_true")
+args = parser.parse_args()
+
+if args.test:
+    import sys
+    sys.path.insert(0,os.getcwd())
+
 from pwman.util.crypto import CryptoEngine
 import getopt
 import sys
 if 'darwin' in sys.platform:
-    from pwman.ui.cli import PwmanCliMac
+    from pwman.ui.cli import PwmanCliMac as PwmanCli
+    OSX=True
 else:
     from pwman.ui.cli import PwmanCli
 
 import pwman.util.config as config
 import pwman.data.factory
-import os
-import os.path
-import subprocess as sp
-_saveconfig = True
 
+config_file=args.cfile
 
-def print_help():
-    print """Syntax: %s [options]
-
- -c, --config FILE      Read configuration from FILE
- -d, --database FILE    Use FILE as database
- -e, --encryption ALGO  Use ALGO to encrypt data
-                        Possible options are:
-                         AES, ARC2, ARC4, Blowfish(default),
-                         CAST, DES, DES3, IDEA, RC5
- -h, --help             Display this help and exit
-
-Please report bugs at https://github.com/pwman3/pwman3
-""" % (sys.argv[0])
 
 
 def which(cmd):
@@ -75,42 +92,31 @@ try:
                       }
     config.set_defaults(default_config)
 
-    opts, args = getopt.getopt(sys.argv[1:], 'c:d:e:h',
-                               ["config=", "database=",
-                               "encryption=", "help"])
-
-    for o in opts:
-        if o[0] == '-c' or o[0] == "--config":
-            config_file = os.path.expanduser(o[1])
-
-        if o[0] == '-h' or o[0] == "--help":
-            print_help()
-            sys.exit(0)
-    # if no config exists yet, look for xsel
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
-    else:
+    elif not OSX :
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
-
-    for o in opts:
-        if o[0] == '-d' or o[0] == "--database":
-            config.set_value("Database", "filename",
-                             os.path.expanduser(o[1]))
-            _saveconfig = False
-        if o[0] == '-e' or o[0] == "--encryption":
-            config.set_value("Encryption", "algorithm", o[1])
+    elif OSX:
+        pbcopypath = which("pbcopy")
+        config.set_value("Global", "xsel", pbcopypath)
+        
+    if args.dbase !=  config.get_value('Database', "filename"):
+        config.set_value("Database", "filename", args.dbase)
+        _saveconfig = False
+    if args.algo != "Blowfish":
+            config.set_value("Encryption", "algorithm", args.algo)
             _saveconfig = False
 
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
-
+    
     enc = CryptoEngine.get()
 
-    type = config.get_value("Database", "type")
-    db = pwman.data.factory.create(type)
+    dbtype = config.get_value("Database", "type")
+    db = pwman.data.factory.create(dbtype)
     cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
@@ -122,7 +128,7 @@ try:
     try:
         cli.cmdloop()
     except KeyboardInterrupt, e:
-        print
+        print e
 finally:
     try:
         if _saveconfig:
