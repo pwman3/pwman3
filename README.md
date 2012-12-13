@@ -54,21 +54,27 @@ To install:
 
    For Example:
      
-      [Generator]
-      numerics = true
-     
+     ```
+     [Generator]
+     numerics = true
+     ```
+
  * Passwords can be l33tified similarly using the following.
      
-      [Generator]
-      leetify = true
- 
+     ```
+     [Generator]
+     leetify = true
+     ```
+
  * Copying password to X11 or Mac clipbord:
   - On Mac OSX systems copying utilizes `pbcopy`  
   - On X11 Systems  Specify the path to `xsel` if you already have `~/.pwman/config` 
       
-          [Global]
-          xsel = yes
-          xselpath = /usr/bin/xsel
+     ```
+     [Global]
+     xsel = yes
+      xselpath = /usr/bin/xsel
+      ```
  
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
