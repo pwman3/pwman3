@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #============================================================================
 # This file is part of Pwman3.
 #
@@ -15,7 +15,6 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
-#============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
@@ -31,7 +30,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='pwman3 - a command line password'\
 +'manager.')
-parser.add_argument('-c','--config', dest='cfile', 
+parser.add_argument('-c','--config', dest='cfile',
                     default=os.path.expanduser("~/.pwman/config"),
                     help='cofiguretion file to read')
 parser.add_argument('-d', '--database', dest='dbase',
@@ -101,7 +100,7 @@ try:
     elif OSX:
         pbcopypath = which("pbcopy")
         config.set_value("Global", "xsel", pbcopypath)
-        
+
     if args.dbase !=  config.get_value('Database', "filename"):
         config.set_value("Database", "filename", args.dbase)
         _saveconfig = False
@@ -112,7 +111,7 @@ try:
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
-    
+
     enc = CryptoEngine.get()
 
     dbtype = config.get_value("Database", "type")

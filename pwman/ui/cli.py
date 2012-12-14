@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -54,7 +54,7 @@ except ImportError, e:
 class CLICallback(Callback):
     def getinput(self, question):
         return raw_input(question)
-    
+
     def getsecret(self, question):
         return getpass.getpass(question + ":")
 
@@ -79,7 +79,7 @@ class PwmanCli(cmd.Cmd):
         else:
 #            traceback.print_exc()
             print "Error: %s " % (exception)
-    
+
     def do_EOF(self, args):
         return self.do_exit(args)
 
@@ -109,10 +109,10 @@ class PwmanCli(cmd.Cmd):
                 ids += range(int(m.group(1)),
                              int(m.group(2))+1)
         return ids
-    
+
     def get_filesystem_path(self, default=""):
         return getinput("Enter filename: ", default)
-    
+
     def get_username(self, default=""):
         return getinput("Username: ", default)
 
@@ -170,7 +170,7 @@ class PwmanCli(cmd.Cmd):
         for tn in tagstrings:
             tags.append(Tag(tn))
         return tags
-        
+
     def print_node(self, node):
         width = str(_defaultwidth)
         print "Node %d." % (node.get_id())
@@ -184,7 +184,7 @@ class PwmanCli(cmd.Cmd):
                                     node.get_notes())
         print typeset("Tags: ", ANSI.Red),
         for t in node.get_tags():
-            print "%s " % t.get_name(),
+            print "rr %s " % t.get_name(),
         print
 
         def heardEnter():
@@ -203,7 +203,7 @@ class PwmanCli(cmd.Cmd):
                 if ret is not None:
                     return True
             return False
-        
+
         def waituntil_enter(somepredicate,timeout, period=0.25):
             mustend = time.time() + timeout
             while time.time() < mustend:
@@ -212,13 +212,13 @@ class PwmanCli(cmd.Cmd):
                     break
                 time.sleep(period)
             self.do_cls('')
-        
+
         if sys.platform != 'win32':
             print "Type Enter to flush screen (autoflash in 5 sec.)"
             waituntil_enter(heardEnter, 5)
         else:
             print "Press any key to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnterWin, 5) 
+            waituntil_enter(heardEnterWin, 5)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
@@ -237,7 +237,7 @@ class PwmanCli(cmd.Cmd):
         enc = CryptoEngine.get()
         if not enc.alive():
             return strings
-        
+
         tags = self._db.listtags()
         for t in tags:
             name = t.get_name()
@@ -325,7 +325,7 @@ class PwmanCli(cmd.Cmd):
     def do_export(self, arg):
         try:
             nodes = self.get_ids(arg)
-                
+
             types = exporter.Exporter.types()
             type = select("Select filetype:", types)
             exp = exporter.Exporter.get(type)
@@ -385,7 +385,7 @@ class PwmanCli(cmd.Cmd):
 
     def do_rm(self, arg):
         self.do_delete(arg)
-        
+
     def do_delete(self, arg):
         ids = self.get_ids(arg)
         try:
@@ -404,9 +404,9 @@ class PwmanCli(cmd.Cmd):
 
     def do_ls(self, args):
         self.do_list(args)
-        
+
     def do_list(self, args):
-        
+
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
@@ -447,7 +447,7 @@ class PwmanCli(cmd.Cmd):
                     c = getonechar("Press <Space> for more, or 'Q' to cancel")
                     if c == 'q':
                         break
-        
+
         except Exception, e:
             self.error(e)
 
@@ -457,7 +457,7 @@ class PwmanCli(cmd.Cmd):
             enc.forget()
         except Exception,e:
             self.error(e)
-            
+
     def do_passwd(self, args):
         try:
             self._db.changepassword()
@@ -504,7 +504,7 @@ class PwmanCli(cmd.Cmd):
             print "Config saved."
         except Exception, e:
             self.error(e)
-    
+
     def do_cls(self,args):
         os.system('clear')
 
@@ -518,7 +518,7 @@ class PwmanCli(cmd.Cmd):
                 node = self._db.getnodes(ids)
                 text_to_clipboards(node[0].get_password())
                 print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
-                (node[0].get_username(), node[0].get_url()) 
+                (node[0].get_username(), node[0].get_url())
                 time.sleep(10)
                 text_to_clipboards("")
             except Exception, e:
@@ -528,7 +528,7 @@ class PwmanCli(cmd.Cmd):
 
     def do_cp(self,args):
         self.do_copy(args)
-    
+
     def do_open(self, args):
         ids = self.get_ids(args)
         if len(ids) > 1:
@@ -548,12 +548,12 @@ class PwmanCli(cmd.Cmd):
     ##
     def usage(self, string):
         print "Usage: %s" % (string)
-    
+
     def help_open(self):
         self.usage("open <ID>")
         print "Launch default browser with 'xdg-open url',\n\
 the url must contain http:// or https://."
-    
+
     def help_o(self):
         self.help_open()
 
@@ -570,7 +570,7 @@ the url must contain http:// or https://."
 
     def help_ls(self):
         self.help_list()
-        
+
     def help_list(self):
         self.usage("list <tag> ...")
         print "List nodes that match current or specified filter. ls is an alias."
@@ -606,7 +606,7 @@ the url must contain http:// or https://."
         self.usage("edit <ID|tag> ... ")
         print "Edits a nodes."
         self._mult_id_help()
-    
+
     def help_import(self):
         self.usage("import [filename] ...")
         print "Imports a nodes from a file."
@@ -615,14 +615,14 @@ the url must contain http:// or https://."
         self.usage("export <ID|tag> ... ")
         print "Exports a list of ids to an external format. If no IDs or tags are specified, then all nodes under the current filter are exported."
         self._mult_id_help()
-        
+
     def help_new(self):
         self.usage("new")
         print "Creates a new node."
-    
+
     def help_rm(self):
         self.help_delete()
-    
+
     def help_print(self):
         self.usage("print <ID|tag> ...")
         print "Displays a node. ",
@@ -630,7 +630,7 @@ the url must contain http:// or https://."
 
     def _mult_id_help(self):
         print "Multiple ids and nodes can be specified, separated by a space. A range of ids can be specified in the format n-N. e.g. '10-20' would specify all nodes having ids from 10 to 20 inclusive. Tags are considered one-by-one. e.g. 'foo 2 bar' would yield to all nodes with tag 'foo', node 2 and all nodes with tag 'bar'."
-    
+
     def help_exit(self):
         self.usage("exit")
         print "Exits the application."
@@ -642,10 +642,10 @@ the url must contain http:// or https://."
     def help_set(self):
         self.usage("set [configoption] [value]")
         print "Sets a configuration option. If no value is specified, the current value for [configoption] is output. If neither [configoption] nor [value] are specified, the whole current configuration is output. [configoption] must be of the format <section>.<option>"
-        
+
     def help_ls(self):
         self.help_list()
-    
+
     def help_passwd(self):
         self.usage("passwd")
         print "Changes the password on the database. "
@@ -665,14 +665,18 @@ the url must contain http:// or https://."
     def help_tags(self):
         self.usage("tags")
         print "Displays all tags in used in the database."
-        
+
     def postloop(self):
         try:
             readline.write_history_file(self._historyfile)
         except Exception, e:
             pass
-    
+
     def __init__(self, db, hasxsel):
+        """
+        initialize CLI interface, set up the DB
+        connecion, see if we have xsel ...
+        """
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) %s <%s>" % (pwman.appname, pwman.version,
                                             pwman.author, pwman.authoremail)
@@ -709,7 +713,7 @@ class PwmanCliMac(PwmanCli):
             node[0].get_password()
             text_to_mcclipboard(node[0].get_password())
             print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
-            (node[0].get_username(), node[0].get_url()) 
+            (node[0].get_username(), node[0].get_url())
             time.sleep(10)
             text_to_clipboards("")
         except Exception, e:
@@ -717,7 +721,7 @@ class PwmanCliMac(PwmanCli):
 
     def do_cp(self,args):
         self.do_copy(args)
-        
+
     def do_open(self, args):
         ids = self.get_ids(args)
         if len(ids) > 1:
@@ -732,7 +736,7 @@ class PwmanCliMac(PwmanCli):
 
     def do_o(self, args):
         self.do_open(args)
-    
+
     ##
     ## Help functions
     ##
@@ -740,7 +744,7 @@ class PwmanCliMac(PwmanCli):
         self.usage("open <ID>")
         print "Launch default browser with 'open url',\n\
 the url must contain http:// or https://."
-    
+
     def help_o(self):
         self.help_open()
 
@@ -757,7 +761,7 @@ def getonechar(question, width=_defaultwidth):
     question = "%s " % (question)
     print question.ljust(width),
     sys.stdout.flush()
-        
+
     fd = sys.stdin.fileno()
     tty_mode = tty.tcgetattr(fd)
     tty.setcbreak(fd)
@@ -767,7 +771,7 @@ def getonechar(question, width=_defaultwidth):
         tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
     print ch
     return ch
-    
+
 def getyesno(question, defaultyes=False, width=_defaultwidth):
     if (defaultyes):
         default = "[Y/n]"
@@ -801,7 +805,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
         readline.set_startup_hook(defaulter)
         oldcompleter = readline.get_completer()
         readline.set_completer(completer)
-        
+
         x = raw_input(question.ljust(width))
 
         readline.set_completer(oldcompleter)
@@ -822,8 +826,8 @@ def getpassword(question, width=_defaultwidth, echo=False):
                 return a1
             else:
                 print "Passwords don't match. Try again."
-        
-        
+
+
 def typeset(text, color, bold=False, underline=False):
     if not config.get_value("Global", "colors") == 'yes':
         return text
@@ -858,12 +862,12 @@ def text_to_clipboards(text):
         xsel_proc.communicate(text)
         # "clipboard":
         xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
-        xsel_proc.communicate(text) 
+        xsel_proc.communicate(text)
     except OSError, e:
         print e, "\nExecuting xsel failed, is it installed ?\n \
 please check your configuration file ... "
-        
-        
+
+
 def text_to_mcclipboards(text):
     """
     copy text to mac os x clip board
@@ -889,12 +893,12 @@ def open_url(link, MacOS=False):
        sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError, e:
         print "Executing open_url failed with:\n", e
-    
+
 
 class CliMenu(object):
     def __init__(self):
         self.items = []
-        
+
     def add(self, item):
         if (isinstance(item, CliMenuItem)):
             self.items.append(item)
@@ -913,21 +917,21 @@ class CliMenu(object):
                         currentstr += ("%s " % (c))
                 else:
                     currentstr = current
-                    
+
                 print ("%d - %-"+str(_defaultwidth)+"s %s") % (i, x.name+":",
                                                                currentstr)
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
             try:
                 # substract 1 because array subscripts start at 1
-                selection = int(option) - 1 
+                selection = int(option) - 1
                 value = self.items[selection].editor(self.items[selection].getter())
                 self.items[selection].setter(value)
             except (ValueError,IndexError):
                 if (option.upper() == 'X'):
                     break
                 print "Invalid selection"
-                
+
 class CliMenuItem(object):
     def __init__(self, name, editor, getter, setter):
         self.name = name
