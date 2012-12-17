@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+script to install pwman3
+"""
 
 from distutils.core import setup
 import pwman

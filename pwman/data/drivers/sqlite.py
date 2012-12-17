@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -39,7 +39,7 @@ import cPickle
 
 class SQLiteDatabase(Database):
     """SQLite Database implementation"""
-    
+
     def __init__(self):
         """Initialise SQLitePwmanDatabase instance."""
         Database.__init__(self)
@@ -77,7 +77,7 @@ class SQLiteDatabase(Database):
                     sql += " INTERSECT "
                 else:
                     first = False
-                    
+
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = TAGS.ID "
                         + " WHERE TAGS.DATA = ?")
                 params.append(cPickle.dumps(t))
@@ -102,7 +102,7 @@ class SQLiteDatabase(Database):
             return tags
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
-        
+
     def getnodes(self, ids):
         nodes = []
         for i in ids:
@@ -125,7 +125,7 @@ class SQLiteDatabase(Database):
         try:
             sql = "UPDATE NODES SET DATA = ? WHERE ID = ?";
             self._cur.execute(sql, [cPickle.dumps(node), id])
-            
+
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
         self._setnodetags(node)
@@ -147,7 +147,7 @@ class SQLiteDatabase(Database):
 
             self._setnodetags(n)
             self._commit()
-            
+
     def removenodes(self, nodes):
         for n in nodes:
             if not isinstance(n, Node): raise DatabaseException(
@@ -155,7 +155,7 @@ class SQLiteDatabase(Database):
             try:
                 sql = "DELETE FROM NODES WHERE ID = ?";
                 self._cur.execute(sql, [n.get_id()])
-                
+
             except sqlite.DatabaseError, e:
                 raise DatabaseException("SQLite: %s" % (e))
             self._deletenodetags(n)
@@ -206,7 +206,7 @@ class SQLiteDatabase(Database):
             if not isinstance(t, Tag): raise DatabaseException(
                 "Tried to insert foreign object into database [%s]", t)
             data = cPickle.dumps(t)
-            
+
             try:
                 self._cur.execute(sql, [data])
                 row = self._cur.fetchone()
@@ -224,19 +224,19 @@ class SQLiteDatabase(Database):
         try:
             sql = "DELETE FROM LOOKUP WHERE NODE = ?"
             self._cur.execute(sql, [node.get_id()])
-            
+
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
-        
+
     def _setnodetags(self, node):
         self._deletenodetags(node)
         ids = self._tagids(node.get_tags())
-        
+
         for i in ids:
             sql = "INSERT OR REPLACE INTO LOOKUP VALUES(?, ?)"
             params = [node.get_id(), i]
-            
+
             try:
                 self._cur.execute(sql, params)
             except sqlite.DatabaseError, e:
@@ -250,7 +250,7 @@ class SQLiteDatabase(Database):
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
-        
+
     def _checktables(self):
         """ Check if the Pwman tables exist """
         self._cur.execute("PRAGMA TABLE_INFO(NODES)")
@@ -271,7 +271,7 @@ class SQLiteDatabase(Database):
             self._cur.execute("CREATE TABLE KEY"
                               + "(THEKEY TEXT NOT NULL DEFAULT '')");
             self._cur.execute("INSERT INTO KEY VALUES('')");
-            
+
             try:
                 self._con.commit()
             except DatabaseError, e:
@@ -288,9 +288,13 @@ class SQLiteDatabase(Database):
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error saving key [%s]" % (e))
-        
-        
+
+
     def loadkey(self):
+        """
+        fetch the key to database. the key is also stored
+        encrypted.
+        """
         self._cur.execute("SELECT THEKEY FROM KEY");
         keyrow = self._cur.fetchone()
         if (keyrow[0] == ''):

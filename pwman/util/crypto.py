@@ -40,8 +40,8 @@ CryptoEngine.init(params)
 crypto = CryptoEngine.get()
 ciphertext = crypto.encrypt("plaintext")
 plaintext = cyypto.decrypt(ciphertext)
-
 """
+
 from Crypto.Cipher import Blowfish as cBlowfish
 from Crypto.Cipher import AES as cAES
 from Crypto.Cipher import ARC2 as cARC2
@@ -104,7 +104,7 @@ class CryptoEngine:
     @classmethod
     def get(cls):
         """
-        get() -> CryptoEngine
+        CryptoEngine.get() -> CryptoEngine
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
@@ -169,13 +169,9 @@ class CryptoEngine:
         Decrypt ciphertext and returns the obj that was encrypted.
         If key is bad, a CryptoBadKeyException is raised
         Can also raise a CryptoException and CryptoUnsupportedException"""
-        print ciphertext
         cipher = self._getcipher()
         ciphertext = str(ciphertext).decode('base64')
         plaintext = cipher.decrypt(ciphertext)
-        print plaintext
-        #import pdb
-        #pdb.set_trace()
         return self._retrievedata(plaintext)
 
     def set_cryptedkey(self, key):
@@ -277,7 +273,7 @@ password again")
 
         while tries < max_tries:
             try:
-                password = self._callback.getsecret("Please enter your\
+                password = self._callback.getsecret("Please enter your \
 password")
                 tmpcipher = self._getcipher_real(password, self._algo)
                 plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
