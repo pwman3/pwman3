@@ -5,5 +5,5 @@ Home-page: https://github.com/pwman3/pwman3
 Author: Oz Nahum
 Author-email: nahumoz@gmail.com
 License: GNU GPL
-Description: UNKNOWN
-Platform: UNKNOWN
+Description: command line password manager with different SQL backends
+Platform: Linux\OSX
