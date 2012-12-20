@@ -24,6 +24,6 @@ version = "0.2.1"
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
-description = "Pwman is a lightweight command line password management application."
+description = "Pwman -a command line password management application."
 keywords = "password management sqlite crypto"
 
