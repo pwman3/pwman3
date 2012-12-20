@@ -19,6 +19,6 @@ Description: console password management application
  password management. It allows one to store passwords in a sqlite database
  locked by a master password which can be encrypted with different algorithms
  (e.g Blowfish, AES, DES3).
- .
+ 
  It is also possible to tag them to ease searches in a large amount of
  passwords
