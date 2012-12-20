@@ -1,3 +1,9 @@
+pwman3 (0.2.1-1) unstable; urgency=low
+  
+  * New version
+            
+ -- Oz Nahum <nahumoz@gmail.com>  Thu, 18 Dec 2012 07:09:57 +0200
+
 pwman3 (0.1.0-1) UNRELEASED; urgency=low
   
   * Bump version Number.
