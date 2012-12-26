@@ -678,8 +678,8 @@ the url must contain http:// or https://."
         connecion, see if we have xsel ...
         """
         cmd.Cmd.__init__(self)
-        self.intro = "%s %s (c) %s <%s>" % (pwman.appname, pwman.version,
-                                            pwman.author, pwman.authoremail)
+        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
+                                            pwman.website)
         self._historyfile = config.get_value("Readline", "history")
         self.hasxsel = hasxsel
         try:
