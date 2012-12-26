@@ -82,8 +82,10 @@ try:
         os.mkdir(config_dir)
 
     config_file = os.path.join(config_dir, "config")
-
-    default_config = {'Global': {'umask': '0100', 'colors': 'yes'},
+    # set cls_timout to negative number (e.g. -1) to disable
+    default_config = {'Global': {'umask': '0100', 'colors': 'yes',
+                                 'cls_timeout': '5'
+                                },
                       'Database': {'type': 'SQLite',
                                    'filename': os.path.join(config_dir,
                                                             "pwman.db")},
@@ -91,8 +93,9 @@ try:
                       'Readline': {'history': os.path.join(config_dir,
                                                            "history")}
                       }
+    
     config.set_defaults(default_config)
-
+    
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
@@ -115,7 +118,7 @@ try:
     os.umask(umask)
 
     enc = CryptoEngine.get()
-
+    
     dbtype = config.get_value("Database", "type")
     db = pwman.data.factory.create(dbtype)
     cli = PwmanCli(db, xselpath)
