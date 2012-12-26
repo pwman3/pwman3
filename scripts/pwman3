@@ -51,11 +51,13 @@ if args.test:
 from pwman.util.crypto import CryptoEngine
 import getopt
 import sys
+
 if 'darwin' in sys.platform:
     from pwman.ui.cli import PwmanCliMac as PwmanCli
-    OSX=True
+    OSX = True
 else:
     from pwman.ui.cli import PwmanCli
+    OSX = False
 
 import pwman.util.config as config
 import pwman.data.factory
