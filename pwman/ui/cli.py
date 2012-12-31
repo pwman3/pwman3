@@ -212,13 +212,15 @@ class PwmanCli(cmd.Cmd):
                     break
                 time.sleep(period)
             self.do_cls('')
-
-        if sys.platform != 'win32':
-            print "Type Enter to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnter, 5)
-        else:
-            print "Press any key to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnterWin, 5)
+        
+        flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        if flushtimeout > 0:
+            if sys.platform != 'win32':
+                print "Type Enter to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnter, flushtimeout)
+            else:
+                print "Press any key to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnterWin, flushtimeout)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
