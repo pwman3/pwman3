@@ -18,6 +18,9 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+"""
+Define the CLI interface for pwman3 and the helper functions
+"""
 
 import pwman
 import pwman.exchange.importer as importer
@@ -35,7 +38,7 @@ import os
 import struct
 import getpass
 import cmd
-import traceback
+#import traceback
 import time
 import select as uselect
 import subprocess as sp
@@ -94,14 +97,14 @@ class PwmanCli(cmd.Cmd):
 
     def get_ids(self, args):
         ids = []
-        rx =re.compile(r"^(\d+)-(\d+)$")
+        rx = re.compile(r"^(\d+)-(\d+)$")
         idstrs = args.split()
         for i in idstrs:
             m = rx.match(i)
             if m == None:
                 try:
                     ids.append(int(i))
-                except ValueError, e:
+                except ValueError:
                     self._db.clearfilter()
                     self._db.filter([Tag(i)])
                     ids += self._db.listnodes()
@@ -117,7 +120,7 @@ class PwmanCli(cmd.Cmd):
         return getinput("Username: ", default)
 
     def get_password(self, default=""):
-        password = getpassword("Password (Blank to generate): ", _defaultwidth,\
+        password = getpassword("Password (Blank to generate): ", _defaultwidth, \
             False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
@@ -139,7 +142,7 @@ class PwmanCli(cmd.Cmd):
     def get_notes(self, default=""):
         return getinput("Notes: ", default)
 
-    def get_tags(self, default=[]):
+    def get_tags(self, default="tag"):
         defaultstr = ''
 
         if len(default) > 0:
@@ -188,10 +191,10 @@ class PwmanCli(cmd.Cmd):
         print
 
         def heardEnter():
-            i,o,e = uselect.select([sys.stdin],[],[],0.0001)
+            i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
             for s in i:
                 if s == sys.stdin:
-                    input = sys.stdin.readline()
+                    sys.stdin.readline()
                     return True
                 return False
 
@@ -204,7 +207,7 @@ class PwmanCli(cmd.Cmd):
                     return True
             return False
 
-        def waituntil_enter(somepredicate,timeout, period=0.25):
+        def waituntil_enter(somepredicate, timeout, period=0.25):
             mustend = time.time() + timeout
             while time.time() < mustend:
                 cond = somepredicate()
@@ -311,15 +314,15 @@ class PwmanCli(cmd.Cmd):
             args = arg.split()
             if len(args) == 0:
                 types = importer.Importer.types()
-                type = select("Select filetype:", types)
-                imp = importer.Importer.get(type)
-                file = getinput("Select file:")
-                imp.import_data(self._db, file)
+                intype = select("Select filetype:", types)
+                imp = importer.Importer.get(intype)
+                infile = getinput("Select file:")
+                imp.import_data(self._db, infile)
             else:
                 for i in args:
                     types = importer.Importer.types()
-                    type = select("Select filetype:", types)
-                    imp = importer.Importer.get(type)
+                    intype = select("Select filetype:", types)
+                    imp = importer.Importer.get(intype)
                     imp.import_data(self._db, i)
         except Exception, e:
             self.error(e)
@@ -329,14 +332,14 @@ class PwmanCli(cmd.Cmd):
             nodes = self.get_ids(arg)
 
             types = exporter.Exporter.types()
-            type = select("Select filetype:", types)
-            exp = exporter.Exporter.get(type)
-            file = getinput("Select output file:")
+            ftype = select("Select filetype:", types)
+            exp = exporter.Exporter.get(ftype)
+            out_file = getinput("Select output file:")
             if len(nodes) > 0:
                 b = getyesno("Export nodes %s?" % (nodes), True)
                 if not b:
                     return
-                exp.export_data(self._db, file, nodes)
+                exp.export_data(self._db, out_file, nodes)
             else:
                 nodes = self._db.listnodes()
                 tags = self._db.currenttags()
@@ -349,7 +352,7 @@ class PwmanCli(cmd.Cmd):
                 b = getyesno("Export all nodes%s?" % (tagstr), True)
                 if not b:
                     return
-                exp.export_data(self._db, file, nodes)
+                exp.export_data(self._db, out_file, nodes)
             print "Data exported."
         except Exception, e:
             self.error(e)
@@ -416,20 +419,20 @@ class PwmanCli(cmd.Cmd):
             if sys.platform != 'win32':
                 rows, cols = gettermsize()
             else:
-                rows,cols = 18, 80 # fix this !
+                rows, cols = 18, 80 # fix this !
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
             cols -= 8
             i = 0
             for n in nodes:
-                tags=n.get_tags()
+                tags = n.get_tags()
                 tagstring = ''
                 first = True
                 for t in tags:
                     if not first:
                         tagstring += ", "
                     else:
-                        first=False
+                        first = False
                     tagstring += t.get_name()
                 name = "%s@%s" % (n.get_username(), n.get_url())
 
@@ -457,7 +460,7 @@ class PwmanCli(cmd.Cmd):
         try:
             enc = CryptoEngine.get()
             enc.forget()
-        except Exception,e:
+        except Exception, e:
             self.error(e)
 
     def do_passwd(self, args):
@@ -507,19 +510,19 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
-    def do_cls(self,args):
+    def do_cls(self, args):
         os.system('clear')
 
-    def do_copy(self,args):
+    def do_copy(self, args):
         if self.hasxsel:
-            ids= self.get_ids(args)
+            ids = self.get_ids(args)
             if len(ids) > 1:
                 print "Can copy only 1 password at a time..."
                 return None
             try:
                 node = self._db.getnodes(ids)
                 text_to_clipboards(node[0].get_password())
-                print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+                print "copied password for %s@%s clipboard... erasing in 10 sec..." % \
                 (node[0].get_username(), node[0].get_url())
                 time.sleep(10)
                 text_to_clipboards("")
@@ -528,7 +531,7 @@ class PwmanCli(cmd.Cmd):
         else:
             print "Can't copy to clipboard, no xsel found in the system!"
 
-    def do_cp(self,args):
+    def do_cp(self, args):
         self.do_copy(args)
 
     def do_open(self, args):
@@ -569,9 +572,6 @@ the url must contain http:// or https://."
     def help_cls(self):
         self.usage("cls")
         print "Clear the Screen from information."
-
-    def help_ls(self):
-        self.help_list()
 
     def help_list(self):
         self.usage("list <tag> ...")
@@ -706,22 +706,22 @@ class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
     """
-    def do_copy(self,args):
-        ids= self.get_ids(args)
+    def do_copy(self, args):
+        ids = self.get_ids(args)
         if len(ids) > 1:
             print "Can only 1 password at a time..."
         try:
             node = self._db.getnodes(ids)
             node[0].get_password()
             text_to_mcclipboard(node[0].get_password())
-            print """copied password for %s@%s clipboard... erasing in 10 sec...""" %\
+            print "copied password for %s@%s clipboard... erasing in 10 sec..." % \
             (node[0].get_username(), node[0].get_url())
             time.sleep(10)
             text_to_clipboards("")
         except Exception, e:
             self.error(e)
 
-    def do_cp(self,args):
+    def do_cp(self, args):
         self.do_copy(args)
 
     def do_open(self, args):
@@ -732,7 +732,7 @@ class PwmanCliMac(PwmanCli):
         try:
             node = self._db.getnodes(ids)
             url = node[0].get_url()
-            open_url(url,MacOS=True)
+            open_url(url, MacOS=True)
         except Exception, e:
             self.error(e)
 
@@ -803,7 +803,9 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
     if (not _readline_available):
         return raw_input(question.ljust(width))
     else:
-        def defaulter(): readline.insert_text(default)
+        def defaulter(): 
+            """define default behavior startup"""
+            readline.insert_text(default)
         readline.set_startup_hook(defaulter)
         oldcompleter = readline.get_completer()
         readline.set_completer(completer)
@@ -822,7 +824,7 @@ def getpassword(question, width=_defaultwidth, echo=False):
         while 1:
             a1 = getpass.getpass(question.ljust(width))
             if len(a1) == 0:
-                return a1;
+                return a1
             a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
             if a1 == a2:
                 return a1
@@ -834,11 +836,11 @@ def typeset(text, color, bold=False, underline=False):
     if not config.get_value("Global", "colors") == 'yes':
         return text
     if (bold):
-        bold = "%d;" %(ANSI.Bold)
+        bold = "%d;" % (ANSI.Bold)
     else:
         bold = ""
     if (underline):
-        underline = "%d;" % (ANSI.Underline)
+        underline = "%d;" % (ANSI.Underscore)
     else:
         underline = ""
     return "\033[%s%s%sm%s\033[%sm" % (bold, underline, color,
@@ -848,9 +850,9 @@ def select(question, possible):
     for i in range(0, len(possible)):
         print ("%d - %-"+str(_defaultwidth)+"s") % (i+1, possible[i])
     while 1:
-        input = getonechar(question)
-        if input.isdigit() and int(input) in range(1, len(possible)+1):
-            return possible[int(input)-1]
+        uinput = getonechar(question)
+        if uinput.isdigit() and int(uinput) in range(1, len(possible)+1):
+            return possible[int(uinput)-1]
 
 def text_to_clipboards(text):
     """
@@ -870,7 +872,7 @@ def text_to_clipboards(text):
 please check your configuration file ... "
 
 
-def text_to_mcclipboards(text):
+def text_to_mcclipboard(text):
     """
     copy text to mac os x clip board
     credit:
@@ -888,11 +890,11 @@ def open_url(link, MacOS=False):
     """
     launch xdg-open or open in MacOSX with url
     """
-    uopen="xdg-open"
+    uopen = "xdg-open"
     if MacOS:
-        uopen="open"
+        uopen = "open"
     try:
-       sp.Popen([uopen, link], stdin=sp.PIPE)
+        sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError, e:
         print "Executing open_url failed with:\n", e
 
@@ -929,7 +931,7 @@ class CliMenu(object):
                 selection = int(option) - 1
                 value = self.items[selection].editor(self.items[selection].getter())
                 self.items[selection].setter(value)
-            except (ValueError,IndexError):
+            except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break
                 print "Invalid selection"
