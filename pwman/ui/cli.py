@@ -35,7 +35,7 @@ import os
 import struct
 import getpass
 import cmd
-import traceback
+#import traceback
 import time
 import select as uselect
 import subprocess as sp
@@ -690,7 +690,7 @@ the url must contain http:// or https://."
 
         try:
             readline.read_history_file(self._historyfile)
-        except Exception, e:
+        except IOError, e:
             pass
 
         self.prompt = "pwman> "
@@ -833,7 +833,7 @@ def typeset(text, color, bold=False, underline=False):
     else:
         bold = ""
     if (underline):
-        underline = "%d;" % (ANSI.Underline)
+        underline = "%d;" % (ANSI.Underscore)
     else:
         underline = ""
     return "\033[%s%s%sm%s\033[%sm" % (bold, underline, color,
@@ -865,7 +865,7 @@ def text_to_clipboards(text):
 please check your configuration file ... "
 
 
-def text_to_mcclipboards(text):
+def text_to_mcclipboard(text):
     """
     copy text to mac os x clip board
     credit:
