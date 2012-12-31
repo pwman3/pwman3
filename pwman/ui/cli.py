@@ -85,11 +85,11 @@ class PwmanCli(cmd.Cmd):
 
     def do_exit(self, args):
         print
-        try:
-            print "goodbye"
-            self._db.close()
-        except Exception, e:
-            self.error(e)
+        #try:
+        #    print "goodbye"
+        self._db.close()
+        #except DatabaseException, e:
+        #    self.error(e)
         return True
 
     def get_ids(self, args):
@@ -817,7 +817,7 @@ def getpassword(question, width=_defaultwidth, echo=False):
         while 1:
             a1 = getpass.getpass(question.ljust(width))
             if len(a1) == 0:
-                return a1;
+                return a1
             a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
             if a1 == a2:
                 return a1
