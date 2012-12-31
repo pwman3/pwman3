@@ -184,7 +184,7 @@ class PwmanCli(cmd.Cmd):
                                     node.get_notes())
         print typeset("Tags: ", ANSI.Red),
         for t in node.get_tags():
-            print "rr %s " % t.get_name(),
+            print " %s " % t.get_name(),
         print
 
         def heardEnter():
@@ -642,9 +642,6 @@ the url must contain http:// or https://."
     def help_set(self):
         self.usage("set [configoption] [value]")
         print "Sets a configuration option. If no value is specified, the current value for [configoption] is output. If neither [configoption] nor [value] are specified, the whole current configuration is output. [configoption] must be of the format <section>.<option>"
-
-    def help_ls(self):
-        self.help_list()
 
     def help_passwd(self):
         self.usage("passwd")
