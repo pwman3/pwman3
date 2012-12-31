@@ -184,7 +184,7 @@ class PwmanCli(cmd.Cmd):
                                     node.get_notes())
         print typeset("Tags: ", ANSI.Red),
         for t in node.get_tags():
-            print "rr %s " % t.get_name(),
+            print " %s " % t.get_name(),
         print
 
         def heardEnter():
