@@ -16,7 +16,6 @@
 #============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -170,7 +169,7 @@ class MySQLDatabase(Database):
             sql = "UPDATE %sNODES SET DATA = %%s WHERE ID = %%s" % (self._prefix)
             cursor.execute(sql, (cPickle.dumps(node), id))
             
-        except MySQL.DatabaseError, e:
+        except MySQLdb.DatabaseError, e:
             raise DatabaseException("MySQL: %s" % (e))
         self._setnodetags(node)
         self._checktags()
@@ -340,8 +339,8 @@ class MySQLDatabase(Database):
 
             cursor.execute(("CREATE TABLE %sKEY"
                                + "(THEKEY TEXT(1024) NOT NULL DEFAULT '')")
-                              % (self._prefix));
-            cursor.execute("INSERT INTO %sKEY VALUES('')" % (self._prefix));
+                              % (self._prefix))
+            cursor.execute("INSERT INTO %sKEY VALUES('')" % (self._prefix))
             
             try:
                 self._con.commit()
@@ -364,7 +363,7 @@ class MySQLDatabase(Database):
         
     def loadkey(self):
         cursor = self._get_cur()
-        cursor.execute("SELECT THEKEY FROM %sKEY" % (self._prefix));
+        cursor.execute("SELECT THEKEY FROM %sKEY" % (self._prefix))
         keyrow = cursor.fetchone()
         if (keyrow[0] == ''):
             return None
