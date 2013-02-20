@@ -31,7 +31,7 @@ minlen = 6
 maxlen = 8
 (word, hypenated_word) = PwGen.generate_password(minlen, maxlen)
 """
-import random
+from Crypto.Random import random
 
 class PasswordGenerationException(Exception):
     def __init__(self, message):
@@ -53,7 +53,7 @@ def generate_password(minlen, maxlen, capitals = True, symbols = False, numerics
 def randomly_capitalize(password):
     newpassword = str()
     for l in password:
-        if (random.random() >= 0.5):
+        if random.randint(0, 1):
             l = l.upper()
         newpassword = newpassword + l
     return newpassword
@@ -61,7 +61,7 @@ def randomly_capitalize(password):
 def leetify(password):
     newpassword = str()
     for l in password:
-        if (random.random() >= 0.5):
+        if random.randint(0, 1):
             l = leetify_char(l)
         newpassword = newpassword + l
     return newpassword
@@ -69,7 +69,7 @@ def leetify(password):
 def change_numerics(password):
     newpassword = str()
     for l in password:
-        if (random.random() >= 0.5):
+        if random.randint(0, 1):
             l = change_numerics_char(l)
         newpassword = newpassword + l
     return newpassword
