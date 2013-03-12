@@ -122,7 +122,11 @@ class PwmanCli(cmd.Cmd):
         return getinput("Username: ", default)
 
     def get_password(self, numerics=False,leetify=False):
-        # TODO: add key word symbols = False
+        """
+        numerics -> numerics
+        leetify -> symbols
+        """
+        # TODO: add key word for specialsigns = False
         password = getpassword("Password (Blank to generate): ", _defaultwidth, \
             False)
         if len(password) == 0:
@@ -131,6 +135,7 @@ class PwmanCli(cmd.Cmd):
 
             numerics = config.get_value("Generator", "numerics") == 'true'
             leetify = config.get_value("Generator", "leetify") == 'true'
+                                 generate_password(minlen, maxlen, capitals = True, symbols = False, numerics = False)
             (password, dumpme) = generator.generate_password(length, length, \
                 True, leetify, numerics)
 
