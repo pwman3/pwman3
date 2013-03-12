@@ -54,3 +54,7 @@ finally you should step into:
 
     node.get_username()
 
+# New features to implement:
+  1. Password expiry date - register password date,  remind when password is about to expire.
+  2. Make new passwords according to user defined rules. 
+

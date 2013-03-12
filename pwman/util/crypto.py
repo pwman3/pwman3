@@ -50,7 +50,8 @@ from Crypto.Cipher import CAST as cCAST
 from Crypto.Cipher import DES as cDES
 from Crypto.Cipher import DES3 as cDES3
 
-from Crypto.Util.randpool import RandomPool
+from Crypto.Random import OSRNG
+
 
 from pwman.util.callback import Callback
 import pwman.util.config as config
@@ -211,8 +212,8 @@ specified")
         if (self._keycrypted == None):
             # Generate a new key, 32 bits in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
-            random = RandomPool()
-            key = str(random.get_bytes(32)).encode('base64')
+            random = OSRNG.new()
+            key = str(random.read(32)).encode('base64')
         else:
             password = self._callback.getsecret("Please enter your current \
 password")
