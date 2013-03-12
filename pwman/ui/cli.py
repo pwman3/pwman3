@@ -18,6 +18,9 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+"""
+Define the CLI interface for pwman3 and the helper functions
+"""
 
 import pwman
 import pwman.exchange.importer as importer
@@ -140,7 +143,7 @@ class PwmanCli(cmd.Cmd):
     def get_notes(self, default=""):
         return getinput("Notes: ", default)
 
-    def get_tags(self, default=""):
+    def get_tags(self, default="tag"):
         defaultstr = ''
 
         if len(default) > 0:
@@ -213,13 +216,15 @@ class PwmanCli(cmd.Cmd):
                     break
                 time.sleep(period)
             self.do_cls('')
-
-        if sys.platform != 'win32':
-            print "Type Enter to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnter, 5)
-        else:
-            print "Press any key to flush screen (autoflash in 5 sec.)"
-            waituntil_enter(heardEnterWin, 5)
+        
+        flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        if flushtimeout > 0:
+            if sys.platform != 'win32':
+                print "Type Enter to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnter, flushtimeout)
+            else:
+                print "Press any key to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnterWin, flushtimeout)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
@@ -310,15 +315,15 @@ class PwmanCli(cmd.Cmd):
             args = arg.split()
             if len(args) == 0:
                 types = importer.Importer.types()
-                ftype = select("Select filetype:", types)
-                imp = importer.Importer.get(ftype)
-                imfile = getinput("Select file:")
-                imp.import_data(self._db, imfile)
+                intype = select("Select filetype:", types)
+                imp = importer.Importer.get(intype)
+                infile = getinput("Select file:")
+                imp.import_data(self._db, infile)
             else:
                 for i in args:
                     types = importer.Importer.types()
-                    ftype = select("Select filetype:", types)
-                    imp = importer.Importer.get(ftype)
+                    intype = select("Select filetype:", types)
+                    imp = importer.Importer.get(intype)
                     imp.import_data(self._db, i)
         except Exception, e:
             self.error(e)
@@ -330,12 +335,12 @@ class PwmanCli(cmd.Cmd):
             types = exporter.Exporter.types()
             ftype = select("Select filetype:", types)
             exp = exporter.Exporter.get(ftype)
-            exfile = getinput("Select output file:")
+            out_file = getinput("Select output file:")
             if len(nodes) > 0:
                 b = getyesno("Export nodes %s?" % (nodes), True)
                 if not b:
                     return
-                exp.export_data(self._db, exfile, nodes)
+                exp.export_data(self._db, out_file, nodes)
             else:
                 nodes = self._db.listnodes()
                 tags = self._db.currenttags()
@@ -348,7 +353,7 @@ class PwmanCli(cmd.Cmd):
                 b = getyesno("Export all nodes%s?" % (tagstr), True)
                 if not b:
                     return
-                exp.export_data(self._db, exfile, nodes)
+                exp.export_data(self._db, out_file, nodes)
             print "Data exported."
         except Exception, e:
             self.error(e)
@@ -569,9 +574,6 @@ the url must contain http:// or https://."
         self.usage("cls")
         print "Clear the Screen from information."
 
-    def help_ls(self):
-        self.help_list()
-
     def help_list(self):
         self.usage("list <tag> ...")
         print "List nodes that match current or specified filter. ls is an alias."
@@ -676,8 +678,8 @@ the url must contain http:// or https://."
         connecion, see if we have xsel ...
         """
         cmd.Cmd.__init__(self)
-        self.intro = "%s %s (c) %s <%s>" % (pwman.appname, pwman.version,
-                                            pwman.author, pwman.authoremail)
+        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
+                                            pwman.website)
         self._historyfile = config.get_value("Readline", "history")
         self.hasxsel = hasxsel
         try:
@@ -800,8 +802,9 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
         return raw_input(question.ljust(width))
     else:
         def defaulter(): 
+            """define default behavior startup"""
             readline.insert_text(default)
-        
+
         readline.set_startup_hook(defaulter)
         oldcompleter = readline.get_completer()
         readline.set_completer(completer)

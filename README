@@ -27,8 +27,9 @@ when using python >= 2.5
     python-crypto
 
 for nicer functionality:
+    
     xsel - to copy password to clipboard on Linux
-
+    
 
 
 Pwman now uses argparse, which is only
@@ -45,6 +46,28 @@ functionality compared to the newer version.
 To install:
 
     $ python setup.py install
+
+## User Insterface
+
+   1. When xsel is install on a Linux system, you can copy passwords directly to clipboard with the copy command.
+   2. The command 'open' will open the default browser if URL is specified.
+   3. An automatic 'clear screen' function is called after printing an entry in the database. 
+      The screen will be cleared after 5 seconds by default. However, this can be changed by changing the 
+      correct value in `~.pwman/config`:
+      
+      ```
+      [Global]
+      ...
+      cls_timeout = 10
+      ```
+      To disable the automatic 'clear screen' functionality set `cls_timeout` to a negative integer. 
+
+      ```
+      [Global]
+      ...
+      cls_timeout = -1
+      ```
+
 
 ## ikegam's function 
 
