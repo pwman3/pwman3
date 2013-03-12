@@ -43,6 +43,7 @@ import cmd
 import time
 import select as uselect
 import subprocess as sp
+import ast
 
 if sys.platform != 'win32':
     import tty
@@ -120,7 +121,8 @@ class PwmanCli(cmd.Cmd):
     def get_username(self, default=""):
         return getinput("Username: ", default)
 
-    def get_password(self, default=""):
+    def get_password(self, numerics=False,leetify=False):
+        # TODO: add key word symbols = False
         password = getpassword("Password (Blank to generate): ", _defaultwidth, \
             False)
         if len(password) == 0:
@@ -364,10 +366,20 @@ class PwmanCli(cmd.Cmd):
     def do_n(self, arg):
         self.do_new(arg)
 
-    def do_new(self, arg):
+    def do_new(self, args):
+        """
+        can override default config settings the following way:
+        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+        pwman> n {'leetify':False, 'numerics':True}
+        Password (Blank to generate):
+        """
         try:
             username = self.get_username()
-            password = self.get_password()
+            if args:
+                args = ast.literal_eval(args)
+                password = self.get_password(**args)
+            else:
+                password = self.get_password()
             url = self.get_url()
             notes = self.get_notes()
             node = Node(username, password, url, notes)
@@ -621,7 +633,9 @@ the url must contain http:// or https://."
 
     def help_new(self):
         self.usage("new")
-        print "Creates a new node."
+        print """Creates a new node., 
+You can override default config settings the following way:      
+pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_rm(self):
         self.help_delete()
