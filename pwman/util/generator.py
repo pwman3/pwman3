@@ -66,6 +66,38 @@ def leetify(password):
         newpassword = newpassword + l
     return newpassword
 
+def random_special_sign(password):
+    """
+    replace one letter with a special sign,
+    this will do the following:
+    In [203]: for i in range(10):
+    print random_special_sign("secret")
+    .....:     
+    secre%
+    sec\et
+    secre?
+    s;cret
+    se$ret
+    secr}t
+    secr*t
+    ;ecret
+    s%cret
+    secre(
+    """
+    newpass = str()
+    specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
+                     "%", "^", "&", "*", "(", ")", ":", ";",
+                     "{", "}", "+","-"]
+                     
+    place = int(random.randint(0, len(password)-1))
+    randomsign = specialsigns[int(random.randint(0, len(specialsigns)-1))]
+    for idx, letter in enumerate(password):
+        if not idx == place:
+            newpass = newpass + letter
+        if idx == place:
+            newpass = newpass + randomsign
+    return newpass
+    
 def change_numerics(password):
     newpassword = str()
     for l in password:
