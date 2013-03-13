@@ -100,7 +100,7 @@ The config file  must have the following option:
     ```
     [Generator]
     special_signs = true
-
+    ```
 
  * Individual password policy can be chosen with:
  
@@ -120,7 +120,7 @@ The config file  must have the following option:
      [Global]
      xsel = yes
       xselpath = /usr/bin/xsel
-      ```
+     ```
  
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
