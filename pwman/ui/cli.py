@@ -134,6 +134,7 @@ class PwmanCli(cmd.Cmd):
             length = int(length)
 
             numerics = config.get_value("Generator", "numerics") == 'true'
+            # TODO: allow custom leetifying through the config
             leetify = config.get_value("Generator", "leetify") == 'true'
                                  generate_password(minlen, maxlen, capitals = True, symbols = False, numerics = False)
             (password, dumpme) = generator.generate_password(length, length, \
