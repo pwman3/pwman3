@@ -40,14 +40,17 @@ class PasswordGenerationException(Exception):
     def __str__(self):
         return self.message
 
-def generate_password(minlen, maxlen, capitals = True, symbols = False, numerics = False):
+def generate_password(minlen, maxlen, capitals = True, symbols = False, \
+    numerics = False, special_chars = False):
     (password, hyphenated) = generate_password_shazel(minlen, maxlen)
     if (capitals):
         password = randomly_capitalize(password)
     if (symbols):
         password = leetify(password)
-    elif (numerics):
+    if (numerics):
         password = change_numerics(password)
+    if (special_chars):
+        password = random_special_sign(password)
     return (password, hyphenated)
 
 def randomly_capitalize(password):
@@ -83,13 +86,46 @@ def random_special_sign(password):
     ;ecret
     s%cret
     secre(
+    note: numbers are not replaced:
+    In [5]: for i in range(10):
+    print random_special_sign(password)
+   ...:     
+    s3cr?t
+    s3cr$t
+    s3cre#
+    $3cret
+    s3c\et
+    s3cr-t
+    }3cret
+    s3*ret
+    s3cre:
+    s3cr@t
+    
+    In [6]: password = "v3r71mp0rt4nt"
+    
+    In [7]: for i in range(10):
+        print random_special_sign(password)
+   ...:     
+    v3r71mp0rt4)t
+    v3r71m&0rt4nt
+    v3r71mp0rt4-t
+    v3r71mp0rt4&t
+    v3^71mp0rt4nt
+    v3r71@p0rt4nt
+    v3}71mp0rt4nt
+    v3r71m}0rt4nt
+    v3r71mp0r*4nt
+    v3^71mp0rt4nt
     """
     newpass = str()
     specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
                      "%", "^", "&", "*", "(", ")", ":", ";",
                      "{", "}", "+","-"]
-                     
+     
     place = int(random.randint(0, len(password)-1))
+    while password[place].isdigit():
+        place = int(random.randint(0, len(password)-1))
+    
     randomsign = specialsigns[int(random.randint(0, len(specialsigns)-1))]
     for idx, letter in enumerate(password):
         if not idx == place:

@@ -121,30 +121,32 @@ class PwmanCli(cmd.Cmd):
     def get_username(self, default=""):
         return getinput("Username: ", default)
 
-    def get_password(self, numerics=False,leetify=False):
+    def get_password(self, argsgiven, numerics=False,leetify=False, symbols=False,
+                     special_signs=False):
         """
+        in the config file:
         numerics -> numerics
         leetify -> symbols
+        special_chars -> special_signs
         """
-        # TODO: add key word for specialsigns = False
+        if argsgiven > 0:
+            length = getinput("Password length (default 7): ", "7")
+            length = int(length)
+            (password, dumpme) = generator.generate_password(length, length, \
+                True, leetify, numerics, special_signs)
+            print "New password: %s" % (password)
+            return password
+        # no args given
         password = getpassword("Password (Blank to generate): ", _defaultwidth, \
             False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
-
-            numerics = config.get_value("Generator", "numerics") == 'true'
-            # TODO: allow custom leetifying through the config
-            leetify = config.get_value("Generator", "leetify") == 'true'
-                                 generate_password(minlen, maxlen, capitals = True, symbols = False, numerics = False)
             (password, dumpme) = generator.generate_password(length, length, \
-                True, leetify, numerics)
-
+                True, leetify, numerics, special_signs)
             print "New password: %s" % (password)
             return password
-        else:
-            return password
-
+        
     def get_url(self, default=""):
         return getinput("Url: ", default)
 
@@ -376,16 +378,31 @@ class PwmanCli(cmd.Cmd):
         """
         can override default config settings the following way:
         Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
-        pwman> n {'leetify':False, 'numerics':True}
+        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
         Password (Blank to generate):
         """
+        errmsg = """could not parse config override, please input some"""\
+                 +""" kind of dictionary, e.g.: n {'leetify':False, """\
+                 +"""'numerics':True, 'special_chars':True}"""
         try:
             username = self.get_username()
             if args:
-                args = ast.literal_eval(args)
-                password = self.get_password(**args)
+                try:
+                    args = ast.literal_eval(args)
+                except Exception:
+                    raise Exception(errmsg)
+                if not isinstance(args, dict):
+                    raise Exception(errmsg)
+                password = self.get_password(1, **args)
             else:
-                password = self.get_password()
+                numerics = config.get_value("Generator", "numerics").lower() == 'true'
+                # TODO: allow custom leetifying through the config
+                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                password = self.get_password(0,
+                                             numerics=numerics,
+                                             symbols=leetify,
+                                             special_signs=special_chars)
             url = self.get_url()
             notes = self.get_notes()
             node = Node(username, password, url, notes)
