@@ -17,14 +17,13 @@ Pwman3 requires the following debian packages:
 when using python 2.4:    
     
     python-pysqlite2
-  python-celementtree
+    python-celementtree
     python-crypto
-
-
 
 when using python >= 2.5 
     
-    python-crypto
+    python-crypto (>=2.6) from upstream (currently broken with 
+    pycrypto from Debian).
 
 for nicer functionality:
     
