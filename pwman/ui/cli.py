@@ -128,8 +128,8 @@ class PwmanCli(cmd.Cmd):
         numerics -> numerics
         leetify -> symbols
         special_chars -> special_signs
-        """
-        if argsgiven > 0:
+        """        
+        if argsgiven == 1:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
             (password, dumpme) = generator.generate_password(length, length, \
@@ -142,10 +142,12 @@ class PwmanCli(cmd.Cmd):
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
+        
             (password, dumpme) = generator.generate_password(length, length, \
                 True, leetify, numerics, special_signs)
             print "New password: %s" % (password)
-            return password
+        
+        return password
         
     def get_url(self, default=""):
         return getinput("Url: ", default)
@@ -963,9 +965,18 @@ class CliMenu(object):
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
             try:
-                # substract 1 because array subscripts start at 1
+                # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
-                value = self.items[selection].editor(self.items[selection].getter())
+                print "selection, ", selection
+                # new value is created by calling the editor with the 
+                # previous value as a parameter 
+                # TODO: enable overriding password policy as if new node
+                # is created.
+                if selection == 1: # for password
+                    value = self.items[selection].editor(0)
+                else:
+                    value = self.items[selection].editor(self.items[selection].getter())
+                
                 self.items[selection].setter(value)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
