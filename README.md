@@ -13,18 +13,17 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
 ## Installing 
 
 Pwman3 requires the following debian packages:
-	
+ 
 when using python 2.4:    
     
     python-pysqlite2
-	python-celementtree
+    python-celementtree
     python-crypto
-
-
 
 when using python >= 2.5 
     
-    python-crypto
+    python-crypto (>=2.6) from upstream (currently broken with 
+    pycrypto from Debian).
 
 for nicer functionality:
     
@@ -73,7 +72,7 @@ To install:
 
  * making a password from the numeric character and the alphabet character ([A-Za-z0-9]).
 
-   You can add a parametor for making the password to the config(~/.pwman/config).
+   You can add a parameter for making the password to the config(~/.pwman/config).
 
    For Example:
      
@@ -88,8 +87,31 @@ To install:
      [Generator]
      leetify = true
      ```
+ * Passwords can contain one of the following special signs:
+    
+    ```
+    specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
+                     "%", "^", "&", "*", "(", ")", ":", ";",
+                     "{", "}", "+","-"]
+    ```
+The config file  must have the following option:
+    
+    ```
+    [Generator]
+    special_signs = true
+    ```
 
- * Copying password to X11 or Mac clipbord:
+ * Individual password policy can be chosen with:
+ 
+     ```
+     Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+     pwman> n {'leetify':False, 'numerics':True, 'special_signs':True}
+     Username: username
+     Password length (default 7): 7
+     New password: Q1dab@7
+     ``` 
+   
+ * Copying password to X11 or Mac clip board:
   - On Mac OSX systems copying utilizes `pbcopy`  
   - On X11 Systems  Specify the path to `xsel` if you already have `~/.pwman/config` 
       
@@ -97,7 +119,7 @@ To install:
      [Global]
      xsel = yes
       xselpath = /usr/bin/xsel
-      ```
+     ```
  
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 

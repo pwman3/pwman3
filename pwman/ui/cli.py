@@ -43,6 +43,7 @@ import cmd
 import time
 import select as uselect
 import subprocess as sp
+import ast
 
 if sys.platform != 'win32':
     import tty
@@ -120,33 +121,44 @@ class PwmanCli(cmd.Cmd):
     def get_username(self, default=""):
         return getinput("Username: ", default)
 
-    def get_password(self, default=""):
+    def get_password(self, argsgiven, numerics=False,leetify=False, symbols=False,
+                     special_signs=False):
+        """
+        in the config file:
+        numerics -> numerics
+        leetify -> symbols
+        special_chars -> special_signs
+        """        
+        if argsgiven == 1:
+            length = getinput("Password length (default 7): ", "7")
+            length = int(length)
+            (password, dumpme) = generator.generate_password(length, length, \
+                True, leetify, numerics, special_signs)
+            print "New password: %s" % (password)
+            return password
+        # no args given
         password = getpassword("Password (Blank to generate): ", _defaultwidth, \
             False)
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
-
-            numerics = config.get_value("Generator", "numerics") == 'true'
-            leetify = config.get_value("Generator", "leetify") == 'true'
+        
             (password, dumpme) = generator.generate_password(length, length, \
-                True, leetify, numerics)
-
+                True, leetify, numerics, special_signs)
             print "New password: %s" % (password)
-            return password
-        else:
-            return password
-
+        
+        return password
+        
     def get_url(self, default=""):
         return getinput("Url: ", default)
 
     def get_notes(self, default=""):
         return getinput("Notes: ", default)
 
-    def get_tags(self, default="tag"):
+    def get_tags(self, default=None):
         defaultstr = ''
 
-        if len(default) > 0:
+        if default:
             for t in default:
                 defaultstr += "%s " % (t.get_name())
         else:
@@ -364,10 +376,35 @@ class PwmanCli(cmd.Cmd):
     def do_n(self, arg):
         self.do_new(arg)
 
-    def do_new(self, arg):
+    def do_new(self, args):
+        """
+        can override default config settings the following way:
+        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
+        Password (Blank to generate):
+        """
+        errmsg = """could not parse config override, please input some"""\
+                 +""" kind of dictionary, e.g.: n {'leetify':False, """\
+                 +"""'numerics':True, 'special_chars':True}"""
         try:
             username = self.get_username()
-            password = self.get_password()
+            if args:
+                try:
+                    args = ast.literal_eval(args)
+                except Exception:
+                    raise Exception(errmsg)
+                if not isinstance(args, dict):
+                    raise Exception(errmsg)
+                password = self.get_password(1, **args)
+            else:
+                numerics = config.get_value("Generator", "numerics").lower() == 'true'
+                # TODO: allow custom leetifying through the config
+                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                password = self.get_password(0,
+                                             numerics=numerics,
+                                             symbols=leetify,
+                                             special_signs=special_chars)
             url = self.get_url()
             notes = self.get_notes()
             node = Node(username, password, url, notes)
@@ -621,7 +658,9 @@ the url must contain http:// or https://."
 
     def help_new(self):
         self.usage("new")
-        print "Creates a new node."
+        print """Creates a new node., 
+You can override default config settings the following way:      
+pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_rm(self):
         self.help_delete()
@@ -926,9 +965,18 @@ class CliMenu(object):
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
             try:
-                # substract 1 because array subscripts start at 1
+                # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
-                value = self.items[selection].editor(self.items[selection].getter())
+                print "selection, ", selection
+                # new value is created by calling the editor with the 
+                # previous value as a parameter 
+                # TODO: enable overriding password policy as if new node
+                # is created.
+                if selection == 1: # for password
+                    value = self.items[selection].editor(0)
+                else:
+                    value = self.items[selection].editor(self.items[selection].getter())
+                
                 self.items[selection].setter(value)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
