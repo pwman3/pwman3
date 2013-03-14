@@ -153,10 +153,10 @@ class PwmanCli(cmd.Cmd):
     def get_notes(self, default=""):
         return getinput("Notes: ", default)
 
-    def get_tags(self, default="tag"):
+    def get_tags(self, default=None):
         defaultstr = ''
 
-        if len(default) > 0:
+        if default:
             for t in default:
                 defaultstr += "%s " % (t.get_name())
         else:
