@@ -58,3 +58,7 @@ finally you should step into:
   1. Password expiry date - register password date,  remind when password is about to expire.
   2. Make new passwords according to user defined rules. 
 
+# build the package with 
+  python setup.py sdist
+# upload  
+  python setup.py sdist upload
