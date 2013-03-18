@@ -10,6 +10,23 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
  * lauching specific uri's with default browser
  * password generators
 
+## A very important note about security
+
+   If you are a concerned about security, please note:
+   PWMAN3 is a very very basic software, which was designed to be used in a safe environment. 
+   - it does not - at the moment - include enchanched security features, due to lack of resourecs. 
+   - I would realy like you to use PWMAN3, so I could get feedback and more ideas, especially, if you
+   know something about security (which is probably more than I know at the moment. 
+   - Be patient, I am working on PWMAN on my free time, and for fun, so don't expect PWMAN3 to 
+     do to more than storing your passwords. 
+   - If you are afraid that PWMAN3 is to weak for your needs ... and you still want to try it, here
+     are a few recommendations:
+     1. Use the AES encryption, it is supposed to be better the Blowfish. 
+     2. Don't store your Password Database in the Obvious place, and if your extremely paranoind
+        store it completely away from your computer on a separate USB key. 
+     3. Use a HARD to crack password to encrypt your database!
+   - If you care, report bugs, and send patches. 
+   
 ## Installing 
 
 Pwman3 requires the following debian packages:
