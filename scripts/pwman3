@@ -33,8 +33,7 @@ parser = argparse.ArgumentParser(description='pwman3 - a command line password'\
 parser.add_argument('-c','--config', dest='cfile',
                     default=os.path.expanduser("~/.pwman/config"),
                     help='cofiguretion file to read')
-parser.add_argument('-d', '--database', dest='dbase',
-                    default=os.path.expanduser("~/.pwman/pwman.db"))
+parser.add_argument('-d', '--database', dest='dbase')
 
 parser.add_argument('-e', '--encryption', dest="algo", default="AES",
                 help="Possible options are: AES(default), ARC2, ARC4, "\
@@ -106,14 +105,14 @@ try:
     elif OSX:
         pbcopypath = which("pbcopy")
         config.set_value("Global", "xsel", pbcopypath)
-
-    if args.dbase !=  config.get_value('Database', "filename"):
+    
+    if args.dbase: 
         config.set_value("Database", "filename", args.dbase)
         _saveconfig = False
     if args.algo != "Blowfish":
             config.set_value("Encryption", "algorithm", args.algo)
             _saveconfig = False
-
+    print config.get_value('Database', "filename")
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
