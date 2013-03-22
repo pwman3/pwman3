@@ -36,9 +36,9 @@ parser.add_argument('-c','--config', dest='cfile',
 parser.add_argument('-d', '--database', dest='dbase',
                     default=os.path.expanduser("~/.pwman/pwman.db"))
 
-parser.add_argument('-e', '--encryption', dest="algo", default="Blowfish",
-                help="Possible options are: AES, ARC2, ARC4, "\
-                +"Blowfish(default) CAST, DES, DES3, IDEA, RC5")
+parser.add_argument('-e', '--encryption', dest="algo", default="AES",
+                help="Possible options are: AES(default), ARC2, ARC4, "\
+                +"Blowfish, CAST, DES, DES3, IDEA, RC5")
 
 parser.add_argument('-t','--test',  help="Run pwman from current directory \
 without installation", action="store_true")
@@ -90,7 +90,7 @@ try:
                       'Database': {'type': 'SQLite',
                                    'filename': os.path.join(config_dir,
                                                             "pwman.db")},
-                      'Encryption': {'algorithm': 'Blowfish'},
+                      'Encryption': {'algorithm': 'AES'},
                       'Readline': {'history': os.path.join(config_dir,
                                                            "history")}
                       }
