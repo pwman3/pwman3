@@ -24,7 +24,7 @@
 from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
-
+import re
 import sys
 if sys.version_info > (2, 5):
     import sqlite3 as sqlite
@@ -62,16 +62,18 @@ class SQLiteDatabase(Database):
         self._cur.close()
         self._con.close()
 
-    def listtags(self, all=False):
+    def listtags(self, alltags=False):
         sql = ''
         params = []
-        if len(self._filtertags) == 0 or all:
+        if len(self._filtertags) == 0 or alltags:
             sql = "SELECT DATA FROM TAGS ORDER BY DATA ASC"
         else:
             sql = ("SELECT TAGS.DATA FROM LOOKUP"
                    +" INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
                    +" WHERE NODE IN (")
             first = True
+            # if using the command filter, the code crashes ...
+            # 
             for t in self._filtertags:
                 if not first:
                     sql += " INTERSECT "
@@ -89,15 +91,19 @@ class SQLiteDatabase(Database):
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
-                params.append(cPickle.dumps(t))
+                params.append(t)
         try:
+            print params
             self._cur.execute(sql, params)
-
             tags = []
             row = self._cur.fetchone()
             while (row != None):
-                tag = cPickle.loads(str(row[0]))
-                tags.append(tag)
+                tagstring = str(row[0])
+                m = re.search('S\"S\'(.+?)\'', tagstring)
+                if m:
+                    found = m.group(1)
+                    #tag = cPickle.loads(str(row[0]))
+                    tags.append(Tag(found))
                 row = self._cur.fetchone()
             return tags
         except sqlite.DatabaseError, e:
