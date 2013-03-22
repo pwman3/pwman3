@@ -72,7 +72,11 @@ def set_value(section, name, value):
     _conf[section][name] = value
 
 def get_conf():
-    """Get a copy of the config. Modifications have no effect. This function only serves for allowing applications to output the config to the user"""
+    """
+    Get a copy of the config. 
+    Modifications have no effect. 
+    This function only serves for allowing applications 
+    to output the config to the user"""
     global _conf
     return copy.deepcopy(_conf)
 

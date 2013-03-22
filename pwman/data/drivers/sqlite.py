@@ -35,6 +35,7 @@ else:
         raise DatabaseException("python-sqlite2 not installed")
 
 import pwman.util.config as config
+
 import cPickle
 
 class SQLiteDatabase(Database):
@@ -102,7 +103,6 @@ class SQLiteDatabase(Database):
                 m = re.search('S\"S\'(.+?)\'', tagstring)
                 if m:
                     found = m.group(1)
-                    #tag = cPickle.loads(str(row[0]))
                     tags.append(Tag(found))
                 row = self._cur.fetchone()
             return tags
@@ -285,6 +285,10 @@ class SQLiteDatabase(Database):
                 raise e
 
     def savekey(self, key):
+        """
+        This function is saving the key to table KEY. 
+        The key already arrives as an encrypted string.
+        """
         sql = "UPDATE KEY SET THEKEY = ?"
         values = [key]
         self._cur.execute(sql, values)

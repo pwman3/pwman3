@@ -112,7 +112,6 @@ try:
     if args.algo != "Blowfish":
             config.set_value("Encryption", "algorithm", args.algo)
             _saveconfig = False
-    print config.get_value('Database', "filename")
     # set umask before creating/opening any files
     umask = int(config.get_value("Global", "umask"))
     os.umask(umask)
