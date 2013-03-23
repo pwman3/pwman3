@@ -277,7 +277,6 @@ class SQLiteDatabase(Database):
             self._cur.execute("CREATE TABLE KEY"
                               + "(THEKEY TEXT NOT NULL DEFAULT '')");
             self._cur.execute("INSERT INTO KEY VALUES('')");
-
             try:
                 self._con.commit()
             except DatabaseError, e:
@@ -288,6 +287,9 @@ class SQLiteDatabase(Database):
         """
         This function is saving the key to table KEY. 
         The key already arrives as an encrypted string.
+        It is the same self._keycrypted from 
+        crypto py (check with id(self._keycrypted) and 
+        id(key) here. 
         """
         sql = "UPDATE KEY SET THEKEY = ?"
         values = [key]
