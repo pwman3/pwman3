@@ -31,9 +31,15 @@ class Database:
         self._filtertags = []
 
     def open(self):
-        """Open the database."""
+        """
+        Open the database, by calling the _open method of the
+        class inherited for the specific database.
+        When done validation that the file is OK, check if it has
+        encryption key, by calling   
+        enc = CryptoEngine.get()
+        key = self.loadkey()
+        """
         self._open()
-
         enc = CryptoEngine.get()
         key = self.loadkey()
         if (key != None):
@@ -45,7 +51,9 @@ class Database:
         pass
 
     def changepassword(self):
-        """Change the databases password."""
+        """
+        Change the databases password.
+        """
         enc = CryptoEngine.get()
         newkey = enc.changepassword()
         return self.savekey(newkey)
