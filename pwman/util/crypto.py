@@ -57,7 +57,18 @@ from pwman.util.callback import Callback
 import pwman.util.config as config
 import cPickle
 import time
+import sys
+import ctypes
 
+def zerome(string):
+    """
+    securely erase strings ...
+    for windows: ctypes.cdll.msvcrt.memset
+    """
+    bufsize = len(string) + 1
+    offset = sys.getsizeof(string) - bufsize
+    ctypes.memset(id(string) + offset, 0, bufsize)
+    
 _INSTANCE = None
 
 # Use this to tell if crypto is successful or not
@@ -220,6 +231,7 @@ password")
             cipher = self._getcipher_real(password, self._algo)
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
+        
         newpassword1 = self._callback.getsecret("Please enter your new \
 password")
         newpassword2 = self._callback.getsecret("Please enter your new \
@@ -229,7 +241,10 @@ password again")
         newcipher = self._getcipher_real(newpassword1, self._algo)
         self._keycrypted = str(newcipher.encrypt(self._preparedata(key,
                            newcipher.block_size))).encode('base64')
-
+        # newpassword1, newpassword2 are not needed any more so we erase 
+        # them
+        zerome(newpassword1)
+        zerome(newpassword2)
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
         if (self._cipher == None):
