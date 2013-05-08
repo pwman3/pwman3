@@ -32,7 +32,7 @@ parser = argparse.ArgumentParser(description='pwman3 - a command line password'\
 +'manager.')
 parser.add_argument('-c','--config', dest='cfile',
                     default=os.path.expanduser("~/.pwman/config"),
-                    help='cofiguretion file to read')
+                    help='cofiguration file to read')
 parser.add_argument('-d', '--database', dest='dbase')
 
 parser.add_argument('-e', '--encryption', dest="algo", default="AES",
@@ -93,9 +93,9 @@ try:
                       'Readline': {'history': os.path.join(config_dir,
                                                            "history")}
                       }
-    
+
     config.set_defaults(default_config)
-    
+
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
@@ -105,8 +105,8 @@ try:
     elif OSX:
         pbcopypath = which("pbcopy")
         config.set_value("Global", "xsel", pbcopypath)
-    
-    if args.dbase: 
+
+    if args.dbase:
         config.set_value("Database", "filename", args.dbase)
         _saveconfig = False
     if args.algo != "Blowfish":
@@ -117,7 +117,7 @@ try:
     os.umask(umask)
 
     enc = CryptoEngine.get()
-    
+
     dbtype = config.get_value("Database", "type")
     db = pwman.data.factory.create(dbtype)
     cli = PwmanCli(db, xselpath)
