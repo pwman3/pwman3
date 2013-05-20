@@ -137,7 +137,7 @@ try:
         dbver = pwman.data.factory.check_db_version(dbtype)
         dbver = float(dbver.strip("\'"))
     else:
-        dbver = 0.3
+        dbver = 0.4
     # the method create could create an old instance that
     # accepts cPickle object or new style instance that
     # accepts only strings.

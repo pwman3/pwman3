@@ -22,6 +22,9 @@ import shutil
 import os.path
 import time
 
+from pwman.util.crypto import CryptoEngine
+import pwman.data.factory
+
 
 class PwmanConvertDB(object):
     """
@@ -30,13 +33,23 @@ class PwmanConvertDB(object):
     """
 
     def __init__(self, args, config):
-        db = config.get_value('Database', 'filename')
-        print "Will convert the following Database: %s " % db
-        backup = '.backup-%s'.join(os.path.splitext(db)) % \
+        self.db = config.get_value('Database', 'filename')
+        self.dbtype = config.get_value("Database", "type")
+        print "Will convert the following Database: %s " % self.db
+        if os.path.exists(config.get_value("Database", "filename")):
+            dbver = pwman.data.factory.check_db_version(self.dbtype)
+            self.dbver = float(dbver.strip("\'"))
+        backup = '.backup-%s'.join(os.path.splitext(self.db)) % \
             time.strftime(
                 '%Y-%m-%d-%H:%m')
-        shutil.copy(db, backup)
+        shutil.copy(self.db, backup)
         print "backup created in ", backup
 
+    def read_old_db(self):
+        "read the old db and get all nodes"
+        self.db = pwman.data.factory.create(self.dbtype, self.dbver)
+
     def run(self):
+        self.read_old_db()
+        self.db.open()
         pass
