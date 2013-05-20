@@ -594,9 +594,8 @@ class PwmanCli(cmd.Cmd):
 
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'xdg-open url',\n\
-the url must contain http:// or https://."
-
+        print "Launch default browser with 'xdg-open url',\n\"
+              + "the url must contain http:// or https://."
     def help_o(self):
         self.help_open()
 
@@ -738,7 +737,9 @@ pwman> n {'leetify':False, 'numerics':True}"""
         self.prompt = "pwman> "
 
 
-
+class PwmanCliNew(PwmanCli):
+    pass
+    
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
@@ -781,8 +782,8 @@ class PwmanCliMac(PwmanCli):
     ##
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'open url',\n\
-the url must contain http:// or https://."
+        print "Launch default browser with 'open url',\n\"
+              + "the url must contain http:// or https://."
 
     def help_o(self):
         self.help_open()
@@ -794,6 +795,9 @@ the url must contain http:// or https://."
     def help_cp(self):
         self.help_copy()
 
+class PwmanCliMacNew(PwmanCliMac):
+    pass
+    
 _defaultwidth = 10
 
 def getonechar(question, width=_defaultwidth):
