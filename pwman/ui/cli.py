@@ -130,7 +130,7 @@ class PwmanCli(cmd.Cmd):
         numerics -> numerics
         leetify -> symbols
         special_chars -> special_signs
-        """        
+        """
         if argsgiven == 1:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
@@ -144,13 +144,13 @@ class PwmanCli(cmd.Cmd):
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
-        
+
             (password, dumpme) = generator.generate_password(length, length, \
                 True, leetify, numerics, special_signs)
             print "New password: %s" % (password)
-        
+
         return password
-        
+
     def get_url(self, default=""):
         return getinput("Url: ", default)
 
@@ -230,7 +230,7 @@ class PwmanCli(cmd.Cmd):
                     break
                 time.sleep(period)
             self.do_cls('')
-        
+
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
             if sys.platform != 'win32':
@@ -401,8 +401,8 @@ class PwmanCli(cmd.Cmd):
             else:
                 numerics = config.get_value("Generator", "numerics").lower() == 'true'
                 # TODO: allow custom leetifying through the config
-                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
-                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                leetify = config.get_value("Generator", "leetify").lower() == 'true'
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true'
                 password = self.get_password(0,
                                              numerics=numerics,
                                              symbols=leetify,
@@ -659,8 +659,8 @@ class PwmanCli(cmd.Cmd):
 
     def help_new(self):
         self.usage("new")
-        print """Creates a new node., 
-You can override default config settings the following way:      
+        print """Creates a new node.,
+You can override default config settings the following way:
 pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_rm(self):
@@ -717,9 +717,11 @@ pwman> n {'leetify':False, 'numerics':True}"""
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
+        _dbwarning = "\n*** WARNNING: You are using the old db format which" \
+                     + " uses cPickle, please upgrade your db !!! ***"
         cmd.Cmd.__init__(self)
-        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
-                                            pwman.website)
+        self.intro = "%s %s (c) visit: %s %s" % (pwman.appname, pwman.version,
+                                                 pwman.website, _dbwarning)
         self._historyfile = config.get_value("Readline", "history")
         self.hasxsel = hasxsel
         try:
@@ -745,7 +747,7 @@ class PwmanCliNew(PwmanCli):
     all the methods related to tags, and
     newer Node format, so backward compatability is kept...
     """
-    
+
     def print_node(self, node):
         width = str(_defaultwidth)
         print "Node %d." % (node.get_id())
@@ -796,7 +798,7 @@ class PwmanCliNew(PwmanCli):
             else:
                 print "Press any key to flush screen (autoflash in 5 sec.)"
                 waituntil_enter(heardEnterWin, flushtimeout)
-                
+
     def do_tags(self, arg):
         tags = self._db.listtags()
         if len(tags) > 0:
@@ -910,8 +912,8 @@ class PwmanCliNew(PwmanCli):
             else:
                 numerics = config.get_value("Generator", "numerics").lower() == 'true'
                 # TODO: allow custom leetifying through the config
-                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
-                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                leetify = config.get_value("Generator", "leetify").lower() == 'true'
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true'
                 password = self.get_password(0,
                                              numerics=numerics,
                                              symbols=leetify,
@@ -935,8 +937,8 @@ class PwmanCliNew(PwmanCli):
                 zerome(node[0]._password)
             except Exception, e:
                 self.error(e)
-                
-                
+
+
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
@@ -994,7 +996,7 @@ class PwmanCliMac(PwmanCli):
 
 class PwmanCliMacNew(PwmanCliMac):
     pass
-    
+
 _defaultwidth = 10
 
 def getonechar(question, width=_defaultwidth):
@@ -1041,7 +1043,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
     if (not _readline_available):
         return raw_input(question.ljust(width))
     else:
-        def defaulter(): 
+        def defaulter():
             """define default behavior startup"""
             readline.insert_text(default)
 
@@ -1169,15 +1171,15 @@ class CliMenu(object):
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 print "selection, ", selection
-                # new value is created by calling the editor with the 
-                # previous value as a parameter 
+                # new value is created by calling the editor with the
+                # previous value as a parameter
                 # TODO: enable overriding password policy as if new node
                 # is created.
                 if selection == 1: # for password
                     value = self.items[selection].editor(0)
                 else:
                     value = self.items[selection].editor(self.items[selection].getter())
-                
+
                 self.items[selection].setter(value)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
