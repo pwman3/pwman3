@@ -25,7 +25,7 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
-
+import re
 import sys
 if sys.version_info > (2, 5):
     import sqlite3 as sqlite
@@ -58,7 +58,7 @@ def check_db_version():
 
     except sqlite.DatabaseError, e:
         raise DatabaseException("SQLite: %s" % (e))
-        
+
 
 class SQLiteDatabaseNewForm(Database):
     """SQLite Database implementation"""
@@ -406,8 +406,8 @@ class SQLiteDatabase(Database):
             sql = "SELECT DATA FROM TAGS ORDER BY DATA ASC"
         else:
             sql = ("SELECT TAGS.DATA FROM LOOKUP"
-                   +" INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
-                   +" WHERE NODE IN (")
+                   + " INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
+                   + " WHERE NODE IN (")
             first = True
             for t in self._filtertags:
                 if not first:
@@ -415,7 +415,8 @@ class SQLiteDatabase(Database):
                 else:
                     first = False
 
-                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = TAGS.ID "
+                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG " +
+                        + " = TAGS.ID "
                         + " WHERE TAGS.DATA = ?")
                 params.append(cPickle.dumps(t))
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
@@ -432,7 +433,7 @@ class SQLiteDatabase(Database):
 
             tags = []
             row = self._cur.fetchone()
-            while (row != None):
+            while (row is not None):
                 tag = cPickle.loads(str(row[0]))
                 tags.append(tag)
                 row = self._cur.fetchone()
@@ -448,7 +449,7 @@ class SQLiteDatabase(Database):
                 self._cur.execute(sql, [i])
 
                 row = self._cur.fetchone()
-                if row != None:
+                if row is not None:
                     node = cPickle.loads(str(row[0]))
                     node.set_id(i)
                     nodes.append(node)
@@ -457,10 +458,11 @@ class SQLiteDatabase(Database):
         return nodes
 
     def editnode(self, id, node):
-        if not isinstance(node, Node): raise DatabaseException(
+        if not isinstance(node, Node):
+            raise DatabaseException(
                 "Tried to insert foreign object into database [%s]" % node)
         try:
-            sql = "UPDATE NODES SET DATA = ? WHERE ID = ?";
+            sql = "UPDATE NODES SET DATA = ? WHERE ID = ?"
             self._cur.execute(sql, [cPickle.dumps(node), id])
 
         except sqlite.DatabaseError, e:
@@ -472,8 +474,9 @@ class SQLiteDatabase(Database):
     def addnodes(self, nodes):
         for n in nodes:
             sql = "INSERT INTO NODES(DATA) VALUES(?)"
-            if not isinstance(n, Node): raise DatabaseException(
-                "Tried to insert foreign object into database [%s]", n)
+            if not isinstance(n, Node):
+                raise DatabaseException(
+                    "Tried to insert foreign object into database [%s]", n)
             value = cPickle.dumps(n)
             try:
                 self._cur.execute(sql, [value])
@@ -487,10 +490,11 @@ class SQLiteDatabase(Database):
 
     def removenodes(self, nodes):
         for n in nodes:
-            if not isinstance(n, Node): raise DatabaseException(
-                "Tried to delete foreign object from database [%s]", n)
+            if not isinstance(n, Node):
+                raise DatabaseException(
+                    "Tried to delete foreign object from database [%s]", n)
             try:
-                sql = "DELETE FROM NODES WHERE ID = ?";
+                sql = "DELETE FROM NODES WHERE ID = ?"
                 self._cur.execute(sql, [n.get_id()])
 
             except sqlite.DatabaseError, e:
@@ -512,7 +516,8 @@ class SQLiteDatabase(Database):
                     sql += " INTERSECT "
                 else:
                     first = False
-                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = TAGS.ID"
+                sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS "
+                        + " ON TAG = TAGS.ID"
                         + " WHERE TAGS.DATA = ? ")
 
                 params.append(cPickle.dumps(t))
@@ -521,7 +526,7 @@ class SQLiteDatabase(Database):
 
             ids = []
             row = self._cur.fetchone()
-            while (row != None):
+            while (row is not None):
                 ids.append(row[0])
                 row = self._cur.fetchone()
             return ids
@@ -540,14 +545,15 @@ class SQLiteDatabase(Database):
         ids = []
         for t in tags:
             sql = "SELECT ID FROM TAGS WHERE DATA = ?"
-            if not isinstance(t, Tag): raise DatabaseException(
-                "Tried to insert foreign object into database [%s]", t)
+            if not isinstance(t, Tag):
+                raise DatabaseException(
+                    "Tried to insert foreign object into database [%s]", t)
             data = cPickle.dumps(t)
 
             try:
                 self._cur.execute(sql, [data])
                 row = self._cur.fetchone()
-                if (row != None):
+                if (row is not None):
                     ids.append(row[0])
                 else:
                     sql = "INSERT INTO TAGS(DATA) VALUES(?)"
@@ -582,7 +588,8 @@ class SQLiteDatabase(Database):
 
     def _checktags(self):
         try:
-            sql = "DELETE FROM TAGS WHERE ID NOT IN (SELECT TAG FROM LOOKUP GROUP BY TAG)"
+            sql = "DELETE FROM TAGS WHERE ID NOT IN (SELECT TAG FROM " \
+                  + "LOOKUP GROUP BY TAG)"
             self._cur.execute(sql)
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
@@ -591,27 +598,27 @@ class SQLiteDatabase(Database):
     def _checktables(self):
         """ Check if the Pwman tables exist """
         self._cur.execute("PRAGMA TABLE_INFO(NODES)")
-        if (self._cur.fetchone() == None):
+        if (self._cur.fetchone() is None):
             # table doesn't exist, create it
             # SQLite does have constraints implemented at the moment
             # so datatype will just be a string
-            self._cur.execute("CREATE TABLE NODES"
-                             + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                             + "DATA BLOB NOT NULL)")
-            self._cur.execute("CREATE TABLE TAGS"
-                              + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                              + "DATA BLOB NOT NULL UNIQUE)")
-            self._cur.execute("CREATE TABLE LOOKUP"
-                              + "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
-                              + " PRIMARY KEY(NODE, TAG))")
+            self._cur.execute("CREATE TABLE NODES "
+                              "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                              "DATA BLOB NOT NULL)")
+            self._cur.execute("CREATE TABLE TAGS "
+                              "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                              "DATA BLOB NOT NULL UNIQUE)")
+            self._cur.execute("CREATE TABLE LOOKUP "
+                              "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
+                              " PRIMARY KEY(NODE, TAG))")
 
-            self._cur.execute("CREATE TABLE KEY"
-                              + "(THEKEY TEXT NOT NULL DEFAULT '')");
-            self._cur.execute("INSERT INTO KEY VALUES('')");
+            self._cur.execute("CREATE TABLE KEY "
+                              + "(THEKEY TEXT NOT NULL DEFAULT '')")
+            self._cur.execute("INSERT INTO KEY VALUES('')")
 
             try:
                 self._con.commit()
-            except DatabaseError, e:
+            except DatabaseException, e:
                 self._con.rollback()
                 raise e
 
@@ -626,13 +633,12 @@ class SQLiteDatabase(Database):
             raise DatabaseException(
                 "SQLite: Error saving key [%s]" % (e))
 
-
     def loadkey(self):
         """
         fetch the key to database. the key is also stored
         encrypted.
         """
-        self._cur.execute("SELECT THEKEY FROM KEY");
+        self._cur.execute("SELECT THEKEY FROM KEY")
         keyrow = self._cur.fetchone()
         if (keyrow[0] == ''):
             return None
