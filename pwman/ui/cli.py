@@ -738,7 +738,7 @@ pwman> n {'leetify':False, 'numerics':True}"""
         except IOError, e:
             pass
 
-        self.prompt = "pwman> "
+        self.prompt = "!pwman> "
 
 
 class PwmanCliNew(PwmanCli):
@@ -748,6 +748,31 @@ class PwmanCliNew(PwmanCli):
     newer Node format, so backward compatability is kept...
     """
 
+    def __init__(self, db, hasxsel):
+        """
+        initialize CLI interface, set up the DB
+        connecion, see if we have xsel ...
+        """
+        cmd.Cmd.__init__(self)
+        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
+                                                 pwman.website)
+        self._historyfile = config.get_value("Readline", "history")
+        self.hasxsel = hasxsel
+        try:
+            enc = CryptoEngine.get()
+            enc.set_callback(CLICallback())
+            self._db = db
+            self._db.open()
+        except Exception, e:
+            self.error(e)
+            sys.exit(1)
+
+        try:
+            readline.read_history_file(self._historyfile)
+        except IOError, e:
+            pass
+
+        self.prompt = "pwman> "
     def print_node(self, node):
         width = str(_defaultwidth)
         print "Node %d." % (node.get_id())
