@@ -23,6 +23,7 @@
 """SQLite Database implementation."""
 from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
+from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 
 import sys
@@ -162,7 +163,7 @@ class SQLiteDatabaseNewForm(Database):
                 #"Tried to load foreign object from database," \
                 #+ " this looks fishy in here...")
                     nodeargs, tags = self.parse_node_string(nodestring)
-                    node = Node(**nodeargs)
+                    node = NewNode(**nodeargs)
                     node.set_tags(tags)
                     node.set_id(i)
                     nodes.append(node)
