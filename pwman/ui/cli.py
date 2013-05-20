@@ -27,6 +27,7 @@ import pwman.exchange.importer as importer
 import pwman.exchange.exporter as exporter
 import pwman.util.generator as generator
 from pwman.data.nodes import Node
+from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
 #, CryptoBadKeyException, \
@@ -738,8 +739,142 @@ pwman> n {'leetify':False, 'numerics':True}"""
 
 
 class PwmanCliNew(PwmanCli):
-    pass
-    
+    """
+    inherit from the old class, override
+    all the methods related to tags, and
+    newer Node format, so backward compatability is kept...
+    """
+    def do_tags(self, arg):
+        tags = self._db.listtags()
+        if len(tags) > 0:
+            tags[0].get_name()  # hack to get password request before output
+        print "Tags: ",
+        if len(tags) == 0:
+            print "None",
+        for t in tags:
+            print "%s " % (t.get_name()),
+        print
+
+    def get_tags(self, default=None):
+        defaultstr = ''
+
+        if default:
+            for t in default:
+                defaultstr += "%s " % (t.get_name())
+        else:
+            tags = self._db.currenttags()
+            for t in tags:
+                defaultstr += "%s " % (t.get_name())
+
+        strings = []
+        tags = self._db.listtags(True)
+        for t in tags:
+            strings.append(t.get_name())
+
+        def complete(text, state):
+            count = 0
+            for s in strings:
+                if s.startswith(text):
+                    if count == state:
+                        return s
+                    else:
+                        count += 1
+
+        taglist = getinput("Tags: ", defaultstr, complete)
+        tagstrings = taglist.split()
+        tags = []
+        for tn in tagstrings:
+            _Tag = Tag(tn)
+            tags.append(_Tag)
+        return tags
+
+    def do_list(self, args):
+        import ipdb
+        ipdb.set_trace()
+        if len(args.split()) > 0:
+            self.do_clear('')
+            self.do_filter(args)
+        try:
+            if sys.platform != 'win32':
+                rows, cols = gettermsize()
+            else:
+                rows, cols = 18, 80  # fix this !
+            nodeids = self._db.listnodes()
+            nodes = self._db.getnodes(nodeids)
+            cols -= 8
+            i = 0
+            for n in nodes:
+                tags = n.get_tags()
+                tagstring = ''
+                first = True
+                for t in tags:
+                    if not first:
+                        tagstring += ", "
+                    else:
+                        first = False
+                    tagstring += t
+
+                name = "%s@%s" % (n.get_username(), n.get_url())
+
+                name_len = cols * 2 / 3
+                tagstring_len = cols / 3
+                if len(name) > name_len:
+                    name = name[:name_len-3] + "..."
+                if len(tagstring) > tagstring_len:
+                    tagstring = tagstring[:tagstring_len-3] + "..."
+                fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
+                formatted_entry = typeset(fmt % (n.get_id(), name, tagstring),
+                                          ANSI.Yellow, False)
+                print formatted_entry
+                i += 1
+                if i > rows-2:
+                    i = 0
+                    c = getonechar("Press <Space> for more, or 'Q' to cancel")
+                    if c == 'q':
+                        break
+
+        except Exception, e:
+            self.error(e)
+
+    def do_new(self, args):
+        """
+        can override default config settings the following way:
+        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
+        Password (Blank to generate):
+        """
+        errmsg = """could not parse config override, please input some"""\
+                 +""" kind of dictionary, e.g.: n {'leetify':False, """\
+                 +"""'numerics':True, 'special_chars':True}"""
+        try:
+            username = self.get_username()
+            if args:
+                try:
+                    args = ast.literal_eval(args)
+                except Exception:
+                    raise Exception(errmsg)
+                if not isinstance(args, dict):
+                    raise Exception(errmsg)
+                password = self.get_password(1, **args)
+            else:
+                numerics = config.get_value("Generator", "numerics").lower() == 'true'
+                # TODO: allow custom leetifying through the config
+                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                password = self.get_password(0,
+                                             numerics=numerics,
+                                             symbols=leetify,
+                                             special_signs=special_chars)
+            url = self.get_url()
+            notes = self.get_notes()
+            node = NewNode(username, password, url, notes)
+            tags = self.get_tags()
+            node.set_tags(tags)
+            self._db.addnodes([node])
+            print "Password ID: %d" % (node.get_id())
+        except Exception, e:
+            self.error(e)
+
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
