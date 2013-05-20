@@ -21,9 +21,20 @@ import os
 import shutil
 import os.path
 import time
-
+import getpass
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
+
+
+from pwman.util.callback import Callback
+
+
+class CLICallback(Callback):
+    def getinput(self, question):
+        return raw_input(question)
+
+    def getsecret(self, question):
+        return getpass.getpass(question + ":")
 
 
 class PwmanConvertDB(object):
@@ -51,5 +62,10 @@ class PwmanConvertDB(object):
 
     def run(self):
         self.read_old_db()
+
+        enc = CryptoEngine.get()
+        enc.set_callback(CLICallback())
         self.db.open()
+        import ipdb; ipdb.set_trace()
+        self.db.getnodes([1])
         pass
