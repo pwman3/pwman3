@@ -576,6 +576,9 @@ class PwmanCli(cmd.Cmd):
 
     def do_open(self, args):
         ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
         if len(ids) > 1:
             print "Can open only 1 link at a time ..."
             return None
@@ -988,6 +991,9 @@ class PwmanCliMac(PwmanCli):
 
     def do_open(self, args):
         ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
         if len(ids) > 1:
             print "Can open only 1 link at a time ..."
             return None
