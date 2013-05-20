@@ -37,9 +37,15 @@ parser.add_argument('-d', '--database', dest='dbase')
 parser.add_argument('-e', '--encryption', dest="algo",
                     help="Possible options are: AES(default), ARC2, ARC4, "
                     + "Blowfish, CAST, DES, DES3, IDEA, RC5")
+parser.add_argument('-k', '--convert', dest='dbconvert',
+                    action='store_true', default=False,
+                    # os.path.expanduser('~/.pwman/pwman.db'),
+                    help="Convert old DB format to Version >= 0.4.",
+                    )
 
 parser.add_argument('-t', '--test',  help="Run pwman from current directory \
 without installation", action="store_true")
+
 args = parser.parse_args()
 
 import sys
@@ -60,8 +66,10 @@ else:
 
 import pwman.util.config as config
 import pwman.data.factory
+from pwman.data.convertdb import PwmanConvertDB
 
 config_file = args.cfile
+print config_file
 
 
 def which(cmd):
@@ -129,7 +137,7 @@ try:
         dbver = pwman.data.factory.check_db_version(dbtype)
         dbver = float(dbver.strip("\'"))
     else:
-        dbver = 0.4
+        dbver = 0.3
     # the method create could create an old instance that
     # accepts cPickle object or new style instance that
     # accepts only strings.
@@ -137,6 +145,11 @@ try:
     # database to the new format using a command line tool.
     # version 0.5 pwman will depreciate that old and insecure
     # code ...
+    if args.dbconvert:
+        dbconvertor = PwmanConvertDB(args, config)
+        status = dbconvertor.run()
+        sys.exit(status)
+
     db = pwman.data.factory.create(dbtype, dbver)
     if dbver >= 0.4:
         cli = PwmanCliNew(db, xselpath)
@@ -157,4 +170,3 @@ finally:
     except Exception, e:
         print "Error: %s" % (e)
         sys.exit(-1)
-
