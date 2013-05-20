@@ -30,6 +30,7 @@ from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto import zerome
 #, CryptoBadKeyException, \
 #     CryptoPasswordMismatchException
 from pwman.util.callback import Callback
@@ -744,6 +745,58 @@ class PwmanCliNew(PwmanCli):
     all the methods related to tags, and
     newer Node format, so backward compatability is kept...
     """
+    
+    def print_node(self, node):
+        width = str(_defaultwidth)
+        print "Node %d." % (node.get_id())
+        print ("%"+width+"s %s") % (typeset("Username:", ANSI.Red),
+                                    node.get_username())
+        print ("%"+width+"s %s") % (typeset("Password:", ANSI.Red),
+                                    node.get_password())
+        print ("%"+width+"s %s") % (typeset("Url:", ANSI.Red),
+                                    node.get_url())
+        print ("%"+width+"s %s") % (typeset("Notes:", ANSI.Red),
+                                    node.get_notes())
+        print typeset("Tags: ", ANSI.Red),
+        for t in node.get_tags():
+            print " %s " % t
+        print
+
+        def heardEnter():
+            i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
+            for s in i:
+                if s == sys.stdin:
+                    sys.stdin.readline()
+                    return True
+                return False
+
+        def heardEnterWin():
+            import msvcrt
+            c = msvcrt.kbhit()
+            if c == 1:
+                ret = msvcrt.getch()
+                if ret is not None:
+                    return True
+            return False
+
+        def waituntil_enter(somepredicate, timeout, period=0.25):
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                cond = somepredicate()
+                if cond:
+                    break
+                time.sleep(period)
+            self.do_cls('')
+
+        flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        if flushtimeout > 0:
+            if sys.platform != 'win32':
+                print "Type Enter to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnter, flushtimeout)
+            else:
+                print "Press any key to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnterWin, flushtimeout)
+                
     def do_tags(self, arg):
         tags = self._db.listtags()
         if len(tags) > 0:
@@ -789,8 +842,6 @@ class PwmanCliNew(PwmanCli):
         return tags
 
     def do_list(self, args):
-        import ipdb
-        ipdb.set_trace()
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
@@ -875,6 +926,17 @@ class PwmanCliNew(PwmanCli):
         except Exception, e:
             self.error(e)
 
+    def do_print(self, arg):
+        for i in self.get_ids(arg):
+            try:
+                node = self._db.getnodes([i])
+                self.print_node(node[0])
+                # when done with node erase it
+                zerome(node[0]._password)
+            except Exception, e:
+                self.error(e)
+                
+                
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...

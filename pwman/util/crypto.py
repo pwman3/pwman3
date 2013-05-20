@@ -57,6 +57,20 @@ from pwman.util.callback import Callback
 import pwman.util.config as config
 import cPickle
 import time
+import sys
+import ctypes
+
+def zerome(string):
+    """
+    securely erase strings ...
+    for windows: ctypes.cdll.msvcrt.memset
+    """
+    bufsize = len(string) + 1
+    offset = sys.getsizeof(string) - bufsize
+    ctypes.memset(id(string) + offset, 0, bufsize)
+
+# Use this to tell if crypto is successful or not
+_TAG = "PWMANCRYPTO"
 
 _INSTANCE = None
 
