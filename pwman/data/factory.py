@@ -34,20 +34,30 @@ from pwman.data.database import Database, DatabaseException
 
 import pwman.util.config as config
 
-def create(type):
+
+def check_db_version(type):
+    if type == "SQLite":
+        try:
+            from pwman.data.drivers import sqlite
+        except ImportError, e:
+            raise DatabaseException("python-sqlite not installed")
+        ver = sqlite.check_db_version()
+        return ver
+     # TODO: implement version checks for other supported DBs.
+     
+def create(type, version=None):
     """
     create(params) -> Database
     Create a Database instance. 
     'type' can only be 'SQLite' at the moment
     """
-
-    if type == "BerkeleyDB":
-        pass
-#        db = BerkeleyDatabase.BerkeleyDatabase(params)
-    elif (type == "SQLite"):
+    if (type == "SQLite"):
         try: 
             from pwman.data.drivers import sqlite
-            db = sqlite.SQLiteDatabase()
+            if version == 0.4:
+                db = sqlite.SQLiteDatabaseNewForm()
+            else:
+                db = sqlite.SQLiteDatabase()
         except ImportError, e:
             raise DatabaseException("python-sqlite not installed")
     elif (type == "Postgresql"):

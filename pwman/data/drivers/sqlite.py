@@ -37,6 +37,28 @@ else:
 import pwman.util.config as config
 import cPickle
 
+
+def check_db_version():
+    """
+    check the data base version query the right table
+    """
+    try:
+        filename = config.get_value('Database', 'filename')
+        con = sqlite.connect(filename)
+        cur = con.cursor()
+        cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
+        row = cur.fetchone()
+        if row is None:
+            return "0.3"
+        try:
+            return row[-2]
+        except IndexError:
+            raise DatabaseException("Something seems fishy with the DB")
+
+    except sqlite.DatabaseError, e:
+        raise DatabaseException("SQLite: %s" % (e))
+        
+
 class SQLiteDatabase(Database):
     """SQLite Database implementation"""
 

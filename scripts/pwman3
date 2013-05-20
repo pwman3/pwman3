@@ -144,9 +144,6 @@ try:
         cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
-except Exception, e:
-    print "Error: %s" % (e)
-    sys.exit(-1)
 
 try:
     try:

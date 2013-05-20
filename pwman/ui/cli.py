@@ -594,7 +594,7 @@ class PwmanCli(cmd.Cmd):
 
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'xdg-open url',\n\"
+        print "Launch default browser with 'xdg-open url',\n" \
               + "the url must contain http:// or https://."
     def help_o(self):
         self.help_open()
@@ -782,7 +782,7 @@ class PwmanCliMac(PwmanCli):
     ##
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'open url',\n\"
+        print "Launch default browser with 'open url',\n" \
               + "the url must contain http:// or https://."
 
     def help_o(self):
