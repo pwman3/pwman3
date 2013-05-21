@@ -59,13 +59,11 @@ class PwmanConvertDB(object):
     def read_old_db(self):
         "read the old db and get all nodes"
         self.db = pwman.data.factory.create(self.dbtype, self.dbver)
-
-    def run(self):
-        self.read_old_db()
-
         enc = CryptoEngine.get()
         enc.set_callback(CLICallback())
         self.db.open()
-        import ipdb; ipdb.set_trace()
-        self.db.getnodes([1])
-        pass
+        self.oldnodes = self.db.listnodes()
+        self.oldnodes = self.db.getnodes(self.oldnodes)
+
+    def run(self):
+        self.read_old_db()
