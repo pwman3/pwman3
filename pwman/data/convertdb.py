@@ -24,9 +24,10 @@ import time
 import getpass
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
-
-
+from pwman.data.drivers import sqlite
 from pwman.util.callback import Callback
+#from pwman.data.nodes import Node
+from pwman.data.nodes import NewNode
 
 
 class CLICallback(Callback):
@@ -65,5 +66,29 @@ class PwmanConvertDB(object):
         self.oldnodes = self.db.listnodes()
         self.oldnodes = self.db.getnodes(self.oldnodes)
 
+    def create_new_db(self):
+        newdb_name = os.path.expanduser('~/.pwman/pwman_new_db.db')
+        self.newdb = sqlite.SQLiteDatabaseNewForm(filename=newdb_name)
+        self.newdb._open()
+
+    def convert_nodes(self):
+        """convert old nodes instances to new format"""
+        self.NewNodes = []
+        for node in self.oldnodes:
+            username = node.get_username()
+            password = node.get_password()
+            url = node.get_url()
+            notes = node.get_notes()
+            tags = node.get_tags()
+            tags_strings = [tag.get_name() for tag in tags]
+            self.newNode = NewNode(username=username,
+                                   password=password,
+                                   url=url,
+                                   notes=notes,
+                                   tags=tags_strings
+                                   )
+
     def run(self):
         self.read_old_db()
+        self.create_new_db()
+        self.convert_nodes()
