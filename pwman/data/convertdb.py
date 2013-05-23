@@ -45,16 +45,16 @@ class PwmanConvertDB(object):
     """
 
     def __init__(self, args, config):
-        self.db = config.get_value('Database', 'filename')
+        self.dbname = config.get_value('Database', 'filename')
         self.dbtype = config.get_value("Database", "type")
-        print "Will convert the following Database: %s " % self.db
+        print "Will convert the following Database: %s " % self.dbname
         if os.path.exists(config.get_value("Database", "filename")):
             dbver = pwman.data.factory.check_db_version(self.dbtype)
             self.dbver = float(dbver.strip("\'"))
-        backup = '.backup-%s'.join(os.path.splitext(self.db)) % \
+        backup = '.backup-%s'.join(os.path.splitext(self.dbname)) % \
             time.strftime(
                 '%Y-%m-%d-%H:%m')
-        shutil.copy(self.db, backup)
+        shutil.copy(self.dbname, backup)
         print "backup created in ", backup
 
     def read_old_db(self):
@@ -67,8 +67,10 @@ class PwmanConvertDB(object):
         self.oldnodes = self.db.getnodes(self.oldnodes)
 
     def create_new_db(self):
-        newdb_name = os.path.expanduser('~/.pwman/pwman_new_db.db')
-        self.newdb = sqlite.SQLiteDatabaseNewForm(filename=newdb_name)
+        newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
+
+        self.newdb = pwman.data.factory.create(self.dbtype, self.dbver,
+                                               newdb_name)
         self.newdb._open()
 
     def convert_nodes(self):
