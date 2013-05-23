@@ -24,10 +24,11 @@ import time
 import getpass
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
-from pwman.data.drivers import sqlite
 from pwman.util.callback import Callback
 #from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
+
+_NEWVERSION = 0.4
 
 
 class CLICallback(Callback):
@@ -69,7 +70,7 @@ class PwmanConvertDB(object):
     def create_new_db(self):
         newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
 
-        self.newdb = pwman.data.factory.create(self.dbtype, self.dbver,
+        self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
                                                newdb_name)
         self.newdb._open()
 
@@ -83,14 +84,22 @@ class PwmanConvertDB(object):
             notes = node.get_notes()
             tags = node.get_tags()
             tags_strings = [tag.get_name() for tag in tags]
-            self.newNode = NewNode(username=username,
-                                   password=password,
-                                   url=url,
-                                   notes=notes,
-                                   tags=tags_strings
-                                   )
+            newNode = NewNode(username=username,
+                              password=password,
+                              url=url,
+                              notes=notes,
+                              tags=tags_strings
+                              )
+            self.NewNodes.append(newNode)
+
+    def save_new_nodes_to_db(self):
+        self.newdb.addnodes(self.NewNodes)
+        self.newdb._commit()
 
     def run(self):
         self.read_old_db()
         self.create_new_db()
         self.convert_nodes()
+        self.save_new_nodes_to_db()
+        # TODO: copy all other stuff from old data base ...
+
