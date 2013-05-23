@@ -69,7 +69,6 @@ import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 
 config_file = args.cfile
-print config_file
 
 
 def which(cmd):
