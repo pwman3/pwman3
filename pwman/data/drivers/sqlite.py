@@ -63,15 +63,17 @@ def check_db_version():
 class SQLiteDatabaseNewForm(Database):
     """SQLite Database implementation"""
 
-    def __init__(self):
+    def __init__(self, filename=None):
         """Initialise SQLitePwmanDatabase instance."""
         Database.__init__(self)
-
-        try:
-            self._filename = config.get_value('Database', 'filename')
-        except KeyError, e:
-            raise DatabaseException(
-                "SQLite: missing parameter [%s]" % (e))
+        if filename:
+            self._filename = filename
+        else:
+            try:
+                self._filename = config.get_value('Database', 'filename')
+            except KeyError, e:
+                raise DatabaseException(
+                    "SQLite: missing parameter [%s]" % (e))
 
     def _open(self):
         try:
