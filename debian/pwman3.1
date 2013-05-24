@@ -1,4 +1,4 @@
-.TH PWMAN3 1 "30 November 2006"
+.TH PWMAN3 1 "24 Mai 2013"
 .SH NAME
 pwman3 \- command line password manager
 .SH SYNOPSIS
@@ -13,14 +13,17 @@ Read the configuration from \fBFILE\fP instead of the default
 \fB~/.pwman3/config\fP.
 
 .TP
+\fB\-e, \-\-encryption\fP ALGORITHM
+Possible options are: AES(default), ARC2, ARC4, Blowfish, CAST, DES, DES3, IDEA, RC5.
+
+.TP
 \fB\-d, \-\-database\fP FILE
 When using the default sqlite backend, use \fBFILE\fP to read/store passwords.
 
+
 .TP
-\fB\-e, \-\-encryption\fP ALGO
-Use \fBALGO\fP to encrypt data. Possible values are: AES, ARC2, ARC4, Blowfish,
-CAST, DES, DES3, IDEA, RC5
-The default encryption algorithm used is Blowfish.
+\fB\-k, \-\-convert\fP 
+Convert old DB format to Version >= 0.4. 
 
 .TP
 \fB\-h, \-\-help\fP
