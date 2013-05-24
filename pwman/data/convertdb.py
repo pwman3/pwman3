@@ -68,10 +68,10 @@ class PwmanConvertDB(object):
         self.oldnodes = self.db.getnodes(self.oldnodes)
 
     def create_new_db(self):
-        newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
+        self.newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
 
         self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
-                                               newdb_name)
+                                               self.newdb_name)
         self.newdb._open()
 
     def convert_nodes(self):
@@ -96,10 +96,24 @@ class PwmanConvertDB(object):
         self.newdb.addnodes(self.NewNodes)
         self.newdb._commit()
 
+    def save_old_key(self):
+        enc = CryptoEngine.get()
+        self.oldkey = enc.get_cryptedkey()
+        self.newdb.savekey(self.oldkey)
+
+    def print_success(self):
+        print """pwman successfully converted the old database to the new
+format.\nPlease run `pwman3 -d %s` to make sure your password and
+data are still correct. If you are convinced that no harm was done,
+update your config file to indicate the permanent location
+to your new database.
+If you found errors, please report a bug in Pwman homepage in github.
+""" % self.newdb_name
+
     def run(self):
         self.read_old_db()
         self.create_new_db()
         self.convert_nodes()
         self.save_new_nodes_to_db()
-        # TODO: copy all other stuff from old data base ...
-
+        self.save_old_key()
+        self.print_success()
