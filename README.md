@@ -63,7 +63,7 @@ To install:
 
     $ python setup.py install
 
-## User Insterface
+## User Interface
 
    1. When xsel is install on a Linux system, you can copy passwords directly to clipboard with the copy command.
    2. The command 'open' will open the default browser if URL is specified.
