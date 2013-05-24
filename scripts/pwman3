@@ -21,49 +21,53 @@
 #============================================================================
 import os
 import os.path
-import subprocess as sp
 
 _saveconfig = True
 
 import argparse
 
 
-parser = argparse.ArgumentParser(description='pwman3 - a command line password'\
-+'manager.')
-parser.add_argument('-c','--config', dest='cfile',
+parser = argparse.ArgumentParser(description='pwman3 - a command line password'
+                                 + ' manager.')
+parser.add_argument('-c', '--config', dest='cfile',
                     default=os.path.expanduser("~/.pwman/config"),
                     help='cofiguration file to read')
 parser.add_argument('-d', '--database', dest='dbase')
+parser.add_argument('-e', '--encryption', dest="algo",
+                    help="Possible options are: AES(default), ARC2, ARC4, "
+                    + "Blowfish, CAST, DES, DES3, IDEA, RC5")
+parser.add_argument('-k', '--convert', dest='dbconvert',
+                    action='store_true', default=False,
+                    # os.path.expanduser('~/.pwman/pwman.db'),
+                    help="Convert old DB format to Version >= 0.4.",
+                    )
 
-parser.add_argument('-e', '--encryption', dest="algo", default="AES",
-                help="Possible options are: AES(default), ARC2, ARC4, "\
-                +"Blowfish, CAST, DES, DES3, IDEA, RC5")
-
-parser.add_argument('-t','--test',  help="Run pwman from current directory \
+parser.add_argument('-t', '--test',  help="Run pwman from current directory \
 without installation", action="store_true")
+
 args = parser.parse_args()
 
+import sys
 if args.test:
-    import sys
-    sys.path.insert(0,os.getcwd())
+    sys.path.insert(0, os.getcwd())
 
 from pwman.util.crypto import CryptoEngine
-import getopt
-import sys
 
 if 'darwin' in sys.platform:
     from pwman.ui.cli import PwmanCliMac as PwmanCli
+    from pwman.ui.cli import PwmanCliMacNew as PwmanCliNew
     OSX = True
 else:
     from pwman.ui.cli import PwmanCli
+    from pwman.ui.cli import PwmanCliNew
     OSX = False
 
 
 import pwman.util.config as config
 import pwman.data.factory
+from pwman.data.convertdb import PwmanConvertDB
 
-config_file=args.cfile
-
+config_file = args.cfile
 
 
 def which(cmd):
@@ -85,7 +89,7 @@ try:
     # set cls_timout to negative number (e.g. -1) to disable
     default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                  'cls_timeout': '5'
-                                },
+                                 },
                       'Database': {'type': 'SQLite',
                                    'filename': os.path.join(config_dir,
                                                             "pwman.db")},
@@ -99,7 +103,7 @@ try:
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
-    elif not OSX :
+    elif not OSX:
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
     elif OSX:
@@ -109,7 +113,7 @@ try:
     if args.dbase:
         config.set_value("Database", "filename", args.dbase)
         _saveconfig = False
-    if args.algo != "Blowfish":
+    if args.algo:
             config.set_value("Encryption", "algorithm", args.algo)
             _saveconfig = False
     # set umask before creating/opening any files
@@ -119,13 +123,38 @@ try:
     enc = CryptoEngine.get()
 
     dbtype = config.get_value("Database", "type")
-    db = pwman.data.factory.create(dbtype)
-    cli = PwmanCli(db, xselpath)
+    # if it is done here, we could do the following:
+    # if db.ver == 0.4 :
+    #     db = pwman.data.factory.create(dbtyp, new_version)
+    # else:
+    #     we use the old code untouched ... insecure, but
+    #     keeps backwards compatibility ...
+    # if the database file exists check it's version
+    # else: force version 0.4
+    if os.path.exists(config.get_value("Database", "filename")):
+        dbver = pwman.data.factory.check_db_version(dbtype)
+        dbver = float(dbver.strip("\'"))
+    else:
+        dbver = 0.4
+    # the method create could create an old instance that
+    # accepts cPickle object or new style instance that
+    # accepts only strings.
+    # The user should be STRONGLY Prompted to CONVERT the
+    # database to the new format using a command line tool.
+    # version 0.5 pwman will depreciate that old and insecure
+    # code ...
+    if args.dbconvert:
+        dbconvertor = PwmanConvertDB(args, config)
+        status = dbconvertor.run()
+        sys.exit(status)
+
+    db = pwman.data.factory.create(dbtype, dbver)
+    if dbver >= 0.4:
+        cli = PwmanCliNew(db, xselpath)
+    elif dbver < 0.4:
+        cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
-except Exception, e:
-    print "Error: %s" % (e)
-    sys.exit(-1)
 
 try:
     try:

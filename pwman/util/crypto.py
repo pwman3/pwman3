@@ -68,7 +68,10 @@ def zerome(string):
     bufsize = len(string) + 1
     offset = sys.getsizeof(string) - bufsize
     ctypes.memset(id(string) + offset, 0, bufsize)
-    
+
+# Use this to tell if crypto is successful or not
+_TAG = "PWMANCRYPTO"
+
 _INSTANCE = None
 
 # Use this to tell if crypto is successful or not

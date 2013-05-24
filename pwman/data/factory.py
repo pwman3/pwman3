@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -30,37 +30,48 @@ db = DBFactory.create(params)
 db.open()
 .....
 """
-from pwman.data.database import Database, DatabaseException
+from pwman.data.database import DatabaseException
 
-import pwman.util.config as config
 
-def create(type):
+def check_db_version(type):
+    if type == "SQLite":
+        try:
+            from pwman.data.drivers import sqlite
+        except ImportError:
+            raise DatabaseException("python-sqlite not installed")
+        ver = sqlite.check_db_version()
+        return ver
+     # TODO: implement version checks for other supported DBs.
+
+
+def create(type, version=None, filename=None):
     """
     create(params) -> Database
-    Create a Database instance. 
+    Create a Database instance.
     'type' can only be 'SQLite' at the moment
     """
-
-    if type == "BerkeleyDB":
-        pass
-#        db = BerkeleyDatabase.BerkeleyDatabase(params)
-    elif (type == "SQLite"):
-        try: 
+    if (type == "SQLite"):
+        try:
             from pwman.data.drivers import sqlite
-            db = sqlite.SQLiteDatabase()
-        except ImportError, e:
+            if version == 0.4 and filename:
+                db = sqlite.SQLiteDatabaseNewForm(filename)
+            elif version == 0.4:
+                db = sqlite.SQLiteDatabaseNewForm()
+            else:
+                db = sqlite.SQLiteDatabase()
+        except ImportError:
             raise DatabaseException("python-sqlite not installed")
     elif (type == "Postgresql"):
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
-        except ImportError, e:
+        except ImportError:
             raise DatabaseException("python-pygresql not installed")
     elif (type == "MySQL"):
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()
-        except ImportError, e:
+        except ImportError:
             raise DatabaseException("python-mysqldb not installed")
     else:
         raise DatabaseException("Unknown database type specified")

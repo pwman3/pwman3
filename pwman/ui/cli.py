@@ -27,8 +27,10 @@ import pwman.exchange.importer as importer
 import pwman.exchange.exporter as exporter
 import pwman.util.generator as generator
 from pwman.data.nodes import Node
+from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto import zerome
 #, CryptoBadKeyException, \
 #     CryptoPasswordMismatchException
 from pwman.util.callback import Callback
@@ -128,7 +130,7 @@ class PwmanCli(cmd.Cmd):
         numerics -> numerics
         leetify -> symbols
         special_chars -> special_signs
-        """        
+        """
         if argsgiven == 1:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
@@ -142,13 +144,13 @@ class PwmanCli(cmd.Cmd):
         if len(password) == 0:
             length = getinput("Password length (default 7): ", "7")
             length = int(length)
-        
+
             (password, dumpme) = generator.generate_password(length, length, \
                 True, leetify, numerics, special_signs)
             print "New password: %s" % (password)
-        
+
         return password
-        
+
     def get_url(self, default=""):
         return getinput("Url: ", default)
 
@@ -228,7 +230,7 @@ class PwmanCli(cmd.Cmd):
                     break
                 time.sleep(period)
             self.do_cls('')
-        
+
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
             if sys.platform != 'win32':
@@ -399,8 +401,8 @@ class PwmanCli(cmd.Cmd):
             else:
                 numerics = config.get_value("Generator", "numerics").lower() == 'true'
                 # TODO: allow custom leetifying through the config
-                leetify = config.get_value("Generator", "leetify").lower() == 'true' 
-                special_chars = config.get_value("Generator", "special_chars").lower() == 'true' 
+                leetify = config.get_value("Generator", "leetify").lower() == 'true'
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true'
                 password = self.get_password(0,
                                              numerics=numerics,
                                              symbols=leetify,
@@ -574,6 +576,9 @@ class PwmanCli(cmd.Cmd):
 
     def do_open(self, args):
         ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
         if len(ids) > 1:
             print "Can open only 1 link at a time ..."
             return None
@@ -594,9 +599,8 @@ class PwmanCli(cmd.Cmd):
 
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'xdg-open url',\n\
-the url must contain http:// or https://."
-
+        print "Launch default browser with 'xdg-open url',\n" \
+              + "the url must contain http:// or https://."
     def help_o(self):
         self.help_open()
 
@@ -658,8 +662,8 @@ the url must contain http:// or https://."
 
     def help_new(self):
         self.usage("new")
-        print """Creates a new node., 
-You can override default config settings the following way:      
+        print """Creates a new node.,
+You can override default config settings the following way:
 pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_rm(self):
@@ -716,9 +720,45 @@ pwman> n {'leetify':False, 'numerics':True}"""
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
+        _dbwarning = "\n*** WARNNING: You are using the old db format which" \
+                     + " uses cPickle, please upgrade your db !!! ***"
+        cmd.Cmd.__init__(self)
+        self.intro = "%s %s (c) visit: %s %s" % (pwman.appname, pwman.version,
+                                                 pwman.website, _dbwarning)
+        self._historyfile = config.get_value("Readline", "history")
+        self.hasxsel = hasxsel
+        try:
+            enc = CryptoEngine.get()
+            enc.set_callback(CLICallback())
+            self._db = db
+            self._db.open()
+        except Exception, e:
+            self.error(e)
+            sys.exit(1)
+
+        try:
+            readline.read_history_file(self._historyfile)
+        except IOError, e:
+            pass
+
+        self.prompt = "!pwman> "
+
+
+class PwmanCliNew(PwmanCli):
+    """
+    inherit from the old class, override
+    all the methods related to tags, and
+    newer Node format, so backward compatability is kept...
+    """
+
+    def __init__(self, db, hasxsel):
+        """
+        initialize CLI interface, set up the DB
+        connecion, see if we have xsel ...
+        """
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
-                                            pwman.website)
+                                                 pwman.website)
         self._historyfile = config.get_value("Readline", "history")
         self.hasxsel = hasxsel
         try:
@@ -736,7 +776,195 @@ pwman> n {'leetify':False, 'numerics':True}"""
             pass
 
         self.prompt = "pwman> "
+    def print_node(self, node):
+        width = str(_defaultwidth)
+        print "Node %d." % (node.get_id())
+        print ("%"+width+"s %s") % (typeset("Username:", ANSI.Red),
+                                    node.get_username())
+        print ("%"+width+"s %s") % (typeset("Password:", ANSI.Red),
+                                    node.get_password())
+        print ("%"+width+"s %s") % (typeset("Url:", ANSI.Red),
+                                    node.get_url())
+        print ("%"+width+"s %s") % (typeset("Notes:", ANSI.Red),
+                                    node.get_notes())
+        print typeset("Tags: ", ANSI.Red),
+        for t in node.get_tags():
+            print " %s " % t
+        print
 
+        def heardEnter():
+            i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
+            for s in i:
+                if s == sys.stdin:
+                    sys.stdin.readline()
+                    return True
+                return False
+
+        def heardEnterWin():
+            import msvcrt
+            c = msvcrt.kbhit()
+            if c == 1:
+                ret = msvcrt.getch()
+                if ret is not None:
+                    return True
+            return False
+
+        def waituntil_enter(somepredicate, timeout, period=0.25):
+            mustend = time.time() + timeout
+            while time.time() < mustend:
+                cond = somepredicate()
+                if cond:
+                    break
+                time.sleep(period)
+            self.do_cls('')
+
+        flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        if flushtimeout > 0:
+            if sys.platform != 'win32':
+                print "Type Enter to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnter, flushtimeout)
+            else:
+                print "Press any key to flush screen (autoflash in 5 sec.)"
+                waituntil_enter(heardEnterWin, flushtimeout)
+
+    def do_tags(self, arg):
+        tags = self._db.listtags()
+        if len(tags) > 0:
+            tags[0].get_name()  # hack to get password request before output
+        print "Tags: ",
+        if len(tags) == 0:
+            print "None",
+        for t in tags:
+            print "%s " % (t.get_name()),
+        print
+
+    def get_tags(self, default=None):
+        defaultstr = ''
+
+        if default:
+            for t in default:
+                defaultstr += "%s " % (t.get_name())
+        else:
+            tags = self._db.currenttags()
+            for t in tags:
+                defaultstr += "%s " % (t.get_name())
+
+        strings = []
+        tags = self._db.listtags(True)
+        for t in tags:
+            strings.append(t.get_name())
+
+        def complete(text, state):
+            count = 0
+            for s in strings:
+                if s.startswith(text):
+                    if count == state:
+                        return s
+                    else:
+                        count += 1
+
+        taglist = getinput("Tags: ", defaultstr, complete)
+        tagstrings = taglist.split()
+        tags = []
+        for tn in tagstrings:
+            _Tag = Tag(tn)
+            tags.append(_Tag)
+        return tags
+
+    def do_list(self, args):
+        if len(args.split()) > 0:
+            self.do_clear('')
+            self.do_filter(args)
+        try:
+            if sys.platform != 'win32':
+                rows, cols = gettermsize()
+            else:
+                rows, cols = 18, 80  # fix this !
+            nodeids = self._db.listnodes()
+            nodes = self._db.getnodes(nodeids)
+            cols -= 8
+            i = 0
+            for n in nodes:
+                tags = n.get_tags()
+                tagstring = ''
+                first = True
+                for t in tags:
+                    if not first:
+                        tagstring += ", "
+                    else:
+                        first = False
+                    tagstring += t
+
+                name = "%s@%s" % (n.get_username(), n.get_url())
+
+                name_len = cols * 2 / 3
+                tagstring_len = cols / 3
+                if len(name) > name_len:
+                    name = name[:name_len-3] + "..."
+                if len(tagstring) > tagstring_len:
+                    tagstring = tagstring[:tagstring_len-3] + "..."
+                fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
+                formatted_entry = typeset(fmt % (n.get_id(), name, tagstring),
+                                          ANSI.Yellow, False)
+                print formatted_entry
+                i += 1
+                if i > rows-2:
+                    i = 0
+                    c = getonechar("Press <Space> for more, or 'Q' to cancel")
+                    if c == 'q':
+                        break
+
+        except Exception, e:
+            self.error(e)
+
+    def do_new(self, args):
+        """
+        can override default config settings the following way:
+        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
+        Password (Blank to generate):
+        """
+        errmsg = """could not parse config override, please input some"""\
+                 +""" kind of dictionary, e.g.: n {'leetify':False, """\
+                 +"""'numerics':True, 'special_chars':True}"""
+        try:
+            username = self.get_username()
+            if args:
+                try:
+                    args = ast.literal_eval(args)
+                except Exception:
+                    raise Exception(errmsg)
+                if not isinstance(args, dict):
+                    raise Exception(errmsg)
+                password = self.get_password(1, **args)
+            else:
+                numerics = config.get_value("Generator", "numerics").lower() == 'true'
+                # TODO: allow custom leetifying through the config
+                leetify = config.get_value("Generator", "leetify").lower() == 'true'
+                special_chars = config.get_value("Generator", "special_chars").lower() == 'true'
+                password = self.get_password(0,
+                                             numerics=numerics,
+                                             symbols=leetify,
+                                             special_signs=special_chars)
+            url = self.get_url()
+            notes = self.get_notes()
+            node = NewNode(username, password, url, notes)
+            tags = self.get_tags()
+            node.set_tags(tags)
+            self._db.addnodes([node])
+            print "Password ID: %d" % (node.get_id())
+        except Exception, e:
+            self.error(e)
+
+    def do_print(self, arg):
+        for i in self.get_ids(arg):
+            try:
+                node = self._db.getnodes([i])
+                self.print_node(node[0])
+                # when done with node erase it
+                zerome(node[0]._password)
+            except Exception, e:
+                self.error(e)
 
 
 class PwmanCliMac(PwmanCli):
@@ -763,6 +991,9 @@ class PwmanCliMac(PwmanCli):
 
     def do_open(self, args):
         ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
         if len(ids) > 1:
             print "Can open only 1 link at a time ..."
             return None
@@ -781,8 +1012,8 @@ class PwmanCliMac(PwmanCli):
     ##
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'open url',\n\
-the url must contain http:// or https://."
+        print "Launch default browser with 'open url',\n" \
+              + "the url must contain http:// or https://."
 
     def help_o(self):
         self.help_open()
@@ -793,6 +1024,9 @@ the url must contain http:// or https://."
 
     def help_cp(self):
         self.help_copy()
+
+class PwmanCliMacNew(PwmanCliMac):
+    pass
 
 _defaultwidth = 10
 
@@ -840,7 +1074,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
     if (not _readline_available):
         return raw_input(question.ljust(width))
     else:
-        def defaulter(): 
+        def defaulter():
             """define default behavior startup"""
             readline.insert_text(default)
 
@@ -968,15 +1202,15 @@ class CliMenu(object):
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 print "selection, ", selection
-                # new value is created by calling the editor with the 
-                # previous value as a parameter 
+                # new value is created by calling the editor with the
+                # previous value as a parameter
                 # TODO: enable overriding password policy as if new node
                 # is created.
                 if selection == 1: # for password
                     value = self.items[selection].editor(0)
                 else:
                     value = self.items[selection].editor(self.items[selection].getter())
-                
+
                 self.items[selection].setter(value)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
