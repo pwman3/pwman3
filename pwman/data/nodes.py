@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -21,6 +21,7 @@
 #============================================================================
 
 from pwman.util.crypto import CryptoEngine
+
 
 class NewNode(object):
 
@@ -34,7 +35,6 @@ class NewNode(object):
         self._tags = []
         self.set_tags(tags)
 
-
     def dump_edit_to_db(self):
         enc = CryptoEngine.get()
         dump = ""
@@ -43,9 +43,9 @@ class NewNode(object):
         dump += "url:"+self._url+"##"
         dump += "notes:"+self._notes+"##"
         dump += "tags:"
-        tagsloc=""
+        tagsloc = ""
         for tag in self._tags:
-            if isinstance(tag , str):
+            if isinstance(tag, str):
                 tagsloc += "tag:"+tag.strip()+"**endtag**"
             else:
                 tagsloc += "tag:"+tag.get_name()+"**endtag**"
@@ -61,9 +61,9 @@ class NewNode(object):
         dump += "url:"+enc.encrypt(self._url)+"##"
         dump += "notes:"+enc.encrypt(self._notes)+"##"
         dump += "tags:"
-        tagsloc=""
+        tagsloc = ""
         for tag in self._tags:
-            if isinstance(tag , str):
+            if isinstance(tag, str):
                 tagsloc += "tag:"+tag.strip()+"**endtag**"
             else:
                 tagsloc += "tag:"+tag.get_name()+"**endtag**"
@@ -144,9 +144,10 @@ class NewNode(object):
 
 
 class Node(object):
-    def __init__(self,username="",password="",url="",notes="",tags=[]):
+    def __init__(self, username="", password="", url="",
+                 notes="", tags=[]):
         """Initialise everything to null."""
-        self._id = 0;
+        self._id = 0
 
         enc = CryptoEngine.get()
         self._username = enc.encrypt(username)
@@ -174,7 +175,7 @@ class Node(object):
 
     def set_id(self, id):
         self._id = id
-        
+
     def get_username(self):
         """Return the username."""
         enc = CryptoEngine.get()
@@ -214,4 +215,3 @@ class Node(object):
         """Set the Notes."""
         enc = CryptoEngine.get()
         self._notes = enc.encrypt(notes)
-
