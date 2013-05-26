@@ -25,7 +25,6 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
-import re
 import sys
 if sys.version_info > (2, 5):
     import sqlite3 as sqlite
@@ -117,18 +116,13 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
-                params.append(t.get_name())
-                import ipdb
-                ipdb.set_trace()
+                params.append(t)
         try:
             self._cur.execute(sql, params)
             tags = []
             row = self._cur.fetchone()
             while row is not None:
                 tagstring = str(row[0])
-                #m = re.search('S\"S\'(.+?)\'', tagstring)
-                #if m:
-                #   found = m.group(1)
                 tags.append(tagstring)
                 row = self._cur.fetchone()
             return tags
@@ -142,7 +136,8 @@ class SQLiteDatabaseNewForm(Database):
             key, val = pair.split(":")
             keyvals[key.lstrip('##')] = val
         tags = nodestring[-1]
-        tags = tags.lstrip("tags:")
+        #tags = tags.lstrip("tags:")
+        tags = tags.split("tags:", 1)[1]
         tags = tags.split("tag:")
         taginsts = []
         for tag in tags:
@@ -158,22 +153,15 @@ class SQLiteDatabaseNewForm(Database):
         nodes = []
         for i in ids:
                 sql = "SELECT DATA FROM NODES WHERE ID = ?"
-            # try:
                 self._cur.execute(sql, [i])
                 row = self._cur.fetchone()
                 if row is not None:
                     nodestring = str(row[0])
-                    # if not nodestring.startswith("(ipwman.data.nodes"):
-                    #     raise DatabaseException(
-                #"Tried to load foreign object from database," \
-                #+ " this looks fishy in here...")
                     nodeargs, tags = self.parse_node_string(nodestring)
                     node = NewNode(**nodeargs)
                     node.set_tags(tags)
                     node.set_id(i)
                     nodes.append(node)
-            # except sqlite.DatabaseError, e:
-            #   raise DatabaseException("SQLite: %s" % (e))
         return nodes
 
     def editnode(self, id, node):
@@ -261,13 +249,11 @@ class SQLiteDatabaseNewForm(Database):
         ids = []
         for tag in tags:
             sql = "SELECT ID FROM TAGS WHERE DATA = ?"
-            # if not isinstance(t, Tag): raise DatabaseException(
-            #    "Tried to insert foreign object into database [%s]", t)
             try:
                 if isinstance(tag, str):
                     self._cur.execute(sql, [tag])
                 else:
-                    self._cur.execute(sql, [tag.get_name()])
+                    self._cur.execute(sql, [tag._name])
                 row = self._cur.fetchone()
                 if (row is not None):
                     ids.append(row[0])

@@ -920,6 +920,7 @@ class PwmanCliNew(PwmanCli):
             i = 0
             for n in nodes:
                 tags = n.get_tags()
+                tags = filter(None, tags)
                 tagstring = ''
                 first = True
                 for t in tags:
