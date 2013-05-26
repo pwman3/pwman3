@@ -325,6 +325,9 @@ class PwmanCli(cmd.Cmd):
 
                 menu.run()
                 self._db.editnode(i, node)
+
+                # when done with node erase it
+                zerome(node._password)
             except Exception, e:
                 self.error(e)
 
@@ -987,6 +990,8 @@ class PwmanCliNew(PwmanCli):
             node.set_tags(tags)
             self._db.addnodes([node])
             print "Password ID: %d" % (node.get_id())
+            # when done with node erase it
+            zerome(password)
         except Exception, e:
             self.error(e)
 
