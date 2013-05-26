@@ -117,17 +117,19 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
-                params.append(t)
+                params.append(t.get_name())
+                import ipdb
+                ipdb.set_trace()
         try:
             self._cur.execute(sql, params)
             tags = []
             row = self._cur.fetchone()
             while row is not None:
                 tagstring = str(row[0])
-                m = re.search('S\"S\'(.+?)\'', tagstring)
-                if m:
-                    found = m.group(1)
-                    tags.append(Tag(found))
+                #m = re.search('S\"S\'(.+?)\'', tagstring)
+                #if m:
+                #   found = m.group(1)
+                tags.append(tagstring)
                 row = self._cur.fetchone()
             return tags
         except sqlite.DatabaseError, e:
@@ -413,7 +415,7 @@ class SQLiteDatabase(Database):
                    + " WHERE NODE IN (")
             first = True
             # if using the command filter, the code crashes ...
-            # 
+            #
             for t in self._filtertags:
                 if not first:
                     sql += " INTERSECT "
@@ -628,11 +630,11 @@ class SQLiteDatabase(Database):
 
     def savekey(self, key):
         """
-        This function is saving the key to table KEY. 
+        This function is saving the key to table KEY.
         The key already arrives as an encrypted string.
-        It is the same self._keycrypted from 
-        crypto py (check with id(self._keycrypted) and 
-        id(key) here. 
+        It is the same self._keycrypted from
+        crypto py (check with id(self._keycrypted) and
+        id(key) here.
         """
         sql = "UPDATE KEY SET THEKEY = ?"
         values = [key]

@@ -628,8 +628,8 @@ class PwmanCli(cmd.Cmd):
 
     def help_list(self):
         self.usage("list <tag> ...")
-        print "List nodes that match current or specified filter."
-        + "ls is an alias."
+        print "List nodes that match current or specified filter." \
+              + " l is an alias."
 
     def help_EOF(self):
         self.help_exit()
@@ -702,17 +702,17 @@ pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_save(self):
         self.usage("save [filename]")
-        print "Saves the current configuration to [filename]. If no filename "
-        + "is given, the configuration is saved to the file from which the "
-        + "initial configuration was loaded."
+        print "Saves the current configuration to [filename]. If no filename "\
+              + "is given, the configuration is saved to the file from which "\
+              + "the initial configuration was loaded."
 
     def help_set(self):
         self.usage("set [configoption] [value]")
-        print "Sets a configuration option. If no value is specified, the "
-        + "current value for [configoption] is output. If neither "
-        + "[configoption] nor [value] are specified, the whole current "
-        + "configuration is output. [configoption] must be of the "
-        + "format <section>.<option>"
+        print "Sets a configuration option. If no value is specified, the "\
+              + "current value for [configoption] is output. If neither "\
+              + "[configoption] nor [value] are specified, the whole current "\
+              + "configuration is output. [configoption] must be of the "\
+              + "format <section>.<option>"
 
     def help_passwd(self):
         self.usage("passwd")
@@ -720,8 +720,8 @@ pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_forget(self):
         self.usage("forget")
-        print "Forgets the database password. Your password will need to "
-        + "be reentered before accessing the database again."
+        print "Forgets the database password. Your password will need to " \
+              + "be reentered before accessing the database again."
 
     def help_clear(self):
         self.usage("clear")
@@ -729,8 +729,8 @@ pwman> n {'leetify':False, 'numerics':True}"""
 
     def help_filter(self):
         self.usage("filter <tag> ...")
-        print "Filters nodes on tag. Arguments can be zero or more tags. "
-        + "Displays current tags if called without arguments."
+        print "Filters nodes on tag. Arguments can be zero or more tags. " \
+              + "Displays current tags if called without arguments."
 
     def help_tags(self):
         self.usage("tags")
@@ -857,13 +857,14 @@ class PwmanCliNew(PwmanCli):
 
     def do_tags(self, arg):
         tags = self._db.listtags()
-        if len(tags) > 0:
-            tags[0].get_name()  # hack to get password request before output
+        #if len(tags) > 0:
+        #    tags[0].get_name()  # hack to get password request before output
+        enc = CryptoEngine.get()
         print "Tags: ",
         if len(tags) == 0:
             print "None",
         for t in tags:
-            print "%s " % (t.get_name()),
+            print "%s " % t,
         print
 
     def get_tags(self, default=None):
