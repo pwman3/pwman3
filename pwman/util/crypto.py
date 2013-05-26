@@ -45,7 +45,7 @@ plaintext = cyypto.decrypt(ciphertext)
 from Crypto.Cipher import Blowfish as cBlowfish
 from Crypto.Cipher import AES as cAES
 from Crypto.Cipher import ARC2 as cARC2
-from Crypto.Cipher import ARC4 as cARC2
+from Crypto.Cipher import ARC4 as cARC4
 from Crypto.Cipher import CAST as cCAST
 from Crypto.Cipher import DES as cDES
 from Crypto.Cipher import DES3 as cDES3
@@ -59,6 +59,7 @@ import cPickle
 import time
 import sys
 import ctypes
+
 
 def zerome(string):
     """
@@ -77,32 +78,39 @@ _INSTANCE = None
 # Use this to tell if crypto is successful or not
 _TAG = "PWMANCRYPTO"
 
+
 class CryptoException(Exception):
     """Generic Crypto Exception."""
     def __init__(self, message):
         self.message = message
+
     def __str__(self):
         return "CryptoException: " + self.message
+
 
 class CryptoUnsupportedException(CryptoException):
     """Unsupported feature requested."""
     def __str__(self):
-        return "CryptoUnsupportedException: " +self.message
+        return "CryptoUnsupportedException: " + self.message
+
 
 class CryptoBadKeyException(CryptoException):
     """Encryption key is incorrect."""
     def __str__(self):
         return "CryptoBadKeyException: " + self.message
 
+
 class CryptoNoKeyException(CryptoException):
     """No key has been initalised."""
     def __str__(self):
         return "CryptoNoKeyException: " + self.message
 
+
 class CryptoNoCallbackException(CryptoException):
     """No Callback has been set."""
     def __str__(self):
         return "CryptoNoCallbackException: " + self.message
+
 
 class CryptoPasswordMismatchException(CryptoException):
     """Entered passwords do not match."""
@@ -123,14 +131,14 @@ class CryptoEngine:
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
-        if (CryptoEngine._instance == None):
+        if CryptoEngine._instance is None:
             algo = config.get_value("Encryption", "algorithm")
             if algo == "Dummy":
                 CryptoEngine._instance = DummyCryptoEngine()
             else:
                 CryptoEngine._instance = CryptoEngine()
         return CryptoEngine._instance
-    #get = classmethod(get)
+    # get = classmethod(get)
 
     def __init__(self):
         """Initialise the Cryptographic Engine
@@ -220,10 +228,10 @@ class CryptoEngine:
         password that the user provides. This makes it easy to change the
         password for the database.
         If oldKeyCrypted is none, then a new password is generated."""
-        if (self._callback == None):
+        if self._callback is None:
             raise CryptoNoCallbackException("No call back class has been \
 specified")
-        if (self._keycrypted == None):
+        if self._keycrypted is None:
             # Generate a new key, 32 bits in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
             random = OSRNG.new()
@@ -234,23 +242,32 @@ password")
             cipher = self._getcipher_real(password, self._algo)
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
-        
+
         newpassword1 = self._callback.getsecret("Please enter your new \
 password")
         newpassword2 = self._callback.getsecret("Please enter your new \
 password again")
-        if (newpassword1 != newpassword2):
-            raise CryptoPasswordMismatchException("Passwords do not match")
+        while newpassword1 != newpassword2:
+            print "Passwords do not match!"
+            newpassword1 = self._callback.getsecret("Please enter your new \
+password")
+            newpassword2 = self._callback.getsecret("Please enter your new \
+password again")
+
+        # if (newpassword1 != newpassword2):
+        #   raise CryptoPasswordMismatchException("Passwords do not match")
         newcipher = self._getcipher_real(newpassword1, self._algo)
-        self._keycrypted = str(newcipher.encrypt(self._preparedata(key,
-                           newcipher.block_size))).encode('base64')
-        # newpassword1, newpassword2 are not needed any more so we erase 
+        self._keycrypted = str(newcipher.encrypt(
+                               self._preparedata(key,
+                                                 newcipher.block_size)
+                               )).encode('base64')
+        # newpassword1, newpassword2 are not needed any more so we erase
         # them
         zerome(newpassword1)
         zerome(newpassword2)
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
-        if (self._cipher == None):
+        if self._cipher is None:
             self._cipher = self._getcipher_real(str(key).decode('base64'),
                                                 self._algo)
             CryptoEngine._timeoutcount = time.time()
@@ -261,7 +278,7 @@ password again")
         """
         check if we have cipher
         """
-        if (self._cipher != None):
+        if self._cipher is not None:
             return True
         else:
             return False
@@ -276,13 +293,14 @@ password again")
         """
         get cypher from user, to decrypt DB
         """
-        if (self._cipher != None
+        if (self._cipher is not None
             and (self._timeout == -1
-            or (time.time() - CryptoEngine._timeoutcount) < self._timeout)):
+                 or (time.time() -
+                     CryptoEngine._timeoutcount) < self._timeout)):
             return self._cipher
-        if (self._callback == None):
+        if self._callback is None:
             raise CryptoNoCallbackException("No Callback exception")
-        if (self._keycrypted == None):
+        if self._keycrypted is None:
             raise CryptoNoKeyException("Encryption key has not been generated")
 
         max_tries = 5
@@ -304,15 +322,14 @@ password")
                 tries += 1
 
         if not key:
-            raise Exception("Wrong password entered %s times; giving up" \
-                    % max_tries)
+            raise Exception("Wrong password entered %s times; giving up"
+                            % max_tries)
 
         self._cipher = self._getcipher_real(str(key).decode('base64'),
-                self._algo)
+                                            self._algo)
 
         CryptoEngine._timeoutcount = time.time()
         return self._cipher
-
 
     def _getcipher_real(self, key, algo):
         """
@@ -335,7 +352,7 @@ password")
             cipher = cDES.new(key, cDES.MODE_ECB)
         elif (algo == 'DES3'):
             key = self._padkey(key, [16, 24])
-            cipher =  cDES3.new(key, cDES3.MODE_ECB)
+            cipher = cDES3.new(key, cDES3.MODE_ECB)
         elif (algo == 'XOR'):
             raise CryptoUnsupportedException("XOR is currently unsupported")
         else:
