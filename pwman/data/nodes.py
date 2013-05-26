@@ -103,7 +103,6 @@ class NewNode(object):
         the username does not containg space as the last character.
         The same is also true for the password.
         """
-
         enc = CryptoEngine.get()
         return enc.decrypt(self._username).strip()
 

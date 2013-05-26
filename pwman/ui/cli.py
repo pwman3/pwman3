@@ -876,11 +876,11 @@ class PwmanCliNew(PwmanCli):
 
         if default:
             for t in default:
-                defaultstr += "%s " % (t.get_name())
+                defaultstr += "%s " % (t)
         else:
             tags = self._db.currenttags()
             for t in tags:
-                defaultstr += "%s " % (t.get_name())
+                defaultstr += "%s " % (t)
 
         strings = []
         tags = self._db.listtags(True)

@@ -167,6 +167,7 @@ class SQLiteDatabaseNewForm(Database):
     def editnode(self, id, node):
         try:
             sql = "UPDATE NODES SET DATA = ? WHERE ID = ?"
+            #sql = "INSERT OR UPDATE NODES SET DATA = ? WHERE ID = ?"
             self._cur.execute(sql, [node.dump_edit_to_db()[0], id])
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
