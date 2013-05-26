@@ -857,9 +857,10 @@ class PwmanCliNew(PwmanCli):
 
     def do_tags(self, arg):
         tags = self._db.listtags()
-        #if len(tags) > 0:
-        #    tags[0].get_name()  # hack to get password request before output
+        # request password
         enc = CryptoEngine.get()
+        if not enc.alive():
+            enc._getcipher()
         print "Tags: ",
         if len(tags) == 0:
             print "None",
