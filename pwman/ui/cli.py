@@ -952,6 +952,25 @@ class PwmanCliNew(PwmanCli):
         except Exception, e:
             self.error(e)
 
+    def do_filter(self, args):
+        tagstrings = args.split()
+
+        try:
+            tags = []
+            for ts in tagstrings:
+                tags.append(Tag(ts))
+            self._db.filter(tags)
+
+            tags = self._db.currenttags()
+            print "Current tags: ",
+            if len(tags) == 0:
+                print "None",
+            for t in tags:
+                print "%s " % (t.get_name()),
+            print
+        except Exception, e:
+            self.error(e)
+
     def do_new(self, args):
         """
         can override default config settings the following way:

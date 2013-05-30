@@ -226,7 +226,8 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         " TAGS.ID WHERE TAGS.DATA = ? ")
-                params.append(t.get_name())
+                #params.append(t.get_name())
+                params.append(t._name)
         try:
             self._cur.execute(sql, params)
             ids = []
