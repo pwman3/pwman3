@@ -20,10 +20,9 @@
 #============================================================================
 
 appname = "Pwman3"
-version = "0.3.8"
+version = "0.3.9a"
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "Pwman -a command line password management application."
 keywords = "password management sqlite crypto"
-

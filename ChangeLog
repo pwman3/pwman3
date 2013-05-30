@@ -1,3 +1,7 @@
+2013-05-30 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.3.9.a
+	* Fix for none encrypted tags in database.
+
 2013-05-24 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9
 	* Fix reading of Nodes and Tags a cPickle object
