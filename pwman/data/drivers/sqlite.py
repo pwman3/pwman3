@@ -263,7 +263,7 @@ class SQLiteDatabaseNewForm(Database):
                     if isinstance(tag, str):
                         self._cur.execute(sql, [tag])
                     else:
-                        self._cur.execute(sql, [tag.get_name()])
+                        self._cur.execute(sql, [tag._name])
 
                     ids.append(self._cur.lastrowid)
             except sqlite.DatabaseError, e:
