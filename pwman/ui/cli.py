@@ -565,6 +565,8 @@ class PwmanCli(cmd.Cmd):
         os.system('clear')
 
     def do_copy(self, args):
+        import ipdb
+        ipdb.set_trace()
         if self.hasxsel:
             ids = self.get_ids(args)
             if len(ids) > 1:
@@ -573,9 +575,10 @@ class PwmanCli(cmd.Cmd):
             try:
                 node = self._db.getnodes(ids)
                 text_to_clipboards(node[0].get_password())
-                print "copied password for %s@%s clipboard... " \
-                    + "erasing in 10 sec..." % (node[0].get_username(),
-                                                node[0].get_url())
+                print "copied password for {}@{} clipboard".format(
+                       node[0].get_username(), node[0].get_url())
+
+                print "erasing in 10 sec..."
                 time.sleep(10)
                 text_to_clipboards("")
             except Exception, e:
