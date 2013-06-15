@@ -22,7 +22,17 @@ Define the CLI interface for pwman3 and the helper functions
 
 import pwman.util.config as config
 import subprocess as sp
+import getpass
+import sys
+import struct
+# import traceback
 
+if sys.platform != 'win32':
+    import tty
+    import termios
+    import fcntl
+
+_defaultwidth = 10
 
 class ANSI(object):
     """
@@ -40,6 +50,7 @@ class ANSI(object):
     Magenta = 35
     Cyan = 36
     White = 37
+
 
 def typeset(text, color, bold=False, underline=False):
     """print colored strings"""
@@ -112,3 +123,64 @@ def open_url(link, macosx=False):
         sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError, e:
         print "Executing open_url failed with:\n", e
+
+
+def getpassword(question, width=_defaultwidth, echo=False):
+    if echo:
+        print question.ljust(width),
+        return sys.stdin.readline().rstrip()
+    else:
+        while 1:
+            a1 = getpass.getpass(question.ljust(width))
+            if len(a1) == 0:
+                return a1
+            a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
+            if a1 == a2:
+                return a1
+            else:
+                print "Passwords don't match. Try again."
+
+
+def gettermsize():
+    s = struct.pack("HHHH", 0, 0, 0, 0)
+    f = sys.stdout.fileno()
+    x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
+    rows, cols, width, height = struct.unpack("HHHH", x)
+    return rows, cols
+
+
+def getinput(question, default="", completer=None, width=_defaultwidth):
+    if (not _readline_available):
+        return raw_input(question.ljust(width))
+    else:
+        def defaulter():
+            """define default behavior startup"""
+            readline.insert_text(default)
+
+        readline.set_startup_hook(defaulter)
+        oldcompleter = readline.get_completer()
+        readline.set_completer(completer)
+
+        x = raw_input(question.ljust(width))
+
+        readline.set_completer(oldcompleter)
+        readline.set_startup_hook()
+        return x
+
+def getyesno(question, defaultyes=False, width=tools._defaultwidth):
+    if (defaultyes):
+        default = "[Y/n]"
+    else:
+        default = "[y/N]"
+    ch = getonechar("%s %s" % (question, default), width)
+    if (ch == '\n'):
+        if (defaultyes):
+            return True
+        else:
+            return False
+    elif (ch == 'y' or ch == 'Y'):
+        return True
+    elif (ch == 'n' or ch == 'N'):
+        return False
+    else:
+        return getyesno(question, defaultyes, width)

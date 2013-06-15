@@ -38,20 +38,16 @@ import pwman.util.config as config
 import re
 import sys
 import os
-import struct
 import getpass
 import cmd
 # import traceback
 import time
 import select as uselect
-import subprocess as sp
 import ast
 from pwman.ui import tools
 
 if sys.platform != 'win32':
     import tty
-    import termios
-    import fcntl
 
 try:
     import readline
@@ -111,10 +107,10 @@ class PwmanCli(cmd.Cmd):
         return ids
 
     def get_filesystem_path(self, default=""):
-        return getinput("Enter filename: ", default)
+        return tools.getinput("Enter filename: ", default)
 
     def get_username(self, default=""):
-        return getinput("Username: ", default)
+        return tools.getinput("Username: ", default)
 
     def get_password(self, argsgiven, numerics=False, leetify=False,
                      symbols=False, special_signs=False):
@@ -125,7 +121,7 @@ class PwmanCli(cmd.Cmd):
         special_chars -> special_signs
         """
         if argsgiven == 1:
-            length = getinput("Password length (default 7): ", "7")
+            length = tools.getinput("Password length (default 7): ", "7")
             length = int(length)
             password, dumpme = generator.generate_password(length, length,
                                                            True, leetify,
@@ -134,10 +130,10 @@ class PwmanCli(cmd.Cmd):
             print "New password: %s" % (password)
             return password
         # no args given
-        password = getpassword("Password (Blank to generate): ",
-                               _defaultwidth, False)
+        password = tools.getpassword("Password (Blank to generate): ",
+                               tools._defaultwidth, False)
         if len(password) == 0:
-            length = getinput("Password length (default 7): ", "7")
+            length = tools.getinput("Password length (default 7): ", "7")
             length = int(length)
 
             (password, dumpme) = generator.generate_password(length, length,
@@ -149,10 +145,10 @@ class PwmanCli(cmd.Cmd):
         return password
 
     def get_url(self, default=""):
-        return getinput("Url: ", default)
+        return tools.getinput("Url: ", default)
 
     def get_notes(self, default=""):
-        return getinput("Notes: ", default)
+        return tools.getinput("Notes: ", default)
 
     def get_tags(self, default=None):
         defaultstr = ''
@@ -179,7 +175,7 @@ class PwmanCli(cmd.Cmd):
                     else:
                         count += 1
 
-        taglist = getinput("Tags: ", defaultstr, complete)
+        taglist = tools.getinput("Tags: ", defaultstr, complete)
         tagstrings = taglist.split()
         tags = []
         for tn in tagstrings:
@@ -187,17 +183,17 @@ class PwmanCli(cmd.Cmd):
         return tags
 
     def print_node(self, node):
-        width = str(_defaultwidth)
+        width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (typeset("Username:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Username:", tools.ANSI.Red),
                                     node.get_username())
-        print ("%"+width+"s %s") % (typeset("Password:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Password:", tools.ANSI.Red),
                                     node.get_password())
-        print ("%"+width+"s %s") % (typeset("Url:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Url:", tools.ANSI.Red),
                                     node.get_url())
-        print ("%"+width+"s %s") % (typeset("Notes:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Notes:", tools.ANSI.Red),
                                     node.get_notes())
-        print typeset("Tags: ", tools.ANSI.Red),
+        print tools.typeset("Tags: ", tools.ANSI.Red),
         for t in node.get_tags():
             print " %s " % t.get_name(),
         print
@@ -326,14 +322,14 @@ class PwmanCli(cmd.Cmd):
             args = arg.split()
             if len(args) == 0:
                 types = importer.Importer.types()
-                intype = select("Select filetype:", types)
+                intype = tools.select("Select filetype:", types)
                 imp = importer.Importer.get(intype)
-                infile = getinput("Select file:")
+                infile = tools.getinput("Select file:")
                 imp.import_data(self._db, infile)
             else:
                 for i in args:
                     types = importer.Importer.types()
-                    intype = select("Select filetype:", types)
+                    intype = tools.select("Select filetype:", types)
                     imp = importer.Importer.get(intype)
                     imp.import_data(self._db, i)
         except Exception, e:
@@ -344,11 +340,11 @@ class PwmanCli(cmd.Cmd):
             nodes = self.get_ids(arg)
 
             types = exporter.Exporter.types()
-            ftype = select("Select filetype:", types)
+            ftype = tools.select("Select filetype:", types)
             exp = exporter.Exporter.get(ftype)
-            out_file = getinput("Select output file:")
+            out_file = tools.getinput("Select output file:")
             if len(nodes) > 0:
-                b = getyesno("Export nodes %s?" % (nodes), True)
+                b = tools.getyesno("Export nodes %s?" % (nodes), True)
                 if not b:
                     return
                 exp.export_data(self._db, out_file, nodes)
@@ -361,7 +357,7 @@ class PwmanCli(cmd.Cmd):
                     for t in tags:
                         tagstr += "'%s' " % (t.get_name())
 
-                b = getyesno("Export all nodes%s?" % (tagstr), True)
+                b = tools.getyesno("Export all nodes%s?" % (tagstr), True)
                 if not b:
                     return
                 exp.export_data(self._db, out_file, nodes)
@@ -437,7 +433,7 @@ class PwmanCli(cmd.Cmd):
         try:
             nodes = self._db.getnodes(ids)
             for n in nodes:
-                b = getyesno("Are you sure you want to delete '%s@%s'?"
+                b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
                              % (n.get_username(), n.get_url()), False)
                 if b is True:
                     self._db.removenodes([n])
@@ -458,7 +454,7 @@ class PwmanCli(cmd.Cmd):
             self.do_filter(args)
         try:
             if sys.platform != 'win32':
-                rows, cols = gettermsize()
+                rows, cols = tools.gettermsize()
             else:
                 rows, cols = 18, 80
             nodeids = self._db.listnodes()
@@ -485,8 +481,8 @@ class PwmanCli(cmd.Cmd):
                     tagstring = tagstring[:tagstring_len-3] + "..."
 
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                print typeset(fmt % (n.get_id(), name, tagstring),
-                              ANSI.Yellow, False)
+                print tools.typeset(fmt % (n.get_id(), name, tagstring),
+                              tools.ANSI.Yellow, False)
                 i += 1
                 if i > rows-2:
                     i = 0
@@ -799,17 +795,17 @@ class PwmanCliNew(PwmanCli):
         self.prompt = "pwman> "
 
     def print_node(self, node):
-        width = str(_defaultwidth)
+        width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (typeset("Username:", ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Username:", tools.ANSI.Red),
                                     node.get_username())
-        print ("%"+width+"s %s") % (typeset("Password:", ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Password:", tools.ANSI.Red),
                                     node.get_password())
-        print ("%"+width+"s %s") % (typeset("Url:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Url:", tools.ANSI.Red),
                                     node.get_url())
-        print ("%"+width+"s %s") % (typeset("Notes:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Notes:", tools.ANSI.Red),
                                     node.get_notes())
-        print typeset("Tags: ", tools.ANSI.Red),
+        print tools.typeset("Tags: ", tools.ANSI.Red),
         for t in node.get_tags():
             print " %s " % t
         print
@@ -888,7 +884,7 @@ class PwmanCliNew(PwmanCli):
                     else:
                         count += 1
 
-        taglist = getinput("Tags: ", defaultstr, complete)
+        taglist = tools.getinput("Tags: ", defaultstr, complete)
         tagstrings = taglist.split()
         tags = []
         for tn in tagstrings:
@@ -902,7 +898,7 @@ class PwmanCliNew(PwmanCli):
             self.do_filter(args)
         try:
             if sys.platform != 'win32':
-                rows, cols = gettermsize()
+                rows, cols = tools.gettermsize()
             else:
                 rows, cols = 18, 80  # fix this !
             nodeids = self._db.listnodes()
@@ -930,7 +926,7 @@ class PwmanCliNew(PwmanCli):
                 if len(tagstring) > tagstring_len:
                     tagstring = tagstring[:tagstring_len-3] + "..."
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                formatted_entry = typeset(fmt % (n.get_id(), name, tagstring),
+                formatted_entry = tools.typeset(fmt % (n.get_id(), name, tagstring),
                                           tools.ANSI.Yellow, False)
                 print formatted_entry
                 i += 1
@@ -1016,7 +1012,7 @@ class PwmanCliNew(PwmanCli):
             except Exception, e:
                 self.error(e)
 
-
+# pylint: disable=R0904
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
@@ -1080,10 +1076,8 @@ class PwmanCliMac(PwmanCli):
 class PwmanCliMacNew(PwmanCliMac):
     pass
 
-_defaultwidth = 10
 
-
-def getonechar(question, width=_defaultwidth):
+def getonechar(question, width=tools._defaultwidth):
     question = "%s " % (question)
     print question.ljust(width),
     sys.stdout.flush()
@@ -1097,68 +1091,6 @@ def getonechar(question, width=_defaultwidth):
         tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
     print ch
     return ch
-
-
-def getyesno(question, defaultyes=False, width=_defaultwidth):
-    if (defaultyes):
-        default = "[Y/n]"
-    else:
-        default = "[y/N]"
-    ch = getonechar("%s %s" % (question, default), width)
-    if (ch == '\n'):
-        if (defaultyes):
-            return True
-        else:
-            return False
-    elif (ch == 'y' or ch == 'Y'):
-        return True
-    elif (ch == 'n' or ch == 'N'):
-        return False
-    else:
-        return getyesno(question, defaultyes, width)
-
-
-def gettermsize():
-    s = struct.pack("HHHH", 0, 0, 0, 0)
-    f = sys.stdout.fileno()
-    x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
-    rows, cols, width, height = struct.unpack("HHHH", x)
-    return rows, cols
-
-
-def getinput(question, default="", completer=None, width=_defaultwidth):
-    if (not _readline_available):
-        return raw_input(question.ljust(width))
-    else:
-        def defaulter():
-            """define default behavior startup"""
-            readline.insert_text(default)
-
-        readline.set_startup_hook(defaulter)
-        oldcompleter = readline.get_completer()
-        readline.set_completer(completer)
-
-        x = raw_input(question.ljust(width))
-
-        readline.set_completer(oldcompleter)
-        readline.set_startup_hook()
-        return x
-
-
-def getpassword(question, width=_defaultwidth, echo=False):
-    if echo:
-        print question.ljust(width),
-        return sys.stdin.readline().rstrip()
-    else:
-        while 1:
-            a1 = getpass.getpass(question.ljust(width))
-            if len(a1) == 0:
-                return a1
-            a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
-            if a1 == a2:
-                return a1
-            else:
-                print "Passwords don't match. Try again."
 
 
 class CliMenu(object):
@@ -1184,8 +1116,9 @@ class CliMenu(object):
                 else:
                     currentstr = current
 
-                print ("%d - %-"+str(_defaultwidth)+"s %s") % (i, x.name+":",
-                                                               currentstr)
+                print ("%d - %-"+str(tools._defaultwidth)+\
+                      "s %s") % (i, x.name+":",
+                                 currentstr)
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
             try:
@@ -1201,7 +1134,6 @@ class CliMenu(object):
                 else:
                     edit = self.items[selection].getter()
                     value = self.items[selection].editor(edit)
-
                 self.items[selection].setter(value)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
