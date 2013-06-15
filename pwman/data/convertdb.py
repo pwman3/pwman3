@@ -68,6 +68,9 @@ class PwmanConvertDB(object):
         self.oldnodes = self.db.getnodes(self.oldnodes)
 
     def create_new_db(self):
+        dest = '-newdb'.join(os.path.splitext(self.dbname))
+        if os.path.exists('-newdb'.join(os.path.splitext(self.dbname))):
+            raise Exception("%s already exists, please move this file!" % dest)
         self.newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
 
         self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
