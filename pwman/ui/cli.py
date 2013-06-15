@@ -18,10 +18,10 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+# pylint: disable=I0011
 """
 Define the CLI interface for pwman3 and the helper functions
 """
-
 import pwman
 import pwman.exchange.importer as importer
 import pwman.exchange.exporter as exporter
@@ -31,23 +31,18 @@ from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
 from pwman.util.crypto import zerome
-#, CryptoBadKeyException, \
-#     CryptoPasswordMismatchException
-from pwman.util.callback import Callback
 import pwman.util.config as config
 import re
 import sys
 import os
-import getpass
 import cmd
-# import traceback
 import time
 import select as uselect
 import ast
 from pwman.ui import tools
-
-if sys.platform != 'win32':
-    import tty
+from pwman.ui.tools import CliMenu
+from pwman.ui.tools import CliMenuItem
+from pwman.ui.tools import CLICallback
 
 try:
     import readline
@@ -56,14 +51,7 @@ except ImportError, e:
     _readline_available = False
 
 
-class CLICallback(Callback):
-    def getinput(self, question):
-        return raw_input(question)
-
-    def getsecret(self, question):
-        return getpass.getpass(question + ":")
-
-
+# pylint: disable=R0904
 class PwmanCli(cmd.Cmd):
     """
     UI class for MacOSX
@@ -141,7 +129,6 @@ class PwmanCli(cmd.Cmd):
                                                              numerics,
                                                              special_signs)
             print "New password: %s" % (password)
-
         return password
 
     def get_url(self, default=""):
@@ -195,8 +182,7 @@ class PwmanCli(cmd.Cmd):
                                     node.get_notes())
         print tools.typeset("Tags: ", tools.ANSI.Red),
         for t in node.get_tags():
-            print " %s " % t.get_name(),
-        print
+            print " %s \n" % t.get_name(),
 
         def heardEnter():
             inpt, out, err = uselect.select([sys.stdin], [], [], 0.0001)
@@ -308,10 +294,8 @@ class PwmanCli(cmd.Cmd):
                 menu.add(CliMenuItem("Tags", self.get_tags,
                                      node.get_tags,
                                      node.set_tags))
-
                 menu.run()
                 self._db.editnode(i, node)
-
                 # when done with node erase it
                 zerome(node._password)
             except Exception, e:
@@ -356,7 +340,6 @@ class PwmanCli(cmd.Cmd):
                     tagstr = " for "
                     for t in tags:
                         tagstr += "'%s' " % (t.get_name())
-
                 b = tools.getyesno("Export all nodes%s?" % (tagstr), True)
                 if not b:
                     return
@@ -486,7 +469,8 @@ class PwmanCli(cmd.Cmd):
                 i += 1
                 if i > rows-2:
                     i = 0
-                    c = getonechar("Press <Space> for more, or 'Q' to cancel")
+                    c = tools.getonechar("Press <Space> for more, "
+                                         "or 'Q' to cancel")
                     if c == 'q':
                         break
 
@@ -593,7 +577,6 @@ class PwmanCli(cmd.Cmd):
     ##
     ## Help functions
     ##
-
     def usage(self, string):
         print "Usage: %s" % (string)
 
@@ -752,12 +735,10 @@ pwman> n {'leetify':False, 'numerics':True}"""
         except Exception, e:
             self.error(e)
             sys.exit(1)
-
         try:
             readline.read_history_file(self._historyfile)
         except IOError, e:
             pass
-
         self.prompt = "!pwman> "
 
 
@@ -926,13 +907,15 @@ class PwmanCliNew(PwmanCli):
                 if len(tagstring) > tagstring_len:
                     tagstring = tagstring[:tagstring_len-3] + "..."
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                formatted_entry = tools.typeset(fmt % (n.get_id(), name, tagstring),
-                                          tools.ANSI.Yellow, False)
+                formatted_entry = tools.typeset(fmt % (n.get_id(),
+                                                name, tagstring),
+                                                tools.ANSI.Yellow, False)
                 print formatted_entry
                 i += 1
                 if i > rows-2:
                     i = 0
-                    c = getonechar("Press <Space> for more, or 'Q' to cancel")
+                    c = tools.getonechar("Press <Space> for more,"
+                                         " or 'Q' to cancel")
                     if c == 'q':
                         break
 
@@ -941,13 +924,11 @@ class PwmanCliNew(PwmanCli):
 
     def do_filter(self, args):
         tagstrings = args.split()
-
         try:
             tags = []
             for ts in tagstrings:
                 tags.append(Tag(ts))
             self._db.filter(tags)
-
             tags = self._db.currenttags()
             print "Current tags: ",
             if len(tags) == 0:
@@ -1012,138 +993,4 @@ class PwmanCliNew(PwmanCli):
             except Exception, e:
                 self.error(e)
 
-# pylint: disable=R0904
-class PwmanCliMac(PwmanCli):
-    """
-    inherit from PwmanCli, override the right functions...
-    """
-    def do_copy(self, args):
-        ids = self.get_ids(args)
-        if len(ids) > 1:
-            print "Can only 1 password at a time..."
-        try:
-            node = self._db.getnodes(ids)
-            node[0].get_password()
-            tools.text_to_mcclipboard(node[0].get_password())
-            print "copied password for %s@%s clipboard... " \
-                  + "erasing in 10 sec..." % \
-                (node[0].get_username(), node[0].get_url())
-            time.sleep(10)
-            tools.text_to_clipboards("")
-        except Exception, e:
-            self.error(e)
 
-    def do_cp(self, args):
-        self.do_copy(args)
-
-    def do_open(self, args):
-        ids = self.get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print "Can open only 1 link at a time ..."
-            return None
-        try:
-            node = self._db.getnodes(ids)
-            url = node[0].get_url()
-            tools.open_url(url, macosx=True)
-        except Exception, e:
-            self.error(e)
-
-    def do_o(self, args):
-        self.do_open(args)
-
-    ##
-    ## Help functions
-    ##
-    def help_open(self):
-        self.usage("open <ID>")
-        print "Launch default browser with 'open url',\n" \
-              + "the url must contain http:// or https://."
-
-    def help_o(self):
-        self.help_open()
-
-    def help_copy(self):
-        self.usage("copy <ID>")
-        print "Copy password to Cocoa clipboard using pbcopy)"
-
-    def help_cp(self):
-        self.help_copy()
-
-
-class PwmanCliMacNew(PwmanCliMac):
-    pass
-
-
-def getonechar(question, width=tools._defaultwidth):
-    question = "%s " % (question)
-    print question.ljust(width),
-    sys.stdout.flush()
-
-    fd = sys.stdin.fileno()
-    tty_mode = tty.tcgetattr(fd)
-    tty.setcbreak(fd)
-    try:
-        ch = os.read(fd, 1)
-    finally:
-        tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
-    print ch
-    return ch
-
-
-class CliMenu(object):
-    def __init__(self):
-        self.items = []
-
-    def add(self, item):
-        if (isinstance(item, CliMenuItem)):
-            self.items.append(item)
-        else:
-            print item.__class__
-
-    def run(self):
-        while True:
-            i = 0
-            for x in self.items:
-                i = i + 1
-                current = x.getter()
-                currentstr = ''
-                if type(current) == list:
-                    for c in current:
-                        currentstr += ("%s " % (c))
-                else:
-                    currentstr = current
-
-                print ("%d - %-"+str(tools._defaultwidth)+\
-                      "s %s") % (i, x.name+":",
-                                 currentstr)
-            print "%c - Finish editing" % ('X')
-            option = getonechar("Enter your choice:")
-            try:
-                print "selection, ", option
-                # substract 1 because array subscripts start at 0
-                selection = int(option) - 1
-                # new value is created by calling the editor with the
-                # previous value as a parameter
-                # TODO: enable overriding password policy as if new node
-                # is created.
-                if selection == 1:  # for password
-                    value = self.items[selection].editor(0)
-                else:
-                    edit = self.items[selection].getter()
-                    value = self.items[selection].editor(edit)
-                self.items[selection].setter(value)
-            except (ValueError, IndexError):
-                if (option.upper() == 'X'):
-                    break
-                print "Invalid selection"
-
-
-class CliMenuItem(object):
-    def __init__(self, name, editor, getter, setter):
-        self.name = name
-        self.editor = editor
-        self.getter = getter
-        self.setter = setter

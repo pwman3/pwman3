@@ -54,8 +54,8 @@ if args.test:
 from pwman.util.crypto import CryptoEngine
 
 if 'darwin' in sys.platform:
-    from pwman.ui.cli import PwmanCliMac as PwmanCli
-    from pwman.ui.cli import PwmanCliMacNew as PwmanCliNew
+    from pwman.ui.mac import PwmanCliMac as PwmanCli
+    from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 else:
     from pwman.ui.cli import PwmanCli

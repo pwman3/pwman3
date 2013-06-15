@@ -20,17 +20,19 @@
 Define the CLI interface for pwman3 and the helper functions
 """
 
+from pwman.util.callback import Callback
 import pwman.util.config as config
 import subprocess as sp
 import getpass
 import sys
 import struct
+import os
 # import traceback
 
 if sys.platform != 'win32':
-    import tty
     import termios
     import fcntl
+    import tty
 
 _defaultwidth = 10
 
@@ -167,7 +169,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
         readline.set_startup_hook()
         return x
 
-def getyesno(question, defaultyes=False, width=tools._defaultwidth):
+def getyesno(question, defaultyes=False, width=_defaultwidth):
     if (defaultyes):
         default = "[Y/n]"
     else:
@@ -184,3 +186,83 @@ def getyesno(question, defaultyes=False, width=tools._defaultwidth):
         return False
     else:
         return getyesno(question, defaultyes, width)
+
+
+class CliMenu(object):
+    def __init__(self):
+        self.items = []
+
+    def add(self, item):
+        if (isinstance(item, CliMenuItem)):
+            self.items.append(item)
+        else:
+            print item.__class__
+
+    def run(self):
+        while True:
+            i = 0
+            for x in self.items:
+                i = i + 1
+                current = x.getter()
+                currentstr = ''
+                if type(current) == list:
+                    for c in current:
+                        currentstr += ("%s " % (c))
+                else:
+                    currentstr = current
+
+                print ("%d - %-"+str(_defaultwidth)+\
+                      "s %s") % (i, x.name+":",
+                                 currentstr)
+            print "%c - Finish editing" % ('X')
+            option = getonechar("Enter your choice:")
+            try:
+                print "selection, ", option
+                # substract 1 because array subscripts start at 0
+                selection = int(option) - 1
+                # new value is created by calling the editor with the
+                # previous value as a parameter
+                # TODO: enable overriding password policy as if new node
+                # is created.
+                if selection == 1:  # for password
+                    value = self.items[selection].editor(0)
+                else:
+                    edit = self.items[selection].getter()
+                    value = self.items[selection].editor(edit)
+                self.items[selection].setter(value)
+            except (ValueError, IndexError):
+                if (option.upper() == 'X'):
+                    break
+                print "Invalid selection"
+
+
+def getonechar(question, width=_defaultwidth):
+    question = "%s " % (question)
+    print question.ljust(width),
+    sys.stdout.flush()
+
+    fd = sys.stdin.fileno()
+    tty_mode = tty.tcgetattr(fd)
+    tty.setcbreak(fd)
+    try:
+        ch = os.read(fd, 1)
+    finally:
+        tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
+    print ch
+    return ch
+
+
+class CliMenuItem(object):
+    def __init__(self, name, editor, getter, setter):
+        self.name = name
+        self.editor = editor
+        self.getter = getter
+        self.setter = setter
+
+
+class CLICallback(Callback):
+    def getinput(self, question):
+        return raw_input(question)
+
+    def getsecret(self, question):
+        return getpass.getpass(question + ":")
