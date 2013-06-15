@@ -24,7 +24,11 @@ from pwman.util.crypto import CryptoEngine
 
 
 class Tag:
-
+    """
+    tags are specific strings used to classify nodes
+    the methods in this class override some built-ins
+    for strings.
+    """
     def __init__(self, name):
         self.set_name(name)
 

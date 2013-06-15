@@ -136,15 +136,10 @@ class SQLiteDatabaseNewForm(Database):
             key, val = pair.split(":")
             keyvals[key.lstrip('##')] = val
         tags = nodestring[-1]
-        #tags = tags.lstrip("tags:")
         tags = tags.split("tags:", 1)[1]
         tags = tags.split("tag:")
-        taginsts = []
-        for tag in tags:
-            _Tag = tag.rstrip("**endtag**")
-            Tag = (_Tag)
-            taginsts.append(Tag)
-        return keyvals, taginsts
+        tags = [tag.split('**endtag**')[0] for tag in tags]
+        return keyvals, tags
 
     def getnodes(self, ids):
         """
