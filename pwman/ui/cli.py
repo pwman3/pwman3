@@ -46,6 +46,7 @@ import time
 import select as uselect
 import subprocess as sp
 import ast
+from pwman.ui import tools
 
 if sys.platform != 'win32':
     import tty
@@ -67,22 +68,10 @@ class CLICallback(Callback):
         return getpass.getpass(question + ":")
 
 
-class ANSI(object):
-    Reset = 0
-    Bold = 1
-    Underscore = 2
-
-    Black = 30
-    Red = 31
-    Green = 32
-    Yellow = 33
-    Blue = 34
-    Magenta = 35
-    Cyan = 36
-    White = 37
-
-
 class PwmanCli(cmd.Cmd):
+    """
+    UI class for MacOSX
+    """
     def error(self, exception):
         if (isinstance(exception, KeyboardInterrupt)):
             print
@@ -94,6 +83,7 @@ class PwmanCli(cmd.Cmd):
         return self.do_exit(args)
 
     def do_exit(self, args):
+        """exit the ui"""
         print
         # try:
         #    print "goodbye"
@@ -199,23 +189,23 @@ class PwmanCli(cmd.Cmd):
     def print_node(self, node):
         width = str(_defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (typeset("Username:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Username:", tools.ANSI.Red),
                                     node.get_username())
-        print ("%"+width+"s %s") % (typeset("Password:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Password:", tools.ANSI.Red),
                                     node.get_password())
-        print ("%"+width+"s %s") % (typeset("Url:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Url:", tools.ANSI.Red),
                                     node.get_url())
-        print ("%"+width+"s %s") % (typeset("Notes:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Notes:", tools.ANSI.Red),
                                     node.get_notes())
-        print typeset("Tags: ", ANSI.Red),
+        print typeset("Tags: ", tools.ANSI.Red),
         for t in node.get_tags():
             print " %s " % t.get_name(),
         print
 
         def heardEnter():
-            i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
-            for s in i:
-                if s == sys.stdin:
+            inpt, out, err = uselect.select([sys.stdin], [], [], 0.0001)
+            for stream in inpt:
+                if stream == sys.stdin:
                     sys.stdin.readline()
                     return True
                 return False
@@ -565,8 +555,6 @@ class PwmanCli(cmd.Cmd):
         os.system('clear')
 
     def do_copy(self, args):
-        import ipdb
-        ipdb.set_trace()
         if self.hasxsel:
             ids = self.get_ids(args)
             if len(ids) > 1:
@@ -574,13 +562,13 @@ class PwmanCli(cmd.Cmd):
                 return None
             try:
                 node = self._db.getnodes(ids)
-                text_to_clipboards(node[0].get_password())
+                tools.text_to_clipboards(node[0].get_password())
                 print "copied password for {}@{} clipboard".format(
                        node[0].get_username(), node[0].get_url())
 
                 print "erasing in 10 sec..."
                 time.sleep(10)
-                text_to_clipboards("")
+                tools.text_to_clipboards("")
             except Exception, e:
                 self.error(e)
         else:
@@ -600,7 +588,7 @@ class PwmanCli(cmd.Cmd):
         try:
             node = self._db.getnodes(ids)
             url = node[0].get_url()
-            open_url(url)
+            tools.open_url(url)
         except Exception, e:
             self.error(e)
 
@@ -817,11 +805,11 @@ class PwmanCliNew(PwmanCli):
                                     node.get_username())
         print ("%"+width+"s %s") % (typeset("Password:", ANSI.Red),
                                     node.get_password())
-        print ("%"+width+"s %s") % (typeset("Url:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Url:", tools.ANSI.Red),
                                     node.get_url())
-        print ("%"+width+"s %s") % (typeset("Notes:", ANSI.Red),
+        print ("%"+width+"s %s") % (typeset("Notes:", tools.ANSI.Red),
                                     node.get_notes())
-        print typeset("Tags: ", ANSI.Red),
+        print typeset("Tags: ", tools.ANSI.Red),
         for t in node.get_tags():
             print " %s " % t
         print
@@ -943,7 +931,7 @@ class PwmanCliNew(PwmanCli):
                     tagstring = tagstring[:tagstring_len-3] + "..."
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 formatted_entry = typeset(fmt % (n.get_id(), name, tagstring),
-                                          ANSI.Yellow, False)
+                                          tools.ANSI.Yellow, False)
                 print formatted_entry
                 i += 1
                 if i > rows-2:
@@ -1040,12 +1028,12 @@ class PwmanCliMac(PwmanCli):
         try:
             node = self._db.getnodes(ids)
             node[0].get_password()
-            text_to_mcclipboard(node[0].get_password())
+            tools.text_to_mcclipboard(node[0].get_password())
             print "copied password for %s@%s clipboard... " \
                   + "erasing in 10 sec..." % \
                 (node[0].get_username(), node[0].get_url())
             time.sleep(10)
-            text_to_clipboards("")
+            tools.text_to_clipboards("")
         except Exception, e:
             self.error(e)
 
@@ -1063,7 +1051,7 @@ class PwmanCliMac(PwmanCli):
         try:
             node = self._db.getnodes(ids)
             url = node[0].get_url()
-            open_url(url, macosx=True)
+            tools.open_url(url, macosx=True)
         except Exception, e:
             self.error(e)
 
@@ -1171,75 +1159,6 @@ def getpassword(question, width=_defaultwidth, echo=False):
                 return a1
             else:
                 print "Passwords don't match. Try again."
-
-
-def typeset(text, color, bold=False, underline=False):
-    if not config.get_value("Global", "colors") == 'yes':
-        return text
-    if (bold):
-        bold = "%d ;" % (ANSI.Bold)
-    else:
-        bold = ""
-    if (underline):
-        underline = "%d;" % (ANSI.Underscore)
-    else:
-        underline = ""
-    return "\033[%s%s%sm%s\033[%sm" % (bold, underline, color,
-                                       text, ANSI.Reset)
-
-
-def select(question, possible):
-    for i in range(0, len(possible)):
-        print ("%d - %-"+str(_defaultwidth)+"s") % (i+1, possible[i])
-    while 1:
-        uinput = getonechar(question)
-        if uinput.isdigit() and int(uinput) in range(1, len(possible)+1):
-            return possible[int(uinput)-1]
-
-
-def text_to_clipboards(text):
-    """
-    copy text to clipboard
-    credit:
-    https://pythonadventures.wordpress.com/tag/xclip/
-    """
-    # "primary":
-    try:
-        xsel_proc = sp.Popen(['xsel', '-pi'], stdin=sp.PIPE)
-        xsel_proc.communicate(text)
-        # "clipboard":
-        xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
-        xsel_proc.communicate(text)
-    except OSError, e:
-        print e, "\nExecuting xsel failed, is it installed ?\n \
-please check your configuration file ... "
-
-
-def text_to_mcclipboard(text):
-    """
-    copy text to mac os x clip board
-    credit:
-    https://pythonadventures.wordpress.com/tag/xclip/
-    """
-    # "primary":
-    try:
-        pbcopy_proc = sp.Popen(['pbcopy'], stdin=sp.PIPE)
-        pbcopy_proc.communicate(text)
-    except OSError, e:
-        print e, "\nExecuting pbcoy failed..."
-
-
-def open_url(link, macosx=False):
-    """
-    launch xdg-open or open in MacOSX with url
-    """
-    uopen = "xdg-open"
-    if macosx:
-        uopen = "open"
-    try:
-        sp.Popen([uopen, link], stdin=sp.PIPE)
-    except OSError, e:
-        print "Executing open_url failed with:\n", e
 
 
 class CliMenu(object):
