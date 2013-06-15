@@ -43,4 +43,5 @@ class Tag:
         self._name = enc.encrypt(name)
 
     def __str__(self):
-        return self._name
+        enc = CryptoEngine.get()
+        return enc.decrypt(self._name)
