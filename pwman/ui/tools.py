@@ -35,6 +35,11 @@ if sys.platform != 'win32':
     import tty
 
 _defaultwidth = 10
+try:
+    import readline
+    _readline_available = True
+except ImportError, e:
+    _readline_available = False
 
 class ANSI(object):
     """
