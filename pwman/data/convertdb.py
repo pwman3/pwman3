@@ -25,7 +25,6 @@ import getpass
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.util.callback import Callback
-#from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 
 _NEWVERSION = 0.4
@@ -54,7 +53,7 @@ class PwmanConvertDB(object):
             self.dbver = float(dbver.strip("\'"))
         backup = '.backup-%s'.join(os.path.splitext(self.dbname)) % \
             time.strftime(
-                '%Y-%m-%d-%H:%m')
+                '%Y-%m-%d-%H:%M')
         shutil.copy(self.dbname, backup)
         print "backup created in ", backup
 
