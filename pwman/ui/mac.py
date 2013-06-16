@@ -26,6 +26,8 @@ from pwman.ui import tools
 import time
 
 # pylint: disable=R0904
+
+
 class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
@@ -39,7 +41,7 @@ class PwmanCliMac(PwmanCli):
             node[0].get_password()
             tools.text_to_mcclipboard(node[0].get_password())
             print "copied password for {}@{} clipboard".format(
-                       node[0].get_username(), node[0].get_url())
+                node[0].get_username(), node[0].get_url())
             time.sleep(10)
             tools.text_to_clipboards("")
         except Exception, e:
@@ -79,7 +81,7 @@ class PwmanCliMac(PwmanCli):
 
     def help_copy(self):
         self.usage("copy <ID>")
-        print "Copy password to Cocoa clipboard using pbcopy)"
+        print "Copy password to Cocoa clipboard using pbcopy"
 
     def help_cp(self):
         self.help_copy()
@@ -87,4 +89,3 @@ class PwmanCliMac(PwmanCli):
 
 class PwmanCliMacNew(PwmanCliMac):
     pass
-

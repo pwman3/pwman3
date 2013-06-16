@@ -119,7 +119,7 @@ class PwmanCli(cmd.Cmd):
             return password
         # no args given
         password = tools.getpassword("Password (Blank to generate): ",
-                               tools._defaultwidth, False)
+                                     tools._defaultwidth, False)
         if len(password) == 0:
             length = tools.getinput("Password length (default 7): ", "7")
             length = int(length)
@@ -192,15 +192,6 @@ class PwmanCli(cmd.Cmd):
                     return True
                 return False
 
-        def heardEnterWin():
-            import msvcrt
-            c = msvcrt.kbhit()
-            if c == 1:
-                ret = msvcrt.getch()
-                if ret is not None:
-                    return True
-            return False
-
         def waituntil_enter(somepredicate, timeout, period=0.25):
             mustend = time.time() + timeout
             while time.time() < mustend:
@@ -212,12 +203,9 @@ class PwmanCli(cmd.Cmd):
 
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
-            if sys.platform != 'win32':
-                print "Type Enter to flush screen (autoflash in 5 sec.)"
-                waituntil_enter(heardEnter, flushtimeout)
-            else:
-                print "Press any key to flush screen (autoflash in 5 sec.)"
-                waituntil_enter(heardEnterWin, flushtimeout)
+            print "Type Enter to flush screen (autoflash in "\
+                  + "%d sec.)" % flushtimeout
+            waituntil_enter(heardEnter, flushtimeout)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
@@ -417,7 +405,7 @@ class PwmanCli(cmd.Cmd):
             nodes = self._db.getnodes(ids)
             for n in nodes:
                 b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
-                             % (n.get_username(), n.get_url()), False)
+                                   % (n.get_username(), n.get_url()), False)
                 if b is True:
                     self._db.removenodes([n])
                     print "%s@%s deleted" % (n.get_username(), n.get_url())
@@ -465,7 +453,7 @@ class PwmanCli(cmd.Cmd):
 
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 print tools.typeset(fmt % (n.get_id(), name, tagstring),
-                              tools.ANSI.Yellow, False)
+                                    tools.ANSI.Yellow, False)
                 i += 1
                 if i > rows-2:
                     i = 0
@@ -544,7 +532,7 @@ class PwmanCli(cmd.Cmd):
                 node = self._db.getnodes(ids)
                 tools.text_to_clipboards(node[0].get_password())
                 print "copied password for {}@{} clipboard".format(
-                       node[0].get_username(), node[0].get_url())
+                    node[0].get_username(), node[0].get_url())
 
                 print "erasing in 10 sec..."
                 time.sleep(10)
@@ -577,6 +565,7 @@ class PwmanCli(cmd.Cmd):
     ##
     ## Help functions
     ##
+
     def usage(self, string):
         print "Usage: %s" % (string)
 
@@ -799,15 +788,6 @@ class PwmanCliNew(PwmanCli):
                     return True
                 return False
 
-        def heardEnterWin():
-            import msvcrt
-            c = msvcrt.kbhit()
-            if c == 1:
-                ret = msvcrt.getch()
-                if ret is not None:
-                    return True
-            return False
-
         def waituntil_enter(somepredicate, timeout, period=0.25):
             mustend = time.time() + timeout
             while time.time() < mustend:
@@ -819,12 +799,9 @@ class PwmanCliNew(PwmanCli):
 
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
-            if sys.platform != 'win32':
-                print "Type Enter to flush screen (autoflash in 5 sec.)"
-                waituntil_enter(heardEnter, flushtimeout)
-            else:
-                print "Press any key to flush screen (autoflash in 5 sec.)"
-                waituntil_enter(heardEnterWin, flushtimeout)
+            print "Type Enter to flush screen (autoflash in "\
+                  + "%d sec.)" % flushtimeout
+            waituntil_enter(heardEnter, flushtimeout)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
@@ -992,5 +969,3 @@ class PwmanCliNew(PwmanCli):
                 zerome(node[0]._password)
             except Exception, e:
                 self.error(e)
-
-

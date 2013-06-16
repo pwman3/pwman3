@@ -57,6 +57,8 @@ if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMac as PwmanCli
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
+elif 'win' in sys.platform:
+    from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
 else:
     from pwman.ui.cli import PwmanCli
     from pwman.ui.cli import PwmanCliNew
