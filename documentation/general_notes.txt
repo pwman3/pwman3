@@ -62,3 +62,10 @@ finally you should step into:
   python setup.py sdist
 # upload  
   python setup.py sdist upload
+
+# PyCrypto Alternatives:
+
+  * http://wiki.yobi.be/wiki/PyCryptoPlus#Differences_with_pycrypto
+  * 
+   
+
