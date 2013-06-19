@@ -157,16 +157,16 @@ def gettermsize():
 
 
 def getinput(question, default="", completer=None, width=_defaultwidth):
-    if (not _readline_available):
+    if not _readline_available:
         return raw_input(question.ljust(width))
     else:
         def defaulter():
             """define default behavior startup"""
-            readline.insert_text(default)
-
-        readline.set_startup_hook(defaulter)
-        oldcompleter = readline.get_completer()
-        readline.set_completer(completer)
+            if _readline_available:
+                readline.insert_text(default)
+            readline.set_startup_hook(defaulter)
+            oldcompleter = readline.get_completer()
+            readline.set_completer(completer)
 
         x = raw_input(question.ljust(width))
 
