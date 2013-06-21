@@ -58,7 +58,6 @@ if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 elif 'win' in sys.platform:
-    print 2
     from pwman.ui.win import PwmanCliWinNew as PwmanCli
     OSX = False
 else:

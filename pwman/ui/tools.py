@@ -33,13 +33,20 @@ if sys.platform != 'win32':
     import termios
     import fcntl
     import tty
+    try:
+        import pyreadline as readline
+        _readline_available = True
+    except ImportError:
+        _readline_available = False
+       # raise ImportError("You need 'pyreadline' on Windows")
+else:
+    try:
+        import readline
+        _readline_available = True
+    except ImportError, e:
+        _readline_available = False
 
 _defaultwidth = 10
-try:
-    import readline
-    _readline_available = True
-except ImportError, e:
-    _readline_available = False
 
 class ANSI(object):
     """
@@ -169,8 +176,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
             readline.set_completer(completer)
 
         x = raw_input(question.ljust(width))
-
-        readline.set_completer(oldcompleter)
+        readline.set_completer(completer)
         readline.set_startup_hook()
         return x
 
