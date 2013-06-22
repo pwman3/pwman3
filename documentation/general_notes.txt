@@ -68,4 +68,11 @@ finally you should step into:
   * http://wiki.yobi.be/wiki/PyCryptoPlus#Differences_with_pycrypto
   * 
    
+# for windows port: https://pypi.python.org/pypi/colorama
+
+# db ... https://github.com/coleifer/peewee
+
+
+  
+  
 
