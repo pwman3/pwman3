@@ -4,10 +4,11 @@ A nice command line password manager, which is smart enough to use different SQL
 Pwman3 can also copy passwords to the clipboard (on Mac and Linux) without exposing them, so you save
 some typing. 
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
+
 ## Nice Features in pwman3:
 
  * copying of passwords to clipboard
- * lauching specific uri's with default browser
+ * launching specific uri's with default browser
  * password generators
 
 ## A very important note about security
@@ -70,7 +71,7 @@ You need to compile python-crypto using mingw, after you downloaded the source c
 pycrypto and extracted it do the following inisde the source code direcotry:
 
     C:\Temp\pycrypto> python setup.py build -c mingw32 
-    C:\Temp\pycrypto> python setup.py install
+    C:\Temp\pycrypto> python setup.py bdist_wininst
 
 Now you should be able to run pwman3 on Windows.
 
