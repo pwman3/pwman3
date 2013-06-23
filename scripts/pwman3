@@ -58,7 +58,8 @@ if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 elif 'win' in sys.platform:
-    from pwman.ui.win import PwmanCliWinNew as PwmanCli
+    from pwman.ui.cli import PwmanCli 
+    from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
     from pwman.ui.cli import PwmanCli
@@ -102,7 +103,8 @@ try:
                       }
 
     config.set_defaults(default_config)
-
+    if 'win' in sys.platform:
+		config.set_value("Global", "colors", 'no')
     if os.path.exists(config_file):
         config.load(config_file)
         xselpath = config.get_value("Global", "xselpath")
@@ -167,7 +169,7 @@ try:
 finally:
     try:
         if _saveconfig:
-            config.save(config_file)
+            config.save(config_file) 
     except Exception, e:
         print "Error: %s" % (e)
         sys.exit(-1)
