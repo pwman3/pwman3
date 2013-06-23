@@ -6,4 +6,4 @@ Author: Oz Nahum
 Author-email: nahumoz@gmail.com
 License: GNU GPL
 Description: command line password manager with different SQL backends
-Platform: Linux\OSX
+Platform: Linux\OSX\Windows
