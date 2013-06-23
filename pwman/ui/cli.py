@@ -43,6 +43,7 @@ from pwman.ui import tools
 from pwman.ui.tools import CliMenu
 from pwman.ui.tools import CliMenuItem
 from pwman.ui.tools import CLICallback
+from colorama import Fore
 
 try:
     import readline
@@ -172,15 +173,15 @@ class PwmanCli(cmd.Cmd):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (tools.typeset("Username:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
-        print ("%"+width+"s %s") % (tools.typeset("Password:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
                                     node.get_password())
-        print ("%"+width+"s %s") % (tools.typeset("Url:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
                                     node.get_url())
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
                                     node.get_notes())
-        print tools.typeset("Tags: ", tools.ANSI.Red),
+        print tools.typeset("Tags: ", Fore.RED),
         for t in node.get_tags():
             print " %s \n" % t.get_name(),
 
@@ -453,7 +454,7 @@ class PwmanCli(cmd.Cmd):
 
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 print tools.typeset(fmt % (n.get_id(), name, tagstring),
-                                    tools.ANSI.Yellow, False)
+                                    Fore.YELLOW, False)
                 i += 1
                 if i > rows-2:
                     i = 0
@@ -767,15 +768,15 @@ class PwmanCliNew(PwmanCli):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (tools.typeset("Username:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
-        print ("%"+width+"s %s") % (tools.typeset("Password:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
                                     node.get_password())
-        print ("%"+width+"s %s") % (tools.typeset("Url:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
                                     node.get_url())
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
                                     node.get_notes())
-        print tools.typeset("Tags: ", tools.ANSI.Red),
+        print tools.typeset("Tags: ", Fore.RED),
         for t in node.get_tags():
             print " %s " % t
         print
@@ -886,7 +887,7 @@ class PwmanCliNew(PwmanCli):
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 formatted_entry = tools.typeset(fmt % (n.get_id(),
                                                 name, tagstring),
-                                                tools.ANSI.Yellow, False)
+                                                Fore.YELLOW, False)
                 print formatted_entry
                 i += 1
                 if i > rows-2:
