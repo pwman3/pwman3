@@ -759,7 +759,7 @@ class PwmanCliNew(PwmanCli):
 
         try:
             readline.read_history_file(self._historyfile)
-        except NameError, e:
+        except IOError, e:
             pass
 
         self.prompt = "pwman> "
