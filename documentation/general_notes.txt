@@ -71,8 +71,9 @@ finally you should step into:
 # for windows port: https://pypi.python.org/pypi/colorama
 
 # db ... https://github.com/coleifer/peewee
-
+         http://sqlobject.org/
+         http://www.sqlalchemy.org/
 
   
-  
+   
 
