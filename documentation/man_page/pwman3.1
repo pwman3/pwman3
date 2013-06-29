@@ -1,4 +1,4 @@
-.TH PWMAN3 1 "24 Mai 2013"
+.TH PWMAN3 1 "29 June 2013"
 .SH NAME
 pwman3 \- command line password manager
 .SH SYNOPSIS
@@ -14,16 +14,23 @@ Read the configuration from \fBFILE\fP instead of the default
 
 .TP
 \fB\-e, \-\-encryption\fP ALGORITHM
-Possible options are: AES(default), ARC2, ARC4, Blowfish, CAST, DES, DES3, IDEA, RC5.
+Possible options are: AES(default), ARC2, ARC4, Blowfish, 
+.br
+CAST, DES, DES3, IDEA, RC5.
 
 .TP
 \fB\-d, \-\-database\fP FILE
-When using the default sqlite backend, use \fBFILE\fP to read/store passwords.
+When using the default sqlite backend, use \fBFILE\fP 
+.br 
+to read/store passwords.
 
 
 .TP
 \fB\-k, \-\-convert\fP 
 Convert old DB format to Version >= 0.4. 
+The databse that will be converted is the one found in the 
+.br
+config file, or the one given as command line argument.
 
 .TP
 \fB\-h, \-\-help\fP
@@ -31,5 +38,6 @@ Display help and exit.
 
 .SH AUTHOR
 
-This manpage has been written by Julien Louis <ptitlouis@sysif.net> for the Debian
-GNU/Linux system but may be used by the others.
+This manpage has been written by Julien Louis <ptitlouis@sysif.net> 
+.br
+for the Debian GNU/Linux system but may be used by the others.

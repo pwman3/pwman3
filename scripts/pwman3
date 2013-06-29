@@ -39,7 +39,10 @@ parser.add_argument('-e', '--encryption', dest="algo",
 parser.add_argument('-k', '--convert', dest='dbconvert',
                     action='store_true', default=False,
                     # os.path.expanduser('~/.pwman/pwman.db'),
-                    help="Convert old DB format to Version >= 0.4.",
+                    help="Convert old DB format to Version >= 0.4."
+                         + "The databse that will be converted is the"
+                         + "one found in the config file, or the one given"
+                         + "as command line argument."
                     )
 
 parser.add_argument('-t', '--test',  help="Run pwman from current directory \
