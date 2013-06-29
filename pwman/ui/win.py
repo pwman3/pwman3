@@ -32,7 +32,9 @@ import ast
 from pwman.util.crypto import zerome
 
 class PwmanCliWinNew(PwmanCliNew):
-
+    """
+    windows ui class
+    """
     def do_new(self, args):
         """
         can override default config settings the following way:
