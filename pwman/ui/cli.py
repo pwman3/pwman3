@@ -125,7 +125,7 @@ class PwmanCli(cmd.Cmd):
             length = tools.getinput("Password length (default 7): ", "7")
         if length:
             length = int(length)
-        else: 
+        else:
             length = 7
             (password, dumpme) = generator.generate_password(length, length,
                                                              True, leetify,
@@ -712,8 +712,12 @@ pwman> n {'leetify':False, 'numerics':True}"""
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
-        _dbwarning = "\n*** WARNNING: You are using the old db format which" \
-                     + " uses cPickle, please upgrade your db !!! ***"
+        _dbwarning = "\n*** WARNNING: You are using the old database format"
+        + " which is unsecure."
+        + " It's highly recommended to switch to the new database format."
+        + "Take a"
+        + " check the help (pwman3 -h) or look at the manpage which explains "
+        + " how to proceed. ***"
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) visit: %s %s" % (pwman.appname, pwman.version,
                                                  pwman.website, _dbwarning)
