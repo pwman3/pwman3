@@ -21,6 +21,6 @@ setup(name=pwman.appname,
                 'pwman.util'],
       scripts=['scripts/pwman3'],
       install_requires=['pycrypto>=2.6',
-                        'colorama=0.2.5'],
+                        'colorama>=0.2.4'],
       extras_require={}
       )
