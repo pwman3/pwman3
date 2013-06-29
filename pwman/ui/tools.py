@@ -27,6 +27,7 @@ import getpass
 import sys
 import struct
 import os
+import colorama
 # import traceback
 
 if sys.platform != 'win32':
@@ -48,6 +49,7 @@ else:
 
 _defaultwidth = 10
 
+
 class ANSI(object):
     """
     ANSI Colors
@@ -67,19 +69,16 @@ class ANSI(object):
 
 
 def typeset(text, color, bold=False, underline=False):
-    """print colored strings"""
+    """
+    print colored strings using colorama
+    """
     if not config.get_value("Global", "colors") == 'yes':
         return text
-    if (bold):
-        bold = "%d ;" % (ANSI.Bold)
-    else:
-        bold = ""
-    if (underline):
-        underline = "%d;" % (ANSI.Underscore)
-    else:
-        underline = ""
-    return "\033[%s%s%sm%s\033[%sm" % (bold, underline, color,
-                                       text, ANSI.Reset)
+    if bold:
+        text = colorama.Style.BRIGHT + text
+    if underline and not 'win32' in sys.platform:
+        text = ANSI.Underscore + text
+    return color+text+colorama.Style.RESET_ALL
 
 
 def select(question, possible):
@@ -180,6 +179,7 @@ def getinput(question, default="", completer=None, width=_defaultwidth):
         readline.set_startup_hook()
         return x
 
+
 def getyesno(question, defaultyes=False, width=_defaultwidth):
     if (defaultyes):
         default = "[Y/n]"
@@ -222,9 +222,9 @@ class CliMenu(object):
                 else:
                     currentstr = current
 
-                print ("%d - %-"+str(_defaultwidth)+\
-                      "s %s") % (i, x.name+":",
-                                 currentstr)
+                print ("%d - %-"+str(_defaultwidth)
+                       + "s %s") % (i, x.name+":",
+                                    currentstr)
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
             try:

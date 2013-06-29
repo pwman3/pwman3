@@ -30,6 +30,8 @@ import msvcrt
 import pwman.util.config as config
 import ast
 from pwman.util.crypto import zerome
+from colorama import Fore
+
 
 class PwmanCliWinNew(PwmanCliNew):
     """
@@ -82,15 +84,15 @@ class PwmanCliWinNew(PwmanCliNew):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (tools.typeset("Username:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
-        print ("%"+width+"s %s") % (tools.typeset("Password:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
                                     node.get_password())
-        print ("%"+width+"s %s") % (tools.typeset("Url:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
                                     node.get_url())
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", tools.ANSI.Red),
+        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
                                     node.get_notes())
-        print tools.typeset("Tags: ", tools.ANSI.Red),
+        print tools.typeset("Tags: ", Fore.RED),
         for t in node.get_tags():
             print " %s \n" % t.get_name(),
 
