@@ -1,5 +1,5 @@
 2013-06-29 Oz Nahum <nahumoz@gmail.com>
-	* Version 0.3.9.b
+	* Version 0.3.9c
     * Fix for Generating Passwords
 	* Added dependacies to setup.py : python-colorama, pycrypto
 
