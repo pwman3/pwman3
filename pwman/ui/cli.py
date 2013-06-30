@@ -123,15 +123,15 @@ class PwmanCli(cmd.Cmd):
                                      tools._defaultwidth, False)
         if len(password) == 0:
             length = tools.getinput("Password length (default 7): ", "7")
-        if length:
-            length = int(length)
-        else:
-            length = 7
-            (password, dumpme) = generator.generate_password(length, length,
-                                                             True, leetify,
-                                                             numerics,
-                                                             special_signs)
-            print "New password: %s" % (password)
+            if length:
+                length = int(length)
+            else:
+                length = 7
+            password, dumpme = generator.generate_password(length, length,
+                                                           True, leetify,
+                                                           numerics,
+                                                           special_signs)
+        print "New password: %s" % (password)
         return password
 
     def get_url(self, default=""):
