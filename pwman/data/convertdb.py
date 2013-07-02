@@ -26,6 +26,7 @@ from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.util.callback import Callback
 from pwman.data.nodes import NewNode
+import sys
 
 _NEWVERSION = 0.4
 
@@ -69,7 +70,9 @@ class PwmanConvertDB(object):
     def create_new_db(self):
         dest = '-newdb'.join(os.path.splitext(self.dbname))
         if os.path.exists('-newdb'.join(os.path.splitext(self.dbname))):
-            raise Exception("%s already exists, please move this file!" % dest)
+            print "%s already exists, please move this file!" % dest
+            sys.exit(2)
+
         self.newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
 
         self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
