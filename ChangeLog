@@ -1,3 +1,10 @@
+2013-07-21 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.3.9d
+    * Fix for filtering tags 
+	* remove exception when old DB file exists
+	  when converting. Instead exist with error
+	  status and explanation.
+
 2013-06-29 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9c
     * Fix for Generating Passwords
