@@ -3,8 +3,10 @@
 script to install pwman3
 """
 
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import Command, setup
 import pwman
+
 
 setup(name=pwman.appname,
       version=pwman.version,
@@ -20,7 +22,25 @@ setup(name=pwman.appname,
                 'pwman.ui',
                 'pwman.util'],
       scripts=['scripts/pwman3'],
+      zip_safe=False,
       install_requires=['pycrypto>=2.6',
-                        'colorama>=0.2.4'],
-      extras_require={}
-      )
+		        'colorama>=0.2.4'],
+      classifiers=[
+          'Environment :: Console',
+
+          'Intended Audience :: End Users/Desktop',
+          'Intended Audience :: Developers',
+          'Intended Audience :: System Administrators',
+
+          'License :: GPL version 3',
+          'Operating System :: MacOS :: MacOS X',
+          'Operating System :: Microsoft :: Windows',
+          'Operating System :: POSIX',
+          'Programming Language :: Python',
+          'Requires-Python:: 2.7',]
+)
+
+
+
+
+
