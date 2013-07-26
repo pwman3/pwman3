@@ -1,3 +1,4 @@
 include ChangeLog
 include documentation/*
 include documentation/man_page/*
+include requirements.txt
