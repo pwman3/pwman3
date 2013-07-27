@@ -758,7 +758,8 @@ class PwmanCliNew(PwmanCli):
         self.hasxsel = hasxsel
         try:
             enc = CryptoEngine.get()
-            enc.set_callback(CLICallback())
+            #enc.set_callback(CLICallback())
+            enc._callback = CLICallback()
             self._db = db
             self._db.open()
         except Exception, e:
