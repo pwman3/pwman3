@@ -49,8 +49,16 @@ class DBTests(unittest.TestCase):
         "test that the right db instance was created"
         dbver = 0.4
         dbtype = config.get_value("Database", "type")
-        db = pwman.data.factory.create(dbtype, dbver)
-        self.assertIn(dbtype, db.__class__.__name__)
+        self.db = pwman.data.factory.create(dbtype, dbver)
+        self.assertIn(dbtype, self.db.__class__.__name__)
+
+    def db_opened(self):
+        """
+        if the db was successfuly opened
+        it will have a file name associated
+        """
+        self.assertTrue(hasattr(self.db, '_filename'))
+
 
 class CLITests(unittest.TestCase):
     """test command line functionallity"""
