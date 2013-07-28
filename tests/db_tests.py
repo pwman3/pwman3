@@ -42,21 +42,23 @@ import unittest
 
 class DBTests(unittest.TestCase):
     """test everything related to db"""
+    def setUp(self):
+        "test that the right db instance was created"
+        dbver = 0.4
+        self.dbtype = config.get_value("Database", "type")
+        self.db = pwman.data.factory.create(self.dbtype, dbver)
+
     def test(self):
         self.assertTrue(True)
 
     def test_db_created(self):
         "test that the right db instance was created"
-        dbver = 0.4
-        dbtype = config.get_value("Database", "type")
-        self.db = pwman.data.factory.create(dbtype, dbver)
-        self.assertIn(dbtype, self.db.__class__.__name__)
+        # self.db = pwman.data.factory.create(dbtype, dbver)
+        self.assertIn(self.dbtype, self.db.__class__.__name__)
 
-    def db_opened(self):
-        """
-        if the db was successfuly opened
-        it will have a file name associated
-        """
+    def test_db_opened(self):
+        "db was successfuly opened"
+        # it will have a file name associated
         self.assertTrue(hasattr(self.db, '_filename'))
 
 
