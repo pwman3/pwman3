@@ -22,8 +22,8 @@ else:
 
 import pwman.util.config as config
 import pwman.data.factory
-from pwman.data.convertdb import PwmanConvertDB
-
+from pwman.data.nodes import NewNode
+from pwman.data.tags import Tag
 
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
@@ -60,6 +60,22 @@ class DBTests(unittest.TestCase):
         "db was successfuly opened"
         # it will have a file name associated
         self.assertTrue(hasattr(self.db, '_filename'))
+
+    def test_create_node(self):
+        "test that a node can be successfuly created"
+        # this method does not test do_new
+        # which is a UI method, rather we test
+        # _db.addnodes
+        username = 'tester'
+        password = 'Password'
+        url = 'example.org'
+        notes = 'some notes'
+        node = NewNode(username, password, url, notes)
+        tags = [Tag(tn) for tn in ['testing1', 'testing2']]
+        node.set_tags(tags)
+        self.db.open()
+        self.db.addnodes([node])
+        self.db.close()
 
 
 class CLITests(unittest.TestCase):
