@@ -853,10 +853,8 @@ class PwmanCliNew(PwmanCli):
 
         taglist = tools.getinput("Tags: ", defaultstr, complete)
         tagstrings = taglist.split()
-        tags = []
-        for tn in tagstrings:
-            _Tag = Tag(tn)
-            tags.append(_Tag)
+        tags = [Tag(tn) for tn in tagstrings]
+
         return tags
 
     def do_list(self, args):
