@@ -25,14 +25,14 @@ from pwman.util.crypto import CryptoEngine
 
 class NewNode(object):
 
-    def __init__(self, username="", password="", url="", notes="", tags=[]):
+    def __init__(self, username="", password="", url="", notes="", tags=None):
         """Initialise everything to null."""
         self._id = 0
         self._username = username
         self._password = password
         self._url = url
         self._notes = notes
-        self._tags = []
+        self._tags = tags
         self.set_tags(tags)
 
     def dump_edit_to_db(self):
@@ -86,9 +86,8 @@ class NewNode(object):
         SQLiteDatabase returns a dictionary,
         but a also, Tags instances..."""
         self._tags = []
-        for tag in tags:
-            self._tags.append(tag)
-#            self._tags.append(tag._name)
+        if tags:
+            self._tags = [t for t in tags]
 
     def get_id(self):
         return self._id
