@@ -59,23 +59,17 @@ def which(cmd):
     return None
 
 try:
-    config_dir = os.path.expanduser("~/.pwman")
-    if not os.path.isdir(config_dir):
-        os.mkdir(config_dir)
-
-    config_file = os.path.join(config_dir, "config")
     # set cls_timout to negative number (e.g. -1) to disable
     default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                  'cls_timeout': '5'
                                  },
                       'Database': {'type': 'SQLite',
-                                   'filename': os.path.join(config_dir,
+                                   'filename': os.path.join("tests",
                                                             "pwman.db")},
                       'Encryption': {'algorithm': 'AES'},
-                      'Readline': {'history': os.path.join(config_dir,
+                      'Readline': {'history': os.path.join("tests",
                                                            "history")}
                       }
-
     config.set_defaults(default_config)
     if 'win' in sys.platform:
         try:
@@ -83,10 +77,7 @@ try:
             colorama.init()
         except ImportError:
             config.set_value("Global", "colors", 'no')
-    if os.path.exists(config_file):
-        config.load(config_file)
-        xselpath = config.get_value("Global", "xselpath")
-    elif not OSX:
+    if not OSX:
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
     elif OSX:
@@ -127,7 +118,8 @@ try:
         cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
-import logging
+
+
 import unittest
 from db_tests import CLITests
 from db_tests import DBTests
