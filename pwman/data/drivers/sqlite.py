@@ -188,7 +188,7 @@ class SQLiteDatabaseNewForm(Database):
             except sqlite.DatabaseError, e:
                 raise DatabaseException("SQLite: %s" % (e))
             idx = self._cur.lastrowid
-            n.set_id(idx)
+            n._id = idx
             self._setnodetags(n)
             self._commit()
 

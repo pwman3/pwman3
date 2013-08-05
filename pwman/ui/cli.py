@@ -174,7 +174,7 @@ class PwmanCli(cmd.Cmd):
 
     def print_node(self, node):
         width = str(tools._defaultwidth)
-        print "Node %d." % (node.get_id())
+        print "Node %d." % (node._id)
         print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
         print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
@@ -775,7 +775,7 @@ class PwmanCliNew(PwmanCli):
 
     def print_node(self, node):
         width = str(tools._defaultwidth)
-        print "Node %d." % (node.get_id())
+        print "Node %d." % (node._id)
         print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
         print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
@@ -868,6 +868,7 @@ class PwmanCliNew(PwmanCli):
                 rows, cols = 18, 80  # fix this !
             nodeids = self._db.listnodes()
             nodes = self._db.getnodes(nodeids)
+
             cols -= 8
             i = 0
             for n in nodes:
@@ -891,7 +892,7 @@ class PwmanCliNew(PwmanCli):
                 if len(tagstring) > tagstring_len:
                     tagstring = tagstring[:tagstring_len-3] + "..."
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                formatted_entry = tools.typeset(fmt % (n.get_id(),
+                formatted_entry = tools.typeset(fmt % (n._id,
                                                 name, tagstring),
                                                 Fore.YELLOW, False)
                 print formatted_entry
@@ -961,7 +962,7 @@ class PwmanCliNew(PwmanCli):
             tags = self.get_tags()
             node.set_tags(tags)
             self._db.addnodes([node])
-            print "Password ID: %d" % (node.get_id())
+            print "Password ID: %d" % (node._id)
             # when done with node erase it
             zerome(password)
         except Exception, e:
