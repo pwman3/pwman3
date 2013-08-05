@@ -75,6 +75,11 @@ class DBTests(unittest.TestCase):
         node.set_tags(tags)
         self.db.open()
         self.db.addnodes([node])
+        idx_created = node._id
+        new_node = self.db.getnodes([idx_created])[0]
+        for key, attr in {'password': password, 'username': username,
+                          'url': url, 'notes': notes}.iteritems():
+            self.assertEquals(attr, eval('new_node.'+key))
         self.db.close()
 
 

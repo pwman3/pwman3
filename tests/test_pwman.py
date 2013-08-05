@@ -65,7 +65,7 @@ try:
                                  },
                       'Database': {'type': 'SQLite',
                                    'filename': os.path.join("tests",
-                                                            "pwman.db")},
+                                                            "test.pwman.db")},
                       'Encryption': {'algorithm': 'AES'},
                       'Readline': {'history': os.path.join("tests",
                                                            "history")}
