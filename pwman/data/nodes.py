@@ -35,6 +35,17 @@ class NewNode(object):
         self._tags = tags
         self.set_tags(tags)
 
+    def __getattr__(self, name):
+        enc = CryptoEngine.get()
+        if name == 'username':
+            return enc.decrypt(self._username).strip()
+        elif name == 'password':
+            return enc.decrypt(self._password).strip()
+        elif name == 'url':
+            return enc.decrypt(self._url).strip()
+        elif name == 'notes':
+            return enc.decrypt(self._notes).strip()
+
     def dump_edit_to_db(self):
         enc = CryptoEngine.get()
         dump = ""
