@@ -773,6 +773,37 @@ class PwmanCliNew(PwmanCli):
 
         self.prompt = "pwman> "
 
+    def do_edit(self, arg):
+        ids = self.get_ids(arg)
+        for i in ids:
+            try:
+                i = int(i)
+                node = self._db.getnodes([i])[0]
+                menu = CliMenu()
+                print "Editing node %d." % (i)
+
+                menu.add(CliMenuItem("Username", self.get_username,
+                                     node.username,
+                                     node.set_username))
+                menu.add(CliMenuItem("Password", self.get_password,
+                                     node.password,
+                                     node.set_password))
+                menu.add(CliMenuItem("Url", self.get_url,
+                                     node.url,
+                                     node.set_url))
+                menu.add(CliMenuItem("Notes", self.get_notes,
+                                     node.notes,
+                                     node.set_notes))
+                menu.add(CliMenuItem("Tags", self.get_tags,
+                                     node.tags,
+                                     node.set_tags))
+                menu.run()
+                self._db.editnode(i, node)
+                # when done with node erase it
+                zerome(node._password)
+            except Exception, e:
+                self.error(e)
+
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node._id)
@@ -785,7 +816,7 @@ class PwmanCliNew(PwmanCli):
         print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
                                     node.notes)
         print tools.typeset("Tags: ", Fore.RED),
-        for t in node.get_tags():
+        for t in node.tags:
             print " %s " % t
         print
 
@@ -872,7 +903,7 @@ class PwmanCliNew(PwmanCli):
             cols -= 8
             i = 0
             for n in nodes:
-                tags = n.get_tags()
+                tags = n.tags
                 tags = filter(None, tags)
                 tagstring = ''
                 first = True

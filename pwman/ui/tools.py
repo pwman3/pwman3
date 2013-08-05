@@ -214,7 +214,12 @@ class CliMenu(object):
             i = 0
             for x in self.items:
                 i = i + 1
-                current = x.getter()
+                # don't break compatability with old db
+                try:
+                    current = x.getter()
+                except TypeError:
+                    current = x.getter
+
                 currentstr = ''
                 if type(current) == list:
                     for c in current:
@@ -238,7 +243,11 @@ class CliMenu(object):
                 if selection == 1:  # for password
                     value = self.items[selection].editor(0)
                 else:
-                    edit = self.items[selection].getter()
+                    try:
+                        edit = self.items[selection].getter()
+                    except TypeError:
+                        edit = self.items[selection].getter
+
                     value = self.items[selection].editor(edit)
                 self.items[selection].setter(value)
             except (ValueError, IndexError):

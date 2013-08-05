@@ -45,6 +45,8 @@ class NewNode(object):
             return enc.decrypt(self._url).strip()
         elif name == 'notes':
             return enc.decrypt(self._notes).strip()
+        elif name == 'tags':
+            return [tag for tag in self._tags]
 
     def dump_edit_to_db(self):
         enc = CryptoEngine.get()
@@ -82,12 +84,6 @@ class NewNode(object):
         dump = [dump]
         return dump
 
-    def get_tags(self):
-        tags = []
-        for tag in self._tags:
-            tags.append(tag)
-        return tags
-
     def set_tags(self, tags):
         """
         this method expects a list of tag instances.
@@ -100,31 +96,8 @@ class NewNode(object):
         if tags:
             self._tags = [t for t in tags]
 
-    def get_id(self):
-        return self._id
-
     def set_id(self, id):
         self._id = id
-
-    def get_username(self):
-        """
-        Return the username.
-        This solution with strip is horribly assuming that
-        the username does not containg space as the last character.
-        The same is also true for the password.
-        """
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._username).strip()
-
-    def set_username(self, username):
-        """Set the username."""
-        enc = CryptoEngine.get()
-        self._username = enc.encrypt(username)
-
-    def get_password(self):
-        """Return the password."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._password).strip()
 
     def set_password(self, password):
         """Set the password."""
@@ -140,11 +113,6 @@ class NewNode(object):
         """Set the URL."""
         enc = CryptoEngine.get()
         self._url = enc.encrypt(url)
-
-    def get_notes(self):
-        """Return the Notes."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._notes)
 
     def set_notes(self, notes):
         """Set the Notes."""

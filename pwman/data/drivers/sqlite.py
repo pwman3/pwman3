@@ -198,7 +198,7 @@ class SQLiteDatabaseNewForm(Database):
             #    "Tried to delete foreign object from database [%s]", n)
             try:
                 sql = "DELETE FROM NODES WHERE ID = ?"
-                self._cur.execute(sql, [n.get_id()])
+                self._cur.execute(sql, [n._id])
 
             except sqlite.DatabaseError, e:
                 raise DatabaseException("SQLite: %s" % (e))
@@ -268,17 +268,17 @@ class SQLiteDatabaseNewForm(Database):
     def _deletenodetags(self, node):
         try:
             sql = "DELETE FROM LOOKUP WHERE NODE = ?"
-            self._cur.execute(sql, [node.get_id()])
+            self._cur.execute(sql, [node._id])
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
     def _setnodetags(self, node):
         self._deletenodetags(node)
-        ids = self._tagids(node.get_tags())
+        ids = self._tagids(node.tags)
         for i in ids:
             sql = "INSERT OR REPLACE INTO LOOKUP VALUES(?, ?)"
-            params = [node.get_id(), i]
+            params = [node._id, i]
 
             try:
                 self._cur.execute(sql, params)
