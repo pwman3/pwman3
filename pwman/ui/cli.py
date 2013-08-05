@@ -777,13 +777,13 @@ class PwmanCliNew(PwmanCli):
         width = str(tools._defaultwidth)
         print "Node %d." % (node._id)
         print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
-                                    node.get_username())
+                                    node.username)
         print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
-                                    node.get_password())
+                                    node.password)
         print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
-                                    node.get_url())
+                                    node.url)
         print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
-                                    node.get_notes())
+                                    node.notes)
         print tools.typeset("Tags: ", Fore.RED),
         for t in node.get_tags():
             print " %s " % t
@@ -883,7 +883,7 @@ class PwmanCliNew(PwmanCli):
                         first = False
                     tagstring += t
 
-                name = "%s@%s" % (n.get_username(), n.get_url())
+                name = "%s@%s" % (n.username, n.url)
 
                 name_len = cols * 2 / 3
                 tagstring_len = cols / 3
