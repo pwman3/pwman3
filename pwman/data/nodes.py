@@ -43,6 +43,22 @@ class NewNode(object):
             return [tag for tag in self._tags]
         else:
             raise AttributeError("'NewNode' has no such attribute: %s" % name)
+
+    def __setattr__(self, name, value):
+        if name in ['username', 'password', 'url', 'notes']:
+            enc = CryptoEngine.get()
+            object.__setattr__(self, name, value)
+            name = '_'+name
+            object.__setattr__(self, name, enc.encrypt(value).strip())
+        if name == 'tags':
+            try:
+                object.__setattr__(self, name, [t for t in value])
+            except TypeError:
+                object.__setattr__(self, name, value)
+        else:
+            object.__setattr__(self, name, value)
+
+
     def dump_edit_to_db(self):
         enc = CryptoEngine.get()
         dump = ""
