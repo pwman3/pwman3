@@ -36,18 +36,13 @@ class NewNode(object):
         self.set_tags(tags)
 
     def __getattr__(self, name):
-        enc = CryptoEngine.get()
-        if name == 'username':
-            return enc.decrypt(self._username).strip()
-        elif name == 'password':
-            return enc.decrypt(self._password).strip()
-        elif name == 'url':
-            return enc.decrypt(self._url).strip()
-        elif name == 'notes':
-            return enc.decrypt(self._notes).strip()
+        if name in ['username', 'password', 'url', 'notes']:
+            enc = CryptoEngine.get()
+            return enc.decrypt(eval('self._'+name).strip())
         elif name == 'tags':
             return [tag for tag in self._tags]
-
+        else:
+            raise AttributeError("'NewNode' has no such attribute: %s" % name)
     def dump_edit_to_db(self):
         enc = CryptoEngine.get()
         dump = ""
@@ -103,11 +98,6 @@ class NewNode(object):
         """Set the password."""
         enc = CryptoEngine.get()
         self._password = enc.encrypt(password).strip()
-
-    def get_url(self):
-        """Return the URL."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._url).strip()
 
     def set_url(self, url):
         """Set the URL."""
