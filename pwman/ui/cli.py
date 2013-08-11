@@ -784,20 +784,21 @@ class PwmanCliNew(PwmanCli):
 
                 menu.add(CliMenuItem("Username", self.get_username,
                                      node.username,
-                                     node.set_username))
+                                     node.username))
                 menu.add(CliMenuItem("Password", self.get_password,
                                      node.password,
-                                     node.set_password))
+                                     node.password))
                 menu.add(CliMenuItem("Url", self.get_url,
                                      node.url,
                                      node.set_url))
-                menu.add(CliMenuItem("Notes", self.get_notes,
-                                     node.notes,
-                                     node.set_notes))
+                menunotes = CliMenuItem("Notes", self.get_notes,
+                                        node.notes,
+                                        node.notes)
+                menu.add(menunotes)
                 menu.add(CliMenuItem("Tags", self.get_tags,
                                      node.tags,
-                                     node.set_tags))
-                menu.run()
+                                     node.tags))
+                menu.runner(node)
                 self._db.editnode(i, node)
                 # when done with node erase it
                 zerome(node._password)

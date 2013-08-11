@@ -245,11 +245,64 @@ class CliMenu(object):
                 else:
                     try:
                         edit = self.items[selection].getter()
+                        value = self.items[selection].editor(edit)
+                        self.items[selection].setter(value)
                     except TypeError:
                         edit = self.items[selection].getter
+                        value = self.items[selection].editor(edit)
+                        self.items[selection].setter = value
+            except (ValueError, IndexError):
+                if (option.upper() == 'X'):
+                    break
+                print "Invalid selection"
 
-                    value = self.items[selection].editor(edit)
-                self.items[selection].setter(value)
+
+    def runner(self, new_node):
+        while True:
+            i = 0
+            for x in self.items:
+                i = i + 1
+                # don't break compatability with old db
+                try:
+                    current = x.getter()
+                except TypeError:
+                    current = x.getter
+                except AttributeError:
+                    current = x
+                currentstr = ''
+                if type(current) == list:
+                    for c in current:
+                        currentstr += ("%s " % (c))
+                else:
+                    currentstr = current
+
+                print ("%d - %-"+str(_defaultwidth)
+                       + "s %s") % (i, x.name+":",
+                                    currentstr)
+            print "%c - Finish editing" % ('X')
+            option = getonechar("Enter your choice:")
+            try:
+                print "selection, ", option
+                # substract 1 because array subscripts start at 0
+                selection = int(option) - 1
+                # new value is created by calling the editor with the
+                # previous value as a parameter
+                # TODO: enable overriding password policy as if new node
+                # is created.
+                if selection == 1:  # for password
+                    value = self.items[selection].editor(0)
+                elif selection == 3:
+                    new_node.notes = getinput("Notes:")
+                    self.items[3].getter = new_node.notes
+                else:
+                    try:
+                        edit = self.items[selection].getter()
+                        value = self.items[selection].editor(edit)
+                        self.items[selection].setter(value)
+                    except TypeError:
+                        edit = self.items[selection].getter
+                        value = self.items[selection].editor(edit)
+                        self.items[selection].setter = value
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break

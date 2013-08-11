@@ -36,7 +36,8 @@ class NewNode(object):
         self.set_tags(tags)
 
     def __getattr__(self, name):
-        if name in ['username', 'password', 'url', 'notes']:
+
+        if name in ['username', 'password', 'url']:  # 'notes']:
             enc = CryptoEngine.get()
             return enc.decrypt(eval('self._'+name).strip())
         elif name == 'tags':
@@ -58,9 +59,7 @@ class NewNode(object):
         else:
             object.__setattr__(self, name, value)
 
-
     def dump_edit_to_db(self):
-        enc = CryptoEngine.get()
         dump = ""
         dump += "username:"+self._username+"##"
         dump += "password:"+self._password+"##"
@@ -120,10 +119,19 @@ class NewNode(object):
         enc = CryptoEngine.get()
         self._url = enc.encrypt(url)
 
-    def set_notes(self, notes):
+    @property
+    def notes(self):
+        """Get the current notes."""
+        print "ass"
+        enc = CryptoEngine.get()
+        return enc.decrypt(self._notes).strip()
+
+
+    @notes.setter
+    def notes(self, value):
         """Set the Notes."""
         enc = CryptoEngine.get()
-        self._notes = enc.encrypt(notes)
+        self._notes = enc.encrypt(value).strip()
 
 
 class Node(object):

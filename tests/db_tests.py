@@ -80,6 +80,7 @@ class DBTests(unittest.TestCase):
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
             self.assertEquals(attr, eval('new_node.'+key))
+
         self.db.close()
 
 
