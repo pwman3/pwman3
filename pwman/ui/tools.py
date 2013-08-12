@@ -289,20 +289,26 @@ class CliMenu(object):
                 # previous value as a parameter
                 # TODO: enable overriding password policy as if new node
                 # is created.
-                if selection == 1:  # for password
+                if selection == 0:
+                    new_node.username = getinput("Username:")
+                    self.items[2].getter = new_node.username
+                elif selection == 1:  # for password
                     value = self.items[selection].editor(0)
-                elif selection == 3:
+                    new_node.password = value
+                    self.items[2].getter = new_node.password
+                elif selection == 2:
+                    new_node.notes = getinput("Url:")
+                    self.items[2].getter = new_node.url
+                elif selection == 3:  # for notes
                     new_node.notes = getinput("Notes:")
                     self.items[3].getter = new_node.notes
-                else:
-                    try:
-                        edit = self.items[selection].getter()
-                        value = self.items[selection].editor(edit)
-                        self.items[selection].setter(value)
-                    except TypeError:
-                        edit = self.items[selection].getter
-                        value = self.items[selection].editor(edit)
-                        self.items[selection].setter = value
+                elif selection == 4:
+                    value = self.items[selection].editor(0)
+                    new_node.tags = value
+                    import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
+                    self.items[4].setter = value
+                    self.items[4].getter = value
+
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break
