@@ -790,7 +790,7 @@ class PwmanCliNew(PwmanCli):
                                      node.password))
                 menu.add(CliMenuItem("Url", self.get_url,
                                      node.url,
-                                     node.set_url))
+                                     node.url))
                 menunotes = CliMenuItem("Notes", self.get_notes,
                                         node.notes,
                                         node.notes)
