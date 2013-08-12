@@ -25,39 +25,31 @@ from pwman.util.crypto import CryptoEngine
 
 class NewNode(object):
 
-    def __init__(self, username="", password="", url="", notes="", tags=None):
+    def __init__(self, username="", password="", url="", notes="", tags=""):
         """Initialise everything to null."""
+
         self._id = 0
         self._username = username
         self._password = password
         self._url = url
         self._notes = notes
         self._tags = tags
-        self.set_tags(tags)
 
-    def __getattr__(self, name):
+    def __setattribute__(self, name, value):
 
-        if name in ['username', 'password', 'url']:  # 'notes']:
-            enc = CryptoEngine.get()
-            return enc.decrypt(eval('self._'+name).strip())
-        elif name == 'tags':
-            return [tag for tag in self._tags]
-        else:
-            raise AttributeError("'NewNode' has no such attribute: %s" % name)
-
-    def __setattr__(self, name, value):
-        if name in ['username', 'password', 'url', 'notes']:
+        if name in ['username']:
             enc = CryptoEngine.get()
             object.__setattr__(self, name, value)
             name = '_'+name
             object.__setattr__(self, name, enc.encrypt(value).strip())
-        if name == 'tags':
-            try:
-                object.__setattr__(self, name, [t for t in value])
-            except TypeError:
-                object.__setattr__(self, name, value)
+
+    def __getattribute__(self, name):
+
+        if name in ['username']:
+            enc = CryptoEngine.get()
+            return enc.decrypt(eval('self._'+name).strip())
         else:
-            object.__setattr__(self, name, value)
+            return object.__getattribute__(self, name)
 
     def dump_edit_to_db(self):
         dump = ""
@@ -96,6 +88,7 @@ class NewNode(object):
 
     def set_tags(self, tags):
         """
+        TODO: remove all references
         this method expects a list of tag instances.
         hence feed it with them.
 
@@ -107,25 +100,58 @@ class NewNode(object):
             self._tags = [t for t in tags]
 
     def set_id(self, id):
+
         self._id = id
 
-    def set_password(self, password):
-        """Set the password."""
-        enc = CryptoEngine.get()
-        self._password = enc.encrypt(password).strip()
+    #@property
+    #def username(self):
+    #    """Get the current username."""
+    #    enc = CryptoEngine.get()
+    #    return enc.decrypt(self._username).strip()
 
-    def set_url(self, url):
-        """Set the URL."""
+    @property
+    def password(self):
+        """Get the current password."""
         enc = CryptoEngine.get()
-        self._url = enc.encrypt(url)
+        return enc.decrypt(self._password).strip()
+
+    #@username.setter
+    #def username(self, value):
+    #    """Set the Notes."""
+    #    enc = CryptoEngine.get()
+    #    self._username = enc.encrypt(value).strip()
+
+    @password.setter
+    def password(self, value):
+        """Set the Notes."""
+        enc = CryptoEngine.get()
+        self._password = enc.encrypt(value).strip()
+
+    @property
+    def tags(self):
+        return [tag for tag in self._tags]
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = [tag for tag in value]
+
+    @property
+    def url(self):
+        """Get the current url."""
+        enc = CryptoEngine.get()
+        return enc.decrypt(self._url).strip()
+
+    @url.setter
+    def url(self, value):
+        """Set the Notes."""
+        enc = CryptoEngine.get()
+        self._url = enc.encrypt(value).strip()
 
     @property
     def notes(self):
         """Get the current notes."""
-        print "ass"
         enc = CryptoEngine.get()
         return enc.decrypt(self._notes).strip()
-
 
     @notes.setter
     def notes(self, value):
