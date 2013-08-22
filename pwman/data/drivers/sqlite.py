@@ -107,7 +107,7 @@ class SQLiteDatabaseNewForm(Database):
 
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         + " TAGS.ID WHERE TAGS.DATA = ?")
-                params.append(t.get_name())
+                params.append(t._name)
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
             first = True
             for t in self._filtertags:
@@ -116,7 +116,7 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
-                params.append(t)
+                params.append(t._name)
         try:
             self._cur.execute(sql, params)
             tags = []
@@ -128,8 +128,9 @@ class SQLiteDatabaseNewForm(Database):
             return tags
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
-        except sqlite.InterfaceError:
-            import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
+        except sqlite.InterfaceError, e:
+            import ipdb
+            ipdb.set_trace()  # XXX BREAKPOINT
 
     def parse_node_string(self, string):
         nodestring = string.split("##")
@@ -223,7 +224,7 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         " TAGS.ID WHERE TAGS.DATA = ? ")
-                params.append(t.get_name())
+                params.append(t._name)
         try:
             self._cur.execute(sql, params)
             ids = []
