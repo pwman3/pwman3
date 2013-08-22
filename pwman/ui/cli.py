@@ -1009,3 +1009,16 @@ class PwmanCliNew(PwmanCli):
                 zerome(node[0]._password)
             except Exception, e:
                 self.error(e)
+
+    def do_delete(self, arg):
+        ids = self.get_ids(arg)
+        try:
+            nodes = self._db.getnodes(ids)
+            for n in nodes:
+                b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
+                                   % (n.username, n.url), False)
+                if b is True:
+                    self._db.removenodes([n])
+                    print "%s@%s deleted" % (n.username, n.url)
+        except Exception, e:
+            self.error(e)

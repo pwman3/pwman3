@@ -256,7 +256,6 @@ class CliMenu(object):
                     break
                 print "Invalid selection"
 
-
     def runner(self, new_node):
         while True:
             i = 0
@@ -302,10 +301,10 @@ class CliMenu(object):
                 elif selection == 3:  # for notes
                     new_node.notes = getinput("Notes:")
                     self.items[3].getter = new_node.notes
+                    self.items[3].setter = new_node.notes
                 elif selection == 4:
                     value = self.items[selection].editor(0)
                     new_node.tags = value
-                    import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
                     self.items[4].setter = value
                     self.items[4].getter = value
 

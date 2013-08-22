@@ -128,6 +128,8 @@ class SQLiteDatabaseNewForm(Database):
             return tags
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
+        except sqlite.InterfaceError:
+            import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
 
     def parse_node_string(self, string):
         nodestring = string.split("##")

@@ -35,21 +35,25 @@ class NewNode(object):
         self._notes = notes
         self._tags = tags
 
-    def __setattribute__(self, name, value):
+    #def __setattr__(self, name, value):
+    #    if name in ['username', 'password', 'url', 'notes']:
+    #        enc = CryptoEngine.get()
+    #        object.__setattr__(self, name, enc.decrypt(value).strip())
+    #    if name in ['_username', '_password', '_url', '_notes']:
+    #        enc = CryptoEngine.get()
+    #        object.__setattr__(self, name, enc.encrypt(value).strip())
+    #    if name == '_tags':
+    #        object.__setattr__(self, name, [t for t in value])
+    #    elif name == '_id':
+    #        object.__setattr__(self, name, value)
 
-        if name in ['username']:
-            enc = CryptoEngine.get()
-            object.__setattr__(self, name, value)
-            name = '_'+name
-            object.__setattr__(self, name, enc.encrypt(value).strip())
+    #def __getattribute__(self, name):
 
-    def __getattribute__(self, name):
-
-        if name in ['username']:
-            enc = CryptoEngine.get()
-            return enc.decrypt(eval('self._'+name).strip())
-        else:
-            return object.__getattribute__(self, name)
+    #    if name in ['username', 'password', 'url', 'notes']:
+    #        enc = CryptoEngine.get()
+    #        return enc.decrypt(eval('self._'+name).strip())
+    #    else:
+    #        return object.__getattribute__(self, name)
 
     def dump_edit_to_db(self):
         dump = ""
@@ -103,23 +107,23 @@ class NewNode(object):
 
         self._id = id
 
-    #@property
-    #def username(self):
-    #    """Get the current username."""
-    #    enc = CryptoEngine.get()
-    #    return enc.decrypt(self._username).strip()
-
     @property
     def password(self):
         """Get the current password."""
         enc = CryptoEngine.get()
         return enc.decrypt(self._password).strip()
 
-    #@username.setter
-    #def username(self, value):
-    #    """Set the Notes."""
-    #    enc = CryptoEngine.get()
-    #    self._username = enc.encrypt(value).strip()
+    @property
+    def username(self):
+        """Get the current username."""
+        enc = CryptoEngine.get()
+        return enc.decrypt(self._username).strip()
+
+    @username.setter
+    def username(self, value):
+        """Set the Notes."""
+        enc = CryptoEngine.get()
+        self._username = enc.encrypt(value).strip()
 
     @password.setter
     def password(self, value):
