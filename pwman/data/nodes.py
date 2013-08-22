@@ -90,8 +90,8 @@ class NewNode(object):
         dump = [dump]
         return dump
 
-    def set_id(self, id):
-        self._id = id
+    # def set_id(self, id):
+    #     self._id = id
 
     @property
     def password(self):
