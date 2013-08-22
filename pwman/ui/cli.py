@@ -991,8 +991,7 @@ class PwmanCliNew(PwmanCli):
             url = self.get_url()
             notes = self.get_notes()
             node = NewNode(username, password, url, notes)
-            tags = self.get_tags()
-            node.set_tags(tags)
+            node.tags = self.get_tags()
             self._db.addnodes([node])
             print "Password ID: %d" % (node._id)
             # when done with node erase it

@@ -90,21 +90,7 @@ class NewNode(object):
         dump = [dump]
         return dump
 
-    def set_tags(self, tags):
-        """
-        TODO: remove all references
-        this method expects a list of tag instances.
-        hence feed it with them.
-
-        fixed! the method parse_node_string in
-        SQLiteDatabase returns a dictionary,
-        but a also, Tags instances..."""
-        self._tags = []
-        if tags:
-            self._tags = [t for t in tags]
-
     def set_id(self, id):
-
         self._id = id
 
     @property
