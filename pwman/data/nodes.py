@@ -67,7 +67,7 @@ class NewNode(object):
             if isinstance(tag, str):
                 tagsloc += "tag:"+tag.strip()+"**endtag**"
             else:
-                tagsloc += "tag:"+tag.get_name()+"**endtag**"
+                tagsloc += "tag:"+tag._name+"**endtag**"
         dump += tagsloc
         dump = [dump]
         return dump
@@ -85,13 +85,10 @@ class NewNode(object):
             if isinstance(tag, str):
                 tagsloc += "tag:"+tag.strip()+"**endtag**"
             else:
-                tagsloc += "tag:"+tag.get_name()+"**endtag**"
+                tagsloc += "tag:"+tag._name+"**endtag**"
         dump += tagsloc
         dump = [dump]
         return dump
-
-    # def set_id(self, id):
-    #     self._id = id
 
     @property
     def password(self):
@@ -107,7 +104,7 @@ class NewNode(object):
 
     @username.setter
     def username(self, value):
-        """Set the Notes."""
+        """Set the username."""
         enc = CryptoEngine.get()
         self._username = enc.encrypt(value).strip()
 

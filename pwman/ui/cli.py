@@ -859,7 +859,6 @@ class PwmanCliNew(PwmanCli):
 
     def get_tags(self, default=None):
         defaultstr = ''
-
         if default:
             for t in default:
                 defaultstr += "%s " % (t)
@@ -951,7 +950,7 @@ class PwmanCliNew(PwmanCli):
             if len(tags) == 0:
                 print "None",
             for t in tags:
-                print "%s " % (t.get_name()),
+                print "%s " % (t.name),
             print
         except Exception, e:
             self.error(e)

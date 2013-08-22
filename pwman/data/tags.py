@@ -30,7 +30,9 @@ class Tag:
     for strings.
     """
     def __init__(self, name):
-        self.set_name(name)
+        enc = CryptoEngine.get()
+        self.name = name
+        self._name = enc.encrypt(name)
 
     def __eq__(self, other):
         if other._name == self._name:
@@ -38,14 +40,14 @@ class Tag:
         else:
             return False
 
-    def get_name(self):
+    @property
+    def name(self):
         enc = CryptoEngine.get()
         return enc.decrypt(self._name)
 
-    def set_name(self, name):
+    @name.setter
+    def name(self, value):
         enc = CryptoEngine.get()
-        self._name = enc.encrypt(name)
+        self._name = enc.encrypt(value)
 
-    def __str__(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
+

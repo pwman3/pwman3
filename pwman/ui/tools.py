@@ -28,7 +28,7 @@ import sys
 import struct
 import os
 import colorama
-# import traceback
+from pwman.data.tags import Tag
 
 if sys.platform != 'win32':
     import termios
@@ -271,7 +271,11 @@ class CliMenu(object):
                 currentstr = ''
                 if type(current) == list:
                     for c in current:
-                        currentstr += ("%s " % (c))
+                        try:
+                            currentstr += ' '+c
+                        except TypeError:
+                            currentstr += ' '+c._name
+
                 else:
                     currentstr = current
 
@@ -303,10 +307,12 @@ class CliMenu(object):
                     self.items[3].getter = new_node.notes
                     self.items[3].setter = new_node.notes
                 elif selection == 4:
-                    value = self.items[selection].editor(0)
-                    new_node.tags = value
-                    self.items[4].setter = value
-                    self.items[4].getter = value
+                    taglist = getinput("Tags:")
+                    tagstrings = taglist.split()
+                    tags = [Tag(tn) for tn in tagstrings]
+                    new_node.tags = tags
+                    self.items[4].setter = new_node.tags
+                    self.items[4].getter = new_node.tags
 
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):

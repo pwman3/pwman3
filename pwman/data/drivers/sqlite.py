@@ -158,7 +158,6 @@ class SQLiteDatabaseNewForm(Database):
                     nodeargs, tags = self.parse_node_string(nodestring)
                     node = NewNode(**nodeargs)
                     node.tags = tags
-                    #node.set_id(i)
                     node._id = i
                     nodes.append(node)
         return nodes
