@@ -773,6 +773,26 @@ class PwmanCliNew(PwmanCli):
 
         self.prompt = "pwman> "
 
+    def do_copy(self, args):
+        if self.hasxsel:
+            ids = self.get_ids(args)
+            if len(ids) > 1:
+                print "Can copy only 1 password at a time..."
+                return None
+            try:
+                node = self._db.getnodes(ids)
+                tools.text_to_clipboards(node[0].password)
+                print "copied password for {}@{} clipboard".format(
+                    node[0].username, node[0].url)
+
+                print "erasing in 10 sec..."
+                time.sleep(10)
+                tools.text_to_clipboards("")
+            except Exception, e:
+                self.error(e)
+        else:
+            print "Can't copy to clipboard, no xsel found in the system!"
+
     def do_edit(self, arg):
         ids = self.get_ids(arg)
         for i in ids:
