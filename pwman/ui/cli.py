@@ -793,6 +793,21 @@ class PwmanCliNew(PwmanCli):
         else:
             print "Can't copy to clipboard, no xsel found in the system!"
 
+    def do_open(self, args):
+        ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
+        if len(ids) > 1:
+            print "Can open only 1 link at a time ..."
+            return None
+        try:
+            node = self._db.getnodes(ids)
+            url = node[0].url
+            tools.open_url(url)
+        except Exception, e:
+            self.error(e)
+
     def do_edit(self, arg):
         ids = self.get_ids(arg)
         for i in ids:
