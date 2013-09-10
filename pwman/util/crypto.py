@@ -118,7 +118,7 @@ class CryptoPasswordMismatchException(CryptoException):
         return "CryptoPasswordMismatchException: " + self.message
 
 
-class CryptoEngine:
+class CryptoEngine(object):
     """Cryptographic Engine"""
     _timeoutcount = 0
     _instance = None
@@ -151,7 +151,7 @@ class CryptoEngine:
                              Default is -1 (disabled).
         """
         algo = config.get_value("Encryption", "algorithm")
-        if len(algo) > 0:
+        if algo:
             self._algo = algo
         else:
             raise CryptoException("Parameters missing, no algorithm given")
