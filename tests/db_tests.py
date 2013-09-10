@@ -72,7 +72,7 @@ class DBTests(unittest.TestCase):
         notes = 'some notes'
         node = NewNode(username, password, url, notes)
         tags = [Tag(tn) for tn in ['testing1', 'testing2']]
-        node.set_tags(tags)
+        node.tags = tags
         self.db.open()
         self.db.addnodes([node])
         idx_created = node._id
