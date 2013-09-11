@@ -123,5 +123,6 @@ except SystemExit, e:
 import unittest
 from db_tests import CLITests
 from db_tests import DBTests
+from crypto_tests import CryptoTest
 if __name__ == '__main__':
     unittest.main()
