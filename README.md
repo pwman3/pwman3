@@ -75,6 +75,21 @@ pycrypto and extracted it do the following inisde the source code direcotry:
 
 Now you should be able to run pwman3 on Windows.
 
+### On Windows 7 64bit: 
+
+PyCryption builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
+The above setup commands won't work in the Windows command prompt. But they do work in 
+the msys command prompt. 
+You also need to edit the following file:
+
+	C:\Python27\Lib\distutils\cygwinccompiler.py
+
+Before doing anything on this file make sure you create a backup! After that remove all references
+for ``-mno-cygwin`. 
+
+and after all that, if you a security minded person, who is capable of using a command line password:
+Do your self a favor and skip Windows. Try Linux\BSD\*Nix OS. 
+
 ## User Interface
    1. When xsel is install on a Linux system, you can copy passwords directly to clipboard with the copy command.
    2. The command 'open' will open the default browser if URL is specified.
