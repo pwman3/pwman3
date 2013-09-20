@@ -23,7 +23,7 @@
 from pwman.util.crypto import CryptoEngine
 
 
-class Tag:
+class Tag(object):
     """
     tags are specific strings used to classify nodes
     the methods in this class override some built-ins
@@ -31,7 +31,6 @@ class Tag:
     """
     def __init__(self, name):
         enc = CryptoEngine.get()
-        self.name = name
         self._name = enc.encrypt(name)
 
     def __eq__(self, other):

@@ -209,17 +209,17 @@ class CryptoEngine(object):
         """
         return self._keycrypted
 
-    #def set_callback(self, callback):
-    #   """
-    #   set the callback function
-    #   """
-    #   self._callback = callback
+    def set_callback(self, callback):
+        """
+        set the callback function
+        """
+        self._callback = callback
 
-    #def get_callback(self):
-    #    """
-    #    return call back function
-    #    """
-    #    return self._callback
+    def get_callback(self):
+        """
+        return call back function
+        """
+        return self._callback
 
     def changepassword(self):
         """
