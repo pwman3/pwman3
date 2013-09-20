@@ -117,7 +117,10 @@ class NewNode(object):
     @property
     def tags(self):
         enc = CryptoEngine.get()
-        return [enc.decrypt(tag).strip() for tag in filter(None,self._tags)]
+        try:
+            return [enc.decrypt(tag) for tag in filter(None, self._tags)]
+        except Exception:
+            return [tag for tag in filter(None, self._tags)]
 
     @tags.setter
     def tags(self, value):
