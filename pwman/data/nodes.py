@@ -35,6 +35,19 @@ class NewNode(object):
         self._notes = notes
         self._tags = tags
 
+    def __str__(self):
+        enc = CryptoEngine.get()
+        try:
+            tags = ', '.join([enc.decrypt(tag).strip() for tag in filter(None,
+                             self._tags)])
+        except Exception:
+            tags = ', '.join([tag.strip() for tag in filter(None, self._tags)])
+
+        user = enc.decrypt(self._username).strip()
+        url = enc.decrypt(self._url).strip()
+        return '{0}@{1}\t{2}'.format(user, url,
+                                     tags)
+
     #def __setattr__(self, name, value):
     #    if name in ['username', 'password', 'url', 'notes']:
     #        enc = CryptoEngine.get()
