@@ -1,14 +1,23 @@
+2013-09-21 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.0 
+	* Multiple bug fixes 
+	* Most changes are developer related (e.g. add unit testing)
+	* Nodes data was writen to DB with cPickle.dumps, hence
+	loading the data was done cPickle.loads. New node
+		are now saved as encrypted string without cPickle.
+		This makes Pwman3 a bit more secure.
+
 2013-07-21 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9d
-    * Fix for filtering tags 
+	* Fix for filtering tags 
 	* remove exception when old DB file exists
 	  when converting. Instead exist with error
 	  status and explanation.
 
 2013-06-29 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9c
-    * Fix for Generating Passwords
-	* Added dependacies to setup.py : python-colorama, pycrypto
+	* Fix for Generating Passwords
+	* Added dependancies to setup.py : python-colorama, pycrypto
 
 2013-05-30 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9.a
