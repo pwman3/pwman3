@@ -24,23 +24,18 @@ setup(name=pwman.appname,
       scripts=['scripts/pwman3'],
       zip_safe=False,
       install_requires=['pycrypto>=2.6',
-		        'colorama>=0.2.4'],
+                'colorama>=0.2.4'],
       classifiers=[
           'Environment :: Console',
 
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Developers',
           'Intended Audience :: System Administrators',
-
-          'License :: GPL version 3',
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
           'Operating System :: MacOS :: MacOS X',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX',
           'Programming Language :: Python',
-          'Requires-Python:: 2.7',]
+          'Programming Language :: Python :: 2.7'
+          ]
 )
-
-
-
-
-
