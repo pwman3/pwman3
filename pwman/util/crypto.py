@@ -324,8 +324,12 @@ password")
         if not key:
             raise Exception("Wrong password entered %s times; giving up"
                             % max_tries)
-
-        self._cipher = self._getcipher_real(str(key).decode('base64'),
+        try:
+            key = str(key).decode('base64')
+        except Exception:
+            key = cPickle.loads(key)
+            key = str(key).decode('base64')
+        self._cipher = self._getcipher_real(key,
                                             self._algo)
 
         CryptoEngine._timeoutcount = time.time()
@@ -380,8 +384,8 @@ password")
         """
         prepare data before encrypting
         """
-        plaintext = cPickle.dumps(obj)
-        plaintext = _TAG + plaintext
+        #plaintext = cPickle.dumps(obj)
+        plaintext = _TAG + obj
         numblocks = (len(plaintext)/blocksize) + 1
         newdatasize = blocksize*numblocks
         return plaintext.ljust(newdatasize)
@@ -394,7 +398,14 @@ password")
             plaintext = plaintext[len(_TAG):]
         else:
             raise CryptoBadKeyException("Error decrypting, bad key")
-        return cPickle.loads(plaintext)
+        try:
+            # old db version used to write stuff to db with
+            # plaintext = cPickle.dumps(obj)
+            # TODO: completely remove this block, and convert
+            # the DB to a completely plain text ...
+            return cPickle.loads(plaintext)
+        except (TypeError, cPickle.UnpicklingError):
+            return plaintext
 
 
 class DummyCryptoEngine(CryptoEngine):
