@@ -28,7 +28,7 @@ import sys
 import struct
 import os
 import colorama
-from pwman.data.tags import Tag
+from pwman.data.tags import TagNew as Tag
 
 if sys.platform != 'win32':
     import termios

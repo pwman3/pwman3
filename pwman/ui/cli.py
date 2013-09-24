@@ -29,6 +29,7 @@ import pwman.util.generator as generator
 from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
+from pwman.data.tags import TagNew as TagN
 from pwman.util.crypto import CryptoEngine
 from pwman.util.crypto import zerome
 import pwman.util.config as config
@@ -919,7 +920,7 @@ class PwmanCliNew(PwmanCli):
 
         taglist = tools.getinput("Tags: ", defaultstr, complete)
         tagstrings = taglist.split()
-        tags = [Tag(tn) for tn in tagstrings]
+        tags = [TagN(tn) for tn in tagstrings]
 
         return tags
 
@@ -978,7 +979,7 @@ class PwmanCliNew(PwmanCli):
         try:
             tags = []
             for ts in tagstrings:
-                tags.append(Tag(ts))
+                tags.append(TagN(ts))
             self._db.filter(tags)
             tags = self._db.currenttags()
             print "Current tags: ",
