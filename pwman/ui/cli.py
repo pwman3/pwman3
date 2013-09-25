@@ -716,7 +716,7 @@ pwman> n {'leetify':False, 'numerics':True}"""
         _dbwarning = "\n*** WARNNING: You are using the old database format" \
             + " which is unsecure." \
             + " It's highly recommended to switch to the new database " \
-            + "format." \
+            + "format. Do note: support for this DB format will be dropped in v0.5." \
             + " Check the help (pwman3 -h) or look at the manpage which" \
             + " explains how to proceed. ***"
 

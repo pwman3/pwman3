@@ -1,9 +1,13 @@
+2013-09-25 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.1 
+	* Fix broken usability with old database format.
+
 2013-09-21 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.0 
 	* Multiple bug fixes 
 	* Most changes are developer related (e.g. add unit testing)
 	* Nodes data was writen to DB with cPickle.dumps, hence
-	loading the data was done cPickle.loads. New node
+	  loading the data was done cPickle.loads. New node
 		are now saved as encrypted string without cPickle.
 		This makes Pwman3 a bit more secure.
 

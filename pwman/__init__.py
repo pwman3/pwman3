@@ -20,7 +20,7 @@
 #============================================================================
 
 appname = "Pwman3"
-version = "0.4.0"
+version = "0.4.1"
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
