@@ -1,3 +1,7 @@
+2013-09-28 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.2 
+	* Fix typos `help` option.
+
 2013-09-25 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.1 
 	* Fix broken usability with old database format.

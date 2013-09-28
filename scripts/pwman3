@@ -27,22 +27,22 @@ _saveconfig = True
 import argparse
 
 
-parser = argparse.ArgumentParser(description='pwman3 - a command line password'
-                                 + ' manager.')
+parser = argparse.ArgumentParser(description=('pwman3 - a command line '
+                                              'password manager.'))
 parser.add_argument('-c', '--config', dest='cfile',
                     default=os.path.expanduser("~/.pwman/config"),
                     help='cofiguration file to read')
 parser.add_argument('-d', '--database', dest='dbase')
 parser.add_argument('-e', '--encryption', dest="algo",
-                    help="Possible options are: AES(default), ARC2, ARC4, "
-                    + "Blowfish, CAST, DES, DES3, IDEA, RC5")
+                    help=("Possible options are: AES(default), ARC2, ARC4, "
+                          "Blowfish, CAST, DES, DES3, IDEA, RC5"))
 parser.add_argument('-k', '--convert', dest='dbconvert',
                     action='store_true', default=False,
                     # os.path.expanduser('~/.pwman/pwman.db'),
-                    help="Convert old DB format to Version >= 0.4."
-                         + "The databse that will be converted is the"
-                         + "one found in the config file, or the one given"
-                         + "as command line argument."
+                    help=("Convert old DB format to version >= 0.4."
+                          " The database that will be converted is the"
+                          " one found in the config file, or the one given"
+                          " as command line argument.")
                     )
 
 parser.add_argument('-t', '--test',  help="Run pwman from current directory \
