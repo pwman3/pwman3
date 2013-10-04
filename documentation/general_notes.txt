@@ -66,7 +66,13 @@ finally you should step into:
 # PyCrypto Alternatives:
 
   * http://wiki.yobi.be/wiki/PyCryptoPlus#Differences_with_pycrypto
-  * 
+  *  http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/
+  * puresalsa20 - not document so good
+  * http://code.google.com/p/pycrypt/
+  * https://github.com/trevp/tlslite/tree/master/tlslite/utils
+  * seems like the best next standard, but very young:
+    https://github.com/alex/cryptography
+
    
 # for windows port: https://pypi.python.org/pypi/colorama
 
