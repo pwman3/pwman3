@@ -72,7 +72,7 @@ finally you should step into:
   * https://github.com/trevp/tlslite/tree/master/tlslite/utils
   * seems like the best next standard, but very young:
     https://github.com/alex/cryptography
-
+  * another salsa Alternative: www.seanet.com/~bugbee/crypto/salsa20/salsa20.pyb
    
 # for windows port: https://pypi.python.org/pypi/colorama
 
