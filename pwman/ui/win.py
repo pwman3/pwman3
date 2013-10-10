@@ -73,9 +73,9 @@ class PwmanCliWinNew(PwmanCliNew):
             notes = self.get_notes()
             node = NewNode(username, password, url, notes)
             tags = self.get_tags()
-            node.set_tags(tags)
+            node.tags = tags
             self._db.addnodes([node])
-            print "Password ID: %d" % (node.get_id())
+            print "Password ID: %d" % (node._id)
             # when done with node erase it
             zerome(password)
         except Exception, e:
@@ -84,7 +84,7 @@ class PwmanCliWinNew(PwmanCliNew):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node.get_id())
-        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
+        print ("%" + width+"s %s") % (tools.typeset("Username:", Fore.RED),
                                     node.get_username())
         print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
                                     node.get_password())
