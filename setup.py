@@ -32,7 +32,7 @@ class PyCryptoInstallCommand(install):
                       + os.path.join('.', '.setup',
                                      'pycrypto-2.6.win32-py2.7.exe'))
             install.run(self)
-            shutil.rmtree('.', '.setup')
+            shutil.rmtree('.setup')
         else:
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
