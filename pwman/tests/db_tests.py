@@ -48,9 +48,6 @@ class DBTests(unittest.TestCase):
         self.dbtype = config.get_value("Database", "type")
         self.db = pwman.data.factory.create(self.dbtype, dbver)
 
-    def test(self):
-        self.assertTrue(True)
-
     def test_db_created(self):
         "test that the right db instance was created"
         # self.db = pwman.data.factory.create(dbtype, dbver)

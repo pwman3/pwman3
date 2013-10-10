@@ -886,11 +886,11 @@ class PwmanCliNew(PwmanCli):
         enc = CryptoEngine.get()
         if not enc.alive():
             enc._getcipher()
-        print "Tags: ",
+        print "Tags: \n",
         if len(tags) == 0:
             print "None",
         for t in tags:
-            print "%s " % t,
+            print enc.decrypt(t)
         print
 
     def get_tags(self, default=None):

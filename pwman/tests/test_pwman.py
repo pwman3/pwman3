@@ -64,8 +64,9 @@ try:
                                  'cls_timeout': '5'
                                  },
                       'Database': {'type': 'SQLite',
-                                   'filename': os.path.join("tests",
-                                                            "test.pwman.db")},
+                                   'filename':
+                                   os.path.join(os.path.dirname(__file__),
+                                   "test.pwman.db")},
                       'Encryption': {'algorithm': 'AES'},
                       'Readline': {'history': os.path.join("tests",
                                                            "history")}
@@ -121,8 +122,14 @@ except SystemExit, e:
 
 
 import unittest
-from db_tests import CLITests
 from db_tests import DBTests
-from crypto_tests import CryptoTest
+
+
+def suite():
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    suite.addTest(loader.loadTestsFromTestCase(DBTests))
+    return suite
+
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner(verbosity=2).run(suite())
