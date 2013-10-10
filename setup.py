@@ -10,7 +10,7 @@ from setuptools.command.install import install
 import os
 import urllib
 import shutil
-
+    
 
 class PyCryptoInstallCommand(install):
     """
@@ -21,18 +21,14 @@ class PyCryptoInstallCommand(install):
                    "binary from voidspace.")
 
     def run(self):
+        base_path = "http://www.voidspace.org.uk/downloads/pycrypto26"
         if 'win32' in sys.platform:
-            if not os.path.exists('./.setup'):
-                os.mkdir('./.setup')
-            urllib.urlretrieve(("http://www.voidspace.org.uk/downloads/"
-                               "pycrypto26/pycrypto-2.6.win32-py2.7.exe"),
-                               os.path.join('.', 'setup',
-                                            ('pycrypto-2.6.win32-py2.7.exe')))
-            os.system('easy_install '
-                      + os.path.join('.', '.setup',
-                                     'pycrypto-2.6.win32-py2.7.exe'))
+            if not 'AMD64' in sys.version:
+                pycrypto = 'pycrypto-2.6.win32-py2.7.exe'
+            else: #   'AMD64' in sys.version:
+                pycrypto = 'pycrypto-2.6.win-amd64-py2.7.exe'
+            os.system('easy_install '+base_path+'/'+pycrypto)
             install.run(self)
-            shutil.rmtree('.setup')
         else:
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
