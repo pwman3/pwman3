@@ -5,6 +5,38 @@ script to install pwman3
 
 from setuptools import setup
 import pwman
+import sys
+from setuptools.command.install import install
+import os
+import urllib
+import shutil
+
+
+class PyCryptoInstallCommand(install):
+    """
+    A Custom command to download and install pycrypto26
+    binary from voidspace. Not optimal, but it should work ...
+    """
+    description = ("A Custom command to download and install pycrypto26"
+                   "binary from voidspace.")
+
+    def run(self):
+        if 'win32' in sys.platform:
+            if not os.path.exists('./.setup'):
+                os.mkdir('./.setup')
+            urllib.urlretrieve(("http://www.voidspace.org.uk/downloads/"
+                               "pycrypto26/pycrypto-2.6.win32-py2.7.exe"),
+                               os.path.join('.', 'setup',
+                                            ('pycrypto-2.6.win32-py2.7.exe')))
+            os.system('easy_install '
+                      + os.path.join('.', '.setup',
+                                     'pycrypto-2.6.win32-py2.7.exe'))
+            install.run(self)
+            shutil.rmtree('.', '.setup')
+        else:
+            print(('Please use pip or your Distro\'s package manager '
+                   'to install pycrypto ...'))
+
 
 setup(name=pwman.appname,
       version=pwman.version,
@@ -35,5 +67,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.7'
       ],
-      test_suite='pwman.tests'
+      test_suite='pwman.tests',
+      cmdclass={'install_pycrypto': PyCryptoInstallCommand},
+
       )
