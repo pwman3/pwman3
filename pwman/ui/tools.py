@@ -78,7 +78,7 @@ def typeset(text, color, bold=False, underline=False):
         text = colorama.Style.BRIGHT + text
     if underline and not 'win32' in sys.platform:
         text = ANSI.Underscore + text
-    return color+text+colorama.Style.RESET_ALL
+    return color + text + colorama.Style.RESET_ALL
 
 
 def select(question, possible):
@@ -86,11 +86,11 @@ def select(question, possible):
     select input from user
     """
     for i in range(0, len(possible)):
-        print ("%d - %-"+str(_defaultwidth)+"s") % (i+1, possible[i])
+        print ("%d - %-" + str(_defaultwidth) + "s") % (i + 1, possible[i])
     while 1:
         uinput = getonechar(question)
-        if uinput.isdigit() and int(uinput) in range(1, len(possible)+1):
-            return possible[int(uinput)-1]
+        if uinput.isdigit() and int(uinput) in range(1, len(possible) + 1):
+            return possible[int(uinput) - 1]
 
 
 def text_to_clipboards(text):
@@ -186,6 +186,7 @@ def getyesno(question, defaultyes=False, width=_defaultwidth):
     else:
         default = "[y/N]"
     ch = getonechar("%s %s" % (question, default), width)
+
     if (ch == '\n'):
         if (defaultyes):
             return True
@@ -227,8 +228,8 @@ class CliMenu(object):
                 else:
                     currentstr = current
 
-                print ("%d - %-"+str(_defaultwidth)
-                       + "s %s") % (i, x.name+":",
+                print ("%d - %-" + str(_defaultwidth)
+                       + "s %s") % (i, x.name + ":",
                                     currentstr)
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
@@ -272,15 +273,15 @@ class CliMenu(object):
                 if type(current) == list:
                     for c in current:
                         try:
-                            currentstr += ' '+c
+                            currentstr += ' ' + c
                         except TypeError:
-                            currentstr += ' '+c._name
+                            currentstr += ' ' + c._name
 
                 else:
                     currentstr = current
 
-                print ("%d - %-"+str(_defaultwidth)
-                       + "s %s") % (i, x.name+":",
+                print ("%d - %-" + str(_defaultwidth)
+                       + "s %s") % (i, x.name + ":",
                                     currentstr)
             print "%c - Finish editing" % ('X')
             option = getonechar("Enter your choice:")
@@ -326,12 +327,19 @@ def getonechar(question, width=_defaultwidth):
     sys.stdout.flush()
 
     fd = sys.stdin.fileno()
-    tty_mode = tty.tcgetattr(fd)
-    tty.setcbreak(fd)
+    # tty module exists only if we are on Posix
+    try:
+        tty_mode = tty.tcgetattr(fd)
+        tty.setcbreak(fd)
+    except NameError:
+        pass
     try:
         ch = os.read(fd, 1)
     finally:
-        tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
+        try:
+            tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
+        except NameError:
+            pass
     print ch
     return ch
 
