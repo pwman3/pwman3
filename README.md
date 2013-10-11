@@ -67,7 +67,17 @@ You can also install PWMAN3 using python pip:
 
 ### Windows Users:
 
-You need to compile python-crypto using mingw, after you downloaded the source code of
+Before installing pwman3 you need to install PyCrypto. To you can install PyCrypto with:
+
+    python setup install_pycrypto
+
+When done, issue:
+    
+    python setup install
+
+If you are more picky than than than you can compile PyCrypto using the instruction bellow.
+
+After you downloaded the source code of 
 pycrypto and extracted it do the following inisde the source code direcotry:
 
     C:\Temp\pycrypto> python setup.py build -c mingw32 
@@ -75,9 +85,9 @@ pycrypto and extracted it do the following inisde the source code direcotry:
 
 Now you should be able to run pwman3 on Windows.
 
-### On Windows 7 64bit: 
+On Windows 7 64bit: 
 
-PyCryption builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
+PyCrypto builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
 The above setup commands won't work in the Windows command prompt. But they do work in 
 the msys command prompt. 
 You also need to edit the following file:
