@@ -93,7 +93,7 @@ class PwmanCli(cmd.Cmd):
                     ids += self._db.listnodes()
             else:
                 ids += range(int(m.group(1)),
-                             int(m.group(2))+1)
+                             int(m.group(2)) + 1)
         return ids
 
     def get_filesystem_path(self, default=""):
@@ -176,14 +176,14 @@ class PwmanCli(cmd.Cmd):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node._id)
-        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
-                                    node.get_username())
-        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
-                                    node.get_password())
-        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
-                                    node.get_url())
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
-                                    node.get_notes())
+        print ("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
+                                        node.get_username())
+        print ("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
+                                        node.get_password())
+        print ("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
+                                        node.get_url())
+        print ("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
+                                        node.get_notes())
         print tools.typeset("Tags: ", Fore.RED),
         for t in node.get_tags():
             print " %s \n" % t.get_name(),
@@ -451,15 +451,15 @@ class PwmanCli(cmd.Cmd):
                 name_len = cols * 2 / 3
                 tagstring_len = cols / 3
                 if len(name) > name_len:
-                    name = name[:name_len-3] + "..."
+                    name = name[:name_len - 3] + "..."
                 if len(tagstring) > tagstring_len:
-                    tagstring = tagstring[:tagstring_len-3] + "..."
+                    tagstring = tagstring[:tagstring_len - 3] + "..."
 
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 print tools.typeset(fmt % (n.get_id(), name, tagstring),
                                     Fore.YELLOW, False)
                 i += 1
-                if i > rows-2:
+                if i > rows - 2:
                     i = 0
                     c = tools.getonechar("Press <Space> for more, "
                                          "or 'Q' to cancel")
@@ -716,7 +716,8 @@ pwman> n {'leetify':False, 'numerics':True}"""
         _dbwarning = "\n*** WARNNING: You are using the old database format" \
             + " which is unsecure." \
             + " It's highly recommended to switch to the new database " \
-            + "format. Do note: support for this DB format will be dropped in v0.5." \
+            + "format. Do note: support for this DB format will be dropped in"\
+            + " v0.5." \
             + " Check the help (pwman3 -h) or look at the manpage which" \
             + " explains how to proceed. ***"
 
@@ -844,14 +845,14 @@ class PwmanCliNew(PwmanCli):
     def print_node(self, node):
         width = str(tools._defaultwidth)
         print "Node %d." % (node._id)
-        print ("%"+width+"s %s") % (tools.typeset("Username:", Fore.RED),
-                                    node.username)
-        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
-                                    node.password)
-        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
-                                    node.url)
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
-                                    node.notes)
+        print ("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
+                                        node.username)
+        print ("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
+                                        node.password)
+        print ("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
+                                        node.url)
+        print ("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
+                                        node.notes)
         print tools.typeset("Tags: ", Fore.RED),
         for t in node.tags:
             print " %s " % t
@@ -955,16 +956,16 @@ class PwmanCliNew(PwmanCli):
                 name_len = cols * 2 / 3
                 tagstring_len = cols / 3
                 if len(name) > name_len:
-                    name = name[:name_len-3] + "..."
+                    name = name[:name_len - 3] + "..."
                 if len(tagstring) > tagstring_len:
-                    tagstring = tagstring[:tagstring_len-3] + "..."
+                    tagstring = tagstring[:tagstring_len - 3] + "..."
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
                 formatted_entry = tools.typeset(fmt % (n._id,
                                                 name, tagstring),
                                                 Fore.YELLOW, False)
                 print formatted_entry
                 i += 1
-                if i > rows-2:
+                if i > rows - 2:
                     i = 0
                     c = tools.getonechar("Press <Space> for more,"
                                          " or 'Q' to cancel")
@@ -1049,8 +1050,11 @@ class PwmanCliNew(PwmanCli):
         try:
             nodes = self._db.getnodes(ids)
             for n in nodes:
-                b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
-                                   % (n.username, n.url), False)
+                try:
+                    b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
+                                       % (n.username, n.url), False)
+                except NameError:
+                    pass
                 if b is True:
                     self._db.removenodes([n])
                     print "%s@%s deleted" % (n.username, n.url)
