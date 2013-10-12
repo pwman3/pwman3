@@ -10,7 +10,7 @@ from setuptools.command.install import install
 import os
 import urllib
 import shutil
-    
+
 
 class PyCryptoInstallCommand(install):
     """
@@ -63,7 +63,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.7'
       ],
-      test_suite='pwman.tests',
+      test_suite='pwman.tests.suite',
       cmdclass={'install_pycrypto': PyCryptoInstallCommand},
 
       )
