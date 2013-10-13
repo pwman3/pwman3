@@ -31,31 +31,11 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
 
 Pwman3 requires the following debian packages:
  
-when using python 2.4:    
+ python-colorama
+ python-crypto 
+ xsel - to copy password to clipboard on Linux
     
-    python-pysqlite2
-    python-celementtree
-    python-crypto
-
-when using python >= 2.5 
-    
-    python-crypto (>=2.6) from upstream (currently broken with 
-    pycrypto from Debian).
-
-for nicer functionality:
-    
-    xsel - to copy password to clipboard on Linux
-    
-Pwman now uses argparse, which is only
-available in Python 2.7. Therefore, if you intend to use
-pwman3 with an older version of Python, please do so before
-installing:
-
-    $ cp scripts/pwman3 scripts/pwman3_bkup
-    $ cp scripts/pwman3_old scripts/pwman3
-
-Note that the old startup script of pwman3 might have limited
-functionality compared to the newer version. 
+Pwman only supports Python 2.7. 
 
 To install from source:
 
