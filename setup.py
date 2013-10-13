@@ -8,8 +8,6 @@ import pwman
 import sys
 from setuptools.command.install import install
 import os
-import urllib
-import shutil
 
 
 class PyCryptoInstallCommand(install):
@@ -25,7 +23,7 @@ class PyCryptoInstallCommand(install):
         if 'win32' in sys.platform:
             if not 'AMD64' in sys.version:
                 pycrypto = 'pycrypto-2.6.win32-py2.7.exe'
-            else: #   'AMD64' in sys.version:
+            else:  # 'for AMD64'
                 pycrypto = 'pycrypto-2.6.win-amd64-py2.7.exe'
             os.system('easy_install '+base_path+'/'+pycrypto)
             install.run(self)
