@@ -123,12 +123,14 @@ except SystemExit, e:
 
 import unittest
 from db_tests import DBTests
+from crypto_tests import CryptoTest
 
 
 def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     suite.addTest(loader.loadTestsFromTestCase(DBTests))
+    suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
     return suite
 
 if __name__ == '__main__':
