@@ -423,7 +423,12 @@ class PwmanCli(cmd.Cmd):
         self.do_list(args)
 
     def do_list(self, args):
-
+        """
+        TODO: in order to make this code testable
+        The functionality in this method should
+        go to a method that returns a string.
+        This method should only do the printing.
+        """
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
@@ -1051,8 +1056,9 @@ class PwmanCliNew(PwmanCli):
             nodes = self._db.getnodes(ids)
             for n in nodes:
                 try:
-                    b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
-                                       % (n.username, n.url), False)
+                    b = tools.getyesno(("Are you sure you want to"
+                                        " delete '%s@%s'?"
+                                        ) % (n.username, n.url), False)
                 except NameError:
                     pass
                 if b is True:
