@@ -45,6 +45,7 @@ from pwman.ui.tools import CliMenu
 from pwman.ui.tools import CliMenuItem
 from pwman.ui.tools import CLICallback
 from colorama import Fore
+from pwman.ui.base import HelpUI, BaseUI
 
 try:
     import readline
@@ -54,7 +55,7 @@ except ImportError, e:
 
 
 # pylint: disable=R0904
-class PwmanCli(cmd.Cmd):
+class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
     """
     UI class for MacOSX
     """
@@ -260,8 +261,6 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
-    def do_e(self, arg):
-        self.do_edit(arg)
 
     def do_edit(self, arg):
         ids = self.get_ids(arg)
@@ -340,12 +339,6 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
-    def do_h(self, arg):
-        self.do_help(arg)
-
-    def do_n(self, arg):
-        self.do_new(arg)
-
     def do_new(self, args):
         """
         can override default config settings the following way:
@@ -389,9 +382,6 @@ class PwmanCli(cmd.Cmd):
         except Exception, e:
             self.error(e)
 
-    def do_p(self, arg):
-        self.do_print(arg)
-
     def do_print(self, arg):
         for i in self.get_ids(arg):
             try:
@@ -400,8 +390,6 @@ class PwmanCli(cmd.Cmd):
             except Exception, e:
                 self.error(e)
 
-    def do_rm(self, arg):
-        self.do_delete(arg)
 
     def do_delete(self, arg):
         ids = self.get_ids(arg)
@@ -415,12 +403,6 @@ class PwmanCli(cmd.Cmd):
                     print "%s@%s deleted" % (n.get_username(), n.get_url())
         except Exception, e:
             self.error(e)
-
-    def do_l(self, args):
-        self.do_list(args)
-
-    def do_ls(self, args):
-        self.do_list(args)
 
     def do_list(self, args):
         """
@@ -551,9 +533,6 @@ class PwmanCli(cmd.Cmd):
         else:
             print "Can't copy to clipboard, no xsel found in the system!"
 
-    def do_cp(self, args):
-        self.do_copy(args)
-
     def do_open(self, args):
         ids = self.get_ids(args)
         if not args:
@@ -568,144 +547,6 @@ class PwmanCli(cmd.Cmd):
             tools.open_url(url)
         except Exception, e:
             self.error(e)
-
-    def do_o(self, args):
-        self.do_open(args)
-    ##
-    ## Help functions
-    ##
-
-    def usage(self, string):
-        print "Usage: %s" % (string)
-
-    def help_open(self):
-        self.usage("open <ID>")
-        print "Launch default browser with 'xdg-open url',\n" \
-              + "the url must contain http:// or https://."
-
-    def help_o(self):
-        self.help_open()
-
-    def help_copy(self):
-        self.usage("copy <ID>")
-        print "Copy password to X clipboard (xsel required)"
-
-    def help_cp(self):
-        self.help_copy()
-
-    def help_cls(self):
-        self.usage("cls")
-        print "Clear the Screen from information."
-
-    def help_list(self):
-        self.usage("list <tag> ...")
-        print "List nodes that match current or specified filter." \
-              + " l is an alias."
-
-    def help_EOF(self):
-        self.help_exit()
-
-    def help_delete(self):
-        self.usage("delete <ID|tag> ...")
-        print "Deletes nodes. rm is an alias."
-        self._mult_id_help()
-
-    def help_h(self):
-        self.help_help()
-
-    def help_help(self):
-        self.usage("help [topic]")
-        print "Prints a help message for a command."
-
-    def help_e(self):
-        self.help_edit()
-
-    def help_n(self):
-        self.help_new()
-
-    def help_p(self):
-        self.help_print()
-
-    def help_l(self):
-        self.help_list()
-
-    def help_edit(self):
-        self.usage("edit <ID|tag> ... ")
-        print "Edits a nodes."
-        self._mult_id_help()
-
-    def help_import(self):
-        self.usage("import [filename] ...")
-        print "Imports a nodes from a file."
-
-    def help_export(self):
-        self.usage("export <ID|tag> ... ")
-        print "Exports a list of ids to an external format. If no IDs or" \
-              + " tags are specified, then all nodes under the current" \
-              + " filter are exported."
-        self._mult_id_help()
-
-    def help_new(self):
-        self.usage("new")
-        print """Creates a new node.,
-You can override default config settings the following way:
-pwman> n {'leetify':False, 'numerics':True}"""
-
-    def help_rm(self):
-        self.help_delete()
-
-    def help_print(self):
-        self.usage("print <ID|tag> ...")
-        print "Displays a node. ",
-        self._mult_id_help()
-
-    def _mult_id_help(self):
-        print "Multiple ids and nodes can be specified, separated by a space."\
-              + "A range of ids can be specified in the format n-N. e.g. " \
-              + "'10-20' would specify all nodes having ids from 10 to 20 " \
-              + "inclusive. Tags are considered one-by-one. e.g. 'foo 2 bar'" \
-              + " would yield to all nodes with tag 'foo', node 2 and all "\
-              + "nodes with tag 'bar'."
-
-    def help_exit(self):
-        self.usage("exit")
-        print "Exits the application."
-
-    def help_save(self):
-        self.usage("save [filename]")
-        print "Saves the current configuration to [filename]. If no filename "\
-              + "is given, the configuration is saved to the file from which "\
-              + "the initial configuration was loaded."
-
-    def help_set(self):
-        self.usage("set [configoption] [value]")
-        print "Sets a configuration option. If no value is specified, the "\
-              + "current value for [configoption] is output. If neither "\
-              + "[configoption] nor [value] are specified, the whole current "\
-              + "configuration is output. [configoption] must be of the "\
-              + "format <section>.<option>"
-
-    def help_passwd(self):
-        self.usage("passwd")
-        print "Changes the password on the database. "
-
-    def help_forget(self):
-        self.usage("forget")
-        print "Forgets the database password. Your password will need to " \
-              + "be reentered before accessing the database again."
-
-    def help_clear(self):
-        self.usage("clear")
-        print "Clears the filter criteria. "
-
-    def help_filter(self):
-        self.usage("filter <tag> ...")
-        print "Filters nodes on tag. Arguments can be zero or more tags. " \
-              + "Displays current tags if called without arguments."
-
-    def help_tags(self):
-        self.usage("tags")
-        print "Displays all tags in used in the database."
 
     def postloop(self):
         try:
@@ -746,40 +587,12 @@ pwman> n {'leetify':False, 'numerics':True}"""
         self.prompt = "!pwman> "
 
 
-class PwmanCliNew(PwmanCli):
+class BaseCommands(PwmanCliOld):
     """
     inherit from the old class, override
     all the methods related to tags, and
     newer Node format, so backward compatability is kept...
     """
-
-    def __init__(self, db, hasxsel):
-        """
-        initialize CLI interface, set up the DB
-        connecion, see if we have xsel ...
-        """
-        cmd.Cmd.__init__(self)
-        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
-                                              pwman.website)
-        self._historyfile = config.get_value("Readline", "history")
-        self.hasxsel = hasxsel
-        try:
-            enc = CryptoEngine.get()
-            #enc.set_callback(CLICallback())
-            enc._callback = CLICallback()
-            self._db = db
-            self._db.open()
-        except Exception, e:
-            self.error(e)
-            sys.exit(1)
-
-        try:
-            readline.read_history_file(self._historyfile)
-        except IOError, e:
-            pass
-
-        self.prompt = "pwman> "
-
     def do_copy(self, args):
         if self.hasxsel:
             ids = self.get_ids(args)
@@ -887,17 +700,12 @@ class PwmanCliNew(PwmanCli):
             waituntil_enter(heardEnter, flushtimeout)
 
     def do_tags(self, arg):
-        tags = self._db.listtags()
-        # request password
         enc = CryptoEngine.get()
         if not enc.alive():
             enc._getcipher()
         print "Tags: \n",
-        if len(tags) == 0:
-            print "None",
-        for t in tags:
-            print enc.decrypt(t)
-        print
+        t = self._tags(enc)
+        print '\n'.join(t)
 
     def get_tags(self, default=None):
         defaultstr = ''
@@ -1066,3 +874,66 @@ class PwmanCliNew(PwmanCli):
                     print "%s@%s deleted" % (n.username, n.url)
         except Exception, e:
             self.error(e)
+
+
+class Aliases(BaseCommands, PwmanCliOld):
+    """
+    Define all the alias you want here...
+    """
+    def do_cp(self, args):
+        self.do_copy(args)
+
+    def do_e(self, arg):
+        self.do_edit(arg)
+
+    def do_l(self, args):
+        self.do_list(args)
+
+    def do_ls(self, args):
+        self.do_list(args)
+
+    def do_p(self, arg):
+        self.do_print(arg)
+
+    def do_rm(self, arg):
+        self.do_delete(arg)
+
+    def do_o(self, args):
+        self.do_open(args)
+
+    def do_h(self, arg):
+        self.do_help(arg)
+
+    def do_n(self, arg):
+        self.do_new(arg)
+
+class PwmanCliNew(Aliases, BaseCommands):
+    """
+    Inherit from the BaseCommands and Aliases
+    """
+    def __init__(self, db, hasxsel):
+        """
+        initialize CLI interface, set up the DB
+        connecion, see if we have xsel ...
+        """
+        cmd.Cmd.__init__(self)
+        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
+                                              pwman.website)
+        self._historyfile = config.get_value("Readline", "history")
+        self.hasxsel = hasxsel
+        try:
+            enc = CryptoEngine.get()
+            #enc.set_callback(CLICallback())
+            enc._callback = CLICallback()
+            self._db = db
+            self._db.open()
+        except Exception, e:
+            self.error(e)
+            sys.exit(1)
+
+        try:
+            readline.read_history_file(self._historyfile)
+        except IOError, e:
+            pass
+
+        self.prompt = "pwman> "
