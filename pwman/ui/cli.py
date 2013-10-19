@@ -589,9 +589,12 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
 class BaseCommands(PwmanCliOld):
     """
-    inherit from the old class, override
+    Inherit from the old class, override
     all the methods related to tags, and
     newer Node format, so backward compatability is kept...
+    Commands defined here, can have aliases definded in Aliases.
+    You can define the aliases here too, but it makes
+    the class code really long and unclear.
     """
     def do_copy(self, args):
         if self.hasxsel:
