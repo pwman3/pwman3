@@ -7,3 +7,4 @@ dist/*
 *.egg
 *.db
 env/*
+MANIFEST
