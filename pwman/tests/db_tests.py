@@ -1,13 +1,9 @@
 import os
 import os.path
-
-_saveconfig = True
-
-
 import sys
 
 if 'darwin' in sys.platform:
-    from pwman.ui.mac import PwmanCliMac as PwmanCli
+    from pwman.ui.mac import PwmanCliMac as PwmanCliOld
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 elif 'win' in sys.platform:
@@ -19,13 +15,23 @@ else:
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
-
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
+from pwman.util.crypto import CryptoEngine
+import unittest
 
-# set cls_timout to negative number (e.g. -1) to disable
+
+def which(cmd):
+    _, cmdname = os.path.split(cmd)
+    for path in os.environ["PATH"].split(os.pathsep):
+        cmd = os.path.join(path, cmdname)
+        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
+            return cmd
+    return None
+
+_saveconfig = False
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '5'
                              },
@@ -36,17 +42,32 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                                        "history")}
                   }
 
-config.set_defaults(default_config)
-import unittest
+
+class SetupTester(object):
+
+    def __init__(self):
+        config.set_defaults(default_config)
+        if not OSX:
+            xselpath = which("xsel")
+            config.set_value("Global", "xsel", xselpath)
+        else:
+            xselpath = "xsel"
+
+        dbver = 0.4
+        dbtype = config.get_value("Database", "type")
+        db = pwman.data.factory.create(dbtype, dbver)
+        self.cli = PwmanCliNew(db, xselpath)
 
 
 class DBTests(unittest.TestCase):
     """test everything related to db"""
+
     def setUp(self):
         "test that the right db instance was created"
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
         self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.tester = SetupTester()
 
     def test_db_created(self):
         "test that the right db instance was created"
@@ -78,6 +99,11 @@ class DBTests(unittest.TestCase):
                           'url': url, 'notes': notes}.iteritems():
             self.assertEquals(attr, eval('new_node.' + key))
         self.db.close()
+
+    def test_tags(self):
+        enc = CryptoEngine.get()
+        got_tags = self.tester.cli._tags(enc)
+        self.assertEqual(2, len(got_tags))
 
 
 class CLITests(unittest.TestCase):
