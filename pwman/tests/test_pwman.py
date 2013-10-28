@@ -27,6 +27,7 @@ sys.path.insert(0, os.getcwd())
 _saveconfig = True
 
 import sys
+
 from pwman.util.crypto import CryptoEngine
 
 if 'darwin' in sys.platform:
@@ -38,14 +39,12 @@ elif 'win' in sys.platform:
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
-    from pwman.ui.cli import PwmanCli
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
 
 import pwman.util.config as config
 import pwman.data.factory
-from pwman.data.convertdb import PwmanConvertDB
 
 
 def which(cmd):

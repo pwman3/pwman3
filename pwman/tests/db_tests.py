@@ -15,7 +15,7 @@ elif 'win' in sys.platform:
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
-    from pwman.ui.cli import PwmanCli
+    from pwman.ui.cli import PwmanCliOld
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
@@ -76,8 +76,7 @@ class DBTests(unittest.TestCase):
         new_node = self.db.getnodes([idx_created])[0]
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
-            self.assertEquals(attr, eval('new_node.'+key))
-
+            self.assertEquals(attr, eval('new_node.' + key))
         self.db.close()
 
 
