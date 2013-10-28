@@ -244,10 +244,26 @@ class SQLiteDatabaseNewForm(Database):
             raise DatabaseException(
                 "SQLite: Error commiting data to db [%s]" % (e))
 
+    def _create_tag(self, tag, node_ids):
+        """add tags to db"""
+        sql = "INSERT OR REPLACE INTO TAGS(DATA) VALUES(?)"
+        if isinstance(tag, str):
+            self._cur.execute(sql, [tag])
+        else:
+            self._cur.execute(sql, [tag._name])
+
+    def _update_tag_lookup(self, node, tag_id):
+        sql = "INSERT OR REPLACE INTO LOOKUP VALUES(?, ?)"
+        params = [node._id, tag_id]
+        try:
+            self._cur.execute(sql, params)
+        except sqlite.DatabaseError, e:
+            raise DatabaseException("SQLite: %s" % (e))
+
     def _tagids(self, tags):
         ids = []
+        sql = "SELECT ID FROM TAGS WHERE DATA = ?"
         for tag in tags:
-            sql = "SELECT ID FROM TAGS WHERE DATA = ?"
             try:
                 if isinstance(tag, str):
                     self._cur.execute(sql, [tag])
@@ -257,12 +273,7 @@ class SQLiteDatabaseNewForm(Database):
                 if (row is not None):
                     ids.append(row[0])
                 else:
-                    sql = "INSERT INTO TAGS(DATA) VALUES(?)"
-                    if isinstance(tag, str):
-                        self._cur.execute(sql, [tag])
-                    else:
-                        self._cur.execute(sql, [tag._name])
-
+                    self._create_tag(tag, None)
                     ids.append(self._cur.lastrowid)
             except sqlite.DatabaseError, e:
                 raise DatabaseException("SQLite: %s" % (e))
@@ -279,14 +290,8 @@ class SQLiteDatabaseNewForm(Database):
     def _setnodetags(self, node):
         self._deletenodetags(node)
         ids = self._tagids(node.tags)
-        for i in ids:
-            sql = "INSERT OR REPLACE INTO LOOKUP VALUES(?, ?)"
-            params = [node._id, i]
-
-            try:
-                self._cur.execute(sql, params)
-            except sqlite.DatabaseError, e:
-                raise DatabaseException("SQLite: %s" % (e))
+        for tagid in ids:
+            self._update_tag_lookup(node, tagid)
         self._commit()
 
     def _checktags(self):
