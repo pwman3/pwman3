@@ -36,7 +36,10 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '5'
                              },
                   'Database': {'type': 'SQLite',
-                               'filename': os.path.join("tests", "pwman.db")},
+                               'filename':
+                               os.path.join(os.path.dirname(__file__),
+                                            "test.pwman.db")},
+
                   'Encryption': {'algorithm': 'AES'},
                   'Readline': {'history': os.path.join("tests",
                                                        "history")}
@@ -48,15 +51,20 @@ class SetupTester(object):
     def __init__(self):
         config.set_defaults(default_config)
         if not OSX:
-            xselpath = which("xsel")
-            config.set_value("Global", "xsel", xselpath)
+            self.xselpath = which("xsel")
+            config.set_value("Global", "xsel", self.xselpath)
         else:
-            xselpath = "xsel"
+            self.xselpath = "xsel"
 
+    def clean(self):
+        if os.path.exists(config.get_value('Database', 'filename')):
+            os.remove(config.get_value('Database', 'filename'))
+
+    def create(self):
         dbver = 0.4
         dbtype = config.get_value("Database", "type")
         db = pwman.data.factory.create(dbtype, dbver)
-        self.cli = PwmanCliNew(db, xselpath)
+        self.cli = PwmanCliNew(db, self.xselpath)
 
 
 class DBTests(unittest.TestCase):
@@ -68,6 +76,7 @@ class DBTests(unittest.TestCase):
         self.dbtype = config.get_value("Database", "type")
         self.db = pwman.data.factory.create(self.dbtype, dbver)
         self.tester = SetupTester()
+        self.tester.create()
 
     def test_db_created(self):
         "test that the right db instance was created"
@@ -104,6 +113,9 @@ class DBTests(unittest.TestCase):
         enc = CryptoEngine.get()
         got_tags = self.tester.cli._tags(enc)
         self.assertEqual(2, len(got_tags))
+
+    #def tearDown(self):
+    #    self.tester.clean()
 
 
 class CLITests(unittest.TestCase):
