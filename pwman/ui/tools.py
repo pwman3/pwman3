@@ -162,22 +162,29 @@ def gettermsize():
     return rows, cols
 
 
-def getinput(question, default="", completer=None, width=_defaultwidth):
-    if not _readline_available:
-        return raw_input(question.ljust(width))
-    else:
-        def defaulter():
-            """define default behavior startup"""
-            if _readline_available:
-                readline.insert_text(default)
-            readline.set_startup_hook(defaulter)
-            oldcompleter = readline.get_completer()
-            readline.set_completer(completer)
+def getinput(question, default="", reader=raw_input,
+             completer=None, width=_defaultwidth):
+    """
+    http://stackoverflow.com/questions/2617057/supply-inputs-to-python-unittests
+    """
+    if reader == raw_input:
+        if not _readline_available:
+            return raw_input(question.ljust(width))
+        else:
+            def defaulter():
+                """define default behavior startup"""
+                if _readline_available:
+                    readline.insert_text(default)
+                readline.set_startup_hook(defaulter)
+                oldcompleter = readline.get_completer()
+                readline.set_completer(completer)
 
-        x = raw_input(question.ljust(width))
-        readline.set_completer(completer)
-        readline.set_startup_hook()
-        return x
+            x = raw_input(question.ljust(width))
+            readline.set_completer(completer)
+            readline.set_startup_hook()
+            return x
+    else:
+        return reader
 
 
 def getyesno(question, defaultyes=False, width=_defaultwidth):
