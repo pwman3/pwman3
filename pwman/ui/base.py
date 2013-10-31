@@ -173,7 +173,10 @@ class BaseUI(object):
         pass
 
     def _tags(self, enc):
-        # TODO: unittest for this method ...
+        """
+        read tags from TAGS table in DB,
+        this method has a working unittest
+        """
         tags = self._db.listtags()
         if tags:
             _tags = [''] * len(tags)
