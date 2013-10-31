@@ -261,7 +261,6 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         except Exception, e:
             self.error(e)
 
-
     def do_edit(self, arg):
         ids = self.get_ids(arg)
         for i in ids:
@@ -389,7 +388,6 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                 self.print_node(node[0])
             except Exception, e:
                 self.error(e)
-
 
     def do_delete(self, arg):
         ids = self.get_ids(arg)
@@ -815,9 +813,9 @@ class BaseCommands(PwmanCliOld):
         pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
         Password (Blank to generate):
         """
-        errmsg = """could not parse config override, please input some"""\
-                 + """ kind of dictionary, e.g.: n {'leetify':False, """\
-                 + """'numerics':True, 'special_chars':True}"""
+        errmsg = ("could not parse config override, please input some"
+                  " kind of dictionary, e.g.: n {'leetify':False, "
+                  " numerics':True, 'special_chars':True}")
         try:
             username = self.get_username()
             if args:
@@ -909,6 +907,7 @@ class Aliases(BaseCommands, PwmanCliOld):
 
     def do_n(self, arg):
         self.do_new(arg)
+
 
 class PwmanCliNew(Aliases, BaseCommands):
     """
