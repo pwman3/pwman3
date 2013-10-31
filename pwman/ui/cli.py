@@ -345,9 +345,9 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
         Password (Blank to generate):
         """
-        errmsg = """could not parse config override, please input some"""\
-                 + """ kind of dictionary, e.g.: n {'leetify':False, """\
-                 + """'numerics':True, 'special_chars':True}"""
+        errmsg = ("could not parse config override, please input some"
+                  " kind of dictionary, e.g.: n {'leetify':False, "
+                  " numerics':True, 'special_chars':True}")
         try:
             username = self.get_username()
             if args:
