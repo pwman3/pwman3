@@ -143,8 +143,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         return tools.getinput("Notes: ", default)
 
     def get_tags(self, default=None):
+        """read node tags from user"""
         defaultstr = ''
-
         if default:
             for t in default:
                 defaultstr += "%s " % (t.get_name())
@@ -709,20 +709,24 @@ class BaseCommands(PwmanCliOld):
         print '\n'.join(t)
 
     def get_tags(self, default=None):
+        """read tags from user"""
         defaultstr = ''
         if default:
             for t in default:
                 defaultstr += "%s " % (t)
         else:
-            tags = self._db.currenttags()
+            # tags = self._db.currenttags()
+            tags = self._db._filtertags
             for t in tags:
                 defaultstr += "%s " % (t)
 
-        strings = []
+        # strings = []
         tags = self._db.listtags(True)
-        for t in tags:
+        #for t in tags:
             # strings.append(t.get_name())
-            strings.append(t)
+        #    strings.append(t)
+
+        strings = [t for t in tags]
 
         def complete(text, state):
             count = 0
@@ -733,7 +737,7 @@ class BaseCommands(PwmanCliOld):
                     else:
                         count += 1
 
-        taglist = tools.getinput("Tags: ", defaultstr, complete)
+        taglist = tools.getinput("Tags: ", defaultstr, completer=complete)
         tagstrings = taglist.split()
         tags = [TagN(tn) for tn in tagstrings]
 
