@@ -100,8 +100,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
     def get_filesystem_path(self, default=""):
         return tools.getinput("Enter filename: ", default)
 
-    def get_username(self, default=""):
-        return tools.getinput("Username: ", default)
+    def get_username(self, default="", reader=raw_input):
+        return tools.getinput("Username: ", default, reader)
 
     def get_password(self, argsgiven, numerics=False, leetify=False,
                      symbols=False, special_signs=False):

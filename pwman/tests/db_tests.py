@@ -114,8 +114,9 @@ class DBTests(unittest.TestCase):
         got_tags = self.tester.cli._tags(enc)
         self.assertEqual(2, len(got_tags))
 
-    #def tearDown(self):
-    #    self.tester.clean()
+    def test_input(self):
+        name = self.tester.cli.get_username(reader=lambda: 'alice')
+        self.assertEqual(name, 'alice')
 
 
 class CLITests(unittest.TestCase):

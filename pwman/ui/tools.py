@@ -184,7 +184,7 @@ def getinput(question, default="", reader=raw_input,
             readline.set_startup_hook()
             return x
     else:
-        return reader
+        return reader()
 
 
 def getyesno(question, defaultyes=False, width=_defaultwidth):
