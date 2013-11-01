@@ -90,15 +90,13 @@ class SQLiteDatabaseNewForm(Database):
     def listtags(self, alltags=False):
         sql = ''
         params = []
-        if len(self._filtertags) == 0 or alltags:
+        if not self._filtertags or alltags:
             sql = "SELECT DATA FROM TAGS ORDER BY DATA ASC"
         else:
             sql = ("SELECT TAGS.DATA FROM LOOKUP"
                    + " INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
                    + " WHERE NODE IN (")
             first = True
-            # if using the command filter, the code crashes ...
-            #
             for t in self._filtertags:
                 if not first:
                     sql += " INTERSECT "
