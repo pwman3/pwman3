@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -19,14 +19,14 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-from pwman.data.nodes import Node
 from pwman.util.crypto import CryptoEngine
 
 
 class DatabaseException(Exception):
     pass
 
-class Database:
+
+class Database(object):
     def __init__(self):
         self._filtertags = []
 
@@ -35,14 +35,14 @@ class Database:
         Open the database, by calling the _open method of the
         class inherited for the specific database.
         When done validation that the file is OK, check if it has
-        encryption key, by calling   
+        encryption key, by calling
         enc = CryptoEngine.get()
         key = self.loadkey()
         """
         self._open()
         enc = CryptoEngine.get()
         key = self.loadkey()
-        if (key != None):
+        if key is not None:
             enc.set_cryptedkey(key)
         else:
             self.changepassword()
@@ -57,13 +57,13 @@ class Database:
         enc = CryptoEngine.get()
         newkey = enc.changepassword()
         return self.savekey(newkey)
-    
+
     def listtags(self, all=False):
         pass
 
     def currenttags(self):
         return self._filtertags
-    
+
     def filter(self, tags):
         for tag in tags:
             if not (tag in self._filtertags):
@@ -74,7 +74,7 @@ class Database:
 
     def getnodes(self, ids):
         pass
-    
+
     def addnodes(self, nodes):
         pass
 
@@ -92,4 +92,3 @@ class Database:
 
     def loadkey(self):
         pass
-    
