@@ -71,12 +71,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
     def do_exit(self, args):
         """exit the ui"""
-        print
-        # try:
-        #    print "goodbye"
         self._db.close()
-        # except DatabaseException, e:
-        #    self.error(e)
         return True
 
     def get_ids(self, args):

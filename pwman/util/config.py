@@ -125,7 +125,7 @@ def save(filename=None):
         if not parser.has_section(key):
             parser.add_section(key)
         sectiondict = _conf[key]
-        if isinstance(dict, sectiondict):
+        if isinstance(sectiondict, dict):
             for optionkey in sectiondict.keys():
                 parser.set(key, optionkey, sectiondict[optionkey])
     try:
