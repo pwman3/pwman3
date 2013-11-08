@@ -138,16 +138,17 @@ def open_url(link, macosx=False):
         print "Executing open_url failed with:\n", e
 
 
-def getpassword(question, width=_defaultwidth, echo=False):
+def getpassword(question, width=_defaultwidth, echo=False,
+                reader=getpass.getpass):
     if echo:
         print question.ljust(width),
         return sys.stdin.readline().rstrip()
     else:
-        while 1:
-            a1 = getpass.getpass(question.ljust(width))
-            if len(a1) == 0:
+        while True:
+            a1 = reader(question.ljust(width))
+            if not a1:
                 return a1
-            a2 = getpass.getpass("[Repeat] %s" % (question.ljust(width)))
+            a2 = reader("[Repeat] %s" % (question.ljust(width)))
             if a1 == a2:
                 return a1
             else:
@@ -165,7 +166,8 @@ def gettermsize():
 def getinput(question, default="", reader=raw_input,
              completer=None, width=_defaultwidth):
     """
-    http://stackoverflow.com/questions/2617057/supply-inputs-to-python-unittests
+    http://stackoverflow.com/questions/2617057/\
+            supply-inputs-to-python-unittests
     """
     if reader == raw_input:
         if not _readline_available:
