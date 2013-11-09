@@ -304,14 +304,17 @@ class CliMenu(object):
                 # is created.
                 if selection == 0:
                     new_node.username = getinput("Username:")
-                    self.items[2].getter = new_node.username
+                    self.items[0].getter = new_node.username
+                    self.items[0].setter = new_node.username
                 elif selection == 1:  # for password
                     value = self.items[selection].editor(0)
                     new_node.password = value
-                    self.items[2].getter = new_node.password
+                    self.items[1].getter = new_node.password
+                    self.items[1].setter = new_node.password
                 elif selection == 2:
-                    new_node.notes = getinput("Url:")
+                    new_node.url = getinput("Url:")
                     self.items[2].getter = new_node.url
+                    self.items[2].setter = new_node.url
                 elif selection == 3:  # for notes
                     new_node.notes = getinput("Notes:")
                     self.items[3].getter = new_node.notes
