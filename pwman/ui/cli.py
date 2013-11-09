@@ -63,11 +63,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         if (isinstance(exception, KeyboardInterrupt)):
             print
         else:
-#            traceback.print_exc()
             print "Error: %s " % (exception)
-
-    def do_EOF(self, args):
-        return self.do_exit(args)
 
     def do_exit(self, args):
         """exit the ui"""
@@ -99,7 +95,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         return tools.getinput("Username: ", default, reader)
 
     def get_password(self, argsgiven, numerics=False, leetify=False,
-                     symbols=False, special_signs=False):
+                     symbols=False, special_signs=False, reader=raw_input):
         """
         in the config file:
         numerics -> numerics
@@ -118,7 +114,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         # no args given
         password = tools.getpassword("Password (Blank to generate): ",
                                      tools._defaultwidth, False)
-        if len(password) == 0:
+        if not password:
             length = tools.getinput("Password length (default 7): ", "7")
             if length:
                 length = int(length)
@@ -131,10 +127,10 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         print "New password: %s" % (password)
         return password
 
-    def get_url(self, default=""):
+    def get_url(self, default="", reader=raw_input):
         return tools.getinput("Url: ", default)
 
-    def get_notes(self, default=""):
+    def get_notes(self, default="", reader=raw_input):
         return tools.getinput("Notes: ", default)
 
     def get_tags(self, default=None):
@@ -885,6 +881,9 @@ class Aliases(BaseCommands, PwmanCliOld):
 
     def do_e(self, arg):
         self.do_edit(arg)
+
+    def do_EOF(self, args):
+        return self.do_exit(args)
 
     def do_l(self, args):
         self.do_list(args)
