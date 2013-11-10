@@ -114,12 +114,20 @@ class DBTests(unittest.TestCase):
         got_tags = self.tester.cli._tags(enc)
         self.assertEqual(2, len(got_tags))
 
+
+class CLITests(unittest.TestCase):
+    """
+    test command line functionallity
+    """
+
+    def setUp(self):
+        "test that the right db instance was created"
+        dbver = 0.4
+        self.dbtype = config.get_value("Database", "type")
+        self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.tester = SetupTester()
+        self.tester.create()
+
     def test_input(self):
         name = self.tester.cli.get_username(reader=lambda: 'alice')
         self.assertEqual(name, 'alice')
-
-
-class CLITests(unittest.TestCase):
-    """test command line functionallity"""
-    def test(self):
-        self.assertTrue(True)

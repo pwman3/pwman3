@@ -88,8 +88,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                              int(m.group(2)) + 1)
         return ids
 
-    def get_filesystem_path(self, default=""):
-        return tools.getinput("Enter filename: ", default)
+    def get_filesystem_path(self, default="", reader=raw_input):
+        return tools.getinput("Enter filename: ", default, reader=reader)
 
     def get_username(self, default="", reader=raw_input):
         return tools.getinput("Username: ", default, reader)
