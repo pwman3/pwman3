@@ -74,8 +74,6 @@ import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 
-config_file = args.cfile
-
 
 def which(cmd):
     _, cmdname = os.path.split(cmd)
@@ -92,7 +90,6 @@ try:
     if not os.path.isdir(config_dir):
         os.mkdir(config_dir)
 
-    config_file = os.path.join(config_dir, "config")
     # set cls_timout to negative number (e.g. -1) to disable
     default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                  'cls_timeout': '5'
@@ -105,22 +102,25 @@ try:
                                                            "history")}
                       }
 
-    config.set_defaults(default_config)
+    if not os.path.exists(args.cfile):
+        config.set_defaults(default_config)
+    else:
+        config.load(args.cfile)
+        xselpath = config.get_value("Global", "xselpath")
+
+    if not OSX:
+        xselpath = which("xsel")
+        config.set_value("Global", "xsel", xselpath)
+    elif OSX:
+        pbcopypath = which("pbcopy")
+        config.set_value("Global", "xsel", pbcopypath)
+
     if 'win' in sys.platform:
         try:
             import colorama
             colorama.init()
         except ImportError:
             config.set_value("Global", "colors", 'no')
-    if os.path.exists(config_file):
-        config.load(config_file)
-        xselpath = config.get_value("Global", "xselpath")
-    elif not OSX:
-        xselpath = which("xsel")
-        config.set_value("Global", "xsel", xselpath)
-    elif OSX:
-        pbcopypath = which("pbcopy")
-        config.set_value("Global", "xsel", pbcopypath)
 
     if args.dbase:
         config.set_value("Database", "filename", args.dbase)
@@ -176,7 +176,7 @@ try:
 finally:
     try:
         if _saveconfig:
-            config.save(config_file)
+            config.save(args.cfile)
     except Exception, e:
         print "Error: %s" % (e)
         sys.exit(-1)
