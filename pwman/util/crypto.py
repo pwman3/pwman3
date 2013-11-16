@@ -404,7 +404,7 @@ password")
             # TODO: completely remove this block, and convert
             # the DB to a completely plain text ...
             return cPickle.loads(plaintext)
-        except (TypeError, cPickle.UnpicklingError):
+        except (TypeError, ValueError, cPickle.UnpicklingError):
             return plaintext
 
 
