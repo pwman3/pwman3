@@ -20,9 +20,34 @@
 #============================================================================
 
 appname = "Pwman3"
-version = "0.4.2"
+version = "0.4.3-dev"
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "Pwman -a command line password management application."
 keywords = "password management sqlite crypto"
+import os
+
+
+def which(cmd):
+    _, cmdname = os.path.split(cmd)
+
+    for path in os.environ["PATH"].split(os.pathsep):
+        cmd = os.path.join(path, cmdname)
+        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
+            return cmd
+
+    return None
+
+config_dir = os.path.expanduser("~/.pwman")
+
+default_config = {'Global': {'umask': '0100', 'colors': 'yes',
+                             'cls_timeout': '5'
+                             },
+                  'Database': {'type': 'SQLite',
+                               'filename': os.path.join(config_dir,
+                                                        "pwman.db")},
+                  'Encryption': {'algorithm': 'AES'},
+                  'Readline': {'history': os.path.join(config_dir,
+                                                       "history")}
+                  }

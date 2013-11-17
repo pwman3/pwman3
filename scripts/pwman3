@@ -21,10 +21,10 @@
 #============================================================================
 import os
 import os.path
+import argparse
+import sys
 
 _saveconfig = True
-
-import argparse
 
 
 parser = argparse.ArgumentParser(description=('pwman3 - a command line '
@@ -50,11 +50,11 @@ without installation", action="store_true")
 
 args = parser.parse_args()
 
-import sys
 if args.test:
     sys.path.insert(0, os.getcwd())
 
 from pwman.util.crypto import CryptoEngine
+from pwman import default_config, which
 
 if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMac as PwmanCli
@@ -74,33 +74,10 @@ import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 
-
-def which(cmd):
-    _, cmdname = os.path.split(cmd)
-
-    for path in os.environ["PATH"].split(os.pathsep):
-        cmd = os.path.join(path, cmdname)
-        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
-            return cmd
-
-    return None
-
 try:
     config_dir = os.path.expanduser("~/.pwman")
     if not os.path.isdir(config_dir):
         os.mkdir(config_dir)
-
-    # set cls_timout to negative number (e.g. -1) to disable
-    default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                                 'cls_timeout': '5'
-                                 },
-                      'Database': {'type': 'SQLite',
-                                   'filename': os.path.join(config_dir,
-                                                            "pwman.db")},
-                      'Encryption': {'algorithm': 'AES'},
-                      'Readline': {'history': os.path.join(config_dir,
-                                                           "history")}
-                      }
 
     if not os.path.exists(args.cfile):
         config.set_defaults(default_config)

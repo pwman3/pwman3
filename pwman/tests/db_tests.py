@@ -20,30 +20,16 @@ import pwman.data.factory
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
+from pwman import which, default_config
 import unittest
 
-
-def which(cmd):
-    _, cmdname = os.path.split(cmd)
-    for path in os.environ["PATH"].split(os.pathsep):
-        cmd = os.path.join(path, cmdname)
-        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
-            return cmd
-    return None
-
 _saveconfig = False
-default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                             'cls_timeout': '5'
-                             },
-                  'Database': {'type': 'SQLite',
-                               'filename':
-                               os.path.join(os.path.dirname(__file__),
-                                            "test.pwman.db")},
 
-                  'Encryption': {'algorithm': 'AES'},
-                  'Readline': {'history': os.path.join("tests",
-                                                       "history")}
-                  }
+default_config['Database'] = {'type': 'SQLite',
+                              'filename':
+                              os.path.join(os.path.dirname(__file__),
+                                           "test.pwman.db")
+                              }
 
 
 class SetupTester(object):
