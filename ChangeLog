@@ -1,3 +1,9 @@
+2013-11-23 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.3
+	* fix for   #726987 in Debian
+	* fix issue #21
+	* fix for ##726884 in Debian 
+
 2013-09-28 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.2 
 	* Fix typos `help` option.
