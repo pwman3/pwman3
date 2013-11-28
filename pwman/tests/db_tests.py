@@ -117,3 +117,8 @@ class CLITests(unittest.TestCase):
     def test_input(self):
         name = self.tester.cli.get_username(reader=lambda: 'alice')
         self.assertEqual(name, 'alice')
+
+    def test_password(self):
+        password = self.tester.cli.get_password(None,
+                                                reader=lambda x: 'hatman')
+        self.assertEqual(password, 'hatman')

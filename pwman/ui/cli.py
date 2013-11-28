@@ -113,7 +113,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             return password
         # no args given
         password = tools.getpassword("Password (Blank to generate): ",
-                                     tools._defaultwidth, False)
+                                     tools._defaultwidth, False, reader)
         if not password:
             length = tools.getinput("Password length (default 7): ", "7")
             if length:
