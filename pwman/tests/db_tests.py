@@ -122,3 +122,13 @@ class CLITests(unittest.TestCase):
         password = self.tester.cli.get_password(None,
                                                 reader=lambda x: 'hatman')
         self.assertEqual(password, 'hatman')
+
+    def test_get_url(self):
+        url = self.tester.cli.get_url(reader=lambda: 'example.com')
+        self.assertEqual(url, 'example.com')
+
+    def test_get_notes(self):
+        pass
+
+    def test_get_tags(self):
+        pass
