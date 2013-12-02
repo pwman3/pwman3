@@ -128,10 +128,10 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         return password
 
     def get_url(self, default="", reader=raw_input):
-        return tools.getinput("Url: ", default)
+        return tools.getinput("Url: ", default, reader)
 
     def get_notes(self, default="", reader=raw_input):
-        return tools.getinput("Notes: ", default)
+        return tools.getinput("Notes: ", default, reader)
 
     def get_tags(self, default=None):
         """read node tags from user"""

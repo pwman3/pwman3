@@ -128,7 +128,8 @@ class CLITests(unittest.TestCase):
         self.assertEqual(url, 'example.com')
 
     def test_get_notes(self):
-        pass
+        notes = self.tester.cli.get_notes(reader=lambda: 'test 123\n test 456')
+        self.assertEqual(notes, 'test 123\n test 456')
 
     def test_get_tags(self):
         pass
