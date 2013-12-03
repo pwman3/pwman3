@@ -32,6 +32,13 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 
+class CustomInstallCommand(install):
+    """Customized setuptools install command - prints a friendly greeting."""
+    def run(self):
+        print "Hello, developer, how are you? :)"
+        install.run(self)
+        print "Hello, developer, how are you? :)"
+
 setup(name=pwman.appname,
       version=pwman.version,
       description=pwman.description,
@@ -62,6 +69,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python :: 2.7'
       ],
       test_suite='pwman.tests.suite',
-      cmdclass={'install_pycrypto': PyCryptoInstallCommand},
+      cmdclass={'install': CustomInstallCommand,
+                'install_pycrypto': PyCryptoInstallCommand},
 
       )
