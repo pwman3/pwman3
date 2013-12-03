@@ -8,6 +8,7 @@ import pwman
 import sys
 from setuptools.command.install import install
 import os
+import shutil
 
 
 class PyCryptoInstallCommand(install):
@@ -35,9 +36,8 @@ class PyCryptoInstallCommand(install):
 class CustomInstallCommand(install):
     """Customized setuptools install command - prints a friendly greeting."""
     def run(self):
-        print "Hello, developer, how are you? :)"
         install.run(self)
-        print "Hello, developer, how are you? :)"
+        shutil.copy("documentation/man_page/pwman3.1", "/usr/share/man/man1/")
 
 setup(name=pwman.appname,
       version=pwman.version,
