@@ -18,7 +18,7 @@ else:
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.nodes import NewNode
-from pwman.data.tags import Tag
+from pwman.data.tags import Tag, TagNew
 from pwman.util.crypto import CryptoEngine
 from pwman import which, default_config
 import unittest
@@ -132,4 +132,9 @@ class CLITests(unittest.TestCase):
         self.assertEqual(notes, 'test 123\n test 456')
 
     def test_get_tags(self):
-        pass
+        tags = self.tester.cli.get_tags(reader=lambda: 'looking glass')
+        for t in tags:
+            self.assertIsInstance(t, TagNew)
+
+        for t, n in zip(tags, 'looking glass'.split()):
+            self.assertEqual(t.name.strip(), n)

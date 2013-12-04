@@ -699,7 +699,7 @@ class BaseCommands(PwmanCliOld):
         t = self._tags(enc)
         print '\n'.join(t)
 
-    def get_tags(self, default=None):
+    def get_tags(self, default=None, reader=raw_input):
         """read tags from user"""
         defaultstr = ''
         if default:
@@ -728,7 +728,8 @@ class BaseCommands(PwmanCliOld):
                     else:
                         count += 1
 
-        taglist = tools.getinput("Tags: ", defaultstr, completer=complete)
+        taglist = tools.getinput("Tags: ", defaultstr, completer=complete,
+                                 reader=reader)
         tagstrings = taglist.split()
         tags = [TagN(tn) for tn in tagstrings]
 
