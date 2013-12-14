@@ -22,6 +22,7 @@
 """
 Define the CLI interface for pwman3 and the helper functions
 """
+from __future__ import print_function
 import pwman
 import pwman.exchange.importer as importer
 import pwman.exchange.exporter as exporter
@@ -61,9 +62,9 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
     """
     def error(self, exception):
         if (isinstance(exception, KeyboardInterrupt)):
-            print
+            print('')
         else:
-            print "Error: %s " % (exception)
+            print("Error: {0} ".format(exception))
 
     def do_exit(self, args):
         """exit the ui"""
@@ -109,7 +110,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                                                            True, leetify,
                                                            numerics,
                                                            special_signs)
-            print "New password: %s" % (password)
+            print ("New password: %s" % (password))
             return password
         # no args given
         password = tools.getpassword("Password (Blank to generate): ",
@@ -124,7 +125,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                                                            True, leetify,
                                                            numerics,
                                                            special_signs)
-        print "New password: %s" % (password)
+        print ("New password: %s" % (password))
         return password
 
     def get_url(self, default="", reader=raw_input):
@@ -167,7 +168,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
     def print_node(self, node):
         width = str(tools._defaultwidth)
-        print "Node %d." % (node._id)
+        print ("Node %d." % (node._id))
         print ("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
                                         node.get_username())
         print ("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
@@ -176,9 +177,9 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                                         node.get_url())
         print ("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
                                         node.get_notes())
-        print tools.typeset("Tags: ", Fore.RED),
+        print (tools.typeset("Tags: ", Fore.RED)),
         for t in node.get_tags():
-            print " %s \n" % t.get_name(),
+            print (" %s \n" % t.get_name()),
 
         def heardEnter():
             inpt, out, err = uselect.select([sys.stdin], [], [], 0.0001)
@@ -199,19 +200,19 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
-            print "Type Enter to flush screen (autoflash in "\
-                  + "%d sec.)" % flushtimeout
+            print ("Type Enter to flush screen (autoflash in "
+                   "%d sec.)" % flushtimeout)
             waituntil_enter(heardEnter, flushtimeout)
 
     def do_tags(self, arg):
         tags = self._db.listtags()
         if len(tags) > 0:
             tags[0].get_name()  # hack to get password request before output
-        print "Tags: ",
+        print ("Tags: "),
         if len(tags) == 0:
-            print "None",
+            print ("None"),
         for t in tags:
-            print "%s " % (t.get_name()),
+            print ("%s " % (t.get_name())),
         print
 
     def complete_filter(self, text, line, begidx, endidx):
@@ -237,11 +238,11 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             self._db.filter(tags)
 
             tags = self._db.currenttags()
-            print "Current tags: ",
+            print ("Current tags: "),
             if len(tags) == 0:
-                print "None",
+                print ("None"),
             for t in tags:
-                print "%s " % (t.get_name()),
+                print ("%s " % (t.get_name())),
             print
         except Exception, e:
             self.error(e)
@@ -259,7 +260,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                 i = int(i)
                 node = self._db.getnodes([i])[0]
                 menu = CliMenu()
-                print "Editing node %d." % (i)
+                print ("Editing node %d." % (i))
                 menu.add(CliMenuItem("Username", self.get_username,
                                      node.get_username,
                                      node.set_username))
@@ -325,7 +326,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                 if not b:
                     return
                 exp.export_data(self._db, out_file, nodes)
-            print "Data exported."
+            print ("Data exported.")
         except Exception, e:
             self.error(e)
 
@@ -368,7 +369,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             tags = self.get_tags()
             node.set_tags(tags)
             self._db.addnodes([node])
-            print "Password ID: %d" % (node.get_id())
+            print ("Password ID: %d" % (node.get_id()))
         except Exception, e:
             self.error(e)
 
@@ -389,7 +390,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                                    % (n.get_username(), n.get_url()), False)
                 if b is True:
                     self._db.removenodes([n])
-                    print "%s@%s deleted" % (n.get_username(), n.get_url())
+                    print ("%s@%s deleted" % (n.get_username(), n.get_url()))
         except Exception, e:
             self.error(e)
 
@@ -432,8 +433,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                     tagstring = tagstring[:tagstring_len - 3] + "..."
 
                 fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                print tools.typeset(fmt % (n.get_id(), name, tagstring),
-                                    Fore.YELLOW, False)
+                print (tools.typeset(fmt % (n.get_id(), name, tagstring),
+                                     Fore.YELLOW, False))
                 i += 1
                 if i > rows - 2:
                     i = 0
@@ -465,21 +466,22 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                 conf = config.get_conf()
                 for s in conf.keys():
                     for n in conf[s].keys():
-                        print "%s.%s = %s" % (s, n, conf[s][n])
+                        print ("%s.%s = %s" % (s, n, conf[s][n]))
             elif len(argstrs) == 1:
                 r = re.compile("(.+)\.(.+)")
                 m = r.match(argstrs[0])
                 if m is None or len(m.groups()) != 2:
-                    print "Invalid option format"
+                    print ("Invalid option format")
                     self.help_set()
                     return
-                print "%s.%s = %s" % (m.group(1), m.group(2),
-                                      config.get_value(m.group(1), m.group(2)))
+                print ("%s.%s = %s" % (m.group(1), m.group(2),
+                                       config.get_value(m.group(1),
+                                       m.group(2))))
             elif len(argstrs) == 2:
                 r = re.compile("(.+)\.(.+)")
                 m = r.match(argstrs[0])
                 if m is None or len(m.groups()) != 2:
-                    print "Invalid option format"
+                    print ("Invalid option format")
                     self.help_set()
                     return
                 config.set_value(m.group(1), m.group(2), argstrs[1])
@@ -495,7 +497,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                 config.save(argstrs[0])
             else:
                 config.save()
-            print "Config saved."
+            print ("Config saved.")
         except Exception, e:
             self.error(e)
 
@@ -506,21 +508,21 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         if self.hasxsel:
             ids = self.get_ids(args)
             if len(ids) > 1:
-                print "Can copy only 1 password at a time..."
+                print ("Can copy only 1 password at a time...")
                 return None
             try:
                 node = self._db.getnodes(ids)
                 tools.text_to_clipboards(node[0].get_password())
-                print "copied password for {}@{} clipboard".format(
-                    node[0].get_username(), node[0].get_url())
+                print ("copied password for {}@{} clipboard".format(
+                       node[0].get_username(), node[0].get_url()))
 
-                print "erasing in 10 sec..."
+                print ("erasing in 10 sec...")
                 time.sleep(10)
                 tools.text_to_clipboards("")
             except Exception, e:
                 self.error(e)
         else:
-            print "Can't copy to clipboard, no xsel found in the system!"
+            print ("Can't copy to clipboard, no xsel found in the system!")
 
     def do_open(self, args):
         ids = self.get_ids(args)
@@ -528,7 +530,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             self.help_open()
             return
         if len(ids) > 1:
-            print "Can open only 1 link at a time ..."
+            print ("Can open only 1 link at a time ...")
             return None
         try:
             node = self._db.getnodes(ids)
@@ -589,21 +591,21 @@ class BaseCommands(PwmanCliOld):
         if self.hasxsel:
             ids = self.get_ids(args)
             if len(ids) > 1:
-                print "Can copy only 1 password at a time..."
+                print ("Can copy only 1 password at a time...")
                 return None
             try:
                 node = self._db.getnodes(ids)
                 tools.text_to_clipboards(node[0].password)
-                print "copied password for {}@{} clipboard".format(
-                    node[0].username, node[0].url)
+                print ("copied password for {}@{} clipboard".format(
+                       node[0].username, node[0].url))
 
-                print "erasing in 10 sec..."
+                print ("erasing in 10 sec...")
                 time.sleep(10)
                 tools.text_to_clipboards("")
             except Exception, e:
                 self.error(e)
         else:
-            print "Can't copy to clipboard, no xsel found in the system!"
+            print ("Can't copy to clipboard, no xsel found in the system!")
 
     def do_open(self, args):
         ids = self.get_ids(args)
@@ -611,7 +613,7 @@ class BaseCommands(PwmanCliOld):
             self.help_open()
             return
         if len(ids) > 1:
-            print "Can open only 1 link at a time ..."
+            print ("Can open only 1 link at a time ...")
             return None
         try:
             node = self._db.getnodes(ids)
@@ -627,7 +629,7 @@ class BaseCommands(PwmanCliOld):
                 i = int(i)
                 node = self._db.getnodes([i])[0]
                 menu = CliMenu()
-                print "Editing node %d." % (i)
+                print ("Editing node %d." % (i))
 
                 menu.add(CliMenuItem("Username", self.get_username,
                                      node.username,
@@ -654,19 +656,19 @@ class BaseCommands(PwmanCliOld):
 
     def print_node(self, node):
         width = str(tools._defaultwidth)
-        print "Node %d." % (node._id)
-        print ("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
-                                        node.username)
-        print ("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
-                                        node.password)
-        print ("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
-                                        node.url)
-        print ("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
-                                        node.notes)
-        print tools.typeset("Tags: ", Fore.RED),
+        print ("Node %d." % (node._id))
+        print (("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
+                                         node.username))
+        print (("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
+                                         node.password))
+        print (("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
+                                         node.url))
+        print (("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
+                                         node.notes))
+        print (tools.typeset("Tags: ", Fore.RED)),
         for t in node.tags:
-            print " %s " % t
-        print
+            print (" %s " % t)
+        print()
 
         def heardEnter():
             i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
@@ -687,17 +689,17 @@ class BaseCommands(PwmanCliOld):
 
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
-            print "Type Enter to flush screen (autoflash in "\
-                  + "%d sec.)" % flushtimeout
+            print ("Type Enter to flush screen (autoflash in "
+                   "%d sec.)" % flushtimeout)
             waituntil_enter(heardEnter, flushtimeout)
 
     def do_tags(self, arg):
         enc = CryptoEngine.get()
         if not enc.alive():
             enc._getcipher()
-        print "Tags: \n",
+        print ("Tags: \n",)
         t = self._tags(enc)
-        print '\n'.join(t)
+        print ('\n'.join(t))
 
     def get_tags(self, default=None, reader=raw_input):
         """read tags from user"""
@@ -773,7 +775,7 @@ class BaseCommands(PwmanCliOld):
                 formatted_entry = tools.typeset(fmt % (n._id,
                                                 name, tagstring),
                                                 Fore.YELLOW, False)
-                print formatted_entry
+                print (formatted_entry)
                 i += 1
                 if i > rows - 2:
                     i = 0
@@ -793,11 +795,11 @@ class BaseCommands(PwmanCliOld):
                 tags.append(TagN(ts))
             self._db.filter(tags)
             tags = self._db.currenttags()
-            print "Current tags: ",
+            print ("Current tags: ",)
             if len(tags) == 0:
-                print "None",
+                print ("None",)
             for t in tags:
-                print "%s " % (t.name),
+                print ("%s " % (t.name),)
             print
         except Exception, e:
             self.error(e)
@@ -839,7 +841,7 @@ class BaseCommands(PwmanCliOld):
             node = NewNode(username, password, url, notes)
             node.tags = self.get_tags()
             self._db.addnodes([node])
-            print "Password ID: %d" % (node._id)
+            print ("Password ID: %d" % (node._id))
             # when done with node erase it
             zerome(password)
         except Exception, e:
@@ -868,7 +870,7 @@ class BaseCommands(PwmanCliOld):
                     pass
                 if b is True:
                     self._db.removenodes([n])
-                    print "%s@%s deleted" % (n.username, n.url)
+                    print ("%s@%s deleted" % (n.username, n.url))
         except Exception, e:
             self.error(e)
 
