@@ -115,26 +115,37 @@ class CLITests(unittest.TestCase):
         self.tester.create()
 
     def test_input(self):
-        name = self.tester.cli.get_username(reader=lambda: 'alice')
-        self.assertEqual(name, 'alice')
+        name = self.tester.cli.get_username(reader=lambda: u'alice')
+        self.assertEqual(name, u'alice')
 
     def test_password(self):
         password = self.tester.cli.get_password(None,
-                                                reader=lambda x: 'hatman')
-        self.assertEqual(password, 'hatman')
+                                                reader=lambda x: u'hatman')
+        self.assertEqual(password, u'hatman')
 
     def test_get_url(self):
-        url = self.tester.cli.get_url(reader=lambda: 'example.com')
-        self.assertEqual(url, 'example.com')
+        url = self.tester.cli.get_url(reader=lambda: u'example.com')
+        self.assertEqual(url, u'example.com')
 
     def test_get_notes(self):
-        notes = self.tester.cli.get_notes(reader=lambda: 'test 123\n test 456')
-        self.assertEqual(notes, 'test 123\n test 456')
+        notes = self.tester.cli.get_notes(reader=lambda:
+                                          u'test 123\n test 456')
+        self.assertEqual(notes, u'test 123\n test 456')
 
     def test_get_tags(self):
-        tags = self.tester.cli.get_tags(reader=lambda: 'looking glass')
+        tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         for t in tags:
             self.assertIsInstance(t, TagNew)
 
         for t, n in zip(tags, 'looking glass'.split()):
             self.assertEqual(t.name.strip(), n)
+
+    # creating all the components of the node does
+    # not yet add the node!
+
+    def test_add_new_entry(self):
+        node = NewNode('alice', 'dough!', 'example.com',
+                       'lorem impsum')
+        tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
+        node.tags = tags
+        self.tester.cli._db.addnodes([node])
