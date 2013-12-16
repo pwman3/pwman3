@@ -8,7 +8,6 @@ import pwman
 import sys
 from setuptools.command.install import install
 import os
-import shutil
 
 
 class PyCryptoInstallCommand(install):
@@ -32,13 +31,6 @@ class PyCryptoInstallCommand(install):
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
 
-
-class CustomInstallCommand(install):
-    """Customized setuptools install command - prints a friendly greeting."""
-    def run(self):
-        install.run(self)
-        shutil.copy("documentation/man_page/pwman3.1", "/usr/share/man/man1/")
-
 setup(name=pwman.appname,
       version=pwman.version,
       description=pwman.description,
@@ -52,6 +44,8 @@ setup(name=pwman.appname,
                 'pwman.exchange',
                 'pwman.ui',
                 'pwman.util'],
+      package_data={"data": ["documentation"]},
+      include_package_data=True,
       scripts=['scripts/pwman3'],
       zip_safe=False,
       install_requires=['pycrypto>=2.6',
@@ -69,7 +63,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python :: 2.7'
       ],
       test_suite='pwman.tests.suite',
-      cmdclass={'install': CustomInstallCommand,
+      cmdclass={
                 'install_pycrypto': PyCryptoInstallCommand},
 
       )
