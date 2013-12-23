@@ -149,3 +149,12 @@ class CLITests(unittest.TestCase):
         tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         node.tags = tags
         self.tester.cli._db.addnodes([node])
+        self.tester.cli._db._cur.execute(
+            "SELECT ID FROM NODES ORDER BY ID ASC", [])
+        rows = self.tester.cli._db._cur.fetchall()
+
+        # by now the db should have 2 new nodes
+        # the first one was added by test_create_node in DBTests
+        # the second was added just now.
+        # This will pass only when running all the tests than ...
+        self.assertEqual(len(rows), 2)
