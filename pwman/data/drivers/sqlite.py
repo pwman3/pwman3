@@ -225,11 +225,13 @@ class SQLiteDatabaseNewForm(Database):
                 params.append(t._name)
         try:
             self._cur.execute(sql, params)
-            ids = []
-            row = self._cur.fetchone()
-            while row is not None:
-                ids.append(row[0])
-                row = self._cur.fetchone()
+            # ids = []
+            # row = self._cur.fetchone()
+            # while row is not None:
+            #   ids.append(row[0])
+            #   row = self._cur.fetchone()
+            rows = self._cur.fetchall()
+            ids = [row[0] for row in rows]
             return ids
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
