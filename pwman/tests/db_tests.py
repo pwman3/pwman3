@@ -92,7 +92,7 @@ class DBTests(unittest.TestCase):
         new_node = self.db.getnodes([idx_created])[0]
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
-            self.assertEquals(attr, eval('new_node.' + key))
+            self.assertEquals(attr, getattr(new_node, key))
         self.db.close()
 
     def test_tags(self):
