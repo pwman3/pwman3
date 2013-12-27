@@ -42,7 +42,7 @@ import time
 import select as uselect
 import ast
 from pwman.ui import tools
-from pwman.ui.tools import CliMenu
+from pwman.ui.tools import CliMenu, CMDLoop
 from pwman.ui.tools import CliMenuItem
 from pwman.ui.tools import CLICallback
 from colorama import Fore
@@ -103,6 +103,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         leetify -> symbols
         special_chars -> special_signs
         """
+        # TODO: replace this code with tools.getpassword
         if argsgiven == 1:
             length = tools.getinput("Password length (default 7): ", "7")
             length = len(length)
@@ -628,7 +629,7 @@ class BaseCommands(PwmanCliOld):
             try:
                 i = int(i)
                 node = self._db.getnodes([i])[0]
-                menu = CliMenu()
+                menu = CMDLoop()
                 print ("Editing node %d." % (i))
 
                 menu.add(CliMenuItem("Username", self.get_username,
@@ -647,7 +648,7 @@ class BaseCommands(PwmanCliOld):
                 menu.add(CliMenuItem("Tags", self.get_tags,
                                      node.tags,
                                      node.tags))
-                menu.runner(node)
+                menu.run(node)
                 self._db.editnode(i, node)
                 # when done with node erase it
                 zerome(node._password)
