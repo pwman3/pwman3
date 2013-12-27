@@ -287,6 +287,8 @@ class CMDLoop(CliMenu):
                     current = x.getter
                 except AttributeError:
                     current = x
+
+                # when printing tags, we have list ...
                 currentstr = ''
                 if type(current) == list:
                     for c in current:
@@ -294,11 +296,13 @@ class CMDLoop(CliMenu):
                             currentstr += ' ' + c
                         except TypeError:
                             currentstr += ' ' + c._name
+                # for the case we are not dealing with
+                # a list of tags
                 else:
                     currentstr = current
 
                 print ("%s - %s: %s" % (i, x.name, currentstr))
-            print("%c - Finish editing" % ('X'))
+            print("X - Finish editing")
             option = getonechar("Enter your choice:")
             try:
                 print ("Selection, ", option)
