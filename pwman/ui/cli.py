@@ -47,6 +47,7 @@ from pwman.ui.tools import CliMenuItem
 from pwman.ui.tools import CLICallback
 from colorama import Fore
 from pwman.ui.base import HelpUI, BaseUI
+import getpass
 
 try:
     import readline
@@ -824,7 +825,7 @@ class BaseCommands(PwmanCliOld):
                     raise Exception(errmsg)
                 if not isinstance(args, dict):
                     raise Exception(errmsg)
-                password = self.get_password(1, **args)
+                password = self.get_password(argsgiven=1, **args)
             else:
                 numerics = config.get_value(
                     "Generator", "numerics").lower() == 'true'
@@ -833,7 +834,7 @@ class BaseCommands(PwmanCliOld):
                     "Generator", "leetify").lower() == 'true'
                 special_chars = config.get_value(
                     "Generator", "special_chars").lower() == 'true'
-                password = self.get_password(0,
+                password = self.get_password(argsgiven=0,
                                              numerics=numerics,
                                              symbols=leetify,
                                              special_signs=special_chars)
@@ -874,6 +875,12 @@ class BaseCommands(PwmanCliOld):
                     print ("%s@%s deleted" % (n.username, n.url))
         except Exception, e:
             self.error(e)
+
+    def get_password(self, argsgiven, numerics=False, leetify=False,
+                     symbols=False, special_signs=False,
+                     reader=getpass.getpass):
+        return tools.getpassword("Password (Blank to generate): ",
+                                 reader=reader)
 
 
 class Aliases(BaseCommands, PwmanCliOld):

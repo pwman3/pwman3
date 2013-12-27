@@ -29,6 +29,7 @@ import struct
 import os
 import colorama
 from pwman.data.tags import TagNew as Tag
+import pwman.util.generator as generator
 
 if sys.platform != 'win32':
     import termios
@@ -138,27 +139,32 @@ def open_url(link, macosx=False):
         print ("Executing open_url failed with:\n", e)
 
 
-def getpassword(question, width=_defaultwidth, echo=False,
-                reader=getpass.getpass):
-    """
-    read password given by user
-    TODO: migrate all the fancy interface from ui.py to here.
-    This includes all the automatic generator password
-    policy etc.
-    """
-    if echo:
-        print(question.ljust(width),)
-        return sys.stdin.readline().rstrip()
-    else:
-        while True:
-            a1 = reader(question.ljust(width))
-            if not a1:
-                return a1
-            a2 = reader("[Repeat] %s" % (question.ljust(width)))
-            if a1 == a2:
-                return a1
-            else:
-                print ("Passwords don't match. Try again.")
+def getpassword(question, argsgiven=None,
+                width=_defaultwidth, echo=False,
+                reader=getpass.getpass, numerics=False, leetify=False,
+                symbols=False, special_signs=False):
+    # TODO: getpassword should recieve a config insatce
+    #       and generate the policy according to it,
+    #       so that getpassword in cli would be simplified
+    if argsgiven == 1:
+        length = getinput("Password length (default 7): ", default='7')
+        length = int(length)
+        password, dumpme = generator.generate_password(length, length,
+                                                       True, leetify,
+                                                       numerics,
+                                                       special_signs)
+        print ("New password: %s" % (password))
+        return password
+    # no args given
+    while True:
+        a1 = reader(question.ljust(width))
+        if not a1:
+            return getpassword('', argsgiven=1)
+        a2 = reader("[Repeat] %s" % (question.ljust(width)))
+        if a1 == a2:
+            return a1
+        else:
+            print ("Passwords don't match. Try again.")
 
 
 def gettermsize():
@@ -177,7 +183,11 @@ def getinput(question, default="", reader=raw_input,
     """
     if reader == raw_input:
         if not _readline_available:
-            return raw_input(question.ljust(width))
+            val = raw_input(question.ljust(width))
+            if val:
+                return val
+            else:
+                return default
         else:
             def defaulter():
                 """define default behavior startup"""
