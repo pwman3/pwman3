@@ -163,7 +163,6 @@ class SQLiteDatabaseNewForm(Database):
     def editnode(self, id, node):
         try:
             sql = "UPDATE NODES SET DATA = ? WHERE ID = ?"
-            #sql = "INSERT OR UPDATE NODES SET DATA = ? WHERE ID = ?"
             self._cur.execute(sql, [node.dump_edit_to_db()[0], id])
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
@@ -173,16 +172,11 @@ class SQLiteDatabaseNewForm(Database):
 
     def addnodes(self, nodes):
         """
-        This method injects the data as PWMAN object using cPickle.
-        To make pwman more secure, either this method has to replaced.
-        Or whenever stuff is read from the database, there must be a
-        security check that it contains the correct objects!
-        Nodes passed to this methos are instances!
+        This method writes the data as an ecrypted string to
+        the database
         """
         for n in nodes:
             sql = "INSERT INTO NODES(DATA) VALUES(?)"
-            # if not isinstance(n, Node): raise DatabaseException(
-            #    "Tried to insert foreign object into database [%s]", n)
             value = n.dump_to_db()
             try:
                 self._cur.execute(sql, value)
