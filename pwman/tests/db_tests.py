@@ -141,7 +141,7 @@ class CLITests(unittest.TestCase):
             self.assertEqual(t.name.strip(), n)
 
     # creating all the components of the node does
-    # not yet add the node!
+    # the node is still not added !
 
     def test_add_new_entry(self):
         node = NewNode('alice', 'dough!', 'example.com',
@@ -158,3 +158,4 @@ class CLITests(unittest.TestCase):
         # the second was added just now.
         # This will pass only when running all the tests than ...
         self.assertEqual(len(rows), 2)
+
