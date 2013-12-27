@@ -19,7 +19,7 @@
 """
 Define the CLI interface for pwman3 and the helper functions
 """
-
+from __future__ import print_function
 from pwman.util.callback import Callback
 import pwman.util.config as config
 import subprocess as sp
@@ -107,8 +107,8 @@ def text_to_clipboards(text):
         xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
         xsel_proc.communicate(text)
     except OSError, e:
-        print e, "\nExecuting xsel failed, is it installed ?\n \
-please check your configuration file ... "
+        print (e, "\nExecuting xsel failed, is it installed ?\n \
+               please check your configuration file ... ")
 
 
 def text_to_mcclipboard(text):
@@ -122,7 +122,7 @@ def text_to_mcclipboard(text):
         pbcopy_proc = sp.Popen(['pbcopy'], stdin=sp.PIPE)
         pbcopy_proc.communicate(text)
     except OSError, e:
-        print e, "\nExecuting pbcoy failed..."
+        print (e, "\nExecuting pbcoy failed...")
 
 
 def open_url(link, macosx=False):
@@ -135,13 +135,19 @@ def open_url(link, macosx=False):
     try:
         sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError, e:
-        print "Executing open_url failed with:\n", e
+        print ("Executing open_url failed with:\n", e)
 
 
 def getpassword(question, width=_defaultwidth, echo=False,
                 reader=getpass.getpass):
+    """
+    read password given by user
+    TODO: migrate all the fancy interface from ui.py to here.
+    This includes all the automatic generator password
+    policy etc.
+    """
     if echo:
-        print question.ljust(width),
+        print(question.ljust(width),)
         return sys.stdin.readline().rstrip()
     else:
         while True:
@@ -152,7 +158,7 @@ def getpassword(question, width=_defaultwidth, echo=False,
             if a1 == a2:
                 return a1
             else:
-                print "Passwords don't match. Try again."
+                print ("Passwords don't match. Try again.")
 
 
 def gettermsize():
@@ -178,7 +184,7 @@ def getinput(question, default="", reader=raw_input,
                 if _readline_available:
                     readline.insert_text(default)
                 readline.set_startup_hook(defaulter)
-                oldcompleter = readline.get_completer()
+                readline.get_completer()
                 readline.set_completer(completer)
 
             x = raw_input(question.ljust(width))
@@ -217,7 +223,7 @@ class CliMenu(object):
         if (isinstance(item, CliMenuItem)):
             self.items.append(item)
         else:
-            print item.__class__
+            print (item.__class__)
 
     def run(self):
         while True:
@@ -240,10 +246,10 @@ class CliMenu(object):
                 print ("%d - %-" + str(_defaultwidth)
                        + "s %s") % (i, x.name + ":",
                                     currentstr)
-            print "%c - Finish editing" % ('X')
+            print ("%c - Finish editing" % ('X'))
             option = getonechar("Enter your choice:")
             try:
-                print "selection, ", option
+                print ("selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 # new value is created by calling the editor with the
@@ -264,17 +270,20 @@ class CliMenu(object):
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break
-                print "Invalid selection"
+                print ("Invalid selection")
 
-    def runner(self, new_node):
+
+class CMDLoop(CliMenu):
+    """
+    Override CliMenu. This class is only used
+    when editing NewNode,
+    """
+    def run(self, new_node=None):
         while True:
             i = 0
             for x in self.items:
                 i = i + 1
-                # don't break compatability with old db
                 try:
-                    current = x.getter()
-                except TypeError:
                     current = x.getter
                 except AttributeError:
                     current = x
@@ -285,17 +294,14 @@ class CliMenu(object):
                             currentstr += ' ' + c
                         except TypeError:
                             currentstr += ' ' + c._name
-
                 else:
                     currentstr = current
 
-                print ("%d - %-" + str(_defaultwidth)
-                       + "s %s") % (i, x.name + ":",
-                                    currentstr)
-            print "%c - Finish editing" % ('X')
+                print ("%s - %s: %s" % (i, x.name, currentstr))
+            print("%c - Finish editing" % ('X'))
             option = getonechar("Enter your choice:")
             try:
-                print "selection, ", option
+                print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 # new value is created by calling the editor with the
@@ -307,8 +313,7 @@ class CliMenu(object):
                     self.items[0].getter = new_node.username
                     self.items[0].setter = new_node.username
                 elif selection == 1:  # for password
-                    value = self.items[selection].editor(0)
-                    new_node.password = value
+                    new_node.password = getpassword('New Password:')
                     self.items[1].getter = new_node.password
                     self.items[1].setter = new_node.password
                 elif selection == 2:
@@ -326,16 +331,15 @@ class CliMenu(object):
                     new_node.tags = tags
                     self.items[4].setter = new_node.tags
                     self.items[4].getter = new_node.tags
-
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break
-                print "Invalid selection"
+                print("Invalid selection")
 
 
 def getonechar(question, width=_defaultwidth):
     question = "%s " % (question)
-    print question.ljust(width),
+    print (question.ljust(width),)
     sys.stdout.flush()
 
     fd = sys.stdin.fileno()
@@ -352,7 +356,7 @@ def getonechar(question, width=_defaultwidth):
             tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
         except NameError:
             pass
-    print ch
+    print(ch)
     return ch
 
 
