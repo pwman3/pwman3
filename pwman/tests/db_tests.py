@@ -158,4 +158,3 @@ class CLITests(unittest.TestCase):
         # the second was added just now.
         # This will pass only when running all the tests than ...
         self.assertEqual(len(rows), 2)
-

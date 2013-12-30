@@ -204,7 +204,6 @@ class SQLiteDatabaseNewForm(Database):
 
     def listnodes(self):
         sql = ''
-        params = []
         if len(self._filtertags) == 0:
             sql = "SELECT ID FROM NODES ORDER BY ID ASC"
         else:
@@ -216,14 +215,9 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         " TAGS.ID WHERE TAGS.DATA = ? ")
-                params.append(t._name)
+                params = [t.name.strip()]
         try:
             self._cur.execute(sql, params)
-            # ids = []
-            # row = self._cur.fetchone()
-            # while row is not None:
-            #   ids.append(row[0])
-            #   row = self._cur.fetchone()
             rows = self._cur.fetchall()
             ids = [row[0] for row in rows]
             return ids

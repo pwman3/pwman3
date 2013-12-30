@@ -783,7 +783,7 @@ class BaseCommands(PwmanCliOld):
                     i = 0
                     c = tools.getonechar("Press <Space> for more,"
                                          " or 'Q' to cancel")
-                    if c == 'q':
+                    if c.lower() == 'q':
                         break
 
         except Exception, e:
@@ -792,9 +792,7 @@ class BaseCommands(PwmanCliOld):
     def do_filter(self, args):
         tagstrings = args.split()
         try:
-            tags = []
-            for ts in tagstrings:
-                tags.append(TagN(ts))
+            tags = [TagN(ts) for ts in tagstrings]
             self._db.filter(tags)
             tags = self._db.currenttags()
             print ("Current tags: ",)
