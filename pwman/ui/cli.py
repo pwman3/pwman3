@@ -73,6 +73,11 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         return True
 
     def get_ids(self, args):
+        """
+        Command can get a single ID or
+        a range of IDs, with begin-end.
+        e.g. 1-3 , will get 1 to 3.
+        """
         ids = []
         rex = re.compile(r"^(\d+)-(\d+)$")
         idstrs = args.split()
