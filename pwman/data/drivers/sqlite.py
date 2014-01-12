@@ -204,6 +204,7 @@ class SQLiteDatabaseNewForm(Database):
 
     def listnodes(self):
         sql = ''
+        params = []
         if len(self._filtertags) == 0:
             sql = "SELECT ID FROM NODES ORDER BY ID ASC"
         else:
