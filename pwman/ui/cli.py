@@ -56,6 +56,15 @@ except ImportError, e:
     _readline_available = False
 
 
+def get_pass_conf():
+    numerics = config.get_value("Generator", "numerics").lower() == 'true'
+    # TODO: allow custom leetifying through the config
+    leetify = config.get_value("Generator", "leetify").lower() == 'true'
+    special_chars = config.get_value("Generator", "special_chars"
+                                     ).lower() == 'true'
+    return numerics, leetify, special_chars
+
+
 # pylint: disable=R0904
 class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
     """
@@ -830,17 +839,11 @@ class BaseCommands(PwmanCliOld):
                     raise Exception(errmsg)
                 password = self.get_password(argsgiven=1, **args)
             else:
-                numerics = config.get_value(
-                    "Generator", "numerics").lower() == 'true'
-                # TODO: allow custom leetifying through the config
-                leetify = config.get_value(
-                    "Generator", "leetify").lower() == 'true'
-                special_chars = config.get_value(
-                    "Generator", "special_chars").lower() == 'true'
+                numerics, leet, s_chars = get_pass_conf()
                 password = self.get_password(argsgiven=0,
                                              numerics=numerics,
-                                             symbols=leetify,
-                                             special_signs=special_chars)
+                                             symbols=leet,
+                                             special_signs=s_chars)
             url = self.get_url()
             notes = self.get_notes()
             node = NewNode(username, password, url, notes)
