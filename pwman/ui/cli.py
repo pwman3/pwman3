@@ -703,7 +703,11 @@ class BaseCommands(PwmanCliOld):
                 time.sleep(period)
             self.do_cls('')
 
-        flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        try:
+            flushtimeout = int(config.get_value("Global", "cls_timeout"))
+        except ValueError:
+            flushtimeout = 10
+
         if flushtimeout > 0:
             print ("Type Enter to flush screen (autoflash in "
                    "%d sec.)" % flushtimeout)
