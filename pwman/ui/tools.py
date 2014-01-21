@@ -305,7 +305,7 @@ class CMDLoop(CliMenu):
                         try:
                             currentstr += ' ' + c
                         except TypeError:
-                            currentstr += ' ' + c._name
+                            currentstr += ' ' + c.name
                 # for the case we are not dealing with
                 # a list of tags
                 else:
