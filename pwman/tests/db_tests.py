@@ -160,3 +160,7 @@ class CLITests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
 
     #TODO: implement a test for get_ids
+
+    def test_get_ids():
+        #used by do_cp or do_open
+        #pass
