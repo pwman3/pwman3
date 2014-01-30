@@ -163,4 +163,4 @@ class CLITests(unittest.TestCase):
 
     def test_get_ids():
         #used by do_cp or do_open
-        #pass
+        pass
