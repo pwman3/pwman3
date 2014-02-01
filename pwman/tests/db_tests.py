@@ -1,7 +1,7 @@
 import os
 import os.path
 import sys
-from Crypto.Random import OSRNG
+from pwman.ui.tools import CLICallback, DummyCallback
 
 if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMac as PwmanCliOld
@@ -51,20 +51,7 @@ class SetupTester(object):
         dbver = 0.4
         dbtype = config.get_value("Database", "type")
         db = pwman.data.factory.create(dbtype, dbver)
-        # TODO:
-        # use db to insert an encrypted password here to the table
-        # KEY
-        # This way the key will be passed by "SELECT THEKEY FROM KEY"
-        # and there won't be a any prompting for password
-        ce = CryptoEngine()
-        ce.set_callback(raw_input)
-        random = OSRNG.new()
-        key = str(random.read(32)).encode('base64')
-        password = '12345'
-        cipher = ce._getcipher_real(password, ce._algo)
-        cipher.encrypt(ce._preparedata(key,
-                       cipher.block_size)).encode('base64')
-        self.cli = PwmanCliNew(db, self.xselpath)
+        self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
 
 
 class DBTests(unittest.TestCase):
@@ -175,6 +162,6 @@ class CLITests(unittest.TestCase):
 
     #TODO: implement a test for get_ids
 
-    def test_get_ids():
+    def test_get_ids(self):
         #used by do_cp or do_open
         pass

@@ -44,7 +44,6 @@ import ast
 from pwman.ui import tools
 from pwman.ui.tools import CliMenu, CMDLoop
 from pwman.ui.tools import CliMenuItem
-from pwman.ui.tools import CLICallback
 from colorama import Fore
 from pwman.ui.base import HelpUI, BaseUI
 import getpass
@@ -932,7 +931,7 @@ class PwmanCliNew(Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
-    def __init__(self, db, hasxsel):
+    def __init__(self, db, hasxsel, callback):
         """
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
@@ -944,8 +943,7 @@ class PwmanCliNew(Aliases, BaseCommands):
         self.hasxsel = hasxsel
         try:
             enc = CryptoEngine.get()
-            #enc.set_callback(CLICallback())
-            enc._callback = CLICallback()
+            enc._callback = callback()
             self._db = db
             self._db.open()
         except Exception, e:

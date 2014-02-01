@@ -45,10 +45,19 @@ class Database(object):
         if key is not None:
             enc.set_cryptedkey(key)
         else:
-            self.changepassword()
+            #self.changepassword()
+            self.get_user_password()
 
     def close(self):
         pass
+
+    def get_user_password(self):
+        """
+        get the databases password from the user
+        """
+        enc = CryptoEngine.get()
+        newkey = enc.changepassword()
+        return self.savekey(newkey)
 
     def changepassword(self):
         """

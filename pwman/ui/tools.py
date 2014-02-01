@@ -383,8 +383,17 @@ class CliMenuItem(object):
 
 
 class CLICallback(Callback):
+
     def getinput(self, question):
         return raw_input(question)
 
     def getsecret(self, question):
         return getpass.getpass(question + ":")
+
+class DummyCallback(Callback):
+
+    def getinput(self, question):
+        return '12345'
+
+    def getsecret(self, question):
+        return '12345'

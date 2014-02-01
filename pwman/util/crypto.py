@@ -221,6 +221,13 @@ class CryptoEngine(object):
         """
         return self._callback
 
+    def get_user_password():
+        "get the password from the user"
+        if self._callback is None:
+            raise CryptoNoCallbackException("No call back class has been "
+                                            "specified")
+
+
     def changepassword(self):
         """
         Creates a new key. The key itself is actually stored in
@@ -229,8 +236,8 @@ class CryptoEngine(object):
         password for the database.
         If oldKeyCrypted is none, then a new password is generated."""
         if self._callback is None:
-            raise CryptoNoCallbackException("No call back class has been \
-specified")
+            raise CryptoNoCallbackException("No call back class has been "
+                                            "specified")
         if self._keycrypted is None:
             # Generate a new key, 32 bits in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
@@ -310,8 +317,8 @@ password again")
 
         while tries < max_tries:
             try:
-                password = self._callback.getsecret("Please enter your \
-password")
+                password = self._callback.getsecret("Please enter your "
+                                                    "password")
                 tmpcipher = self._getcipher_real(password, self._algo)
                 plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
                     'base64'))
