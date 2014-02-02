@@ -8,3 +8,4 @@ dist/*
 *.db
 env/*
 MANIFEST
+.coverage
