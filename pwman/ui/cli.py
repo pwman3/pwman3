@@ -91,16 +91,15 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
         rex = rex.match(args)
         if hasattr(rex, 'groupdict'):
-            begin = int(rex.groupdict()['begin'])
-            end = int(rex.groupdict()['end'])
-
-            if end and begin:
-                # check that end is bigger than begin
+            try:
+                begin = int(rex.groupdict()['begin'])
+                end = int(rex.groupdict()['end'])
                 if not end > begin:
                     print("Start node should be smaller than end node")
                     return ids
                 ids += range(begin, end+1)
-            elif begin:
+                return ids
+            except TypeError:
                 ids.append(int(begin))
         else:
             print("Could not understand your input...")

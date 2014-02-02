@@ -1,7 +1,7 @@
 import os
 import os.path
 import sys
-from pwman.ui.tools import CLICallback, DummyCallback
+from pwman.ui.tools import DummyCallback
 
 if 'darwin' in sys.platform:
     from pwman.ui.mac import PwmanCliMac as PwmanCliOld
@@ -164,4 +164,11 @@ class CLITests(unittest.TestCase):
 
     def test_get_ids(self):
         #used by do_cp or do_open
-        pass
+        import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
+
+        self.assertEqual([1], self.tester.cli.get_ids('1'))
+        self.assertListEqual([1, 2, 3, 4, 5], self.tester.cli.get_ids('1-5'))
+        self.assertListEqual([], self.tester.cli.get_ids('5-1'))
+        self.assertListEqual([], self.tester.cli.get_ids('5x-1'))
+        self.assertListEqual([], self.tester.cli.get_ids('5x'))
+        self.assertListEqual([], self.tester.cli.get_ids('5\\'))
