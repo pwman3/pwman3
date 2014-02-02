@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pwman3/pwman3.png?branch=master)](https://travis-ci.org/pwman3/pwman3)
 [![Coverage Status](https://coveralls.io/repos/pwman3/pwman3/badge.png?branch=master)](https://coveralls.io/r/pwman3/pwman3?branch=master)
+
 A nice command line password manager, which is smart enough to use different SQL Databases (MySQL, SQLite, PostgreSQL).  
 Pwman3 can also copy passwords to the clipboard (on Mac and Linux) without exposing them, so you save
 some typing. 
