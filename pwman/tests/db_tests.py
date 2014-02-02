@@ -164,8 +164,6 @@ class CLITests(unittest.TestCase):
 
     def test_get_ids(self):
         #used by do_cp or do_open
-        import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
-
         self.assertEqual([1], self.tester.cli.get_ids('1'))
         self.assertListEqual([1, 2, 3, 4, 5], self.tester.cli.get_ids('1-5'))
         self.assertListEqual([], self.tester.cli.get_ids('5-1'))
