@@ -47,6 +47,7 @@ from pwman.ui.tools import CliMenuItem
 from colorama import Fore
 from pwman.ui.base import HelpUI, BaseUI
 import getpass
+from pwman.ui.tools import CLICallback
 
 try:
     import readline
@@ -87,20 +88,22 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         e.g. 1-3 , will get 1 to 3.
         """
         ids = []
-        rex = re.compile(r"^(\d+)-(\d+)$")
-        idstrs = args.split()
-        for i in idstrs:
-            m = rex.match(i)
-            if m is None:
-                try:
-                    ids.append(int(i))
-                except ValueError:
-                    self._db.clearfilter()
-                    self._db.filter([Tag(i)])
-                    ids += self._db.listnodes()
-            else:
-                ids += range(int(m.group(1)),
-                             int(m.group(2)) + 1)
+        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
+        rex = rex.match(args)
+        if hasattr(rex, 'groupdict'):
+            begin = int(rex.groupdict()['begin'])
+            end = int(rex.groupdict()['end'])
+
+            if end and begin:
+                # check that end is bigger than begin
+                if not end > begin:
+                    print("Start node should be smaller than end node")
+                    return ids
+                ids += range(begin, end+1)
+            elif begin:
+                ids.append(int(begin))
+        else:
+            print("Could not understand your input...")
         return ids
 
     def get_filesystem_path(self, default="", reader=raw_input):
@@ -491,7 +494,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
                     return
                 print ("%s.%s = %s" % (m.group(1), m.group(2),
                                        config.get_value(m.group(1),
-                                       m.group(2))))
+                                                        m.group(2))))
             elif len(argstrs) == 2:
                 r = re.compile("(.+)\.(.+)")
                 m = r.match(argstrs[0])
