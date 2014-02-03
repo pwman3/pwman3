@@ -34,7 +34,7 @@ def which(cmd):
 
     for path in os.environ["PATH"].split(os.pathsep):
         cmd = os.path.join(path, cmdname)
-        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
+        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):  # pragma: no cover
             return cmd
 
 config_dir = os.path.expanduser("~/.pwman")

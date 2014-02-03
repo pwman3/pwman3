@@ -74,5 +74,5 @@ class TagNew(object):
 
     @name.setter
     def name(self, value):
-        enc = CryptoEngine.get()
-        self._name = enc.encrypt(value)
+        enc = CryptoEngine.get()  #  pragma: no cover
+        self._name = enc.encrypt(value)  # pragma: no cover
