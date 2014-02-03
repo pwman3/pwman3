@@ -37,8 +37,6 @@ def which(cmd):
         if os.path.isfile(cmd) and os.access(cmd, os.X_OK):
             return cmd
 
-    return None
-
 config_dir = os.path.expanduser("~/.pwman")
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
