@@ -3,11 +3,11 @@ import os.path
 import sys
 from pwman.ui.tools import DummyCallback
 
-if 'darwin' in sys.platform:
+if 'darwin' in sys.platform:  # pragma: no cover
     from pwman.ui.mac import PwmanCliMac as PwmanCliOld
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
-elif 'win' in sys.platform:
+elif 'win' in sys.platform:  # pragma: no cover
     from pwman.ui.cli import PwmanCli
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
