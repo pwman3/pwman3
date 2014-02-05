@@ -47,6 +47,11 @@ class SetupTester(object):
         if os.path.exists(config.get_value('Database', 'filename')):
             os.remove(config.get_value('Database', 'filename'))
 
+        if os.path.exists(os.path.join(os.path.dirname(__file__),
+                                       'testing_config')):
+            os.remove(os.path.join(os.path.dirname(__file__),
+                                   'testing_config'))
+
     def create(self):
         dbver = 0.4
         dbtype = config.get_value("Database", "type")
@@ -160,8 +165,6 @@ class CLITests(unittest.TestCase):
         # This will pass only when running all the tests than ...
         self.assertEqual(len(rows), 2)
 
-    #TODO: implement a test for get_ids
-
     def test_get_ids(self):
         #used by do_cp or do_open
         self.assertEqual([1], self.tester.cli.get_ids('1'))
@@ -170,3 +173,21 @@ class CLITests(unittest.TestCase):
         self.assertListEqual([], self.tester.cli.get_ids('5x-1'))
         self.assertListEqual([], self.tester.cli.get_ids('5x'))
         self.assertListEqual([], self.tester.cli.get_ids('5\\'))
+
+
+class ConfigTest(unittest.TestCase):
+
+    def setUp(self):
+        "test that the right db instance was created"
+        dbver = 0.4
+        self.dbtype = config.get_value("Database", "type")
+        self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.tester = SetupTester()
+        self.tester.create()
+
+    def test_config_write(self):
+        config.save(os.path.join(os.path.dirname(__file__), 'testing_config'))
+    def test_config_write_with_none(self):
+        config._file = os.path.join(os.path.dirname(__file__), 'testing_config')
+        config.save()
+

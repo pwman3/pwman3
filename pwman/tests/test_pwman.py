@@ -22,7 +22,7 @@
 import os
 import sys
 import unittest
-from db_tests import (DBTests, SetupTester, CLITests)
+from db_tests import (DBTests, SetupTester, CLITests, ConfigTest)
 from crypto_tests import CryptoTest
 
 # make sure we use local pwman
@@ -39,6 +39,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(DBTests))
     suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
     suite.addTest(loader.loadTestsFromTestCase(CLITests))
+    suite.addTest(loader.loadTestsFromTestCase(ConfigTest))
     return suite
 
 if __name__ == '__main__':
