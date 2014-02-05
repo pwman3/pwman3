@@ -29,7 +29,7 @@ class ConfigException(Exception):
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (self.__class__.__name__, self.message)
+        return "%s: %s" % (self.__class__.__name__, self.message)  # pragma: no cover
 
 
 class ConfigNoConfigException(ConfigException):

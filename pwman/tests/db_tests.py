@@ -28,8 +28,7 @@ _saveconfig = False
 
 default_config['Database'] = {'type': 'SQLite',
                               'filename':
-                              os.path.join(os.path.dirname(__file__),
-                                           "test.pwman.db")
+                              os.path.join(os.path.dirname(__file__), "test.pwman.db")
                               }
 
 
@@ -187,7 +186,14 @@ class ConfigTest(unittest.TestCase):
 
     def test_config_write(self):
         config.save(os.path.join(os.path.dirname(__file__), 'testing_config'))
+
     def test_config_write_with_none(self):
-        config._file = os.path.join(os.path.dirname(__file__), 'testing_config')
+        config._file = os.path.join(os.path.dirname(__file__),
+                                    'testing_config')
         config.save()
 
+    def test_write_no_permission(self):
+        # this test will pass if you run as root ...
+        # assuming you are not doing something like that
+        self.assertRaises(config.ConfigException, config.save,
+                          '/root/test_config')
