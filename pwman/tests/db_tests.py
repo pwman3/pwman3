@@ -197,3 +197,7 @@ class ConfigTest(unittest.TestCase):
         # assuming you are not doing something like that
         self.assertRaises(config.ConfigException, config.save,
                           '/root/test_config')
+
+    def test_add_default(self):
+        config.add_defaults({'Section1': {'name': 'value'}})
+        self.assertIn('Section1', config._defaults)
