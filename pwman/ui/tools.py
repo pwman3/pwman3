@@ -390,6 +390,7 @@ class CLICallback(Callback):
     def getsecret(self, question):
         return getpass.getpass(question + ":")
 
+
 class DummyCallback(Callback):
 
     def getinput(self, question):
@@ -397,3 +398,12 @@ class DummyCallback(Callback):
 
     def getsecret(self, question):
         return '12345'
+
+
+class DummyCallback2(Callback):
+
+    def getinput(self, question):
+        return 'newsecret'
+
+    def getsecret(self, question):
+        return 'newsecret'

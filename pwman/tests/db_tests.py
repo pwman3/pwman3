@@ -1,7 +1,8 @@
 import os
 import os.path
 import sys
-from pwman.ui.tools import DummyCallback
+from pwman.ui.tools import DummyCallback, DummyCallback2
+
 
 if 'darwin' in sys.platform:  # pragma: no cover
     from pwman.ui.mac import PwmanCliMac as PwmanCliOld
@@ -20,7 +21,7 @@ import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag, TagNew
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import which, default_config
 import unittest
 
@@ -104,6 +105,11 @@ class DBTests(unittest.TestCase):
         enc = CryptoEngine.get()
         got_tags = self.tester.cli._tags(enc)
         self.assertEqual(2, len(got_tags))
+
+    def test_change_pass(self):
+        self.tester.cli.callback = DummyCallback2
+        self.assertRaises(CryptoBadKeyException,
+                          self.tester.cli._db.changepassword)
 
 
 class CLITests(unittest.TestCase):
