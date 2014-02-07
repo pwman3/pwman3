@@ -142,13 +142,18 @@ def open_url(link, macosx=False):
 def getpassword(question, argsgiven=None,
                 width=_defaultwidth, echo=False,
                 reader=getpass.getpass, numerics=False, leetify=False,
-                symbols=False, special_signs=False):
+                symbols=False, special_signs=False, length=None):
     # TODO: getpassword should recieve a config insatce
     #       and generate the policy according to it,
     #       so that getpassword in cli would be simplified
-    if argsgiven == 1:
-        length = getinput("Password length (default 7): ", default='7')
-        length = int(length)
+    if argsgiven == 1 or length:
+        while not length:
+            try:
+                length = getinput("Password length (default 7): ", default='7')
+                length = int(length)
+            except ValueError:
+                print("please enter a proper integer")
+
         password, dumpme = generator.generate_password(length, length,
                                                        True, leetify,
                                                        numerics,
@@ -391,19 +396,3 @@ class CLICallback(Callback):
         return getpass.getpass(question + ":")
 
 
-class DummyCallback(Callback):
-
-    def getinput(self, question):
-        return '12345'
-
-    def getsecret(self, question):
-        return '12345'
-
-
-class DummyCallback2(Callback):
-
-    def getinput(self, question):
-        return 'newsecret'
-
-    def getsecret(self, question):
-        return 'newsecret'
