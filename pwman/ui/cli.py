@@ -889,9 +889,9 @@ class BaseCommands(PwmanCliOld):
 
     def get_password(self, argsgiven, numerics=False, leetify=False,
                      symbols=False, special_signs=False,
-                     reader=getpass.getpass):
+                     reader=getpass.getpass, length=None):
         return tools.getpassword("Password (Blank to generate): ",
-                                 reader=reader)
+                                 reader=reader, length=length)
 
 
 class Aliases(BaseCommands, PwmanCliOld):
