@@ -1,9 +1,25 @@
+from pwman.util.callback import Callback
 import os
 import os.path
 import sys
-from pwman.ui.tools import DummyCallback, DummyCallback2
 
 
+class DummyCallback(Callback):
+
+    def getinput(self, question):
+        return '12345'
+
+    def getsecret(self, question):
+        return '12345'
+
+
+class DummyCallback2(Callback):
+
+    def getinput(self, question):
+        return 'newsecret'
+
+    def getsecret(self, question):
+        return 'newsecret'
 if 'darwin' in sys.platform:  # pragma: no cover
     from pwman.ui.mac import PwmanCliMac as PwmanCliOld
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
@@ -29,7 +45,8 @@ _saveconfig = False
 
 default_config['Database'] = {'type': 'SQLite',
                               'filename':
-                              os.path.join(os.path.dirname(__file__), "test.pwman.db")
+                              os.path.join(os.path.dirname(__file__),
+                                           "test.pwman.db")
                               }
 
 
@@ -134,6 +151,10 @@ class CLITests(unittest.TestCase):
                                                 reader=lambda x: u'hatman')
         self.assertEqual(password, u'hatman')
 
+    def test_random_password(self):
+        password = self.tester.cli.get_password(None, length=7)
+        self.assertEqual(len(password), 7)
+
     def test_get_url(self):
         url = self.tester.cli.get_url(reader=lambda: u'example.com')
         self.assertEqual(url, u'example.com')
@@ -171,7 +192,8 @@ class CLITests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
 
     def test_get_ids(self):
-        #used by do_cp or do_open
+        #used by do_cp or do_open,
+        # this spits many time could not understand your input
         self.assertEqual([1], self.tester.cli.get_ids('1'))
         self.assertListEqual([1, 2, 3, 4, 5], self.tester.cli.get_ids('1-5'))
         self.assertListEqual([], self.tester.cli.get_ids('5-1'))
