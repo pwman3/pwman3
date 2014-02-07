@@ -69,7 +69,7 @@ else:
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
-from pwman.ui.tools import CLICallback, DummyCallback
+from pwman.ui.tools import CLICallback
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
