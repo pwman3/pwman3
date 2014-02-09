@@ -167,7 +167,10 @@ def getpassword(question, argsgiven=None,
             return getpassword('', argsgiven=1)
         a2 = reader("[Repeat] %s" % (question.ljust(width)))
         if a1 == a2:
-            return a1
+            if leetify:
+                return generator.leetify(a1)
+            else:
+                return a1
         else:
             print ("Passwords don't match. Try again.")
 
@@ -394,5 +397,3 @@ class CLICallback(Callback):
 
     def getsecret(self, question):
         return getpass.getpass(question + ":")
-
-

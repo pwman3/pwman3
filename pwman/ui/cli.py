@@ -891,7 +891,7 @@ class BaseCommands(PwmanCliOld):
                      symbols=False, special_signs=False,
                      reader=getpass.getpass, length=None):
         return tools.getpassword("Password (Blank to generate): ",
-                                 reader=reader, length=length)
+                                 reader=reader, length=length, leetify=leetify)
 
 
 class Aliases(BaseCommands, PwmanCliOld):

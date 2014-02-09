@@ -1,4 +1,5 @@
 from pwman.util.callback import Callback
+from pwman.util.generator import leetlist
 import os
 import os.path
 import sys
@@ -154,6 +155,21 @@ class CLITests(unittest.TestCase):
     def test_random_password(self):
         password = self.tester.cli.get_password(None, length=7)
         self.assertEqual(len(password), 7)
+
+    def test_random_leet_password(self):
+        password = self.tester.cli.get_password(None, leetify=True, length=7)
+        l_num = 0
+        for v in leetlist.values():
+            if v in password:
+                l_num += 1
+
+        self.assertTrue(l_num > 0)
+
+    def test_leet_password(self):
+        password = self.tester.cli.get_password(None, leetify=True,
+                                                reader=lambda x: u'HAtman')
+        print password
+        self.assertRegexpMatches(password, "(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|\/\|)?(A|a|4)?(N|n|\|\\|)?")
 
     def test_get_url(self):
         url = self.tester.cli.get_url(reader=lambda: u'example.com')
