@@ -169,7 +169,8 @@ class CLITests(unittest.TestCase):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
         print password
-        self.assertRegexpMatches(password, "(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|\/\|)?(A|a|4)?(N|n|\|\\|)?")
+        self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
+                                            "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
 
     def test_get_url(self):
         url = self.tester.cli.get_url(reader=lambda: u'example.com')
