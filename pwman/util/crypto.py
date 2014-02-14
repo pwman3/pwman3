@@ -75,9 +75,6 @@ _TAG = "PWMANCRYPTO"
 
 _INSTANCE = None
 
-# Use this to tell if crypto is successful or not
-_TAG = "PWMANCRYPTO"
-
 
 class CryptoException(Exception):
     """Generic Crypto Exception."""
@@ -239,7 +236,7 @@ class CryptoEngine(object):
             raise CryptoNoCallbackException("No call back class has been "
                                             "specified")
         if self._keycrypted is None:
-            # Generate a new key, 32 bits in length, if that's
+            # Generate a new key, 32 byts in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
             random = OSRNG.new()
             key = str(random.read(32)).encode('base64')
