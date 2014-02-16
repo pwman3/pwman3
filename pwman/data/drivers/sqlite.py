@@ -25,17 +25,8 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
-import sys
-if sys.version_info > (2, 5):
-    import sqlite3 as sqlite
-else:
-    try:
-        from pysqlite2 import dbapi2 as sqlite
-    except ImportError:
-        raise DatabaseException("python-sqlite2 not installed")
-
+import sqlite3 as sqlite
 import pwman.util.config as config
-
 import cPickle
 
 
