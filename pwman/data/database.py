@@ -23,10 +23,11 @@ from pwman.util.crypto import CryptoEngine
 
 
 class DatabaseException(Exception):
-    pass
+    pass  # prage: no cover
 
 
 class Database(object):
+
     def __init__(self):
         self._filtertags = []
 
@@ -45,11 +46,10 @@ class Database(object):
         if key is not None:
             enc.set_cryptedkey(key)
         else:
-            #self.changepassword()
             self.get_user_password()
 
     def close(self):
-        pass
+        pass  # pragma: no cover
 
     def get_user_password(self):
         """
@@ -68,7 +68,7 @@ class Database(object):
         return self.savekey(newkey)
 
     def listtags(self, all=False):
-        pass
+        pass  # pragma: no cover
 
     def currenttags(self):
         return self._filtertags
@@ -82,22 +82,22 @@ class Database(object):
         self._filtertags = []
 
     def getnodes(self, ids):
-        pass
+        pass  # pragma: no cover
 
     def addnodes(self, nodes):
-        pass
+        pass  # pragma: no cover
 
     def editnode(self, id, node):
-        pass
+        pass  # pragma: no cover
 
     def removenodes(self, nodes):
-        pass
+        pass  # pragma: no cover
 
     def listnodes(self):
-        pass
+        pass  # pragma: no cover
 
     def savekey(self, key):
-        pass
+        pass  # pragma: no cover
 
     def loadkey(self):
-        pass
+        pass  # pragma: no cover
