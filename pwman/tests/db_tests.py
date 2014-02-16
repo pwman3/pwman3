@@ -256,3 +256,23 @@ class ConfigTest(unittest.TestCase):
     def test_add_default(self):
         config.add_defaults({'Section1': {'name': 'value'}})
         self.assertIn('Section1', config._defaults)
+
+    def test_get_conf(self):
+        cnf = config.get_conf()
+        cnf_keys = cnf.keys()
+        self.assertTrue('Encryption' in cnf_keys)
+        self.assertTrue('Readline' in cnf_keys)
+        self.assertTrue('Global' in cnf_keys)
+        self.assertTrue('Database' in cnf_keys)
+
+    def test_load_conf(self):
+        self.assertRaises(config.ConfigException, config.load, 'NoSuchFile')
+        # Everything should be ok
+        config.save('TestConfig.ini')
+        config.load('TestConfig.ini')
+        # let's corrupt the file
+        cfg = open('TestConfig.ini', 'w')
+        cfg.write('Corruption')
+        cfg.close()
+        self.assertRaises(config.ConfigException, config.load,
+                          'TestConfig.ini')
