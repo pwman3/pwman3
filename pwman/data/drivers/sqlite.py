@@ -25,6 +25,7 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import NewNode
 import sqlite3 as sqlite
 import pwman.util.config as config
+from osqlite import SQLiteDatabase
 
 
 def check_db_version():
