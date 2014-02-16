@@ -40,6 +40,7 @@ from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag, TagNew
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import which, default_config
+from pwman.ui.cli import get_pass_conf
 import unittest
 
 _saveconfig = False
@@ -217,6 +218,15 @@ class CLITests(unittest.TestCase):
         self.assertListEqual([], self.tester.cli.get_ids('5x-1'))
         self.assertListEqual([], self.tester.cli.get_ids('5x'))
         self.assertListEqual([], self.tester.cli.get_ids('5\\'))
+
+    def test_get_pass_conf(self):
+        numerics, leet, s_chars = get_pass_conf()
+        self.assertFalse(numerics)
+        self.assertFalse(leet)
+        self.assertFalse(s_chars)
+
+    def test_do_exit(self):
+        self.assertTrue(self.tester.cli.do_exit(''))
 
 
 class ConfigTest(unittest.TestCase):
