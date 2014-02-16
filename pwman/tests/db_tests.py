@@ -241,11 +241,15 @@ class ConfigTest(unittest.TestCase):
 
     def test_config_write(self):
         config.save(os.path.join(os.path.dirname(__file__), 'testing_config'))
+        self.assertTrue(os.path.exists('testing_config'))
+        os.remove('testing_config')
 
     def test_config_write_with_none(self):
         config._file = os.path.join(os.path.dirname(__file__),
                                     'testing_config')
         config.save()
+        self.assertTrue(os.path.exists('testing_config'))
+        os.remove('testing_config')
 
     def test_write_no_permission(self):
         # this test will pass if you run as root ...
