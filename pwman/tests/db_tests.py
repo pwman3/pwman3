@@ -276,3 +276,4 @@ class ConfigTest(unittest.TestCase):
         cfg.close()
         self.assertRaises(config.ConfigException, config.load,
                           'TestConfig.ini')
+        os.remove('TestConfig.ini')
