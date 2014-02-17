@@ -343,7 +343,7 @@ class CMDLoop(CliMenu):
                     self.items[2].getter = new_node.url
                     self.items[2].setter = new_node.url
                 elif selection == 3:  # for notes
-                    new_node.notes = getinput("Notes:")
+                    new_node.notes = self.items[3].editor
                     self.items[3].getter = new_node.notes
                     self.items[3].setter = new_node.notes
                 elif selection == 4:
@@ -362,22 +362,25 @@ class CMDLoop(CliMenu):
 def getonechar(question, width=_defaultwidth):
     question = "%s " % (question)
     print (question.ljust(width),)
-    sys.stdout.flush()
-
-    fd = sys.stdin.fileno()
-    # tty module exists only if we are on Posix
     try:
-        tty_mode = tty.tcgetattr(fd)
-        tty.setcbreak(fd)
-    except NameError:
-        pass
-    try:
-        ch = os.read(fd, 1)
-    finally:
+        sys.stdout.flush()
+        fd = sys.stdin.fileno()
+        # tty module exists only if we are on Posix
         try:
-            tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
+            tty_mode = tty.tcgetattr(fd)
+            tty.setcbreak(fd)
         except NameError:
             pass
+        try:
+            ch = os.read(fd, 1)
+        finally:
+            try:
+                tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
+            except NameError:
+                pass
+    except AttributeError:
+        ch = sys.stdin.readline()[0]
+
     print(ch)
     return ch
 
