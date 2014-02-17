@@ -101,31 +101,32 @@ class BaseCommands(PwmanCliOld):
         except Exception, e:
             self.error(e)
 
-    def do_edit(self, arg):
+    def do_edit(self, arg, menu=None):
         ids = self.get_ids(arg)
         for i in ids:
             try:
                 i = int(i)
                 node = self._db.getnodes([i])[0]
-                menu = CMDLoop()
-                print ("Editing node %d." % (i))
+                if not menu:
+                    menu = CMDLoop()
+                    print ("Editing node %d." % (i))
 
-                menu.add(CliMenuItem("Username", self.get_username,
-                                     node.username,
-                                     node.username))
-                menu.add(CliMenuItem("Password", self.get_password,
-                                     node.password,
-                                     node.password))
-                menu.add(CliMenuItem("Url", self.get_url,
-                                     node.url,
-                                     node.url))
-                menunotes = CliMenuItem("Notes", self.get_notes,
-                                        node.notes,
-                                        node.notes)
-                menu.add(menunotes)
-                menu.add(CliMenuItem("Tags", self.get_tags,
-                                     node.tags,
-                                     node.tags))
+                    menu.add(CliMenuItem("Username", self.get_username,
+                                         node.username,
+                                         node.username))
+                    menu.add(CliMenuItem("Password", self.get_password,
+                                         node.password,
+                                         node.password))
+                    menu.add(CliMenuItem("Url", self.get_url,
+                                         node.url,
+                                         node.url))
+                    menunotes = CliMenuItem("Notes", self.get_notes,
+                                            node.notes,
+                                            node.notes)
+                    menu.add(menunotes)
+                    menu.add(CliMenuItem("Tags", self.get_tags,
+                                         node.tags,
+                                         node.tags))
                 menu.run(node)
                 self._db.editnode(i, node)
                 # when done with node erase it
@@ -198,7 +199,7 @@ class BaseCommands(PwmanCliOld):
 
         # strings = []
         tags = self._db.listtags(True)
-        #for t in tags:
+        # for t in tags:
             # strings.append(t.get_name())
         #    strings.append(t)
 
