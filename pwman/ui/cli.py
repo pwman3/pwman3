@@ -24,31 +24,22 @@ Define the CLI interface for pwman3 and the helper functions
 """
 from __future__ import print_function
 import pwman
-import pwman.exchange.importer as importer
-import pwman.exchange.exporter as exporter
-import pwman.util.generator as generator
-from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
-from pwman.data.tags import Tag
 from pwman.data.tags import TagNew as TagN
 from pwman.util.crypto import CryptoEngine
 from pwman.util.crypto import zerome
 import pwman.util.config as config
-import re
 import sys
-import os
 import cmd
 import time
 import select as uselect
 import ast
 from pwman.ui import tools
-from pwman.ui.tools import CliMenu, CMDLoop
+from pwman.ui.tools import CMDLoop
 from pwman.ui.tools import CliMenuItem
 from pwman.ui.ocli import PwmanCliOld
 from colorama import Fore
-from pwman.ui.base import HelpUI, BaseUI
 import getpass
-from pwman.ui.tools import CLICallback
 
 try:
     import readline
