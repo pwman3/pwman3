@@ -22,15 +22,12 @@ class DummyCallback2(Callback):
     def getsecret(self, question):
         return 'newsecret'
 if 'darwin' in sys.platform:  # pragma: no cover
-    from pwman.ui.mac import PwmanCliMac as PwmanCliOld
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 elif 'win' in sys.platform:  # pragma: no cover
-    from pwman.ui.cli import PwmanCli
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
-    from pwman.ui.cli import PwmanCliOld
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
@@ -41,6 +38,7 @@ from pwman.data.tags import Tag, TagNew
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import which, default_config
 from pwman.ui.cli import get_pass_conf
+from pwman.ui.tools import CMDLoop, CliMenuItem
 import unittest
 
 _saveconfig = False
@@ -218,6 +216,33 @@ class CLITests(unittest.TestCase):
         self.assertListEqual([], self.tester.cli.get_ids('5x-1'))
         self.assertListEqual([], self.tester.cli.get_ids('5x'))
         self.assertListEqual([], self.tester.cli.get_ids('5\\'))
+
+    def test_edit(self):
+        node = self.tester.cli._db.getnodes([2])[0]
+        menu = CMDLoop()
+        menu.add(CliMenuItem("Username", self.tester.cli.get_username,
+                             node.username,
+                             node.username))
+        menu.add(CliMenuItem("Password", self.tester.cli.get_password,
+                             node.password,
+                             node.password))
+        menu.add(CliMenuItem("Url", self.tester.cli.get_url,
+                             node.url,
+                             node.url))
+        menunotes = CliMenuItem("Notes",
+                                self.tester.cli.get_notes(reader=lambda:
+                                                          u'bla bla'),
+                                node.notes,
+                                node.notes)
+        menu.add(menunotes)
+        menu.add(CliMenuItem("Tags", self.tester.cli.get_tags,
+                             node.tags,
+                             node.tags))
+
+        import StringIO
+        s = StringIO.StringIO("4\nX")
+        sys.stdin = s
+        menu.run(node)
 
     def test_get_pass_conf(self):
         numerics, leet, s_chars = get_pass_conf()
