@@ -116,8 +116,7 @@ class SQLiteDatabaseNewForm(Database):
         except sqlite.DatabaseError, e:
             raise DatabaseException("SQLite: %s" % (e))
         except sqlite.InterfaceError, e:
-            import ipdb
-            ipdb.set_trace()  # XXX BREAKPOINT
+            raise e
 
     def parse_node_string(self, string):
         nodestring = string.split("##")

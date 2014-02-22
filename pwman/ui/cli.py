@@ -64,6 +64,7 @@ class PwmanCliNew(Aliases, BaseCommands):
             enc = CryptoEngine.get()
             enc._callback = callback()
             self._db = db
+            #  this cascades down all the way to setting the database key
             self._db.open()
         except Exception, e:  # pragma: no cover
             self.error(e)

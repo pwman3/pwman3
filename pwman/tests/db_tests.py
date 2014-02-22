@@ -8,34 +8,46 @@ import sys
 class DummyCallback(Callback):
 
     def getsecret(self, question):
-        return str(123) + str(45)
+        return u'12345'
 
     def getnewsecret(self, question):
-        return str(123) + str(45)
+        return u'12345'
 
 
 class DummyCallback2(Callback):
 
     def getinput(self, question):
-        return 'newsecret'
+        return u'newsecret'
 
     def getsecret(self, question):
-        return 'wrong'
+        return u'wrong'
 
     def getnewsecret(self, question):
-        return 'newsecret'
+        return u'newsecret'
 
 
 class DummyCallback3(Callback):
 
     def getinput(self, question):
-        return 'newsecret'
+        return u'newsecret'
 
     def getsecret(self, question):
-        return '12345'
+        return u'12345'
 
     def getnewsecret(self, question):
-        return 'newsecret'
+        return u'newsecret'
+
+class DummyCallback4(Callback):
+
+    def getinput(self, question):
+        return u'newsecret'
+
+    def getsecret(self, question):
+        return u'newsecret'
+
+    def getnewsecret(self, question):
+        return u'newsecret'
+
 
 if 'darwin' in sys.platform:  # pragma: no cover
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
@@ -146,9 +158,13 @@ class DBTests(unittest.TestCase):
                           self.tester.cli._db.changepassword)
 
     def test_db_change_pass(self):
+        "fuck yeah, we change the password and the new dummy works"
         enc = CryptoEngine.get()
         enc._callback = DummyCallback3()
         self.tester.cli._db.changepassword()
+        self.tester.cli.do_forget('')
+        enc._callback = DummyCallback4()
+        self.tester.cli.do_ls('')
 
 
 class CLITests(unittest.TestCase):
@@ -271,6 +287,12 @@ class CLITests(unittest.TestCase):
         self.assertFalse(numerics)
         self.assertFalse(leet)
         self.assertFalse(s_chars)
+
+    def test_do_tags(self):
+        self.tester.cli.do_filter('bank')
+
+    def test_do_clear(self):
+        self.tester.cli.do_clear('')
 
     def test_do_exit(self):
         self.assertTrue(self.tester.cli.do_exit(''))
