@@ -47,24 +47,21 @@ def create(type, version=None, filename=None):
     Create a Database instance.
     'type' can only be 'SQLite' at the moment
     """
-    if (type == "SQLite"):
-        try:
-            from pwman.data.drivers import sqlite
-            if version == 0.4 and filename:
-                db = sqlite.SQLiteDatabaseNewForm(filename)
-            elif version == 0.4:
-                db = sqlite.SQLiteDatabaseNewForm()
-            else:
-                db = sqlite.SQLiteDatabase()
-        except ImportError:
-            raise DatabaseException("python-sqlite not installed")
-    elif (type == "Postgresql"):
+    if type == "SQLite":
+        from pwman.data.drivers import sqlite
+        if version == 0.4 and filename:
+            db = sqlite.SQLiteDatabaseNewForm(filename)
+        elif version == 0.4:
+            db = sqlite.SQLiteDatabaseNewForm()
+        else:
+            db = sqlite.SQLiteDatabase()
+    elif type == "Postgresql":
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
         except ImportError:
             raise DatabaseException("python-pygresql not installed")
-    elif (type == "MySQL"):
+    elif type == "MySQL":
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()

@@ -40,7 +40,7 @@ from pwman import which, default_config
 from pwman.ui.cli import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 import unittest
-
+from pwman.data import factory
 _saveconfig = False
 
 default_config['Database'] = {'type': 'SQLite',
@@ -252,6 +252,12 @@ class CLITests(unittest.TestCase):
 
     def test_do_exit(self):
         self.assertTrue(self.tester.cli.do_exit(''))
+
+
+class FactoryTest(unittest.TestCase):
+
+    def test_factory_check_db_ver(self):
+        self.assertEquals(factory.check_db_version('SQLite'), u"'0.4'")
 
 
 class ConfigTest(unittest.TestCase):
