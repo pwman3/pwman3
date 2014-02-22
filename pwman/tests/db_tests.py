@@ -7,11 +7,11 @@ import sys
 
 class DummyCallback(Callback):
 
-    def getinput(self, question):
-        return '12345'
-
     def getsecret(self, question):
-        return '12345'
+        return str(123) + str(45)
+
+    def getnewsecret(self, question):
+        return str(123) + str(45)
 
 
 class DummyCallback2(Callback):
@@ -20,7 +20,23 @@ class DummyCallback2(Callback):
         return 'newsecret'
 
     def getsecret(self, question):
+        return 'wrong'
+
+    def getnewsecret(self, question):
         return 'newsecret'
+
+
+class DummyCallback3(Callback):
+
+    def getinput(self, question):
+        return 'newsecret'
+
+    def getsecret(self, question):
+        return '12345'
+
+    def getnewsecret(self, question):
+        return 'newsecret'
+
 if 'darwin' in sys.platform:  # pragma: no cover
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
@@ -124,9 +140,15 @@ class DBTests(unittest.TestCase):
         self.assertEqual(2, len(got_tags))
 
     def test_change_pass(self):
-        self.tester.cli.callback = DummyCallback2
+        enc = CryptoEngine.get()
+        enc._callback = DummyCallback2()
         self.assertRaises(CryptoBadKeyException,
                           self.tester.cli._db.changepassword)
+
+    def test_db_change_pass(self):
+        enc = CryptoEngine.get()
+        enc._callback = DummyCallback3()
+        self.tester.cli._db.changepassword()
 
 
 class CLITests(unittest.TestCase):

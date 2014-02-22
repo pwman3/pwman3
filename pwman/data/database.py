@@ -65,7 +65,8 @@ class Database(object):
         """
         enc = CryptoEngine.get()
         newkey = enc.changepassword()
-        return self.savekey(newkey)
+        return newkey
+        #  self.savekey(newkey)
 
     def listtags(self, all=False):
         pass  # pragma: no cover

@@ -473,7 +473,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
     def do_passwd(self, args):
         try:
-            self._db.changepassword()
+            key = self._db.changepassword()
+            self._db._save(key)
         except Exception, e:
             self.error(e)
 

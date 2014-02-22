@@ -400,3 +400,6 @@ class CLICallback(Callback):
 
     def getsecret(self, question):
         return getpass.getpass(question + ":")
+
+    def getnewsecret(self, question):
+        return getpass.getpass(question + ":")
