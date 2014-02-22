@@ -65,7 +65,7 @@ elif 'win' in sys.platform:
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
-    from pwman.ui.cli import PwmanCliOld as PwmanCli
+    from pwman.ui.ocli import PwmanCliOld as PwmanCli
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
