@@ -204,8 +204,10 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
-                        " TAGS.ID WHERE TAGS.DATA = ? ")
-                params = [t.name.strip()]
+                        " TAGS.ID WHERE TAGS.DATA like ? ")
+                p = t._name.strip()
+                p += '%'
+                params = [p]
         try:
             self._cur.execute(sql, params)
             rows = self._cur.fetchall()

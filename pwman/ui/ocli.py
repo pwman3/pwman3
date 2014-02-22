@@ -820,7 +820,7 @@ class BaseCommands(PwmanCliOld):
             if len(tags) == 0:
                 print ("None",)
             for t in tags:
-                print ("%s " % (t.name),)
+                print ("%s " % t)
             print
         except Exception, e:
             self.error(e)
