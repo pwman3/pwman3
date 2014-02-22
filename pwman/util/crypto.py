@@ -135,7 +135,6 @@ class CryptoEngine(object):
             else:
                 CryptoEngine._instance = CryptoEngine()
         return CryptoEngine._instance
-    # get = classmethod(get)
 
     def __init__(self):
         """Initialise the Cryptographic Engine
@@ -218,12 +217,11 @@ class CryptoEngine(object):
         """
         return self._callback
 
-    def get_user_password():
+    def get_user_password(self):
         "get the password from the user"
         if self._callback is None:
             raise CryptoNoCallbackException("No call back class has been "
                                             "specified")
-
 
     def changepassword(self):
         """
@@ -241,25 +239,23 @@ class CryptoEngine(object):
             random = OSRNG.new()
             key = str(random.read(32)).encode('base64')
         else:
-            password = self._callback.getsecret("Please enter your current \
-password")
+            password = self._callback.getsecret(("Please enter your current "
+                                                 "password"))
             cipher = self._getcipher_real(password, self._algo)
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
 
-        newpassword1 = self._callback.getsecret("Please enter your new \
+        newpassword1 = self._callback.getnewsecret("Please enter your new \
 password")
-        newpassword2 = self._callback.getsecret("Please enter your new \
+        newpassword2 = self._callback.getnewsecret("Please enter your new \
 password again")
         while newpassword1 != newpassword2:
             print "Passwords do not match!"
-            newpassword1 = self._callback.getsecret("Please enter your new \
+            newpassword1 = self._callback.getnewsecret("Please enter your new \
 password")
-            newpassword2 = self._callback.getsecret("Please enter your new \
+            newpassword2 = self._callback.getnewsecret("Please enter your new \
 password again")
 
-        # if (newpassword1 != newpassword2):
-        #   raise CryptoPasswordMismatchException("Passwords do not match")
         newcipher = self._getcipher_real(newpassword1, self._algo)
         self._keycrypted = str(newcipher.encrypt(
                                self._preparedata(key,
@@ -269,13 +265,14 @@ password again")
         # them
         zerome(newpassword1)
         zerome(newpassword2)
+        del(newpassword1)
+        del(newpassword2)
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
         if self._cipher is None:
             self._cipher = self._getcipher_real(str(key).decode('base64'),
                                                 self._algo)
             CryptoEngine._timeoutcount = time.time()
-
         return self._keycrypted
 
     def alive(self):
@@ -309,7 +306,6 @@ password again")
 
         max_tries = 5
         tries = 0
-
         key = None
 
         while tries < max_tries:
