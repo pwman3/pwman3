@@ -31,14 +31,11 @@ db.open()
 .....
 """
 from pwman.data.database import DatabaseException
+from pwman.data.drivers import sqlite
 
 
 def check_db_version(type):
     if type == "SQLite":
-        try:
-            from pwman.data.drivers import sqlite
-        except ImportError:
-            raise DatabaseException("python-sqlite not installed")
         ver = sqlite.check_db_version()
         return ver
      # TODO: implement version checks for other supported DBs.
