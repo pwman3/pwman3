@@ -217,11 +217,11 @@ class CryptoEngine(object):
         """
         return self._callback
 
-    def get_user_password(self):
-        "get the password from the user"
-        if self._callback is None:
-            raise CryptoNoCallbackException("No call back class has been "
-                                            "specified")
+    #def get_user_password(self):
+    #    "get the password from the user"
+    #    if self._callback is None:
+    #        raise CryptoNoCallbackException("No call back class has been "
+    #                                        "specified")
 
     def changepassword(self):
         """
