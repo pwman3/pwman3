@@ -1,5 +1,6 @@
 from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
+from pwman.data.drivers.sqlite import DatabaseException
 import os
 import os.path
 import sys
@@ -36,6 +37,7 @@ class DummyCallback3(Callback):
 
     def getnewsecret(self, question):
         return u'newsecret'
+
 
 class DummyCallback4(Callback):
 
@@ -167,6 +169,23 @@ class DBTests(unittest.TestCase):
         self.tester.cli.do_ls('')
 
 
+class TestDBFalseConfig(unittest.TestCase):
+
+    def setUp(self):
+        #filename = default_config['Database'].pop('filename')
+        self.fname1 = default_config['Database'].pop('filename')
+        self.fname = config._conf['Database'].pop('filename')
+
+    def test_db_missing_conf_parameter(self):
+        self.assertRaises(DatabaseException, pwman.data.factory.create,
+                          'SQLite', 0.4)
+
+    def tearDown(self):
+        config.set_value('Database', 'filename', self.fname)
+        default_config['Database']['filename'] = self.fname1
+        config._conf['Database']['filename'] = self.fname
+
+
 class CLITests(unittest.TestCase):
     """
     test command line functionallity
@@ -205,7 +224,6 @@ class CLITests(unittest.TestCase):
     def test_leet_password(self):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
-        print password
         self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
                                             "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
 
