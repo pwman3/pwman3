@@ -25,28 +25,23 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import NewNode
 import sqlite3 as sqlite
 import pwman.util.config as config
-from osqlite import SQLiteDatabase
 
 
 def check_db_version():
     """
     check the data base version query the right table
     """
+    filename = config.get_value('Database', 'filename')
+    con = sqlite.connect(filename)
+    cur = con.cursor()
+    cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
+    row = cur.fetchone()
+    if row is None:
+        return "0.3"
     try:
-        filename = config.get_value('Database', 'filename')
-        con = sqlite.connect(filename)
-        cur = con.cursor()
-        cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
-        row = cur.fetchone()
-        if row is None:
-            return "0.3"
-        try:
-            return row[-2]
-        except IndexError:
-            raise DatabaseException("Something seems fishy with the DB")
-
-    except sqlite.DatabaseError, e:
-        raise DatabaseException("SQLite: %s" % (e))
+        return row[-2]
+    except IndexError:  # pragma: no cover
+        raise DatabaseException("Something seems fishy with the DB")
 
 
 class SQLiteDatabaseNewForm(Database):
