@@ -23,7 +23,7 @@
 from pwman.util.crypto import CryptoEngine
 
 
-class Tag:
+class Tag:  # pragma: no cover
     """
     tags are specific strings used to classify nodes
     the methods in this class override some built-ins
@@ -57,7 +57,7 @@ class TagNew(object):
         enc = CryptoEngine.get()
         self._name = enc.encrypt(name)
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # pragma: no cover
         if other._name == self._name:
             return True
         else:
@@ -74,5 +74,5 @@ class TagNew(object):
 
     @name.setter
     def name(self, value):
-        enc = CryptoEngine.get()  #  pragma: no cover
+        enc = CryptoEngine.get()  # pragma: no cover
         self._name = enc.encrypt(value)  # pragma: no cover
