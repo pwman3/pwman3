@@ -9,7 +9,7 @@ install:
 # command to run tests, e.g. python setup.py test
 script:  
     # coverage run --source=pwman setup.py test
-    coverage run --omit="pwman/tests/*.py,pwman/ui/mac.py,pwman/ui/win.py,pwman/data/convertdb.py,pwman/data/nodes_multiple_approach.py,pwman/data/models.py,pwman/data/drivers/postgresql.py,pwman/data/drivers/mysql.py,pwman/ui/ocli.py,pwman/exchange/importer.py,pwman/data/drivers/osqlite.py,pwman/ui/base.py" --source=pwman setup.py test && coverage html
+    coverage run --omit="pwman/tests/*.py,pwman/ui/mac.py,pwman/ui/win.py,pwman/data/convertdb.py,pwman/data/nodes_multiple_approach.py,pwman/data/models.py,pwman/data/drivers/postgresql.py,pwman/data/drivers/mysql.py,pwman/ui/ocli.py,pwman/exchange/importer.py,pwman/data/drivers/osqlite.py,pwman/ui/base.py" --source=pwman setup.py test 
 
 
 after_success:
