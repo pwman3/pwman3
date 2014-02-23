@@ -35,15 +35,11 @@ if sys.platform != 'win32':
     import termios
     import fcntl
     import tty
+    import readline
+    _readline_available = True
+else:  # pragma: no cover
     try:
         import pyreadline as readline
-        _readline_available = True
-    except ImportError:
-        _readline_available = False
-       # raise ImportError("You need 'pyreadline' on Windows")
-else:
-    try:
-        import readline
         _readline_available = True
     except ImportError, e:
         _readline_available = False
@@ -69,7 +65,7 @@ class ANSI(object):
     White = 37
 
 
-def typeset(text, color, bold=False, underline=False):
+def typeset(text, color, bold=False, underline=False):  # pragma: no cover
     """
     print colored strings using colorama
     """
@@ -82,7 +78,7 @@ def typeset(text, color, bold=False, underline=False):
     return color + text + colorama.Style.RESET_ALL
 
 
-def select(question, possible):
+def select(question, possible):  # pragma: no cover
     """
     select input from user
     """
@@ -94,7 +90,7 @@ def select(question, possible):
             return possible[int(uinput) - 1]
 
 
-def text_to_clipboards(text):
+def text_to_clipboards(text):  # pragma: no cover
     """
     copy text to clipboard
     credit:
@@ -112,7 +108,7 @@ def text_to_clipboards(text):
                please check your configuration file ... ")
 
 
-def text_to_mcclipboard(text):
+def text_to_mcclipboard(text): # pragma: no cover
     """
     copy text to mac os x clip board
     credit:
@@ -126,7 +122,7 @@ def text_to_mcclipboard(text):
         print (e, "\nExecuting pbcoy failed...")
 
 
-def open_url(link, macosx=False):
+def open_url(link, macosx=False):  # pragma: no cover
     """
     launch xdg-open or open in MacOSX with url
     """
@@ -142,7 +138,7 @@ def open_url(link, macosx=False):
 def getpassword(question, argsgiven=None,
                 width=_defaultwidth, echo=False,
                 reader=getpass.getpass, numerics=False, leetify=False,
-                symbols=False, special_signs=False, length=None):
+                symbols=False, special_signs=False, length=None):  # pragma: no cover
     # TODO: getpassword should recieve a config insatce
     #       and generate the policy according to it,
     #       so that getpassword in cli would be simplified
@@ -175,7 +171,7 @@ def getpassword(question, argsgiven=None,
             print ("Passwords don't match. Try again.")
 
 
-def gettermsize():
+def gettermsize():  # pragma: no cover
     s = struct.pack("HHHH", 0, 0, 0, 0)
     f = sys.stdout.fileno()
     x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
@@ -184,7 +180,7 @@ def gettermsize():
 
 
 def getinput(question, default="", reader=raw_input,
-             completer=None, width=_defaultwidth):
+             completer=None, width=_defaultwidth):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
@@ -213,7 +209,7 @@ def getinput(question, default="", reader=raw_input,
         return reader()
 
 
-def getyesno(question, defaultyes=False, width=_defaultwidth):
+def getyesno(question, defaultyes=False, width=_defaultwidth):  # pragma: no cover
     if (defaultyes):
         default = "[Y/n]"
     else:
@@ -233,7 +229,7 @@ def getyesno(question, defaultyes=False, width=_defaultwidth):
         return getyesno(question, defaultyes, width)
 
 
-class CliMenu(object):
+class CliMenu(object):  # pragma: no cover
     def __init__(self):
         self.items = []
 
@@ -291,7 +287,7 @@ class CliMenu(object):
                 print ("Invalid selection")
 
 
-class CMDLoop(CliMenu):
+class CMDLoop(CliMenu):  # pragma: no cover
     """
     Override CliMenu. This class is only used
     when editing NewNode,
@@ -359,7 +355,7 @@ class CMDLoop(CliMenu):
                 print("Invalid selection")
 
 
-def getonechar(question, width=_defaultwidth):
+def getonechar(question, width=_defaultwidth):  # pragma: no cover
     question = "%s " % (question)
     print (question.ljust(width),)
     try:
@@ -393,7 +389,7 @@ class CliMenuItem(object):
         self.setter = setter
 
 
-class CLICallback(Callback):
+class CLICallback(Callback):  # pragma: no cover
 
     def getinput(self, question):
         return raw_input(question)

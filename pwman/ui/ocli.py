@@ -25,7 +25,6 @@ Base Class and Old UI classes, should be removed in next pwman release
 from __future__ import print_function
 import pwman
 import pwman.exchange.importer as importer
-import pwman.exchange.exporter as exporter
 import pwman.util.generator as generator
 from pwman.data.nodes import Node
 from pwman.data.tags import Tag
@@ -320,33 +319,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             self.error(e)
 
     def do_export(self, arg):
-        try:
-            nodes = self.get_ids(arg)
-
-            types = exporter.Exporter.types()
-            ftype = tools.select("Select filetype:", types)
-            exp = exporter.Exporter.get(ftype)
-            out_file = tools.getinput("Select output file:")
-            if len(nodes) > 0:
-                b = tools.getyesno("Export nodes %s?" % (nodes), True)
-                if not b:
-                    return
-                exp.export_data(self._db, out_file, nodes)
-            else:
-                nodes = self._db.listnodes()
-                tags = self._db.currenttags()
-                tagstr = ""
-                if len(tags) > 0:
-                    tagstr = " for "
-                    for t in tags:
-                        tagstr += "'%s' " % (t.get_name())
-                b = tools.getyesno("Export all nodes%s?" % (tagstr), True)
-                if not b:
-                    return
-                exp.export_data(self._db, out_file, nodes)
-            print ("Data exported.")
-        except Exception, e:
-            self.error(e)
+        print('Not implemented...')
 
     def do_new(self, args):
         """
