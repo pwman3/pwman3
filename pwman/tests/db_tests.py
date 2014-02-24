@@ -168,6 +168,29 @@ class DBTests(unittest.TestCase):
         enc._callback = DummyCallback4()
         self.tester.cli.do_ls('')
 
+    def test_db_list_tags(self):
+        # tags are return as ecrypted strings
+        tags = self.tester.cli._db.listtags()
+        self.assertEqual(2, len(tags))
+        self.tester.cli.do_filter('testing1')
+        tags = self.tester.cli._db.listtags()
+        self.assertEqual(1, len(tags))
+        self.tester.cli.do_ls('')
+
+    def test_db_remove_node(self):
+        node = self.tester.cli._db.getnodes([1])
+        self.tester.cli._db.removenodes(node)
+        # create the removed node again
+        username = 'tester'
+        password = 'Password'
+        url = 'example.org'
+        notes = 'some notes'
+        node = NewNode(username, password, url, notes)
+        tags = [Tag(tn) for tn in ['testing1', 'testing2']]
+        node.tags = tags
+        self.db.open()
+        self.db.addnodes([node])
+
 
 class TestDBFalseConfig(unittest.TestCase):
 
@@ -261,7 +284,7 @@ class CLITests(unittest.TestCase):
         # by now the db should have 2 new nodes
         # the first one was added by test_create_node in DBTests
         # the second was added just now.
-        # This will pass only when running all the tests than ...
+        # This will pass only when running all the tests then ...
         self.assertEqual(len(rows), 2)
 
     def test_get_ids(self):

@@ -37,7 +37,7 @@ def check_db_version():
     cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
     row = cur.fetchone()
     if row is None:
-        return "0.3"
+        return "0.3"  # pragma: no cover
     try:
         return row[-2]
     except IndexError:  # pragma: no cover
@@ -54,7 +54,8 @@ class SQLiteDatabaseNewForm(Database):
         # so there's no need to try... except here...
         self._filename = config.get_value('Database', 'filename')
         if not self._filename:
-            raise DatabaseException("SQLite: missing config parameter: filename")
+            raise DatabaseException(("SQLite: missing config parameter:"
+                                    " filename"))
 
     def _open(self):
         try:
@@ -80,7 +81,7 @@ class SQLiteDatabaseNewForm(Database):
             first = True
             for t in self._filtertags:
                 if not first:
-                    sql += " INTERSECT "
+                    sql += " INTERSECT "  # pragma: no cover
                 else:
                     first = False
 
@@ -91,7 +92,7 @@ class SQLiteDatabaseNewForm(Database):
             first = True
             for t in self._filtertags:
                 if not first:
-                    sql += " OR "
+                    sql += " OR "  # pragma: no cover
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
@@ -191,7 +192,7 @@ class SQLiteDatabaseNewForm(Database):
             first = True
             for t in self._filtertags:
                 if not first:
-                    sql += " INTERSECT "
+                    sql += " INTERSECT "  # pragma: no cover
                 else:
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
