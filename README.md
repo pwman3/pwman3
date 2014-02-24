@@ -13,7 +13,7 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
  * copying of passwords to clipboard
  * launching specific uri's with default browser
  * password generators
- * not really a user oriented feature, it guarantees smashing downs of silly 
+ * not really a user oriented feature. However, it guarantees the elimination of silly 
    bugs: pwman3 is test driven! 
 
 ## A very important note about security
