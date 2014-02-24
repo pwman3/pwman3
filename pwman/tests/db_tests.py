@@ -300,6 +300,7 @@ class CLITests(unittest.TestCase):
         s = StringIO.StringIO("4\nX")
         sys.stdin = s
         menu.run(node)
+        self.tester.cli._db.editnode(2, node)
 
     def test_get_pass_conf(self):
         numerics, leet, s_chars = get_pass_conf()
