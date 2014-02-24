@@ -35,7 +35,7 @@ class NewNode(object):
         self._notes = notes
         self._tags = tags
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         enc = CryptoEngine.get()
         try:
             tags = ', '.join([enc.decrypt(tag).strip() for tag in filter(None,
@@ -48,26 +48,6 @@ class NewNode(object):
         return '{0}@{1}\t{2}'.format(user, url,
                                      tags)
 
-    #def __setattr__(self, name, value):
-    #    if name in ['username', 'password', 'url', 'notes']:
-    #        enc = CryptoEngine.get()
-    #        object.__setattr__(self, name, enc.decrypt(value).strip())
-    #    if name in ['_username', '_password', '_url', '_notes']:
-    #        enc = CryptoEngine.get()
-    #        object.__setattr__(self, name, enc.encrypt(value).strip())
-    #    if name == '_tags':
-    #        object.__setattr__(self, name, [t for t in value])
-    #    elif name == '_id':
-    #        object.__setattr__(self, name, value)
-
-    #def __getattribute__(self, name):
-
-    #    if name in ['username', 'password', 'url', 'notes']:
-    #        enc = CryptoEngine.get()
-    #        return enc.decrypt(eval('self._'+name).strip())
-    #    else:
-    #        return object.__getattribute__(self, name)
-
     def dump_edit_to_db(self):
         dump = ""
         dump += "username:"+self._username+"##"
@@ -77,10 +57,7 @@ class NewNode(object):
         dump += "tags:"
         tagsloc = ""
         for tag in self._tags:
-            if isinstance(tag, str):
-                tagsloc += "tag:"+tag.strip()+"**endtag**"
-            else:
-                tagsloc += "tag:"+tag._name+"**endtag**"
+            tagsloc += "tag:"+tag.strip()+"**endtag**"
         dump += tagsloc
         dump = [dump]
         return dump
@@ -95,10 +72,7 @@ class NewNode(object):
         dump += "tags:"
         tagsloc = ""
         for tag in self._tags:
-            if isinstance(tag, str):
-                tagsloc += "tag:"+tag.strip()+"**endtag**"
-            else:
-                tagsloc += "tag:"+tag._name+"**endtag**"
+            tagsloc += "tag:"+tag._name+"**endtag**"
         dump += tagsloc
         dump = [dump]
         return dump
@@ -164,7 +138,7 @@ class NewNode(object):
         self._notes = enc.encrypt(value).strip()
 
 
-class Node(object):
+class Node(object):  # pragma: no cover
     def __init__(self, username="", password="", url="",
                  notes="", tags=[]):
         """Initialise everything to null."""
