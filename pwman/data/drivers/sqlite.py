@@ -160,7 +160,7 @@ class SQLiteDatabaseNewForm(Database):
             value = n.dump_to_db()
             try:
                 self._cur.execute(sql, value)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError, e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
             idx = self._cur.lastrowid
             n._id = idx
@@ -215,7 +215,7 @@ class SQLiteDatabaseNewForm(Database):
             raise DatabaseException(
                 "SQLite: Error commiting data to db [%s]" % (e))
 
-    def _create_tag(self, tag, node_ids):
+    def _create_tag(self, tag):
         """add tags to db"""
         sql = "INSERT OR REPLACE INTO TAGS(DATA) VALUES(?)"
         if isinstance(tag, str):
@@ -240,12 +240,9 @@ class SQLiteDatabaseNewForm(Database):
                     self._cur.execute(sql, [tag])
                 else:
                     self._cur.execute(sql, [tag._name])
-                row = self._cur.fetchone()
-                if (row is not None):
-                    ids.append(row[0])
-                else:
-                    self._create_tag(tag, None)
-                    ids.append(self._cur.lastrowid)
+
+                self._create_tag(tag)
+                ids.append(self._cur.lastrowid)
             except sqlite.DatabaseError, e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
         return ids
