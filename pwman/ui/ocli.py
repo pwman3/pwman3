@@ -544,31 +544,13 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         """
         self._dbwarning = "\n*** WARNNING: You are using the old database format" \
             + " which is unsecure." \
-            + " Please upgrade to the new database " \
-            + "format. Do note: support for this DB format will be dropped in"\
-            + " v0.5. This  database format is in hold. No bugs are fixed. Please " \
+            + " This  database format is in hold. No bugs are fixed. Please " \
             + " upgrade your database." \
             + " Check the help (pwman3 -h) or look at the manpage which" \
             + " explains how to proceed. ***"
 
-        cmd.Cmd.__init__(self)
-        self.intro = "%s %s (c) visit: %s %s" % (pwman.appname, pwman.version,
-                                                 pwman.website, self._dbwarning)
-        self._historyfile = config.get_value("Readline", "history")
-        self.hasxsel = hasxsel
-        try:
-            enc = CryptoEngine.get()
-            enc.set_callback(CLICallback())
-            self._db = db
-            #  self._db.open()
-        except Exception, e:
-            self.error(e)
-            sys.exit(1)
-        try:
-            readline.read_history_file(self._historyfile)
-        except IOError, e:
-            pass
-        self.prompt = "!pwman> "
+        print (_dbwarning)
+        sys.exit(1)
 
 
 class BaseCommands(PwmanCliOld):

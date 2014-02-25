@@ -47,12 +47,16 @@ def check_db_version():
 class SQLiteDatabaseNewForm(Database):
     """SQLite Database implementation"""
 
-    def __init__(self):
+    def __init__(self, filename=None):
         """Initialise SQLitePwmanDatabase instance."""
         Database.__init__(self)
         # error handling is implemented in config.get_value
         # so there's no need to try... except here...
-        self._filename = config.get_value('Database', 'filename')
+        if not filename:
+            self._filename = config.get_value('Database', 'filename')
+        else:
+            self._filename = filename
+
         if not self._filename:
             raise DatabaseException(("SQLite: missing config parameter:"
                                     " filename"))

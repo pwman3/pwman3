@@ -89,12 +89,13 @@ class PwmanConvertDB(object):
             notes = node.get_notes()
             tags = node.get_tags()
             tags_strings = [tag.get_name() for tag in tags]
-            newNode = NewNode(username=username,
-                              password=password,
-                              url=url,
-                              notes=notes,
-                              tags=tags_strings
-                              )
+            newNode = NewNode()
+            newNode.username = username
+            newNode.password = password
+            newNode.url = url
+            newNode.notes = notes
+            tags = tags_strings
+            newNode.tags = tags
             self.NewNodes.append(newNode)
 
     def save_new_nodes_to_db(self):
