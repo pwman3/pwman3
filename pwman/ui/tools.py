@@ -138,7 +138,8 @@ def open_url(link, macosx=False):  # pragma: no cover
 def getpassword(question, argsgiven=None,
                 width=_defaultwidth, echo=False,
                 reader=getpass.getpass, numerics=False, leetify=False,
-                symbols=False, special_signs=False, length=None):  # pragma: no cover
+                symbols=False, special_signs=False,
+                length=None):  # pragma: no cover
     # TODO: getpassword should recieve a config insatce
     #       and generate the policy according to it,
     #       so that getpassword in cli would be simplified
@@ -180,7 +181,7 @@ def gettermsize():  # pragma: no cover
 
 
 def getinput(question, default="", reader=raw_input,
-             completer =None, width=_defaultwidth):  # pragma: no cover
+             completer=None, width=_defaultwidth):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
@@ -209,7 +210,10 @@ def getinput(question, default="", reader=raw_input,
         return reader()
 
 
-class CliMenu(object):  # pragma: no cover
+class CMDLoop(object):  # pragma: no cover
+    """
+    The menu that drives editing of a node
+    """
     def __init__(self):
         self.items = []
 
@@ -219,59 +223,6 @@ class CliMenu(object):  # pragma: no cover
         else:
             print (item.__class__)
 
-    def run(self):
-        while True:
-            i = 0
-            for x in self.items:
-                i = i + 1
-                # don't break compatability with old db
-                try:
-                    current = x.getter()
-                except TypeError:
-                    current = x.getter
-
-                currentstr = ''
-                if type(current) == list:
-                    for c in current:
-                        currentstr += ("%s " % (c))
-                else:
-                    currentstr = current
-
-                print ("%d - %-" + str(_defaultwidth)
-                       + "s %s") % (i, x.name + ":",
-                                    currentstr)
-            print ("%c - Finish editing" % ('X'))
-            option = getonechar("Enter your choice:")
-            try:
-                print ("selection, ", option)
-                # substract 1 because array subscripts start at 0
-                selection = int(option) - 1
-                # new value is created by calling the editor with the
-                # previous value as a parameter
-                # TODO: enable overriding password policy as if new node
-                # is created.
-                if selection == 1:  # for password
-                    value = self.items[selection].editor(0)
-                else:
-                    try:
-                        edit = self.items[selection].getter()
-                        value = self.items[selection].editor(edit)
-                        self.items[selection].setter(value)
-                    except TypeError:
-                        edit = self.items[selection].getter
-                        value = self.items[selection].editor(edit)
-                        self.items[selection].setter = value
-            except (ValueError, IndexError):
-                if (option.upper() == 'X'):
-                    break
-                print ("Invalid selection")
-
-
-class CMDLoop(CliMenu):  # pragma: no cover
-    """
-    Override CliMenu. This class is only used
-    when editing NewNode,
-    """
     def run(self, new_node=None):
         while True:
             i = 0
@@ -362,7 +313,7 @@ def getonechar(question, width=_defaultwidth):  # pragma: no cover
     return ch
 
 
-class CliMenuItem(object):
+class CliMenuItem(object):  # pragma: no cover
     def __init__(self, name, editor, getter, setter):
         self.name = name
         self.editor = editor
