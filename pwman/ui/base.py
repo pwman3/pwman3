@@ -590,15 +590,16 @@ class BaseCommands(BaseUI, HelpUI):
         try:
             nodes = self._db.getnodes(ids)
             for n in nodes:
-                try:
-                    b = tools.getyesno(("Are you sure you want to"
-                                        " delete '%s@%s'?"
-                                        ) % (n.username, n.url), False)
-                except NameError:
-                    pass
-                if b is True:
-                    self._db.removenodes([n])
-                    print ("%s@%s deleted" % (n.username, n.url))
+                ans = ''
+                while True:
+                    ans = tools.getinput(("Are you sure you want to"
+                                         " delete '%s@%s' ([y/N])?"
+                                          ) % (n.username, n.url)).lower().strip('\n')
+                    if ans == '' or ans == 'y' or ans == 'n':
+                        break
+            if ans == 'y':
+                self._db.removenodes([n])
+                print ("%s@%s deleted" % (n.username, n.url))
         except Exception, e:
             self.error(e)
 

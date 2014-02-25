@@ -108,7 +108,7 @@ def text_to_clipboards(text):  # pragma: no cover
                please check your configuration file ... ")
 
 
-def text_to_mcclipboard(text): # pragma: no cover
+def text_to_mcclipboard(text):  # pragma: no cover
     """
     copy text to mac os x clip board
     credit:
@@ -180,7 +180,7 @@ def gettermsize():  # pragma: no cover
 
 
 def getinput(question, default="", reader=raw_input,
-             completer=None, width=_defaultwidth):  # pragma: no cover
+             completer =None, width=_defaultwidth):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
@@ -207,26 +207,6 @@ def getinput(question, default="", reader=raw_input,
             return x
     else:
         return reader()
-
-
-def getyesno(question, defaultyes=False, width=_defaultwidth):  # pragma: no cover
-    if (defaultyes):
-        default = "[Y/n]"
-    else:
-        default = "[y/N]"
-    ch = getonechar("%s %s" % (question, default), width)
-
-    if (ch == '\n'):
-        if (defaultyes):
-            return True
-        else:
-            return False
-    elif (ch == 'y' or ch == 'Y'):
-        return True
-    elif (ch == 'n' or ch == 'N'):
-        return False
-    else:
-        return getyesno(question, defaultyes, width)
 
 
 class CliMenu(object):  # pragma: no cover
