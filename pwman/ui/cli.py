@@ -46,7 +46,7 @@ def get_pass_conf():
     return numerics, leetify, special_chars
 
 
-class PwmanCliNew(Aliases, BaseCommands):
+class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """

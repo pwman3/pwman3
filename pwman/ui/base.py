@@ -190,16 +190,13 @@ class BaseUI(object):
             return _tags
 
 import pwman.exchange.importer as importer
-import pwman.util.generator as generator
 from pwman.data.nodes import Node
-from pwman.data.tags import Tag
 from pwman.util.crypto import CryptoEngine
 from pwman.util.crypto import zerome
 import pwman.util.config as config
 import re
 import sys
 import os
-import cmd
 import time
 import select as uselect
 import ast
@@ -207,8 +204,6 @@ from pwman.ui import tools
 from pwman.ui.tools import CliMenu
 from pwman.ui.tools import CliMenuItem
 from colorama import Fore
-from pwman.ui.base import HelpUI, BaseUI
-from pwman.ui.tools import CLICallback
 from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
@@ -231,10 +226,7 @@ def get_pass_conf():
 
 
 # pylint: disable=R0904
-class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
-    """
-    UI class for MacOSX
-    """
+class PwmanCliOld(HelpUI, BaseUI):
     def error(self, exception):
         if (isinstance(exception, KeyboardInterrupt)):
             print('')
@@ -270,164 +262,14 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             print("Could not understand your input...")
         return ids
 
-    def get_filesystem_path(self, default="", reader=raw_input):
-        return tools.getinput("Enter filename: ", default, reader=reader)
-
     def get_username(self, default="", reader=raw_input):
         return tools.getinput("Username: ", default, reader)
-
-    def get_password(self, argsgiven, numerics=False, leetify=False,
-                     symbols=False, special_signs=False, reader=raw_input):
-        """
-        in the config file:
-        numerics -> numerics
-        leetify -> symbols
-        special_chars -> special_signs
-        """
-        # TODO: replace this code with tools.getpassword
-        if argsgiven == 1:
-            length = tools.getinput("Password length (default 7): ", "7")
-            length = len(length)
-            password, dumpme = generator.generate_password(length, length,
-                                                           True, leetify,
-                                                           numerics,
-                                                           special_signs)
-            print ("New password: %s" % (password))
-            return password
-        # no args given
-        password = tools.getpassword("Password (Blank to generate): ",
-                                     tools._defaultwidth, False, reader)
-        if not password:
-            length = tools.getinput("Password length (default 7): ", "7")
-            if length:
-                length = int(length)
-            else:
-                length = 7
-            password, dumpme = generator.generate_password(length, length,
-                                                           True, leetify,
-                                                           numerics,
-                                                           special_signs)
-        print ("New password: %s" % (password))
-        return password
 
     def get_url(self, default="", reader=raw_input):
         return tools.getinput("Url: ", default, reader)
 
     def get_notes(self, default="", reader=raw_input):
         return tools.getinput("Notes: ", default, reader)
-
-    def get_tags(self, default=None):
-        """read node tags from user"""
-        defaultstr = ''
-        if default:
-            for t in default:
-                defaultstr += "%s " % (t.get_name())
-        else:
-            tags = self._db.currenttags()
-            for t in tags:
-                defaultstr += "%s " % (t.get_name())
-
-        strings = []
-        tags = self._db.listtags(True)
-        for t in tags:
-            strings.append(t.get_name())
-
-        def complete(text, state):
-            count = 0
-            for s in strings:
-                if s.startswith(text):
-                    if count == state:
-                        return s
-                    else:
-                        count += 1
-
-        taglist = tools.getinput("Tags: ", defaultstr, complete)
-        tagstrings = taglist.split()
-        tags = []
-        for tn in tagstrings:
-            tags.append(TagNew(tn))
-        return tags
-
-    def print_node(self, node):
-        width = str(tools._defaultwidth)
-        print ("Node %d." % (node._id))
-        print ("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
-                                        node.get_username())
-        print ("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
-                                        node.get_password())
-        print ("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
-                                        node.get_url())
-        print ("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
-                                        node.get_notes())
-        print (tools.typeset("Tags: ", Fore.RED)),
-        for t in node.get_tags():
-            print (" %s \n" % t.get_name()),
-
-        def heardEnter():
-            inpt, out, err = uselect.select([sys.stdin], [], [], 0.0001)
-            for stream in inpt:
-                if stream == sys.stdin:
-                    sys.stdin.readline()
-                    return True
-                return False
-
-        def waituntil_enter(somepredicate, timeout, period=0.25):
-            mustend = time.time() + timeout
-            while time.time() < mustend:
-                cond = somepredicate()
-                if cond:
-                    break
-                time.sleep(period)
-            self.do_cls('')
-
-        flushtimeout = int(config.get_value("Global", "cls_timeout"))
-        if flushtimeout > 0:
-            print ("Type Enter to flush screen (autoflash in "
-                   "%d sec.)" % flushtimeout)
-            waituntil_enter(heardEnter, flushtimeout)
-
-    def do_tags(self, arg):
-        tags = self._db.listtags()
-        if len(tags) > 0:
-            tags[0].get_name()  # hack to get password request before output
-        print ("Tags: "),
-        if len(tags) == 0:
-            print ("None"),
-        for t in tags:
-            print ("%s " % (t.get_name())),
-        print
-
-    def complete_filter(self, text, line, begidx, endidx):
-        strings = []
-        enc = CryptoEngine.get()
-        if not enc.alive():
-            return strings
-
-        tags = self._db.listtags()
-        for t in tags:
-            name = t.get_name()
-            if name.startswith(text):
-                strings.append(t.get_name())
-        return strings
-
-    def do_filter(self, args):
-        tagstrings = args.split()
-
-        try:
-            tags = []
-            for ts in tagstrings:
-                tags.append(Tag(ts))
-            self._db.filter(tags)
-
-            tags = self._db.currenttags()
-            print ("Current tags: "),
-            if len(tags) == 0:
-                print ("None"),
-            for t in tags:
-                print ("%s " % (t.get_name())),
-            print
-        except Exception, e:
-            self.error(e)
 
     def do_clear(self, args):
         try:
