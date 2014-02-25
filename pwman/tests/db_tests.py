@@ -67,7 +67,7 @@ from pwman.data.nodes import NewNode
 from pwman.data.tags import TagNew
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import which, default_config
-from pwman.ui.cli import get_pass_conf
+from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 import unittest
 from pwman.data import factory

@@ -1,9 +1,7 @@
 import pwman.util.config as config
 import os
-import pwman.data.factory
-from pwman.data.nodes import NewNode
-from pwman.data.tags import Tag
-from pwman.util.crypto import CryptoEngine, CryptoException, CryptoNoCallbackException
+from pwman.util.crypto import (CryptoEngine, CryptoException,
+                               CryptoNoCallbackException)
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '5'
@@ -30,7 +28,5 @@ class CryptoTest(unittest.TestCase):
         self.assertRaises((CryptoNoCallbackException,), crypto._getcipher)
 
     def test_prepare_data(self):
-        obj='dummy_data'
+        obj = 'dummy_data'
         self.assertTrue(True)
-
-

@@ -37,15 +37,6 @@ except ImportError, e:  # pragma: no cover
     _readline_available = False
 
 
-def get_pass_conf():
-    numerics = config.get_value("Generator", "numerics").lower() == 'true'
-    # TODO: allow custom leetifying through the config
-    leetify = config.get_value("Generator", "leetify").lower() == 'true'
-    special_chars = config.get_value("Generator", "special_chars"
-                                     ).lower() == 'true'
-    return numerics, leetify, special_chars
-
-
 class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
