@@ -55,7 +55,6 @@ from Crypto.Random import OSRNG
 
 from pwman.util.callback import Callback
 import pwman.util.config as config
-import cPickle
 import time
 import sys
 import ctypes
@@ -324,11 +323,9 @@ password again")
         if not key:
             raise Exception("Wrong password entered %s times; giving up"
                             % max_tries)
-        try:
-            key = str(key).decode('base64')
-        except Exception:
-            key = cPickle.loads(key)
-            key = str(key).decode('base64')
+
+        key = str(key).decode('base64')
+
         self._cipher = self._getcipher_real(key,
                                             self._algo)
 
@@ -384,7 +381,6 @@ password again")
         """
         prepare data before encrypting
         """
-        #plaintext = cPickle.dumps(obj)
         plaintext = _TAG + obj
         numblocks = (len(plaintext)/blocksize) + 1
         newdatasize = blocksize*numblocks
@@ -398,14 +394,8 @@ password again")
             plaintext = plaintext[len(_TAG):]
         else:
             raise CryptoBadKeyException("Error decrypting, bad key")
-        try:
-            # old db version used to write stuff to db with
-            # plaintext = cPickle.dumps(obj)
-            # TODO: completely remove this block, and convert
-            # the DB to a completely plain text ...
-            return cPickle.loads(plaintext)
-        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
-            return plaintext
+
+        return plaintext
 
 
 class DummyCryptoEngine(CryptoEngine):
@@ -414,13 +404,13 @@ class DummyCryptoEngine(CryptoEngine):
     def __init__(self):
         pass
 
-    def encrypt(self, obj):
+    def encrypt(self, strng):
         """Return the object pickled."""
-        return cPickle.dumps(obj)
+        return strng.upper()
 
-    def decrypt(self, ciphertext):
+    def decrypt(self, strng):
         """Unpickle the object."""
-        return cPickle.loads(str(ciphertext))
+        return strng.lower()
 
     def changepassword(self):
         return ''
