@@ -42,27 +42,25 @@ def check_db_version(type):
      # TODO: implement version checks for other supported DBs.
 
 
-def create(type, version=None, filename=None):
+def create(dbtype, version=None, filename=None):
     """
     create(params) -> Database
     Create a Database instance.
     'type' can only be 'SQLite' at the moment
     """
-    if type == "SQLite":
+    if dbtype == "SQLite":
         from pwman.data.drivers import sqlite
         if version == 0.4 and filename:
             db = sqlite.SQLiteDatabaseNewForm(filename)
         elif version == 0.4:
             db = sqlite.SQLiteDatabaseNewForm()
-        else:
-            db = osqlite.SQLiteDatabase()
-    elif type == "Postgresql":
+    elif dbtype == "Postgresql":
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
         except ImportError:
             raise DatabaseException("python-pygresql not installed")
-    elif type == "MySQL":
+    elif dbtype == "MySQL":
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()
