@@ -190,7 +190,6 @@ class BaseUI(object):
             return _tags
 
 import pwman.exchange.importer as importer
-from pwman.data.nodes import Node
 from pwman.util.crypto import CryptoEngine
 from pwman.util.crypto import zerome
 import pwman.util.config as config
@@ -209,12 +208,6 @@ from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
 
-try:
-    import readline
-    _readline_available = True
-except ImportError, e:  # pragma: no cover
-    _readline_available = False
-
 
 def get_pass_conf():
     numerics = config.get_value("Generator", "numerics").lower() == 'true'
@@ -227,55 +220,11 @@ def get_pass_conf():
 
 # pylint: disable=R0904
 class PwmanCliOld(HelpUI, BaseUI):
-    def error(self, exception):
-        if (isinstance(exception, KeyboardInterrupt)):
-            print('')
-        else:
-            print("Error: {0} ".format(exception))
 
     def do_exit(self, args):
         """exit the ui"""
         self._db.close()
         return True
-
-    def get_ids(self, args):
-        """
-        Command can get a single ID or
-        a range of IDs, with begin-end.
-        e.g. 1-3 , will get 1 to 3.
-        """
-        ids = []
-        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
-        rex = rex.match(args)
-        if hasattr(rex, 'groupdict'):
-            try:
-                begin = int(rex.groupdict()['begin'])
-                end = int(rex.groupdict()['end'])
-                if not end > begin:
-                    print("Start node should be smaller than end node")
-                    return ids
-                ids += range(begin, end+1)
-                return ids
-            except TypeError:
-                ids.append(int(begin))
-        else:
-            print("Could not understand your input...")
-        return ids
-
-    def get_username(self, default="", reader=raw_input):
-        return tools.getinput("Username: ", default, reader)
-
-    def get_url(self, default="", reader=raw_input):
-        return tools.getinput("Url: ", default, reader)
-
-    def get_notes(self, default="", reader=raw_input):
-        return tools.getinput("Notes: ", default, reader)
-
-    def do_clear(self, args):
-        try:
-            self._db.clearfilter()
-        except Exception, e:
-            self.error(e)
 
     def do_edit(self, arg):
         ids = self.get_ids(arg)
@@ -327,57 +276,6 @@ class PwmanCliOld(HelpUI, BaseUI):
 
     def do_export(self, arg):
         print('Not implemented...')
-
-    def do_new(self, args):
-        """
-        can override default config settings the following way:
-        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
-        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
-        Password (Blank to generate):
-        """
-        errmsg = ("could not parse config override, please input some"
-                  " kind of dictionary, e.g.: n {'leetify':False, "
-                  " numerics':True, 'special_chars':True}")
-        try:
-            username = self.get_username()
-            if args:
-                try:
-                    args = ast.literal_eval(args)
-                except Exception:
-                    raise Exception(errmsg)
-                if not isinstance(args, dict):
-                    raise Exception(errmsg)
-                password = self.get_password(1, **args)
-            else:
-                numerics = config.get_value("Generator",
-                                            "numerics").lower() == 'true'
-                # TODO: allow custom leetifying through the config
-                leetify = config.get_value("Generator",
-                                           "leetify").lower() == 'true'
-                special_chars = config.get_value("Generator",
-                                                 "special_chars").lower() == \
-                    'true'
-                password = self.get_password(0,
-                                             numerics=numerics,
-                                             symbols=leetify,
-                                             special_signs=special_chars)
-            url = self.get_url()
-            notes = self.get_notes()
-            node = Node(username, password, url, notes)
-            tags = self.get_tags()
-            node.set_tags(tags)
-            self._db.addnodes([node])
-            print ("Password ID: %d" % (node.get_id()))
-        except Exception, e:
-            self.error(e)
-
-    def do_print(self, arg):
-        for i in self.get_ids(arg):
-            try:
-                node = self._db.getnodes([i])
-                self.print_node(node[0])
-            except Exception, e:  # pragma: no cover
-                self.error(e)
 
     def do_delete(self, arg):
         ids = self.get_ids(arg)
@@ -451,12 +349,71 @@ class PwmanCliOld(HelpUI, BaseUI):
         except Exception, e:
             self.error(e)
 
-    def do_passwd(self, args):
+    def do_open(self, args):
+        ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
+        if len(ids) > 1:
+            print ("Can open only 1 link at a time ...")
+            return None
         try:
-            key = self._db.changepassword()
-            self._db._save(key)
+            node = self._db.getnodes(ids)
+            url = node[0].get_url()
+            tools.open_url(url)
         except Exception, e:
             self.error(e)
+
+    def __init__(self, db, hasxsel):
+        """
+        initialize CLI interface, set up the DB
+        connecion, see if we have xsel ...
+        """
+        _dbwarning = "\n*** WARNNING: You are using the old database format" \
+            + " which is unsecure." \
+            + " This  database format is in hold. No bugs are fixed. Please " \
+            + " upgrade your database." \
+            + " Check the help (pwman3 -h) or look at the manpage which" \
+            + " explains how to proceed. ***"
+
+        print (_dbwarning)
+        sys.exit(1)
+
+
+class BaseCommands(PwmanCliOld):
+    """
+    Inherit from the old class, override
+    all the methods related to tags, and
+    newer Node format, so backward compatability is kept...
+    Commands defined here, can have aliases definded in Aliases.
+    You can define the aliases here too, but it makes
+    the class code really long and unclear.
+    """
+    def error(self, exception):
+        if (isinstance(exception, KeyboardInterrupt)):
+            print('')
+        else:
+            print("Error: {0} ".format(exception))
+
+    def do_copy(self, args):
+        if self.hasxsel:
+            ids = self.get_ids(args)
+            if len(ids) > 1:
+                print ("Can copy only 1 password at a time...")
+                return None
+            try:
+                node = self._db.getnodes(ids)
+                tools.text_to_clipboards(node[0].password)
+                print ("copied password for {}@{} clipboard".format(
+                       node[0].username, node[0].url))
+
+                print ("erasing in 10 sec...")
+                time.sleep(10)
+                tools.text_to_clipboards("")
+            except Exception, e:
+                self.error(e)
+        else:
+            print ("Can't copy to clipboard, no xsel found in the system!")
 
     def do_set(self, args):
         argstrs = args.split()
@@ -489,105 +446,14 @@ class PwmanCliOld(HelpUI, BaseUI):
         except Exception, e:
             self.error(e)
 
-    def do_save(self, args):
-        argstrs = args.split()
-        try:
-            if len(argstrs) > 0:
-                config.save(argstrs[0])
-            else:
-                config.save()
-            print ("Config saved.")
-        except Exception, e:
-            self.error(e)
+    def get_username(self, default="", reader=raw_input):
+        return tools.getinput("Username: ", default, reader)
 
-    def do_cls(self, args):
-        os.system('clear')
+    def get_url(self, default="", reader=raw_input):
+        return tools.getinput("Url: ", default, reader)
 
-    def do_copy(self, args):
-        if self.hasxsel:
-            ids = self.get_ids(args)
-            if len(ids) > 1:
-                print ("Can copy only 1 password at a time...")
-                return None
-            try:
-                node = self._db.getnodes(ids)
-                tools.text_to_clipboards(node[0].get_password())
-                print ("copied password for {}@{} clipboard".format(
-                       node[0].get_username(), node[0].get_url()))
-
-                print ("erasing in 10 sec...")
-                time.sleep(10)
-                tools.text_to_clipboards("")
-            except Exception, e:
-                self.error(e)
-        else:
-            print ("Can't copy to clipboard, no xsel found in the system!")
-
-    def do_open(self, args):
-        ids = self.get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print ("Can open only 1 link at a time ...")
-            return None
-        try:
-            node = self._db.getnodes(ids)
-            url = node[0].get_url()
-            tools.open_url(url)
-        except Exception, e:
-            self.error(e)
-
-    def postloop(self):
-        try:
-            readline.write_history_file(self._historyfile)
-        except Exception:
-            pass
-
-    def __init__(self, db, hasxsel):
-        """
-        initialize CLI interface, set up the DB
-        connecion, see if we have xsel ...
-        """
-        _dbwarning = "\n*** WARNNING: You are using the old database format" \
-            + " which is unsecure." \
-            + " This  database format is in hold. No bugs are fixed. Please " \
-            + " upgrade your database." \
-            + " Check the help (pwman3 -h) or look at the manpage which" \
-            + " explains how to proceed. ***"
-
-        print (_dbwarning)
-        sys.exit(1)
-
-
-class BaseCommands(PwmanCliOld):
-    """
-    Inherit from the old class, override
-    all the methods related to tags, and
-    newer Node format, so backward compatability is kept...
-    Commands defined here, can have aliases definded in Aliases.
-    You can define the aliases here too, but it makes
-    the class code really long and unclear.
-    """
-    def do_copy(self, args):
-        if self.hasxsel:
-            ids = self.get_ids(args)
-            if len(ids) > 1:
-                print ("Can copy only 1 password at a time...")
-                return None
-            try:
-                node = self._db.getnodes(ids)
-                tools.text_to_clipboards(node[0].password)
-                print ("copied password for {}@{} clipboard".format(
-                       node[0].username, node[0].url))
-
-                print ("erasing in 10 sec...")
-                time.sleep(10)
-                tools.text_to_clipboards("")
-            except Exception, e:
-                self.error(e)
-        else:
-            print ("Can't copy to clipboard, no xsel found in the system!")
+    def get_notes(self, default="", reader=raw_input):
+        return tools.getinput("Notes: ", default, reader)
 
     def do_open(self, args):
         ids = self.get_ids(args)
@@ -603,6 +469,15 @@ class BaseCommands(PwmanCliOld):
             tools.open_url(url)
         except Exception, e:
             self.error(e)
+
+    def do_clear(self, args):
+        try:
+            self._db.clearfilter()
+        except Exception, e:
+            self.error(e)
+
+    def do_cls(self, args):
+        os.system('clear')
 
     def do_edit(self, arg, menu=None):
         ids = self.get_ids(arg)
@@ -679,6 +554,24 @@ class BaseCommands(PwmanCliOld):
             print ("Type Enter to flush screen (autoflash in "
                    "%d sec.)" % flushtimeout)
             waituntil_enter(heardEnter, flushtimeout)
+
+    def do_passwd(self, args):
+        try:
+            key = self._db.changepassword()
+            self._db._save(key)
+        except Exception, e:
+            self.error(e)
+
+    def do_save(self, args):
+        argstrs = args.split()
+        try:
+            if len(argstrs) > 0:
+                config.save(argstrs[0])
+            else:
+                config.save()
+            print ("Config saved.")
+        except Exception, e:
+            self.error(e)
 
     def do_tags(self, arg):
         enc = CryptoEngine.get()
@@ -857,6 +750,30 @@ class BaseCommands(PwmanCliOld):
                     print ("%s@%s deleted" % (n.username, n.url))
         except Exception, e:
             self.error(e)
+
+    def get_ids(self, args):
+        """
+        Command can get a single ID or
+        a range of IDs, with begin-end.
+        e.g. 1-3 , will get 1 to 3.
+        """
+        ids = []
+        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
+        rex = rex.match(args)
+        if hasattr(rex, 'groupdict'):
+            try:
+                begin = int(rex.groupdict()['begin'])
+                end = int(rex.groupdict()['end'])
+                if not end > begin:
+                    print("Start node should be smaller than end node")
+                    return ids
+                ids += range(begin, end+1)
+                return ids
+            except TypeError:
+                ids.append(int(begin))
+        else:
+            print("Could not understand your input...")
+        return ids
 
     def get_password(self, argsgiven, numerics=False, leetify=False,
                      symbols=False, special_signs=False,
