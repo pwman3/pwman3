@@ -21,6 +21,31 @@
 Define the base CLI interface for pwman3
 """
 from __future__ import print_function
+from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto import zerome
+import pwman.util.config as config
+import re
+import sys
+import os
+import time
+import select as uselect
+import ast
+from pwman.ui import tools
+from pwman.ui.tools import CliMenuItem
+from colorama import Fore
+from pwman.data.nodes import NewNode
+from pwman.ui.tools import CMDLoop
+import getpass
+from pwman.data.tags import TagNew
+
+
+def get_pass_conf():
+    numerics = config.get_value("Generator", "numerics").lower() == 'true'
+    # TODO: allow custom leetifying through the config
+    leetify = config.get_value("Generator", "leetify").lower() == 'true'
+    special_chars = config.get_value("Generator", "special_chars"
+                                     ).lower() == 'true'
+    return numerics, leetify, special_chars
 
 
 class HelpUI(object):
@@ -90,7 +115,7 @@ class HelpUI(object):
 
     def help_import(self):
         self.usage("import [filename] ...")
-        print ("Imports a nodes from a file.")
+        print ("Not implemented...")
 
     def help_export(self):
         self.usage("export <ID|tag> ... ")
@@ -189,198 +214,9 @@ class BaseUI(object):
             _tags = filter(None, _tags)
             return _tags
 
-import pwman.exchange.importer as importer
-from pwman.util.crypto import CryptoEngine
-from pwman.util.crypto import zerome
-import pwman.util.config as config
-import re
-import sys
-import os
-import time
-import select as uselect
-import ast
-from pwman.ui import tools
-from pwman.ui.tools import CliMenu
-from pwman.ui.tools import CliMenuItem
-from colorama import Fore
-from pwman.data.nodes import NewNode
-from pwman.ui.tools import CMDLoop
-import getpass
-from pwman.data.tags import TagNew
-
-
-def get_pass_conf():
-    numerics = config.get_value("Generator", "numerics").lower() == 'true'
-    # TODO: allow custom leetifying through the config
-    leetify = config.get_value("Generator", "leetify").lower() == 'true'
-    special_chars = config.get_value("Generator", "special_chars"
-                                     ).lower() == 'true'
-    return numerics, leetify, special_chars
-
 
 # pylint: disable=R0904
-class PwmanCliOld(HelpUI, BaseUI):
-
-    def do_exit(self, args):
-        """exit the ui"""
-        self._db.close()
-        return True
-
-    def do_edit(self, arg):
-        ids = self.get_ids(arg)
-        for i in ids:
-            try:
-                i = int(i)
-                node = self._db.getnodes([i])[0]
-                menu = CliMenu()
-                print ("Editing node %d." % (i))
-                menu.add(CliMenuItem("Username", self.get_username,
-                                     node.get_username,
-                                     node.set_username))
-                menu.add(CliMenuItem("Password", self.get_password,
-                                     node.get_password,
-                                     node.set_password))
-                menu.add(CliMenuItem("Url", self.get_url,
-                                     node.get_url,
-                                     node.set_url))
-                menu.add(CliMenuItem("Notes", self.get_notes,
-                                     node.get_notes,
-                                     node.set_notes))
-                menu.add(CliMenuItem("Tags", self.get_tags,
-                                     node.get_tags,
-                                     node.set_tags))
-                menu.run()
-                self._db.editnode(i, node)
-                # when done with node erase it
-                zerome(node._password)
-            except Exception, e:
-                self.error(e)
-
-    def do_import(self, arg):
-        try:
-            args = arg.split()
-            if len(args) == 0:
-                types = importer.Importer.types()
-                intype = tools.select("Select filetype:", types)
-                imp = importer.Importer.get(intype)
-                infile = tools.getinput("Select file:")
-                imp.import_data(self._db, infile)
-            else:
-                for i in args:
-                    types = importer.Importer.types()
-                    intype = tools.select("Select filetype:", types)
-                    imp = importer.Importer.get(intype)
-                    imp.import_data(self._db, i)
-        except Exception, e:
-            self.error(e)
-
-    def do_export(self, arg):
-        print('Not implemented...')
-
-    def do_delete(self, arg):
-        ids = self.get_ids(arg)
-        try:
-            nodes = self._db.getnodes(ids)
-            for n in nodes:
-                b = tools.getyesno("Are you sure you want to delete '%s@%s'?"
-                                   % (n.get_username(), n.get_url()), False)
-                if b is True:
-                    self._db.removenodes([n])
-                    print ("%s@%s deleted" % (n.get_username(), n.get_url()))
-        except Exception, e:
-            self.error(e)
-
-    def do_list(self, args):
-        """
-        TODO: in order to make this code testable
-        The functionality in this method should
-        go to a method that returns a string.
-        This method should only do the printing.
-        """
-        if len(args.split()) > 0:
-            self.do_clear('')
-            self.do_filter(args)
-        try:
-            if sys.platform != 'win32':
-                rows, cols = tools.gettermsize()
-            else:
-                rows, cols = 18, 80
-            nodeids = self._db.listnodes()
-            nodes = self._db.getnodes(nodeids)
-            cols -= 8
-            i = 0
-            for n in nodes:
-                tags = n.get_tags()
-                tagstring = ''
-                first = True
-                for t in tags:
-                    if not first:
-                        tagstring += ", "
-                    else:
-                        first = False
-                    tagstring += t.get_name()
-                name = "%s@%s" % (n.get_username(), n.get_url())
-
-                name_len = cols * 2 / 3
-                tagstring_len = cols / 3
-                if len(name) > name_len:
-                    name = name[:name_len - 3] + "..."
-                if len(tagstring) > tagstring_len:
-                    tagstring = tagstring[:tagstring_len - 3] + "..."
-
-                fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                print (tools.typeset(fmt % (n.get_id(), name, tagstring),
-                                     Fore.YELLOW, False))
-                i += 1
-                if i > rows - 2:
-                    i = 0
-                    c = tools.getonechar("Press <Space> for more, "
-                                         "or 'Q' to cancel")
-                    if c == 'q':
-                        break
-
-        except Exception, e:
-            self.error(e)
-
-    def do_forget(self, args):
-        try:
-            enc = CryptoEngine.get()
-            enc.forget()
-        except Exception, e:
-            self.error(e)
-
-    def do_open(self, args):
-        ids = self.get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print ("Can open only 1 link at a time ...")
-            return None
-        try:
-            node = self._db.getnodes(ids)
-            url = node[0].get_url()
-            tools.open_url(url)
-        except Exception, e:
-            self.error(e)
-
-    def __init__(self, db, hasxsel):
-        """
-        initialize CLI interface, set up the DB
-        connecion, see if we have xsel ...
-        """
-        _dbwarning = "\n*** WARNNING: You are using the old database format" \
-            + " which is unsecure." \
-            + " This  database format is in hold. No bugs are fixed. Please " \
-            + " upgrade your database." \
-            + " Check the help (pwman3 -h) or look at the manpage which" \
-            + " explains how to proceed. ***"
-
-        print (_dbwarning)
-        sys.exit(1)
-
-
-class BaseCommands(PwmanCliOld):
+class BaseCommands(BaseUI, HelpUI):
     """
     Inherit from the old class, override
     all the methods related to tags, and
@@ -414,6 +250,21 @@ class BaseCommands(PwmanCliOld):
                 self.error(e)
         else:
             print ("Can't copy to clipboard, no xsel found in the system!")
+
+    def do_exit(self, args):
+        """exit the ui"""
+        self._db.close()
+        return True
+
+    def do_export(self, arg):
+        print('Not implemented...')
+
+    def do_forget(self, args):
+        try:
+            enc = CryptoEngine.get()
+            enc.forget()
+        except Exception, e:
+            self.error(e)
 
     def do_set(self, args):
         argstrs = args.split()
@@ -782,7 +633,7 @@ class BaseCommands(PwmanCliOld):
                                  reader=reader, length=length, leetify=leetify)
 
 
-class Aliases(BaseCommands, PwmanCliOld):
+class Aliases(BaseCommands):
     """
     Define all the alias you want here...
     """
