@@ -339,6 +339,7 @@ class CMDLoop(CliMenu):  # pragma: no cover
                     self.items[2].getter = new_node.url
                     self.items[2].setter = new_node.url
                 elif selection == 3:  # for notes
+                    # new_node.notes = getinput("Notes:")
                     new_node.notes = getinput("Notes:")
                     self.items[3].getter = new_node.notes
                     self.items[3].setter = new_node.notes

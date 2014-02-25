@@ -64,7 +64,7 @@ else:
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.nodes import NewNode
-from pwman.data.tags import Tag, TagNew
+from pwman.data.tags import TagNew
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import which, default_config
 from pwman.ui.cli import get_pass_conf
@@ -136,8 +136,14 @@ class DBTests(unittest.TestCase):
         password = 'Password'
         url = 'example.org'
         notes = 'some notes'
-        node = NewNode(username, password, url, notes)
-        tags = [Tag(tn) for tn in ['testing1', 'testing2']]
+        #node = NewNode(username, password, url, notes)
+        node = NewNode()
+        node.username = username
+        node.password = password
+        node.url = url
+        node.notes = notes
+        #node = NewNode(username, password, url, notes)
+        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
         node.tags = tags
         self.db.open()
         self.db.addnodes([node])
@@ -181,12 +187,12 @@ class DBTests(unittest.TestCase):
         node = self.tester.cli._db.getnodes([1])
         self.tester.cli._db.removenodes(node)
         # create the removed node again
-        username = 'tester'
-        password = 'Password'
-        url = 'example.org'
-        notes = 'some notes'
-        node = NewNode(username, password, url, notes)
-        tags = [Tag(tn) for tn in ['testing1', 'testing2']]
+        node = NewNode()
+        node.username = 'tester'
+        node.password = 'Password'
+        node.url = 'example.org'
+        node.notes = 'some notes'
+        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
         node.tags = tags
         self.db.open()
         self.db.addnodes([node])
@@ -272,8 +278,16 @@ class CLITests(unittest.TestCase):
     # the node is still not added !
 
     def test_add_new_entry(self):
-        node = NewNode('alice', 'dough!', 'example.com',
-                       'lorem impsum')
+        #node = NewNode('alice', 'dough!', 'example.com',
+        #               'lorem impsum')
+
+        node = NewNode()
+        node.username = 'alice'
+        node.password = 'dough!'
+        node.url = 'example.com'
+        node.notes = 'somenotes'
+        node.tags = 'lorem ipsum'
+
         tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         node.tags = tags
         self.tester.cli._db.addnodes([node])
@@ -320,10 +334,13 @@ class CLITests(unittest.TestCase):
                              node.tags))
 
         import StringIO
-        s = StringIO.StringIO("4\nX")
-        sys.stdin = s
+        dummy_stdin = StringIO.StringIO('4\n\nX')
+        self.assertTrue(len(dummy_stdin.readlines()))
+        dummy_stdin.seek(0)
+        sys.stdin = dummy_stdin
         menu.run(node)
         self.tester.cli._db.editnode(2, node)
+        sys.stdin = sys.__stdin__
 
     def test_get_pass_conf(self):
         numerics, leet, s_chars = get_pass_conf()

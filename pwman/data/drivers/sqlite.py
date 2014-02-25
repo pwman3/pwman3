@@ -134,8 +134,14 @@ class SQLiteDatabaseNewForm(Database):
                 row = self._cur.fetchone()
                 if row is not None:
                     nodestring = str(row[0])
-                    nodeargs, tags = self.parse_node_string(nodestring)
-                    node = NewNode(**nodeargs)
+                    args, tags = self.parse_node_string(nodestring)
+
+                    #node = NewNode(**nodeargs)
+                    node = NewNode()
+                    node._password = args['password']
+                    node._username = args['username']
+                    node._url = args['url']
+                    node._notes = args['notes']
                     node.tags = tags
                     node._id = i
                     nodes.append(node)
@@ -158,7 +164,7 @@ class SQLiteDatabaseNewForm(Database):
         """
         for n in nodes:
             sql = "INSERT INTO NODES(DATA) VALUES(?)"
-            value = n.dump_to_db()
+            value = n.dump_edit_to_db()
             try:
                 self._cur.execute(sql, value)
             except sqlite.DatabaseError, e:  # pragma: no cover

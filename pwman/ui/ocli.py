@@ -47,7 +47,7 @@ from pwman.ui.tools import CLICallback
 from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
-from pwman.data.tags import TagNew as TagN
+from pwman.data.tags import TagNew
 
 try:
     import readline
@@ -180,7 +180,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         tagstrings = taglist.split()
         tags = []
         for tn in tagstrings:
-            tags.append(Tag(tn))
+            tags.append(TagNew(tn))
         return tags
 
     def print_node(self, node):
@@ -730,7 +730,7 @@ class BaseCommands(PwmanCliOld):
         taglist = tools.getinput("Tags: ", defaultstr, completer=complete,
                                  reader=reader)
         tagstrings = taglist.split()
-        tags = [TagN(tn) for tn in tagstrings]
+        tags = [TagNew(tn) for tn in tagstrings]
 
         return tags
 
@@ -787,7 +787,7 @@ class BaseCommands(PwmanCliOld):
     def do_filter(self, args):
         tagstrings = args.split()
         try:
-            tags = [TagN(ts) for ts in tagstrings]
+            tags = [TagNew(ts) for ts in tagstrings]
             self._db.filter(tags)
             tags = self._db.currenttags()
             print ("Current tags: ",)
@@ -827,7 +827,12 @@ class BaseCommands(PwmanCliOld):
                                              special_signs=s_chars)
             url = self.get_url()
             notes = self.get_notes()
-            node = NewNode(username, password, url, notes)
+            node = NewNode()
+            node.username = username
+            node.password = password
+            node.url = url
+            node.notes = notes
+            #node = NewNode(username, password, url, notes)
             node.tags = self.get_tags()
             self._db.addnodes([node])
             print ("Password ID: %d" % (node._id))

@@ -57,22 +57,11 @@ class NewNode(object):
         dump += "tags:"
         tagsloc = ""
         for tag in self._tags:
-            tagsloc += "tag:"+tag.strip()+"**endtag**"
-        dump += tagsloc
-        dump = [dump]
-        return dump
+            if isinstance(tag, str):
+                tagsloc += "tag:"+tag.strip()+"**endtag**"
+            else:
+                tagsloc += "tag:"+tag._name+"**endtag**"
 
-    def dump_to_db(self):
-        enc = CryptoEngine.get()
-        dump = ""
-        dump += "username:"+enc.encrypt(self._username)+"##"
-        dump += "password:"+enc.encrypt(self._password)+"##"
-        dump += "url:"+enc.encrypt(self._url)+"##"
-        dump += "notes:"+enc.encrypt(self._notes)+"##"
-        dump += "tags:"
-        tagsloc = ""
-        for tag in self._tags:
-            tagsloc += "tag:"+tag._name+"**endtag**"
         dump += tagsloc
         dump = [dump]
         return dump
