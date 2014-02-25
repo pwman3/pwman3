@@ -57,15 +57,12 @@ from pwman.util.crypto import CryptoEngine
 from pwman import default_config, which
 
 if 'darwin' in sys.platform:
-    from pwman.ui.mac import PwmanCliMac as PwmanCli
     from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
     OSX = True
 elif 'win' in sys.platform:
-    from pwman.ui.cli import PwmanCli
     from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
     OSX = False
 else:
-    from pwman.ui.ocli import PwmanCliOld as PwmanCli
     from pwman.ui.cli import PwmanCliNew
     OSX = False
 
@@ -140,8 +137,6 @@ try:
     db = pwman.data.factory.create(dbtype, dbver)
     if dbver >= 0.4:
         cli = PwmanCliNew(db, xselpath, CLICallback)
-    elif dbver < 0.4:
-        cli = PwmanCli(db, xselpath)
 except SystemExit, e:
     sys.exit(e)
 
