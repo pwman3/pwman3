@@ -546,7 +546,8 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             + " which is unsecure." \
             + " It's highly recommended to switch to the new database " \
             + "format. Do note: support for this DB format will be dropped in"\
-            + " v0.5." \
+            + " v0.5. This  database format is in hold. No bugs are fixed. Please " \
+            + " upgrade your database." \
             + " Check the help (pwman3 -h) or look at the manpage which" \
             + " explains how to proceed. ***"
 

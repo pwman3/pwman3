@@ -1,3 +1,13 @@
+2014-Feb-25 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.4
+	* Multiple bug fixes 
+	* Complete test coverage 
+	* Last version supporting old data base format.
+	  The next version will break compatability. 
+	  The compatability will be broken because the old code 
+	  is not testable, and immposible to maintain. 
+	  Therefore this version still includes the converter. 
+
 2013-11-23 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.3
 	* fix for   #726987 in Debian
