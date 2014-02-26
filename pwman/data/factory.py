@@ -32,6 +32,7 @@ db.open()
 """
 from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
+from pwman.data.drivers import osqlite
 
 
 def check_db_version(type):
@@ -54,7 +55,7 @@ def create(type, version=None, filename=None):
         elif version == 0.4:
             db = sqlite.SQLiteDatabaseNewForm()
         else:
-            db = sqlite.SQLiteDatabase()
+            db = osqlite.SQLiteDatabase()
     elif type == "Postgresql":
         try:
             from pwman.data.drivers import postgresql
