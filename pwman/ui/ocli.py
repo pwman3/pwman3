@@ -542,7 +542,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
-        _dbwarning = "\n*** WARNNING: You are using the old database format" \
+        self._dbwarning = "\n*** WARNNING: You are using the old database format" \
             + " which is unsecure." \
             + " Please upgrade to the new database " \
             + "format. Do note: support for this DB format will be dropped in"\
@@ -553,7 +553,7 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
 
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) visit: %s %s" % (pwman.appname, pwman.version,
-                                                 pwman.website, _dbwarning)
+                                                 pwman.website, self._dbwarning)
         self._historyfile = config.get_value("Readline", "history")
         self.hasxsel = hasxsel
         try:
@@ -561,7 +561,6 @@ class PwmanCliOld(cmd.Cmd, HelpUI, BaseUI):
             enc.set_callback(CLICallback())
             self._db = db
             #  self._db.open()
-            sys.exit(0)
         except Exception, e:
             self.error(e)
             sys.exit(1)
