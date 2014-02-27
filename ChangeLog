@@ -1,3 +1,8 @@
+2014-Feb-27 Oz Nahum <nahumoz@gmail.com>
+	* Version 0.4.5 
+	* Fix for old database format
+	* The tag is on commit 5304181711797bb2da68addc18b97740f6540da3
+
 2014-Feb-25 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.4
 	* Multiple bug fixes 
