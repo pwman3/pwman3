@@ -32,6 +32,7 @@ db.open()
 """
 from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
+#from pwman.data.drivers import osqlite
 
 
 def check_db_version(type):
