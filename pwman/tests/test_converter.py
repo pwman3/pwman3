@@ -18,24 +18,24 @@
 #============================================================================
 # pylint: disable=I0011
 
-
-from pwman.data.database import Database, DatabaseException, DatabaseError
-from pwman.data.convertdb import Node
-from pwman.data.convertdb import Tag
-import sqlite
-import pwman.util.config as config
+import sys
+import os
+sys.path.insert(0, os.getcwd())
+from pwman.data.database import Database, DatabaseException
+from pwman.data.convertdb import Tag, Node
+import sqlite3 as sqlite
 import cPickle
 
 
 class SQLiteDatabase(Database):
     """SQLite Database implementation"""
 
-    def __init__(self):
+    def __init__(self, fname):
         """Initialise SQLitePwmanDatabase instance."""
         Database.__init__(self)
 
         try:
-            self._filename = config.get_value('Database', 'filename')
+            self._filename = fname
         except KeyError, e:
             raise DatabaseException(
                 "SQLite: missing parameter [%s]" % (e))
@@ -271,7 +271,7 @@ class SQLiteDatabase(Database):
 
             try:
                 self._con.commit()
-            except DatabaseError, e:
+            except DatabaseException, e:
                 self._con.rollback()
                 raise e
 
@@ -296,4 +296,15 @@ class SQLiteDatabase(Database):
 
 
 class CreateTestDataBase(object):
-    pass
+
+    def __init__(self):
+        self.db = SQLiteDatabase('konverter.db')
+
+    def run(self):
+        self.db._open()
+        self.db.close()
+
+
+if __name__ == '__main__':
+    tester = CreateTestDataBase()
+    tester.run()
