@@ -36,7 +36,7 @@ import pwman.util.config as config
 import cPickle
 
 
-class Tag:  # pragma: no cover
+class Tag(object):  # pragma: no cover
     """
     tags are specific strings used to classify nodes
     the methods in this class override some built-ins
