@@ -19,6 +19,7 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+from __future__ import print_function
 import os
 import os.path
 import argparse
@@ -109,14 +110,6 @@ try:
     enc = CryptoEngine.get()
 
     dbtype = config.get_value("Database", "type")
-    # if it is done here, we could do the following:
-    # if db.ver == 0.4 :
-    #     db = pwman.data.factory.create(dbtyp, new_version)
-    # else:
-    #     we use the old code untouched ... insecure, but
-    #     keeps backwards compatibility ...
-    # if the database file exists check it's version
-    # else: force version 0.4
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = pwman.data.factory.check_db_version(dbtype)
         dbver = float(dbver.strip("\'"))
@@ -138,8 +131,13 @@ try:
     if dbver >= 0.4:
         cli = PwmanCliNew(db, xselpath, CLICallback)
     elif dbver < 0.4:
-        cli = PwmanCli(db, xselpath)
-        print cli._dbwarning
+        print("\n*** WARNNING: You are using the old database format"
+              " which is insecure."
+              " Please upgrade to the new database "
+              " format. Do note: support for this DB format will be dropped in"
+              " v0.5. This  database format is on hold. No bugs are fixead"
+              " Check the help (pwman3 -h) or look at the manpage which"
+              " explains how to proceed. ***")
         sys.exit(0)
 except SystemExit, e:
     sys.exit(e)
@@ -148,11 +146,11 @@ try:
     try:
         cli.cmdloop()
     except KeyboardInterrupt, e:
-        print e
+        print (e)
 finally:
     try:
         if _saveconfig:
             config.save(args.cfile)
     except Exception, e:
-        print "Error: %s" % (e)
+        print ("Error: %s" % e )
         sys.exit(-1)
