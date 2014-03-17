@@ -108,20 +108,14 @@ try:
     os.umask(umask)
 
     enc = CryptoEngine.get()
-
     dbtype = config.get_value("Database", "type")
+
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = pwman.data.factory.check_db_version(dbtype)
         dbver = float(dbver.strip("\'"))
     else:
         dbver = 0.4
-    # the method create could create an old instance that
-    # accepts cPickle object or new style instance that
-    # accepts only strings.
-    # The user should be STRONGLY Prompted to CONVERT the
-    # database to the new format using a command line tool.
-    # version 0.5 pwman will depreciate that old and insecure
-    # code ...
+
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
         status = dbconvertor.run()

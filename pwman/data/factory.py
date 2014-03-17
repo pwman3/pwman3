@@ -54,6 +54,8 @@ def create(dbtype, version=None, filename=None):
             db = sqlite.SQLiteDatabaseNewForm(filename)
         elif version == 0.4:
             db = sqlite.SQLiteDatabaseNewForm()
+        else:
+            db = None
     elif dbtype == "Postgresql":
         try:
             from pwman.data.drivers import postgresql
