@@ -25,55 +25,53 @@ import os.path
 import argparse
 import sys
 import re
-
-_saveconfig = True
-
-
-parser = argparse.ArgumentParser(description=('pwman3 - a command line '
-                                              'password manager.'))
-parser.add_argument('-c', '--config', dest='cfile',
-                    default=os.path.expanduser("~/.pwman/config"),
-                    help='cofiguration file to read')
-parser.add_argument('-d', '--database', dest='dbase')
-parser.add_argument('-e', '--encryption', dest="algo",
-                    help=("Possible options are: AES(default), ARC2, ARC4, "
-                          "Blowfish, CAST, DES, DES3, IDEA, RC5"))
-parser.add_argument('-k', '--convert', dest='dbconvert',
-                    action='store_true', default=False,
-                    # os.path.expanduser('~/.pwman/pwman.db'),
-                    help=("Convert old DB format to version >= 0.4."
-                          " The database that will be converted is the"
-                          " one found in the config file, or the one given"
-                          " as command line argument.")
-                    )
-
-parser.add_argument('-t', '--test',  help="Run pwman from current directory \
-without installation", action="store_true")
-
-args = parser.parse_args()
-
-if args.test:
-    sys.path.insert(0, os.getcwd())
-
-from pwman.util.crypto import CryptoEngine
-from pwman import default_config, which
-
-if 'darwin' in sys.platform:
-    from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
-    OSX = True
-elif 'win' in sys.platform:
-    from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
-    OSX = False
-else:
-    from pwman.ui.cli import PwmanCliNew
-    OSX = False
-
 from pwman.ui.tools import CLICallback
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
+from pwman.util.crypto import CryptoEngine
+from pwman import default_config, which
 
-try:
+_saveconfig = True
+
+def get_ui_platform():
+    if 'darwin' in sys.platform:
+        from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
+        OSX = True
+    elif 'win' in sys.platform:
+        from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
+        OSX = False
+    else:
+        from pwman.ui.cli import PwmanCliNew
+        OSX = False
+
+    return PwmanCliNew, OSX
+
+def parser_options():
+    parser = argparse.ArgumentParser(description=('pwman3 - a command line '
+                                                  'password manager.'))
+    parser.add_argument('-c', '--config', dest='cfile',
+                        default=os.path.expanduser("~/.pwman/config"),
+                        help='cofiguration file to read')
+    parser.add_argument('-d', '--database', dest='dbase')
+    parser.add_argument('-e', '--encryption', dest="algo",
+                        help=("Possible options are: AES(default), ARC2, ARC4, "
+                              "Blowfish, CAST, DES, DES3, IDEA, RC5"))
+    parser.add_argument('-k', '--convert', dest='dbconvert',
+                        action='store_true', default=False,
+                        # os.path.expanduser('~/.pwman/pwman.db'),
+                        help=("Convert old DB format to version >= 0.4."
+                              " The database that will be converted is the"
+                              " one found in the config file, or the one given"
+                              " as command line argument."))
+    parser.add_argument('-t', '--test',  help=("Run pwman from current directory "
+                                               "without installation"),
+                        action="store_true")
+
+    return parser
+
+def get_conf_options(args, OSX):
+
     config_dir = os.path.expanduser("~/.pwman")
     if not os.path.isdir(config_dir):
         os.mkdir(config_dir)
@@ -115,11 +113,24 @@ try:
         print("Could not determine umask from config!")
         sys.exit(2)
 
-    enc = CryptoEngine.get()
     dbtype = config.get_value("Database", "type")
     if not dbtype:
         printf("Could not read the Database type from the config!")
         sys.exit(1)
+
+    return xselpath, dbtype
+
+args = parser_options().parse_args()
+
+if args.test:
+    sys.path.insert(0, os.getcwd())
+
+PwmanCliNew, OSX = get_ui_platform()
+
+try:
+    xselpath, dbtype = get_conf_options(args, OSX)
+    enc = CryptoEngine.get()
+
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = pwman.data.factory.check_db_version(dbtype)
         dbver = float(dbver.strip("\'"))
