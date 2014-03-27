@@ -30,23 +30,9 @@ import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 from pwman.util.crypto import CryptoEngine
-from pwman import default_config, which
+from pwman import default_config, which, get_ui_platform
 
 _saveconfig = True
-
-
-def get_ui_platform(platform):
-    if 'darwin' in platform:
-        from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
-        OSX = True
-    elif 'win' in platform:
-        from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
-        OSX = False
-    else:
-        from pwman.ui.cli import PwmanCliNew
-        OSX = False
-
-    return PwmanCliNew, OSX
 
 
 def parser_options():

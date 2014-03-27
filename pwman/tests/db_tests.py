@@ -50,16 +50,9 @@ class DummyCallback4(Callback):
     def getnewsecret(self, question):
         return u'newsecret'
 
+from pwman import get_ui_platform
 
-if 'darwin' in sys.platform:  # pragma: no cover
-    from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
-    OSX = True
-elif 'win' in sys.platform:  # pragma: no cover
-    from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
-    OSX = False
-else:
-    from pwman.ui.cli import PwmanCliNew
-    OSX = False
+PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 import pwman.util.config as config
 import pwman.data.factory
