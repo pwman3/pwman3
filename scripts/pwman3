@@ -178,14 +178,14 @@ except SystemExit, e:
     sys.exit(e)
 
 try:
+    cli.cmdloop()
+except KeyboardInterrupt, e:
+    print(e)
+
+
+if _saveconfig:
     try:
-        cli.cmdloop()
-    except KeyboardInterrupt, e:
-        print (e)
-finally:
-    try:
-        if _saveconfig:
-            config.save(args.cfile)
+        config.save(args.cfile)
     except Exception, e:
         print ("Error: %s" % e)
         sys.exit(-1)
