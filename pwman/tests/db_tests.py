@@ -1,9 +1,43 @@
+#============================================================================
+# This file is part of Pwman3.
+#
+# Pwman3 is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 2
+# as published by the Free Software Foundation;
+#
+# Pwman3 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pwman3; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#============================================================================
+# Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
+#============================================================================
+
+from pwman import get_ui_platform
+import pwman.util.config as config
+import pwman.data.factory
+from pwman.data.nodes import NewNode
+from pwman.data.tags import TagNew
+from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
+from pwman import which, default_config
+from pwman.ui.base import get_pass_conf
+from pwman.ui.tools import CMDLoop, CliMenuItem
+import unittest
+from pwman.data import factory
+_saveconfig = False
 from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
 from pwman.data.drivers.sqlite import DatabaseException
+import StringIO
 import os
 import os.path
 import sys
+
+PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 
 class DummyCallback(Callback):
@@ -50,21 +84,6 @@ class DummyCallback4(Callback):
     def getnewsecret(self, question):
         return u'newsecret'
 
-from pwman import get_ui_platform
-
-PwmanCliNew, OSX = get_ui_platform(sys.platform)
-
-import pwman.util.config as config
-import pwman.data.factory
-from pwman.data.nodes import NewNode
-from pwman.data.tags import TagNew
-from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
-from pwman import which, default_config
-from pwman.ui.base import get_pass_conf
-from pwman.ui.tools import CMDLoop, CliMenuItem
-import unittest
-from pwman.data import factory
-_saveconfig = False
 
 default_config['Database'] = {'type': 'SQLite',
                               'filename':
@@ -326,7 +345,6 @@ class CLITests(unittest.TestCase):
                              node.tags,
                              node.tags))
 
-        import StringIO
         dummy_stdin = StringIO.StringIO('4\n\nX')
         self.assertTrue(len(dummy_stdin.readlines()))
         dummy_stdin.seek(0)
