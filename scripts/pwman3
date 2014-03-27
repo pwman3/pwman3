@@ -73,9 +73,9 @@ def parser_options():
     return parser
 
 
-def get_conf_options(args, OSX):
-
+def get_conf():
     config_dir = os.path.expanduser("~/.pwman")
+
     if not os.path.isdir(config_dir):
         os.mkdir(config_dir)
 
@@ -83,8 +83,11 @@ def get_conf_options(args, OSX):
         config.set_defaults(default_config)
     else:
         config.load(args.cfile)
-        xselpath = config.get_value("Global", "xselpath")
 
+    return config
+
+
+def set_xsel(config):
     if not OSX:
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
@@ -92,12 +95,26 @@ def get_conf_options(args, OSX):
         pbcopypath = which("pbcopy")
         config.set_value("Global", "xsel", pbcopypath)
 
+
+def set_win_colors(config):
     if 'win' in sys.platform:
         try:
             import colorama
             colorama.init()
         except ImportError:
             config.set_value("Global", "colors", 'no')
+
+
+def get_conf_options(args, OSX):
+
+    global _saveconfig
+    config = get_conf()
+
+    xselpath = config.get_value("Global", "xselpath")
+    if not xselpath:
+        set_xsel(config)
+
+    set_win_colors(config)
 
     if args.dbase:
         config.set_value("Database", "filename", args.dbase)
