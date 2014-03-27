@@ -187,5 +187,5 @@ finally:
         if _saveconfig:
             config.save(args.cfile)
     except Exception, e:
-        print ("Error: %s" % e )
+        print ("Error: %s" % e)
         sys.exit(-1)
