@@ -118,24 +118,29 @@ def set_umask(config):
         sys.exit(2)
 
 
+def set_db(args):
+    global _saveconfig
+    if args.dbase:
+        config.set_value("Database", "filename", args.dbase)
+        _saveconfig = False
+
+
+def set_algorithm(args):
+    global _saveconfig
+    if args.algo:
+        config.set_value("Encryption", "algorithm", args.algo)
+        _saveconfig = False
+
+
 def get_conf_options(args, OSX):
 
-    global _saveconfig
     config = get_conf()
-
     xselpath = config.get_value("Global", "xselpath")
     if not xselpath:
         set_xsel(config)
 
     set_win_colors(config)
-
-    if args.dbase:
-        config.set_value("Database", "filename", args.dbase)
-        _saveconfig = False
-    if args.algo:
-            config.set_value("Encryption", "algorithm", args.algo)
-            _saveconfig = False
-
+    set_db(args)
     set_umask(config)
     dbtype = config.get_value("Database", "type")
     if not dbtype:
@@ -144,14 +149,14 @@ def get_conf_options(args, OSX):
 
     return xselpath, dbtype
 
-args = parser_options().parse_args()
 
-if args.test:
-    sys.path.insert(0, os.getcwd())
+if __name__ == '__main__':
+    args = parser_options().parse_args()
+    if args.test:
+        sys.path.insert(0, os.getcwd())
 
-PwmanCliNew, OSX = get_ui_platform(sys.platform)
+    PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
-try:
     xselpath, dbtype = get_conf_options(args, OSX)
     enc = CryptoEngine.get()
 
@@ -178,18 +183,14 @@ try:
               " Check the help (pwman3 -h) or look at the manpage which"
               " explains how to proceed. ***")
         sys.exit(0)
-except SystemExit, e:
-    sys.exit(e)
-
-try:
-    cli.cmdloop()
-except KeyboardInterrupt, e:
-    print(e)
-
-
-if _saveconfig:
     try:
-        config.save(args.cfile)
-    except Exception, e:
-        print ("Error: %s" % e)
-        sys.exit(-1)
+        cli.cmdloop()
+    except KeyboardInterrupt, e:
+        print(e)
+
+    if _saveconfig:
+        try:
+            config.save(args.cfile)
+        except Exception, e:
+            print ("Error: %s" % e)
+            sys.exit(-1)
