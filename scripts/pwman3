@@ -34,11 +34,12 @@ from pwman import default_config, which
 
 _saveconfig = True
 
-def get_ui_platform():
-    if 'darwin' in sys.platform:
+
+def get_ui_platform(platform):
+    if 'darwin' in platform:
         from pwman.ui.mac import PwmanCliMacNew as PwmanCliNew
         OSX = True
-    elif 'win' in sys.platform:
+    elif 'win' in platform:
         from pwman.ui.win import PwmanCliWinNew as PwmanCliNew
         OSX = False
     else:
@@ -46,6 +47,7 @@ def get_ui_platform():
         OSX = False
 
     return PwmanCliNew, OSX
+
 
 def parser_options():
     parser = argparse.ArgumentParser(description=('pwman3 - a command line '
@@ -64,11 +66,12 @@ def parser_options():
                               " The database that will be converted is the"
                               " one found in the config file, or the one given"
                               " as command line argument."))
-    parser.add_argument('-t', '--test',  help=("Run pwman from current directory "
-                                               "without installation"),
+    parser.add_argument('-t', '--test', help=("Run pwman from current directory "
+                                              "without installation"),
                         action="store_true")
 
     return parser
+
 
 def get_conf_options(args, OSX):
 
@@ -125,7 +128,7 @@ args = parser_options().parse_args()
 if args.test:
     sys.path.insert(0, os.getcwd())
 
-PwmanCliNew, OSX = get_ui_platform()
+PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 try:
     xselpath, dbtype = get_conf_options(args, OSX)
