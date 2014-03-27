@@ -17,25 +17,26 @@
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 
-from pwman import get_ui_platform
-import pwman.util.config as config
-import pwman.data.factory
 from pwman.data.nodes import NewNode
 from pwman.data.tags import TagNew
-from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
-from pwman import which, default_config
-from pwman.ui.base import get_pass_conf
-from pwman.ui.tools import CMDLoop, CliMenuItem
-import unittest
 from pwman.data import factory
-_saveconfig = False
+from pwman.data.drivers.sqlite import DatabaseException
+from pwman.util import config
 from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
-from pwman.data.drivers.sqlite import DatabaseException
+from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
+
+from pwman import which, default_config, get_ui_platform
+from pwman.ui.base import get_pass_conf
+from pwman.ui.tools import CMDLoop, CliMenuItem
+
+import unittest
 import StringIO
 import os
 import os.path
 import sys
+
+_saveconfig = False
 
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
@@ -114,7 +115,7 @@ class SetupTester(object):
     def create(self):
         dbver = 0.4
         dbtype = config.get_value("Database", "type")
-        db = pwman.data.factory.create(dbtype, dbver)
+        db = factory.create(dbtype, dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
 
 
@@ -125,13 +126,12 @@ class DBTests(unittest.TestCase):
         "test that the right db instance was created"
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
-        self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.db = factory.create(self.dbtype, dbver)
         self.tester = SetupTester()
         self.tester.create()
 
     def test_db_created(self):
         "test that the right db instance was created"
-        # self.db = pwman.data.factory.create(dbtype, dbver)
         self.assertIn(self.dbtype, self.db.__class__.__name__)
 
     def test_db_opened(self):
