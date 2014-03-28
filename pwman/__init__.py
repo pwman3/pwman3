@@ -29,20 +29,6 @@ keywords = "password management sqlite crypto"
 import os
 
 
-def get_ui_platform(platform):
-    if 'darwin' in platform:
-        from ui.mac import PwmanCliMacNew as PwmanCliNew
-        OSX = True
-    elif 'win' in platform:
-        from ui.win import PwmanCliWinNew as PwmanCliNew
-        OSX = False
-    else:
-        from ui.cli import PwmanCliNew
-        OSX = False
-
-    return PwmanCliNew, OSX
-
-
 def which(cmd):
     _, cmdname = os.path.split(cmd)
 
