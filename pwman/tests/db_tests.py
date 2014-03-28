@@ -218,8 +218,8 @@ class TestDBFalseConfig(unittest.TestCase):
         self.fname = config._conf['Database'].pop('filename')
 
     def test_db_missing_conf_parameter(self):
-        self.assertRaises(DatabaseException, pwman.data.factory.create,
-                          'SQLite', 0.4)
+            self.assertRaises(DatabaseException, factory.create,
+                              'SQLite', 0.4)
 
     def tearDown(self):
         config.set_value('Database', 'filename', self.fname)
@@ -236,7 +236,7 @@ class CLITests(unittest.TestCase):
         "test that the right db instance was created"
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
-        self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.db = factory.create(self.dbtype, dbver)
         self.tester = SetupTester()
         self.tester.create()
 
@@ -381,7 +381,7 @@ class ConfigTest(unittest.TestCase):
         "test that the right db instance was created"
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
-        self.db = pwman.data.factory.create(self.dbtype, dbver)
+        self.db = factory.create(self.dbtype, dbver)
         self.tester = SetupTester()
         self.tester.create()
 
