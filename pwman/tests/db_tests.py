@@ -26,7 +26,8 @@ from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 
-from pwman import which, default_config, get_ui_platform
+from pwman import which, default_config
+from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 

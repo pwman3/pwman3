@@ -25,12 +25,7 @@ import os.path
 import argparse
 import sys
 import re
-from pwman.ui.tools import CLICallback
-import pwman.util.config as config
-import pwman.data.factory
-from pwman.data.convertdb import PwmanConvertDB
-from pwman.util.crypto import CryptoEngine
-from pwman import default_config, which, get_ui_platform
+
 
 _saveconfig = True
 
@@ -43,8 +38,8 @@ def parser_options():
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-e', '--encryption', dest="algo",
-                        help=("Possible options are: AES(default), ARC2, ARC4, "
-                              "Blowfish, CAST, DES, DES3, IDEA, RC5"))
+                        help=("Possible options are: AES(default), ARC2, ARC4,"
+                              " Blowfish, CAST, DES, DES3, IDEA, RC5"))
     parser.add_argument('-k', '--convert', dest='dbconvert',
                         action='store_true', default=False,
                         # os.path.expanduser('~/.pwman/pwman.db'),
@@ -52,8 +47,9 @@ def parser_options():
                               " The database that will be converted is the"
                               " one found in the config file, or the one given"
                               " as command line argument."))
-    parser.add_argument('-t', '--test', help=("Run pwman from current directory "
-                                              "without installation"),
+    parser.add_argument('-t', '--test', help=("Run pwman from current"
+                                              " directory"
+                                              " without installation"),
                         action="store_true")
 
     return parser
@@ -141,6 +137,14 @@ if __name__ == '__main__':
     if args.test:
         sys.path.insert(0, os.getcwd())
 
+    from pwman import default_config, which
+    from pwman.ui import get_ui_platform
+    from pwman.ui.tools import CLICallback
+    import pwman.util.config as config
+    import pwman.data.factory
+    from pwman.data.convertdb import PwmanConvertDB
+    from pwman.util.crypto import CryptoEngine
+
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
     xselpath, dbtype = get_conf_options(args, OSX)
@@ -151,6 +155,16 @@ if __name__ == '__main__':
         dbver = float(dbver.strip("\'"))
     else:
         dbver = 0.4
+
+    if dbver < 0.4:
+        print("\n*** WARNNING: You are using the old database format"
+              " which is insecure."
+              " Please upgrade to the new database "
+              " format. Do note: support for this DB format will be dropped in"
+              " v0.5. This  database format is on hold. No bugs are fixead"
+              " Check the help (pwman3 -h) or look at the manpage which"
+              " explains how to proceed. ***")
+        sys.exit(0)
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
