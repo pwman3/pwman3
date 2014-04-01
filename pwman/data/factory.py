@@ -38,7 +38,10 @@ from pwman.data.drivers import sqlite
 def check_db_version(type):
     if type == "SQLite":
         ver = sqlite.check_db_version()
-        return ver
+        try:
+            return float(ver.strip("\'"))
+        except ValueError:
+            return 0.3
      # TODO: implement version checks for other supported DBs.
 
 

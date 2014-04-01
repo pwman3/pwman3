@@ -21,7 +21,6 @@
 #============================================================================
 from __future__ import print_function
 import os
-import os.path
 import argparse
 import sys
 import re
@@ -29,6 +28,13 @@ import re
 
 _saveconfig = True
 
+_db_warn = ("\n*** WARNNING: You are using the old database format"
+            " which is insecure."
+            " Please upgrade to the new database "
+            " format. Do note: support for this DB format will be dropped in"
+            " v0.5. This  database format is on hold. No bugs are fixead"
+            " Check the help (pwman3 -h) or look at the manpage which"
+            " explains how to proceed. ***")
 
 def parser_options():
     parser = argparse.ArgumentParser(description=('pwman3 - a command line '
@@ -51,7 +57,6 @@ def parser_options():
                                               " directory"
                                               " without installation"),
                         action="store_true")
-
     return parser
 
 
@@ -69,7 +74,7 @@ def get_conf():
     return config
 
 
-def set_xsel(config):
+def set_xsel(config, OSX):
     if not OSX:
         xselpath = which("xsel")
         config.set_value("Global", "xsel", xselpath)
@@ -119,7 +124,7 @@ def get_conf_options(args, OSX):
     config = get_conf()
     xselpath = config.get_value("Global", "xselpath")
     if not xselpath:
-        set_xsel(config)
+        set_xsel(config, OSX)
 
     set_win_colors(config)
     set_db(args)
@@ -132,39 +137,22 @@ def get_conf_options(args, OSX):
     return xselpath, dbtype
 
 
-if __name__ == '__main__':
-    args = parser_options().parse_args()
-    if args.test:
-        sys.path.insert(0, os.getcwd())
-
-    from pwman import default_config, which
-    from pwman.ui import get_ui_platform
-    from pwman.ui.tools import CLICallback
-    import pwman.util.config as config
-    import pwman.data.factory
-    from pwman.data.convertdb import PwmanConvertDB
-    from pwman.util.crypto import CryptoEngine
-
-    PwmanCliNew, OSX = get_ui_platform(sys.platform)
-
-    xselpath, dbtype = get_conf_options(args, OSX)
-    enc = CryptoEngine.get()
-
+def get_db_version(config, dbtype):
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = pwman.data.factory.check_db_version(dbtype)
-        dbver = float(dbver.strip("\'"))
+        if dbver < 0.4:
+            print(_db_warn)
+            sys.exit(1)
     else:
         dbver = 0.4
+    return dbver
 
-    if dbver < 0.4:
-        print("\n*** WARNNING: You are using the old database format"
-              " which is insecure."
-              " Please upgrade to the new database "
-              " format. Do note: support for this DB format will be dropped in"
-              " v0.5. This  database format is on hold. No bugs are fixead"
-              " Check the help (pwman3 -h) or look at the manpage which"
-              " explains how to proceed. ***")
-        sys.exit(0)
+
+def main(args):
+    PwmanCliNew, OSX = get_ui_platform(sys.platform)
+    xselpath, dbtype = get_conf_options(args, OSX)
+    enc = CryptoEngine.get()
+    dbver = get_db_version(config, dbtype)
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
@@ -185,3 +173,17 @@ if __name__ == '__main__':
         except Exception, e:
             print ("Error: %s" % e)
             sys.exit(-1)
+
+if __name__ == '__main__':
+    args = parser_options().parse_args()
+    if args.test:
+        sys.path.insert(0, os.getcwd())
+
+    from pwman import default_config, which
+    from pwman.ui import get_ui_platform
+    from pwman.ui.tools import CLICallback
+    import pwman.util.config as config
+    import pwman.data.factory
+    from pwman.data.convertdb import PwmanConvertDB
+    from pwman.util.crypto import CryptoEngine
+    main(args)
