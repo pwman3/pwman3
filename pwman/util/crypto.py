@@ -55,6 +55,7 @@ from Crypto.Random import OSRNG
 
 from pwman.util.callback import Callback
 import pwman.util.config as config
+import cPickle
 import time
 import sys
 import ctypes
@@ -325,7 +326,6 @@ password again")
                             % max_tries)
 
         key = str(key).decode('base64')
-
         self._cipher = self._getcipher_real(key,
                                             self._algo)
 
@@ -381,6 +381,7 @@ password again")
         """
         prepare data before encrypting
         """
+        #plaintext = cPickle.dumps(obj)
         plaintext = _TAG + obj
         numblocks = (len(plaintext)/blocksize) + 1
         newdatasize = blocksize*numblocks
@@ -395,7 +396,17 @@ password again")
         else:
             raise CryptoBadKeyException("Error decrypting, bad key")
 
-        return plaintext
+        try:
+            # old db version used to write stuff to db with
+            # plaintext = cPickle.dumps(obj)
+            # TODO: completely remove this block, and convert
+            # the DB to a completely plain text ...
+
+            # This implies that the coversion from OLD DATABASE FORMAT has
+            # to plain strings too ...
+            return cPickle.loads(plaintext)
+        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
+            return plaintext
 
 
 class DummyCryptoEngine(CryptoEngine):
