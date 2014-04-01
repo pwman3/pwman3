@@ -373,7 +373,7 @@ class CLITests(unittest.TestCase):
 class FactoryTest(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
-        self.assertEquals(factory.check_db_version('SQLite'), u"'0.4'")
+        self.assertEquals(factory.check_db_version('SQLite'), 0.4)
 
 
 class ConfigTest(unittest.TestCase):
