@@ -297,7 +297,7 @@ class PwmanConvertDB(object):
         print "Will convert the following Database: %s " % self.dbname
         if os.path.exists(config.get_value("Database", "filename")):
             dbver = pwman.data.factory.check_db_version(self.dbtype)
-            self.dbver = float(dbver.strip("\'"))
+            self.dbver = float(dbver)
         backup = '.backup-%s'.join(os.path.splitext(self.dbname)) % \
             time.strftime(
                 '%Y-%m-%d-%H:%M')
@@ -332,6 +332,7 @@ class PwmanConvertDB(object):
         for node in self.oldnodes:
             username = node.get_username()
             password = node.get_password()
+
             url = node.get_url()
             notes = node.get_notes()
             tags = node.get_tags()
