@@ -142,7 +142,6 @@ def get_db_version(config, dbtype):
         dbver = pwman.data.factory.check_db_version(dbtype)
         if dbver < 0.4:
             print(_db_warn)
-            sys.exit(1)
     else:
         dbver = 0.4
     return dbver
@@ -158,6 +157,9 @@ def main(args):
         dbconvertor = PwmanConvertDB(args, config)
         status = dbconvertor.run()
         sys.exit(status)
+
+    if dbver < 0.4:
+        sys.exit(1)
 
     db = pwman.data.factory.create(dbtype, dbver)
     cli = PwmanCliNew(db, xselpath, CLICallback)
