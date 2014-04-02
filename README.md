@@ -22,7 +22,7 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
    PWMAN3 is a very very basic software, which was designed to be used in a safe environment. 
    - If you are afraid that PWMAN3 is to weak for your needs ... and you still want to try it, here
      are a few recommendations:
-     1. Use the AES encryption, it is supposed to be better the Blowfish. 
+     1. Use the AES encryption, it is supposed to be better than Blowfish. 
      2. Don't store your Password Database in the Obvious place, and if your extremely paranoind
         store it completely away from your computer on a separate USB key. 
      3. Use a HARD to crack password to encrypt your database!
