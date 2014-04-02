@@ -26,6 +26,7 @@ from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.util.callback import Callback
 from pwman.data.nodes import NewNode
+from pwman.data.tags import Tag
 import sys
 
 _NEWVERSION = 0.4
@@ -34,108 +35,6 @@ from pwman.data.database import Database, DatabaseException
 import sqlite3 as sqlite
 import pwman.util.config as config
 import cPickle
-
-
-class Tag(object):  # pragma: no cover
-    """
-    tags are specific strings used to classify nodes
-    the methods in this class override some built-ins
-    for strings.
-    """
-    def __init__(self, name):
-        self.set_name(name)
-
-    def __eq__(self, other):
-        if other._name == self._name:
-            return True
-        else:
-            return False
-
-    def get_name(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
-
-    def set_name(self, name):
-        enc = CryptoEngine.get()
-        self._name = enc.encrypt(name)
-
-    def __str__(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
-
-
-class Node(object):  # pragma: no cover
-    def __init__(self, username="", password="", url="",
-                 notes="", tags=[]):
-        """Initialise everything to null."""
-        self._id = 0
-
-        enc = CryptoEngine.get()
-        self._username = enc.encrypt(username)
-        self._password = enc.encrypt(password)
-        self._url = enc.encrypt(url)
-        self._notes = enc.encrypt(notes)
-        self._tags = []
-        self.set_tags(tags)
-
-    def get_tags(self):
-        tags = []
-        enc = CryptoEngine.get()
-        for i in self._tags:
-            tags.append(enc.decrypt(i))
-        return tags
-
-    def set_tags(self, tags):
-        self._tags = []
-        enc = CryptoEngine.get()
-        for i in tags:
-            self._tags.append(enc.encrypt(i))
-
-    def get_id(self):
-        return self._id
-
-    def set_id(self, id):
-        self._id = id
-
-    def get_username(self):
-        """Return the username."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._username)
-
-    def set_username(self, username):
-        """Set the username."""
-        enc = CryptoEngine.get()
-        self._username = enc.encrypt(username)
-
-    def get_password(self):
-        """Return the password."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._password)
-
-    def set_password(self, password):
-        """Set the password."""
-        enc = CryptoEngine.get()
-        self._password = enc.encrypt(password)
-
-    def get_url(self):
-        """Return the URL."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._url)
-
-    def set_url(self, url):
-        """Set the URL."""
-        enc = CryptoEngine.get()
-        self._url = enc.encrypt(url)
-
-    def get_notes(self):
-        """Return the Notes."""
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._notes)
-
-    def set_notes(self, notes):
-        """Set the Notes."""
-        enc = CryptoEngine.get()
-        self._notes = enc.encrypt(notes)
 
 
 class SQLiteDatabaseReader(Database):
