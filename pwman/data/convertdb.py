@@ -16,7 +16,7 @@
 #============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-
+from __future__ import print_function
 import os
 import shutil
 import os.path
@@ -193,7 +193,10 @@ class PwmanConvertDB(object):
     def __init__(self, args, config):
         self.dbname = config.get_value('Database', 'filename')
         self.dbtype = config.get_value("Database", "type")
-        print "Will convert the following Database: %s " % self.dbname
+        self.newdb_name = args.output
+
+    def backup_old_db(self):
+        print("Will convert the following Database: %s " % self.dbname)
         if os.path.exists(config.get_value("Database", "filename")):
             dbver = pwman.data.factory.check_db_version(self.dbtype)
             self.dbver = float(dbver)
@@ -201,7 +204,7 @@ class PwmanConvertDB(object):
             time.strftime(
                 '%Y-%m-%d-%H:%M')
         shutil.copy(self.dbname, backup)
-        print "backup created in ", backup
+        print("backup created in ", backup)
 
     def read_old_db(self):
         "read the old db and get all nodes"
@@ -216,7 +219,7 @@ class PwmanConvertDB(object):
     def create_new_db(self):
         dest = '-newdb'.join(os.path.splitext(self.dbname))
         if os.path.exists('-newdb'.join(os.path.splitext(self.dbname))):
-            print "%s already exists, please move this file!" % dest
+            print("%s already exists, please move this file!" % dest)
             sys.exit(2)
 
         self.newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
@@ -255,15 +258,15 @@ class PwmanConvertDB(object):
         self.newdb.savekey(self.oldkey)
 
     def print_success(self):
-        print """pwman successfully converted the old database to the new
-format.\nPlease run `pwman3 -d %s` to make sure your password and
-data are still correct. If you are convinced that no harm was done,
-update your config file to indicate the permanent location
-to your new database.
-If you found errors, please report a bug in Pwman homepage in github.
-""" % self.newdb_name
+        print("pwman successfully converted the old database to the new "
+              "format.\nPlease run `pwman3 -d %s` to make sure your password "
+              "and data are still correct. If you are convinced that no harm "
+              "was done, update your config file to indicate the permanent "
+              "location to your new database. If you found errors, please "
+              "report a bug in Pwman homepage in github. " % self.newdb_name)
 
     def run(self):
+        self.backup_old_db()
         self.read_old_db()
         self.create_new_db()
         self.convert_nodes()
