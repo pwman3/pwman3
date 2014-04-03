@@ -53,6 +53,10 @@ def parser_options():
                               " The database that will be converted is the"
                               " one found in the config file, or the one given"
                               " as command line argument."))
+    parser.add_argument('-O', '--output', dest='output',
+                        default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
+                        help=("The name of the newly created database after "
+                              "converting."))
     parser.add_argument('-t', '--test', help=("Run pwman from current"
                                               " directory"
                                               " without installation"),
@@ -155,8 +159,8 @@ def main(args):
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
-        status = dbconvertor.run()
-        sys.exit(status)
+        dbconvertor.run()
+        sys.exit(0)
 
     if dbver < 0.4:
         sys.exit(1)
