@@ -80,8 +80,8 @@ class SQLiteDatabaseNewForm(Database):
             sql = "SELECT DATA FROM TAGS ORDER BY DATA ASC"
         else:
             sql = ("SELECT TAGS.DATA FROM LOOKUP"
-                   + " INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
-                   + " WHERE NODE IN (")
+                   " INNER JOIN TAGS ON LOOKUP.TAG = TAGS.ID"
+                   " WHERE NODE IN (")
             first = True
             for t in self._filtertags:
                 if not first:
@@ -90,7 +90,7 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
 
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
-                        + " TAGS.ID WHERE TAGS.DATA = ?")
+                        " TAGS.ID WHERE TAGS.DATA = ?")
                 params.append(t._name)
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
             first = True
@@ -100,7 +100,7 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += "TAGS.DATA = ?"
-                params.append(t._name)
+                params.append(t.name)
         try:
             self._cur.execute(sql, params)
             tags = []
@@ -207,7 +207,10 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         " TAGS.ID WHERE TAGS.DATA like ? ")
+                # this is correct if tags are ciphertext
                 p = t._name.strip()
+                # this is wrong, it will work when tags are stoed as plain text
+                # p = t.name.strip()
                 p += '%'
                 params = [p]
         try:
