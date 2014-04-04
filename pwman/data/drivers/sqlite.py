@@ -25,7 +25,7 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import NewNode
 import sqlite3 as sqlite
 import pwman.util.config as config
-
+import itertools
 
 def check_db_version():
     """
@@ -90,8 +90,8 @@ class SQLiteDatabaseNewForm(Database):
                     first = False
 
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
-                        " TAGS.ID WHERE TAGS.DATA = ?")
-                params.append(t._name)
+                        " TAGS.ID WHERE TAGS.DATA LIKE ?")
+                params.append(t._name+'%')
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
             first = True
             for t in self._filtertags:
@@ -99,8 +99,9 @@ class SQLiteDatabaseNewForm(Database):
                     sql += " OR "  # pragma: no cover
                 else:
                     first = False
-                sql += "TAGS.DATA = ?"
-                params.append(t.name)
+                #sql += "TAGS.DATA = ?"
+                sql += "TAGS.DATA LIKE ?"
+                params.append(t.name+'%')
         try:
             self._cur.execute(sql, params)
             tags = []
@@ -206,13 +207,14 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
-                        " TAGS.ID WHERE TAGS.DATA like ? ")
+                        " TAGS.ID WHERE TAGS.DATA LIKE ? ")
                 # this is correct if tags are ciphertext
                 p = t._name.strip()
-                # this is wrong, it will work when tags are stoed as plain text
+                # this is wrong, it will work when tags are stored as plain text
                 # p = t.name.strip()
-                p += '%'
+                p = '%'+p+'%'
                 params = [p]
+
         try:
             self._cur.execute(sql, params)
             rows = self._cur.fetchall()
@@ -231,11 +233,20 @@ class SQLiteDatabaseNewForm(Database):
 
     def _create_tag(self, tag):
         """add tags to db"""
-        sql = "INSERT OR REPLACE INTO TAGS(DATA) VALUES(?)"
+        # sql = "INSERT OR REPLACE INTO TAGS(DATA) VALUES(?)"
+        sql = "INSERT OR IGNORE INTO TAGS(DATA) VALUES(?)"
         if isinstance(tag, str):
             self._cur.execute(sql, [tag])
         else:
             self._cur.execute(sql, [tag._name])
+
+    def _deletenodetags(self, node):
+        try:
+            sql = "DELETE FROM LOOKUP WHERE NODE = ?"
+            self._cur.execute(sql, [node._id])
+        except sqlite.DatabaseError, e:  # pragma: no cover
+            raise DatabaseException("SQLite: %s" % (e))
+        self._commit()
 
     def _update_tag_lookup(self, node, tag_id):
         sql = "INSERT OR REPLACE INTO LOOKUP VALUES(?, ?)"
@@ -247,30 +258,26 @@ class SQLiteDatabaseNewForm(Database):
 
     def _tagids(self, tags):
         ids = []
-        sql = "SELECT ID FROM TAGS WHERE DATA = ?"
+        sql = "SELECT ID FROM TAGS WHERE DATA LIKE ?"
         for tag in tags:
             try:
                 if isinstance(tag, str):
                     self._cur.execute(sql, [tag])
                 else:
-                    self._cur.execute(sql, [tag._name])
+                    self._cur.execute(sql, [tag._name+'%'])
 
-                self._create_tag(tag)
-                ids.append(self._cur.lastrowid)
+                ids = list(itertools.chain(*self._cur.fetchall()))
+                for id in self._cur.fetchall():
+                    ids.append(id)
+
+                if not ids:
+                    self._create_tag(tag)
+                    ids.append(self._cur.lastrowid)
             except sqlite.DatabaseError, e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
         return ids
 
-    def _deletenodetags(self, node):
-        try:
-            sql = "DELETE FROM LOOKUP WHERE NODE = ?"
-            self._cur.execute(sql, [node._id])
-        except sqlite.DatabaseError, e:  # pragma: no cover
-            raise DatabaseException("SQLite: %s" % (e))
-        self._commit()
-
     def _setnodetags(self, node):
-        self._deletenodetags(node)
         ids = self._tagids(node.tags)
         for tagid in ids:
             self._update_tag_lookup(node, tagid)
