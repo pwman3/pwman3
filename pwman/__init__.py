@@ -18,15 +18,16 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+import os
+import pkg_resources
 
 appname = "Pwman3"
-version = "0.5-dev"
+version = pkg_resources.get_distribution('pwman3').version
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "Pwman -a command line password management application."
 keywords = "password management sqlite crypto"
-import os
 
 
 def which(cmd):

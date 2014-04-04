@@ -10,7 +10,7 @@ from setuptools.command.install import install
 import os
 from subprocess import Popen,  PIPE
 
-def descibe():
+def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
     ver = des.stdout.readlines()
     if ver:
@@ -44,7 +44,7 @@ class PyCryptoInstallCommand(install):
 
 
 setup(name=pwman.appname,
-      version=descibe(),
+      version=describe(),
       description=pwman.description,
       author=pwman.author,
       author_email=pwman.authoremail,
