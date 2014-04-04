@@ -22,7 +22,12 @@ import os
 import pkg_resources
 
 appname = "Pwman3"
-version = pkg_resources.get_distribution('pwman3').version
+try:
+    version = pkg_resources.get_distribution('pwman3').version
+except pkg_resources.DistributionNotFound:
+    version = "0.5-dev"
+    os.system('git describe')
+
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
