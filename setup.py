@@ -8,6 +8,16 @@ import pwman
 import sys
 from setuptools.command.install import install
 import os
+from subprocess import Popen,  PIPE
+
+def descibe():
+    des = Popen('git describe', shell=True, stdout=PIPE)
+    ver = des.stdout.readlines()
+    if ver:
+        return ver[0].strip()
+    else:
+        return pwman.version
+
 
 
 class PyCryptoInstallCommand(install):
@@ -31,8 +41,10 @@ class PyCryptoInstallCommand(install):
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
 
+
+
 setup(name=pwman.appname,
-      version=pwman.version,
+      version=descibe(),
       description=pwman.description,
       author=pwman.author,
       author_email=pwman.authoremail,
