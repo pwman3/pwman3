@@ -200,7 +200,6 @@ class BaseUI(object):
     def _tags(self, enc):
         """
         read tags from TAGS table in DB,
-        this method has a working unittest
         """
         tags = self._db.listtags()
         if tags:
