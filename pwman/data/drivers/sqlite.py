@@ -99,18 +99,14 @@ class SQLiteDatabaseNewForm(Database):
                     sql += " OR "  # pragma: no cover
                 else:
                     first = False
-                #sql += "TAGS.DATA = ?"
-                sql += "TAGS.DATA LIKE ?"
-                params.append(t.name+'%')
+                sql += "TAGS.DATA = ?"
+                params.append(t.name)
+
         try:
             self._cur.execute(sql, params)
-            tags = []
-            row = self._cur.fetchone()
-            while row is not None:
-                tagstring = str(row[0])
-                tags.append(tagstring)
-                row = self._cur.fetchone()
+            tags = [str(t[0]) for t in self._cur.fetchall()]
             return tags
+
         except sqlite.DatabaseError, e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
         except sqlite.InterfaceError, e:  # pragma: no cover
@@ -265,12 +261,10 @@ class SQLiteDatabaseNewForm(Database):
                     self._cur.execute(sql, [tag])
                 else:
                     self._cur.execute(sql, [tag._name+'%'])
-
-                ids = list(itertools.chain(*self._cur.fetchall()))
-                for id in self._cur.fetchall():
-                    ids.append(id)
-
-                if not ids:
+                values = self._cur.fetchall()
+                if values:
+                    ids.extend(list(itertools.chain(*values)))
+                else:
                     self._create_tag(tag)
                     ids.append(self._cur.lastrowid)
             except sqlite.DatabaseError, e:  # pragma: no cover
