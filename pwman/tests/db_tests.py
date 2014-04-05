@@ -192,9 +192,8 @@ class DBTests(unittest.TestCase):
         tags = self.tester.cli._db.listtags()
         self.assertEqual(2, len(tags))
         self.tester.cli.do_filter('testing1')
-        # TODO: fix this broken tag issue
-        #tags = self.tester.cli._db.listtags()
-        #self.assertEqual(1, len(tags))
+        tags = self.tester.cli._db.listtags()
+        self.assertEqual(2, len(tags))
         self.tester.cli.do_ls('')
 
     def test_db_remove_node(self):
