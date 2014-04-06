@@ -140,7 +140,7 @@ def getpassword(question, argsgiven=None,
                 reader=getpass.getpass, numerics=False, leetify=False,
                 symbols=False, special_signs=False,
                 length=None):  # pragma: no cover
-    # TODO: getpassword should recieve a config insatce
+    # TODO: getpassword should recieve a config insatnce
     #       and generate the policy according to it,
     #       so that getpassword in cli would be simplified
     if argsgiven == 1 or length:
@@ -205,6 +205,8 @@ def getinput(question, default="", reader=raw_input,
             x = raw_input(question.ljust(width))
             readline.set_completer(completer)
             readline.set_startup_hook()
+            if not x:
+                return default
             return x
     else:
         return reader()
