@@ -141,10 +141,10 @@ def get_conf_options(args, OSX):
     return xselpath, dbtype
 
 
-def get_db_version(config, dbtype):
+def get_db_version(config, dbtype, args):
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = pwman.data.factory.check_db_version(dbtype)
-        if dbver < 0.4:
+        if dbver < 0.4 and not args.dbconvert:
             print(_db_warn)
     else:
         dbver = 0.4
@@ -155,7 +155,7 @@ def main(args):
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype = get_conf_options(args, OSX)
     enc = CryptoEngine.get()
-    dbver = get_db_version(config, dbtype)
+    dbver = get_db_version(config, dbtype, args)
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
