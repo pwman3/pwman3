@@ -23,6 +23,7 @@
 """SQLite Database implementation."""
 from pwman.data.database import Database, DatabaseException
 from pwman.data.nodes import NewNode
+from pwman.util.crypto import CryptoEngine
 import sqlite3 as sqlite
 import pwman.util.config as config
 import itertools
@@ -136,8 +137,6 @@ class SQLiteDatabaseNewForm(Database):
                 if row is not None:
                     nodestring = str(row[0])
                     args, tags = self.parse_node_string(nodestring)
-
-                    #node = NewNode(**nodeargs)
                     node = NewNode()
                     node._password = args['password']
                     node._username = args['username']
@@ -231,6 +230,7 @@ class SQLiteDatabaseNewForm(Database):
         """add tags to db"""
         # sql = "INSERT OR REPLACE INTO TAGS(DATA) VALUES(?)"
         sql = "INSERT OR IGNORE INTO TAGS(DATA) VALUES(?)"
+
         if isinstance(tag, str):
             self._cur.execute(sql, [tag])
         else:
@@ -258,6 +258,8 @@ class SQLiteDatabaseNewForm(Database):
         for tag in tags:
             try:
                 if isinstance(tag, str):
+                    enc = CryptoEngine.get()
+                    tag = enc.encrypt(tag)
                     self._cur.execute(sql, [tag])
                 else:
                     self._cur.execute(sql, [tag._name+'%'])

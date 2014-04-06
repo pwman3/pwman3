@@ -19,7 +19,6 @@
 from __future__ import print_function
 import os
 import shutil
-import os.path
 import time
 import getpass
 from pwman.util.crypto import CryptoEngine
@@ -28,14 +27,13 @@ from pwman.util.callback import Callback
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 import sys
-
-_NEWVERSION = 0.4
-
+import re
 from pwman.data.database import Database, DatabaseException
 import sqlite3 as sqlite
 import pwman.util.config as config
 import cPickle
 
+_NEWVERSION = 0.4
 
 class SQLiteDatabaseReader(Database):
     """SQLite Database implementation"""
@@ -91,8 +89,8 @@ class SQLiteDatabaseReader(Database):
                 else:
                     first = False
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS "
-                        + " ON TAG = TAGS.ID"
-                        + " WHERE TAGS.DATA = ? ")
+                        " ON TAG = TAGS.ID"
+                        " WHERE TAGS.DATA = ? ")
 
                 params.append(cPickle.dumps(t))
         try:
@@ -234,18 +232,16 @@ class PwmanConvertDB(object):
         for node in self.oldnodes:
             username = node.get_username()
             password = node.get_password()
-
             url = node.get_url()
             notes = node.get_notes()
             tags = node.get_tags()
-            tags_strings = [tag.get_name() for tag in tags]
+            tags_strings = [ tag._name for tag in tags]
             newNode = NewNode()
             newNode.username = username
             newNode.password = password
             newNode.url = url
             newNode.notes = notes
-            tags = tags_strings
-            newNode.tags = tags
+            newNode.tags = tags_strings
             self.NewNodes.append(newNode)
 
     def save_new_nodes_to_db(self):

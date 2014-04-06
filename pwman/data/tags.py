@@ -56,8 +56,8 @@ class Tag(object):  # pragma: no cover
     the methods in this class override some built-ins
     for strings.
     """
-    def __init__(self, name):
-        self.set_name(name)
+    #def __init__(self, name):
+    #    self.set_name(name)
 
     def __eq__(self, other):
         if other._name == self._name:
