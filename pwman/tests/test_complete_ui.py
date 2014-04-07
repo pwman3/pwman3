@@ -46,7 +46,7 @@ class Ferrum(unittest.TestCase):
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3')+' -t -k -d '+OLD_DB_PATH)
         #child = pexpect.spawn('../../scripts/pwman3 -t -k -d '+OLD_DB_PATH)
-        child.expect('[\s|\S]+Please enter your password:', timeout=0.5)
+        child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
         print child.readlines()
 
