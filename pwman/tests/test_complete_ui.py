@@ -38,27 +38,28 @@ class Ferrum(unittest.TestCase):
     def test_db_warning(self):
         "when trying to run with old db, we should see warning"
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../../scripts/pwman3')+' -t -d '+OLD_DB_PATH)
+                                           '../../scripts/pwman3') +
+                              ' -t -d '+OLD_DB_PATH)
         self.assertEqual(0, child.expect_exact(_db_warn, timeout=0.5))
 
     def test_run_convert(self):
         "invoke pwman with -k option to convert the old data"
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../../scripts/pwman3')+' -t -k -d '+OLD_DB_PATH)
-        #child = pexpect.spawn('../../scripts/pwman3 -t -k -d '+OLD_DB_PATH)
+                                           '../../scripts/pwman3') +
+                              ' -t -k -e Blowfish -d '+OLD_DB_PATH)
         child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
         print child.readlines()
 
-        #rv = child.expect_exact(('\r\npwman successfully converted the old database '
-        #                         'to the new format.\r\nPlease run `pwman3 -d %s` '
-        #                         'to make sure your password and data are still '
-        #                         'correct. If you are convinced that no harm was '
-        #                         'done, update your config file to indicate the '
-        #                         'permanent location to your new database. '
-        #                         'If you found errors, please report a bug in Pwman '
-        #                         'homepage in github. \r\n' %  NEW_DB_PATH))
-        #self.assertEqual(0, rv)
+        rv = child.expect_exact(('\r\npwman successfully converted the old database '
+                                 'to the new format.\r\nPlease run `pwman3 -d %s` '
+                                 'to make sure your password and data are still '
+                                 'correct. If you are convinced that no harm was '
+                                 'done, update your config file to indicate the '
+                                 'permanent location to your new database. '
+                                 'If you found errors, please report a bug in Pwman '
+                                 'homepage in github. \r\n' %  NEW_DB_PATH))
+        self.assertEqual(0, rv)
 
 
 def suite():
