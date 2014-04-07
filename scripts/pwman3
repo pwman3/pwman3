@@ -116,7 +116,7 @@ def set_db(args):
         _saveconfig = False
 
 
-def set_algorithm(args):
+def set_algorithm(args, config):
     global _saveconfig
     if args.algo:
         config.set_value("Encryption", "algorithm", args.algo)
@@ -133,6 +133,7 @@ def get_conf_options(args, OSX):
     set_win_colors(config)
     set_db(args)
     set_umask(config)
+    set_algorithm(args, config)
     dbtype = config.get_value("Database", "type")
     if not dbtype:
         print("Could not read the Database type from the config!")
