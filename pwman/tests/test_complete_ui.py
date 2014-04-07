@@ -49,7 +49,8 @@ class Ferrum(unittest.TestCase):
                               ' -t -k -e Blowfish -d '+OLD_DB_PATH)
         child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
-        print child.readlines()
+
+        #print child.readlines()
 
         rv = child.expect_exact(('\r\npwman successfully converted the old database '
                                  'to the new format.\r\nPlease run `pwman3 -d %s` '
