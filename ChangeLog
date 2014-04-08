@@ -1,3 +1,10 @@
+2014-Apr-8  Oz Nahum <nahumoz@gmail.com>
+    * Version 0.5. 
+	* Multiple bug fixes. 
+	* 95% test coverage. 
+	* Drop supprt for old database format that uses cPickle.
+	  Everything is stored in SQLite as encrypted strings.
+
 2014-Feb-27 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.5 
 	* Fix for old database format

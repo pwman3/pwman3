@@ -25,7 +25,7 @@ appname = "Pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.5-dev"
+    version = "0.5"
 
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
