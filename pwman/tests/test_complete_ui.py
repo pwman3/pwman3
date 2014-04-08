@@ -28,8 +28,7 @@ NEW_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8-newdb.db')
 _db_warn = ("\n*** WARNNING: You are using the old database format"
             " which is insecure."
             " Please upgrade to the new database "
-            " format. Do note: support for this DB format will be dropped in"
-            " v0.5. This  database format is on hold. No bugs are fixead"
+            " format."
             " Check the help (pwman3 -h) or look at the manpage which"
             " explains how to proceed. ***")
 
