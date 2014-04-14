@@ -29,8 +29,10 @@ _db_warn = ("\n*** WARNNING: You are using the old database format"
             " which is insecure."
             " Please upgrade to the new database "
             " format."
-            " Check the help (pwman3 -h) or look at the manpage which"
-            " explains how to proceed. ***")
+            " You can upgrade the database now, or you can do it later."
+            " Check the help (pwman3 -h) or look at the manpage. "
+            "***")
+
 
 class Ferrum(unittest.TestCase):
 

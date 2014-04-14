@@ -32,8 +32,9 @@ _db_warn = ("\n*** WARNNING: You are using the old database format"
             " which is insecure."
             " Please upgrade to the new database "
             " format."
-            " Check the help (pwman3 -h) or look at the manpage which"
-            " explains how to proceed. ***")
+            " You can upgrade the database now, or you can do it later."
+            " Check the help (pwman3 -h) or look at the manpage. "
+            "***")
 
 def parser_options():
     parser = argparse.ArgumentParser(description=('pwman3 - a command line '
@@ -151,6 +152,31 @@ def get_db_version(config, dbtype, args):
     return dbver
 
 
+def auto_convert():
+    #1) Display a message saying that the database will be converted
+    # This step is done already in get_db_version
+    dbconvertor = PwmanConvertDB(args, config)
+
+    #2) copy the old database : cp ~/.pwman3/pwman.db ~/.pwman3/pwman.backup-2013-11-23-23:15.db
+    #3) Display a message about the backup file path
+    # These steps are done by PwmanConvertDB.backup_old_db()
+    dbconvertor.backup_old_db()
+
+    #4) convert the old database to the new format in ~/.pwman3/pwman.db
+    # This step is done by PwmanConvertDB.create_new_db()
+    #                      PwmanConvertDB.convert_nodes()
+    #                      PwmanConvertDB.save_new_nodes_to_db()
+    #                      PwmanConvertDB.save_old_key()
+
+    #5) Display a message about the result of the conversion
+    # add message here ...
+
+
+    #5b) close connection
+    #5c) rename the newly created db to the old name!
+    #6) Start the pwman3 normally if all went ok
+    return
+
 def main(args):
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype = get_conf_options(args, OSX)
@@ -163,7 +189,7 @@ def main(args):
         sys.exit(0)
 
     if dbver < 0.4:
-        sys.exit(1)
+        auto_convert()
 
     db = pwman.data.factory.create(dbtype, dbver)
     cli = PwmanCliNew(db, xselpath, CLICallback)
