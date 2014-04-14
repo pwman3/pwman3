@@ -126,7 +126,7 @@ def set_algorithm(args, config):
 def get_conf_options(args, OSX):
 
     config = get_conf()
-    xselpath = config.get_value("Global", "xselpath")
+    xselpath = config.get_value("Global", "xsel")
     if not xselpath:
         set_xsel(config, OSX)
 
