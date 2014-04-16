@@ -51,17 +51,8 @@ class Ferrum(unittest.TestCase):
         child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
 
-        
-        print child.readlines()
-        #rv = child.expect_exact(('\r\npwman successfully converted the old database '
-        #                         'to the new format.\r\nPlease run `pwman3 -d %s` '
-        #                         'to make sure your password and data are still '
-        #                         'correct. If you are convinced that no harm was '
-        #                         'done, update your config file to indicate the '
-        #                         'permanent location to your new database. '
-        #                         'If you found errors, please report a bug in Pwman '
-        #                         'homepage in github. \r\n' %  NEW_DB_PATH))
-        #self.assertEqual(0, rv)
+        rv = child.expect('pwman successfully converted the old database')
+        self.assertEqual(0, rv)
         # todo - add test to run auto_convert
 
 def suite():
