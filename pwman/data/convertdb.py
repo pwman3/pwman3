@@ -26,14 +26,13 @@ import pwman.data.factory
 from pwman.util.callback import Callback
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
-import sys
-import re
 from pwman.data.database import Database, DatabaseException
 import sqlite3 as sqlite
 import pwman.util.config as config
 import cPickle
 
 _NEWVERSION = 0.4
+
 
 class SQLiteDatabaseReader(Database):
     """SQLite Database implementation"""
@@ -191,7 +190,10 @@ class PwmanConvertDB(object):
     def __init__(self, args, config):
         self.dbname = config.get_value('Database', 'filename')
         self.dbtype = config.get_value("Database", "type")
-        self.newdb_name = args.output
+        if not args.output:
+            self.newdb_name = self.dbname
+        else:
+            self.newdb_name = '.new-%s'.join(os.path.splitext(self.dbname))
 
     def backup_old_db(self):
         print("Will convert the following Database: %s " % self.dbname)
@@ -215,12 +217,10 @@ class PwmanConvertDB(object):
         self.oldnodes = self.db.getnodes(self.oldnodes)
 
     def create_new_db(self):
-        dest = '-newdb'.join(os.path.splitext(self.dbname))
-        if os.path.exists('-newdb'.join(os.path.splitext(self.dbname))):
-            print("%s already exists, please move this file!" % dest)
-            sys.exit(2)
-
-        self.newdb_name = '-newdb'.join(os.path.splitext(self.dbname))
+        if os.path.exists(self.newdb_name):
+            #print("%s already exists, please move this file!" % dest)
+            #sys.exit(2)
+            os.remove(self.newdb_name)
 
         self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
                                                self.newdb_name)
@@ -235,7 +235,7 @@ class PwmanConvertDB(object):
             url = node.get_url()
             notes = node.get_notes()
             tags = node.get_tags()
-            tags_strings = [ tag._name for tag in tags]
+            tags_strings = [tag._name for tag in tags]
             newNode = NewNode()
             newNode.username = username
             newNode.password = password
@@ -256,9 +256,7 @@ class PwmanConvertDB(object):
     def print_success(self):
         print("pwman successfully converted the old database to the new "
               "format.\nPlease run `pwman3 -d %s` to make sure your password "
-              "and data are still correct. If you are convinced that no harm "
-              "was done, update your config file to indicate the permanent "
-              "location to your new database. If you found errors, please "
+              "and data are still correct. If you found errors, please "
               "report a bug in Pwman homepage in github. " % self.newdb_name)
 
     def run(self):
