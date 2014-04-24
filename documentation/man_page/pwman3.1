@@ -1,43 +1,43 @@
-.TH PWMAN3 1 "29 June 2013"
+.TH PWMAN3 1 "24 April 2014"
 .SH NAME
 pwman3 \- command line password manager
 .SH SYNOPSIS
 
 \fBpwman3\fP [\fIoptions\fP]
+\fBpwman3\fP --help
 
 .SH DESCRIPTION
 
+Pwman3 aims to provide a simple but powerful command line interface for
+password management. It allows one to store your password in a SQLite
+database locked by a master password which can be encrypted with
+different algorithms (e.g AES, Blowfish, DES3, IDEA, etc.).
+
+.SH OPTIONS
+.IP "\fB\-h\fR, \fB\-\-help\fR" 2
+.IX Item "-h, --help"
+Display help message and exit.
+.IP "\fB\-c\fR \fI\s-1FILE\s0\fR, \fB\-\-config\fR \fI\s-1FILE\s0\fR" 2
+.IX Item "-c FILE, --config FILE"
+Read the configuration from \s-1FILE\s0 instead of the default \fB~/.pwman3/config\fR.
 .TP
-\fB\-c, \-\-config\fP FILE
-Read the configuration from \fBFILE\fP instead of the default
-\fB~/.pwman3/config\fP.
-
-.TP
-\fB\-e, \-\-encryption\fP ALGORITHM
-Possible options are: AES(default), ARC2, ARC4, Blowfish, 
-.br
-CAST, DES, DES3, IDEA, RC5.
-
-.TP
-\fB\-d, \-\-database\fP FILE
-When using the default sqlite backend, use \fBFILE\fP 
-.br 
-to read/store passwords.
-
-
-.TP
-\fB\-k, \-\-convert\fP 
-Convert old DB format to version >= 0.4.
-The database that will be converted is the one found in the
-.br
-config file, or the one given as command line argument.
-
-.TP
-\fB\-h, \-\-help\fP
-Display help and exit.
-
-.SH AUTHOR
-
-This manpage has been written by Julien Louis <ptitlouis@sysif.net> 
-.br
-for the Debian GNU/Linux system but may be used by the others.
+.IP "\fB\-d\fR \fI\s-1DATABASE\s0\fR, \fB\-\-database\fR \fI\s-1DATABASE\s0\fR" 2
+.IX Item "-d DATABASE, --database DATABASE"
+When using the default SQLite backend, use \s-1DATABASE\s0 file path to read/store
+passwords.
+.IP "\fB\-e\fR \fI\s-1ALGO\s0\fR, \fB\-\-encryption\fR=\fI\s-1ALGO\s0\fR" 2
+.IX Item "-e ALGO, --encryption=ALGO"
+Use \s-1ALGO\s0 to encrypt data. Possible values are: \s-1AES , ARC2, ARC4,\s0
+Blowfish, \s-1CAST, DES, DES3, IDEA, RC5.\s0 The default encryption algorithm used is
+\&\s-1AES.\s0
+.IP "\fB\-k\fR, \fB\-\-convert\fR" 2
+.IX Item "-k, --convert"
+Convert old \s-1DB\s0 format to version >= 0.4. The database that will be converted is
+the one found in the config file, or the one given as command line argument.
+.IP "\fB\-O\fR, \fB\-\-output\fR \fI\s-1OUTPUT\s0\fR" 2
+.IX Item "-O, --output OUTPUT"
+Use \s-1OUTPUT\s0 as file path for the newly created database after converting.
+.SH "AUTHORS"
+.IX Header "AUTHORS"
+Pwman3 was originally written by Ivan Kelly <ivan@ivankelly.net>. Pwman3 is now
+maintained by Oz Nahum <nahumoz@gmail.com>.
