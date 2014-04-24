@@ -36,6 +36,7 @@ _db_warn = ("\n*** WARNNING: You are using the old database format"
             " Check the help (pwman3 -h) or look at the manpage. "
             "***")
 
+
 def parser_options():
     parser = argparse.ArgumentParser(description=('pwman3 - a command line '
                                                   'password manager.'))
