@@ -21,6 +21,7 @@
 import pexpect
 import unittest
 import os
+import shutil
 
 OLD_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8.db')
 NEW_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8-newdb.db')
@@ -45,14 +46,27 @@ class Ferrum(unittest.TestCase):
 
     def test_run_convert(self):
         "invoke pwman with -k option to convert the old data"
+        lfile = 'test.log'
+        logfile = open(lfile, 'w')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -t -k -e Blowfish -d '+OLD_DB_PATH)
+                              ' -t -k -e Blowfish -d '+OLD_DB_PATH,
+                              logfile=logfile)
         child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
 
         rv = child.expect('pwman successfully converted the old database')
         self.assertEqual(0, rv)
+        # if successfully converted, reset the converted database
+        if not rv:
+            with open(lfile) as l:
+                lines = l.readlines()
+                orig = lines[0].split(':')[-1].strip()
+                backup = lines[1].split()[-1].strip()
+            shutil.copy(backup, orig)
+            # do some cleaning
+            os.remove(lfile)
+            os.remove(backup)
         # todo - add test to run auto_convert
 
 def suite():
