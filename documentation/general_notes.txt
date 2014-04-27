@@ -81,5 +81,15 @@ finally you should step into:
          http://www.sqlalchemy.org/
 
   
-   
+# when developing pwman3 you might be using a debugger. if so add the following 
+  pre-commit hook to your .git/ :
+
+$ cat .git/hooks/pre-commit 
+#!/bin/bash
+VAR=$(git diff --cached | grep "import ipdb; ipdb.set_trace")
+if [ ! -z "$VAR" ]; then
+  echo "You've left a BREAK POINT in one of your files! Aborting commit..."
+  exit 1
+fi 
+exit 0
 
