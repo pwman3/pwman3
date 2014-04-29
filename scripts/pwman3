@@ -28,13 +28,14 @@ import shutil
 
 _saveconfig = True
 
-_db_warn = ("\n*** WARNNING: You are using the old database format"
+_db_warn = ("pwman3 detected that are using the old database format"
             " which is insecure."
-            " Please upgrade to the new database "
-            " format."
-            " You can upgrade the database now, or you can do it later."
-            " Check the help (pwman3 -h) or look at the manpage. "
-            "***")
+            " pwman3 will try to convert the database now."
+            "\n"
+            "If you choose not to convert the database, pwman3, will quit."
+            "\nYou can check the help (pwman3 -h) or look at the manpage how to convert "
+            " the database manually."
+            )
 
 
 def parser_options():
@@ -199,6 +200,11 @@ def main(args):
         sys.exit(0)
 
     if dbver < 0.4:
+        ans = raw_input("Would you like to proceed with conversion of the database"
+                        " before starting pwman3 [y/N]?")
+        if ans.lower() != "y":
+            sys.exit(1)
+
         auto_convert()
         dbver = 0.4
 

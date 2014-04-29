@@ -26,13 +26,7 @@ import shutil
 OLD_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8.db')
 NEW_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8-newdb.db')
 
-_db_warn = ("\n*** WARNNING: You are using the old database format"
-            " which is insecure."
-            " Please upgrade to the new database "
-            " format."
-            " You can upgrade the database now, or you can do it later."
-            " Check the help (pwman3 -h) or look at the manpage. "
-            "***")
+_db_warn = ("pwman3 detected that are using the old database format")
 
 
 class Ferrum(unittest.TestCase):
@@ -42,7 +36,7 @@ class Ferrum(unittest.TestCase):
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
                               ' -t -d '+OLD_DB_PATH)
-        self.assertEqual(0, child.expect_exact(_db_warn, timeout=0.5))
+        self.assertEqual(0, child.expect(_db_warn, timeout=0.5))
 
     def test_run_convert(self):
         "invoke pwman with -k option to convert the old data"
