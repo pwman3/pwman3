@@ -45,7 +45,8 @@ def which(cmd):
 config_dir = os.path.expanduser("~/.pwman")
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                             'cls_timeout': '5'
+                             'cls_timeout': '5',
+                             'save': 'True'
                              },
                   'Database': {'type': 'SQLite',
                                'filename': os.path.join(config_dir,
