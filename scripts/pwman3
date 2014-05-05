@@ -33,9 +33,9 @@ import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 from pwman.util.crypto import CryptoEngine
 
-_db_warn = ("pwman3 detected that are using the old database format"
+_db_warn = ("pwman3 detected that you are using the old database format"
             " which is insecure."
-            " pwman3 will try to convert the database now."
+            " pwman3 will try to automatically convert the database now."
             "\n"
             "If you choose not to convert the database, pwman3, will quit."
             "\nYou can check the help (pwman3 -h) or look at the manpage how to convert "
@@ -174,7 +174,7 @@ def main(args):
         sys.exit(0)
 
     if dbver < 0.4:
-        ans = raw_input("Would you like to proceed with conversion of the database"
+        ans = raw_input("Would you like to proceed with the conversion of the database"
                         " before starting pwman3 [y/N]?")
         if ans.lower() != "y":
             sys.exit(1)
