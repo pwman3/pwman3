@@ -20,6 +20,7 @@
 #============================================================================
 import os
 import pkg_resources
+import argparse
 
 appname = "Pwman3"
 try:
@@ -55,3 +56,27 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Readline': {'history': os.path.join(config_dir,
                                                        "history")}
                   }
+
+
+def parser_options():
+    parser = argparse.ArgumentParser(description=('pwman3 - a command line '
+                                                  'password manager.'))
+    parser.add_argument('-c', '--config', dest='cfile',
+                        default=os.path.expanduser("~/.pwman/config"),
+                        help='cofiguration file to read')
+    parser.add_argument('-d', '--database', dest='dbase')
+    parser.add_argument('-e', '--encryption', dest="algo",
+                        help=("Possible options are: AES(default), ARC2, ARC4,"
+                              " Blowfish, CAST, DES, DES3, IDEA, RC5"))
+    parser.add_argument('-k', '--convert', dest='dbconvert',
+                        action='store_true', default=False,
+                        # os.path.expanduser('~/.pwman/pwman.db'),
+                        help=("Convert old DB format to version >= 0.4."
+                              " The database that will be converted is the"
+                              " one found in the config file, or the one given"
+                              " as command line argument."))
+    parser.add_argument('-O', '--output', dest='output',
+                        #default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
+                        help=("The name of the newly created database after "
+                              "converting."))
+    return parser

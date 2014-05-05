@@ -21,11 +21,17 @@
 #============================================================================
 from __future__ import print_function
 import os
-import argparse
 import sys
 import re
 import shutil
-
+from pwman import default_config, which
+from pwman import parser_options
+from pwman.ui import get_ui_platform
+from pwman.ui.tools import CLICallback
+import pwman.util.config as config
+import pwman.data.factory
+from pwman.data.convertdb import PwmanConvertDB
+from pwman.util.crypto import CryptoEngine
 
 _db_warn = ("pwman3 detected that are using the old database format"
             " which is insecure."
@@ -35,34 +41,6 @@ _db_warn = ("pwman3 detected that are using the old database format"
             "\nYou can check the help (pwman3 -h) or look at the manpage how to convert "
             " the database manually."
             )
-
-
-def parser_options():
-    parser = argparse.ArgumentParser(description=('pwman3 - a command line '
-                                                  'password manager.'))
-    parser.add_argument('-c', '--config', dest='cfile',
-                        default=os.path.expanduser("~/.pwman/config"),
-                        help='cofiguration file to read')
-    parser.add_argument('-d', '--database', dest='dbase')
-    parser.add_argument('-e', '--encryption', dest="algo",
-                        help=("Possible options are: AES(default), ARC2, ARC4,"
-                              " Blowfish, CAST, DES, DES3, IDEA, RC5"))
-    parser.add_argument('-k', '--convert', dest='dbconvert',
-                        action='store_true', default=False,
-                        # os.path.expanduser('~/.pwman/pwman.db'),
-                        help=("Convert old DB format to version >= 0.4."
-                              " The database that will be converted is the"
-                              " one found in the config file, or the one given"
-                              " as command line argument."))
-    parser.add_argument('-O', '--output', dest='output',
-                        #default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
-                        help=("The name of the newly created database after "
-                              "converting."))
-    parser.add_argument('-t', '--test', help=("Run pwman from current"
-                                              " directory"
-                                              " without installation"),
-                        action="store_true")
-    return parser
 
 
 def get_conf(args):
@@ -221,14 +199,4 @@ def main(args):
 
 if __name__ == '__main__':
     args = parser_options().parse_args()
-    if args.test:
-        sys.path.insert(0, os.getcwd())
-
-    from pwman import default_config, which
-    from pwman.ui import get_ui_platform
-    from pwman.ui.tools import CLICallback
-    import pwman.util.config as config
-    import pwman.data.factory
-    from pwman.data.convertdb import PwmanConvertDB
-    from pwman.util.crypto import CryptoEngine
     main(args)
