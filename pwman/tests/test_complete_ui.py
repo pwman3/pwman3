@@ -35,7 +35,7 @@ class Ferrum(unittest.TestCase):
         "when trying to run with old db, we should see warning"
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -t -d '+OLD_DB_PATH)
+                              ' -d '+OLD_DB_PATH)
         self.assertEqual(0, child.expect(_db_warn, timeout=0.5))
 
     def test_run_convert(self):
@@ -44,7 +44,7 @@ class Ferrum(unittest.TestCase):
         logfile = open(lfile, 'w')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -t -k -e Blowfish -d '+OLD_DB_PATH,
+                              ' -k -e Blowfish -d '+OLD_DB_PATH,
                               logfile=logfile)
         child.expect('[\s|\S]+Please enter your password:', timeout=5)
         self.assertEqual(6, child.sendline('12345'))
