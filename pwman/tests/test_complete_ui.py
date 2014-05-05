@@ -26,7 +26,7 @@ import shutil
 OLD_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8.db')
 NEW_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8-newdb.db')
 
-_db_warn = ("pwman3 detected that are using the old database format")
+_db_warn = ("pwman3 detected that you are using the old database format")
 
 
 class Ferrum(unittest.TestCase):
