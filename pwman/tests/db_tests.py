@@ -363,6 +363,13 @@ class CLITests(unittest.TestCase):
     def test_do_tags(self):
         self.tester.cli.do_filter('bank')
 
+    def test_do_forget(self):
+        self.tester.cli.do_forget('')
+
+    def test_do_auth(self):
+        crypto = CryptoEngine.get()
+        crypto.auth('12345')
+
     def test_do_clear(self):
         self.tester.cli.do_clear('')
 
