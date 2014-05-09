@@ -171,6 +171,17 @@ class CryptoEngine(object):
             self._timeout = -1
         self._cipher = None
 
+    def auth(self, key):
+        """
+        authenticate using a given key
+        """
+        tmpcipher = self._getcipher_real(key, self._algo)
+        plainkey = tmpcipher.decrypt(str(self._keycrypted).decode('base64'))
+        key = self._retrievedata(plainkey)
+        key = str(key).decode('base64')
+        self._cipher = self._getcipher_real(key, self._algo)
+
+
     def encrypt(self, obj):
         """
         encrypt(obj) -> ciphertext

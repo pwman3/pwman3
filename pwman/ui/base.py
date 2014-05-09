@@ -468,6 +468,10 @@ class BaseCommands(BaseUI, HelpUI):
         return tags
 
     def do_list(self, args):
+
+        #crypto  = CryptoEngine.get()
+        #crypto.auth('YOURPASSWORD')
+
         if len(args.split()) > 0:
             self.do_clear('')
             self.do_filter(args)
