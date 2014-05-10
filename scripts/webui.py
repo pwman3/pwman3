@@ -18,7 +18,7 @@
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 from __future__ import print_function
-from bottle import route, run, debug, template, request, get
+from bottle import route, run, debug, template, request, get, redirect
 import os
 import sys
 import re
@@ -31,6 +31,7 @@ from pwman.util.crypto import CryptoEngine
 import pwman.util.config as config
 import pwman.data.factory
 
+AUTHENTICATED = False
 
 tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
@@ -45,6 +46,12 @@ tmplt = """
 %end
 </table>
 """
+
+login = """
+<p>Please enter your database password: <b>
+<form action="/auth" method="POST">
+Password: <input type="password" name="pwd">
+</form>"""
 
 def get_conf(args):
     config_dir = os.path.expanduser("~/.pwman")
@@ -120,17 +127,39 @@ def get_conf_options(args, OSX):
 
     return xselpath, dbtype
 
+
+@route('/auth', method=['GET', 'POST'])
+def is_authenticated():
+
+    global AUTHENTICATED
+
+    crypto  = CryptoEngine.get()
+
+    if request.method == 'POST':
+        key = request.POST.get('pwd', '')
+        crypto.auth(key)
+        AUTHENTICATED = True
+        redirect('/')
+    else:
+        return login
+
+
 @route('/', method=['GET', 'POST'])
 def listnodes():
+
+    global AUTHENTICATED
+
     OSX = False
     args = parser_options().parse_args()
     xselpath, dbtype = get_conf_options(args, OSX)
     dbver = 0.4
     db = pwman.data.factory.create(dbtype, dbver)
     db.open()
-    crypto  = CryptoEngine.get()
-    crypto.auth('YOURPASSWORD')
 
+    crypto  = CryptoEngine.get()
+
+    if not AUTHENTICATED:
+        redirect('/auth')
 
     nodeids = db.listnodes()
     nodes = db.getnodes(nodeids)
