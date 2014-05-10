@@ -315,7 +315,7 @@ class CLITests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
 
     def test_get_ids(self):
-        #used by do_cp or do_open,
+        # used by do_cp or do_open,
         # this spits many time could not understand your input
         self.assertEqual([1], self.tester.cli.get_ids('1'))
         self.assertListEqual([1, 2, 3, 4, 5], self.tester.cli.get_ids('1-5'))
