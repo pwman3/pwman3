@@ -135,6 +135,14 @@ def listnodes():
     nodeids = db.listnodes()
     nodes = db.getnodes(nodeids)
 
+    nodesd = [''] * len(nodes)
+    for idx, node in enumerate(nodes):
+        tags = node.tags
+        tags = filter(None, tags)
+        nodesd[idx]=('@'.join((node.username, node.url)), ','.join(tags))
+
+    output = template('make_table', rows=nodesd)
+    return output
 
 debug(True)
 run(reloader=True)
