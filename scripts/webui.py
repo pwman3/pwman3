@@ -37,12 +37,13 @@ tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
 <p>The open items are as follows:</p>
 <table border="1">
-%for row in rows:
+%for node in nodes:
   <tr>
-  %for col in row:
-    <td>{{col}}</td>
+  %for item in node:
+    <td>{{item}}</td>
   %end
   </tr>
+  <tr><td></td><td>edit</td></tr>
 %end
 </table>
 """
@@ -52,6 +53,7 @@ login = """
 <form action="/auth" method="POST">
 Password: <input type="password" name="pwd">
 </form>"""
+
 
 def get_conf(args):
     config_dir = os.path.expanduser("~/.pwman")
@@ -109,6 +111,7 @@ def set_algorithm(args, config):
         config.set_value("Encryption", "algorithm", args.algo)
         config.set_value("Global", "save", "False")
 
+
 def get_conf_options(args, OSX):
 
     config = get_conf(args)
@@ -132,8 +135,7 @@ def get_conf_options(args, OSX):
 def is_authenticated():
 
     global AUTHENTICATED
-
-    crypto  = CryptoEngine.get()
+    crypto = CryptoEngine.get()
 
     if request.method == 'POST':
         key = request.POST.get('pwd', '')
@@ -156,7 +158,7 @@ def listnodes():
     db = pwman.data.factory.create(dbtype, dbver)
     db.open()
 
-    crypto  = CryptoEngine.get()
+    crypto = CryptoEngine.get()
 
     if not AUTHENTICATED:
         redirect('/auth')
@@ -168,9 +170,9 @@ def listnodes():
     for idx, node in enumerate(nodes):
         tags = node.tags
         tags = filter(None, tags)
-        nodesd[idx]=('@'.join((node.username, node.url)), ','.join(tags))
+        nodesd[idx] = ('@'.join((node.username, node.url)), ','.join(tags))
 
-    output = template('make_table', rows=nodesd)
+    output = template(tmplt, nodes=nodesd)
     return output
 
 debug(True)
