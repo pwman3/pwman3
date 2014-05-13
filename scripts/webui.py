@@ -30,11 +30,19 @@ from pwman.ui.tools import CLICallback
 from pwman.util.crypto import CryptoEngine
 import pwman.util.config as config
 import pwman.data.factory
+from pwman.data.tags import TagNew
 
 AUTHENTICATED = False
 
 tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
+<form action="/" method="POST">
+<select name="tag" onchange="this.form.submit()">
+%for node in nodes:
+<option value="{{node[1]}}">{{node[1]}}</option>
+%end
+</select>
+</form>
 <p>The open items are as follows:</p>
 <table border="1">
 %for node in nodes:
@@ -151,6 +159,7 @@ def listnodes():
 
     global AUTHENTICATED
 
+    _filter = None
     OSX = False
     args = parser_options().parse_args()
     xselpath, dbtype = get_conf_options(args, OSX)
@@ -162,6 +171,11 @@ def listnodes():
 
     if not AUTHENTICATED:
         redirect('/auth')
+
+    if 'POST' in request.method:
+        _filter = request.POST.get('tag')
+        if _filter:
+            db._filtertags = [TagNew(_filter.strip())]
 
     nodeids = db.listnodes()
     nodes = db.getnodes(nodeids)
