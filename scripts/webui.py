@@ -33,13 +33,14 @@ import pwman.data.factory
 from pwman.data.tags import TagNew
 
 AUTHENTICATED = False
+TAGS = None
 
 tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
 <form action="/" method="POST">
 <select name="tag" onchange="this.form.submit()">
-%for node in nodes:
-<option value="{{node[1]}}">{{node[1]}}</option>
+%for tag in tags:
+<option value="{{tag}}">{{tag}}</option>
 %end
 </select>
 </form>
@@ -157,7 +158,7 @@ def is_authenticated():
 @route('/', method=['GET', 'POST'])
 def listnodes():
 
-    global AUTHENTICATED
+    global AUTHENTICATED, TAGS
 
     _filter = None
     OSX = False
@@ -182,11 +183,13 @@ def listnodes():
 
     nodesd = [''] * len(nodes)
     for idx, node in enumerate(nodes):
-        tags = node.tags
-        tags = filter(None, tags)
-        nodesd[idx] = ('@'.join((node.username, node.url)), ','.join(tags))
+        ntags = filter(None, node.tags)
+        nodesd[idx] = ('@'.join((node.username, node.url)), ','.join(ntags))
 
-    output = template(tmplt, nodes=nodesd)
+    if not TAGS:
+        TAGS =set([''.join(node.tags).strip() for node in nodes])
+        print(len(TAGS))
+    output = template(tmplt, nodes=nodesd, tags=TAGS)
     return output
 
 debug(True)
