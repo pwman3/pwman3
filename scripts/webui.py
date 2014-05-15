@@ -177,6 +177,8 @@ def listnodes():
         _filter = request.POST.get('tag')
         if _filter:
             db._filtertags = [TagNew(_filter.strip())]
+        if _filter == 'None':
+            db._filtertags = []
 
     nodeids = db.listnodes()
     nodes = db.getnodes(nodeids)
@@ -187,7 +189,10 @@ def listnodes():
         nodesd[idx] = ('@'.join((node.username, node.url)), ','.join(ntags))
 
     if not TAGS:
-        TAGS =set([''.join(node.tags).strip() for node in nodes])
+        TAGS = list(set([''.join(node.tags).strip() for node in nodes]))
+        TAGS.sort()
+        TAGS.insert(0, 'None')
+        TAGS.insert(0, 'None')
         print(len(TAGS))
     output = template(tmplt, nodes=nodesd, tags=TAGS)
     return output
