@@ -78,7 +78,7 @@ class PwmanCliWinNew(PwmanCliNew):
             print "Password ID: %d" % (node._id)
             # when done with node erase it
             zerome(password)
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def print_node(self, node):
