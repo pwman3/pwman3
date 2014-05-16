@@ -33,7 +33,7 @@ from pwman.ui.base import Aliases, BaseCommands
 try:
     import readline
     _readline_available = True
-except ImportError, e:  # pragma: no cover
+except ImportError as e:  # pragma: no cover
     _readline_available = False
 
 
@@ -57,13 +57,13 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
             self._db = db
             #  this cascades down all the way to setting the database key
             self._db.open()
-        except Exception, e:  # pragma: no cover
+        except Exception as e:  # pragma: no cover
             self.error(e)
             sys.exit(1)
 
         try:
             readline.read_history_file(self._historyfile)
-        except IOError, e:  # pragma: no cover
+        except IOError as e:  # pragma: no cover
             pass
 
         self.prompt = "pwman> "
