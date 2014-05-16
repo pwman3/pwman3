@@ -207,7 +207,7 @@ class BaseUI(object):
             for t in tags:
                 try:
                     _tags.append(enc.decrypt(t))
-                except (ValueError, Exception), e:
+                except (ValueError, Exception) as e:
                     _tags.append(t)
                     del(e)
             _tags = filter(None, _tags)
@@ -245,7 +245,7 @@ class BaseCommands(BaseUI, HelpUI):
                 print ("erasing in 10 sec...")
                 time.sleep(10)
                 tools.text_to_clipboards("")
-            except Exception, e:
+            except Exception as e:
                 self.error(e)
         else:
             print ("Can't copy to clipboard, no xsel found in the system!")
@@ -262,7 +262,7 @@ class BaseCommands(BaseUI, HelpUI):
         try:
             enc = CryptoEngine.get()
             enc.forget()
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_set(self, args):
@@ -293,7 +293,7 @@ class BaseCommands(BaseUI, HelpUI):
                 config.set_value(m.group(1), m.group(2), argstrs[1])
             else:
                 self.help_set()
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def get_username(self, default="", reader=raw_input):
@@ -317,13 +317,13 @@ class BaseCommands(BaseUI, HelpUI):
             node = self._db.getnodes(ids)
             url = node[0].url
             tools.open_url(url)
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_clear(self, args):
         try:
             self._db.clearfilter()
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_cls(self, args):
@@ -359,7 +359,7 @@ class BaseCommands(BaseUI, HelpUI):
                 self._db.editnode(i, node)
                 # when done with node erase it
                 zerome(node._password)
-            except Exception, e:
+            except Exception as e:
                 self.error(e)
 
     def print_node(self, node):
@@ -409,7 +409,7 @@ class BaseCommands(BaseUI, HelpUI):
         try:
             key = self._db.changepassword()
             self._db._save(key)
-        except Exception, e:
+        except Exception  as e:
             self.error(e)
 
     def do_save(self, args):
@@ -420,7 +420,7 @@ class BaseCommands(BaseUI, HelpUI):
             else:
                 config.save()
             print ("Config saved.")
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_tags(self, arg):
@@ -518,7 +518,7 @@ class BaseCommands(BaseUI, HelpUI):
                     if c.lower() == 'q':
                         break
 
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_filter(self, args):
@@ -533,7 +533,7 @@ class BaseCommands(BaseUI, HelpUI):
             for t in tags:
                 print ("%s " % t)
             print
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_new(self, args):
@@ -575,7 +575,7 @@ class BaseCommands(BaseUI, HelpUI):
             print ("Password ID: %d" % (node._id))
             # when done with node erase it
             zerome(password)
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_print(self, arg):
@@ -585,7 +585,7 @@ class BaseCommands(BaseUI, HelpUI):
                 self.print_node(node[0])
                 # when done with node erase it
                 zerome(node[0]._password)
-            except Exception, e:
+            except Exception as e:
                 self.error(e)
 
     def do_delete(self, arg):
@@ -603,7 +603,7 @@ class BaseCommands(BaseUI, HelpUI):
             if ans == 'y':
                 self._db.removenodes([n])
                 print ("%s@%s deleted" % (n.username, n.url))
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def get_ids(self, args):
