@@ -58,14 +58,14 @@ def get_value(section, name):
     global _conf, _defaults
     try:
         return _conf[section][name]
-    except KeyError, e:
+    except KeyError as e:
         pass
 
     try:
         value = _defaults[section][name]
         set_value(section, name, value)
         return value
-    except KeyError, e:
+    except KeyError as e:
         pass
 
     return ''
@@ -101,9 +101,9 @@ def load(filename):
         try:
             fp = open(filename, "r")
             parser.readfp(fp)
-        except ParsingError, e:
+        except ParsingError as e:
             raise ConfigException(e)
-        except IOError, e:
+        except IOError as e:
             raise ConfigNoConfigException(e)
     finally:
         if (fp):
@@ -132,5 +132,5 @@ def save(filename=None):
         fp = file(filename, "w+")
         parser.write(fp)
         fp.close()
-    except IOError, e:
+    except IOError as e:
         raise ConfigException(str(e))
