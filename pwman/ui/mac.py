@@ -44,7 +44,7 @@ class PwmanCliMac(PwmanCli):
                 node[0].get_username(), node[0].get_url())
             time.sleep(10)
             tools.text_to_clipboards("")
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_cp(self, args):
@@ -62,7 +62,7 @@ class PwmanCliMac(PwmanCli):
             node = self._db.getnodes(ids)
             url = node[0].get_url()
             tools.open_url(url, macosx=True)
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def do_o(self, args):
