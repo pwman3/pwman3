@@ -67,7 +67,7 @@ class SQLiteDatabaseNewForm(Database):
             self._con = sqlite.connect(self._filename)
             self._cur = self._con.cursor()
             self._checktables()
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
 
     def close(self):
@@ -108,9 +108,9 @@ class SQLiteDatabaseNewForm(Database):
             tags = [str(t[0]) for t in self._cur.fetchall()]
             return tags
 
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
-        except sqlite.InterfaceError, e:  # pragma: no cover
+        except sqlite.InterfaceError as e:  # pragma: no cover
             raise e
 
     def parse_node_string(self, string):
@@ -151,7 +151,7 @@ class SQLiteDatabaseNewForm(Database):
         try:
             sql = "UPDATE NODES SET DATA = ? WHERE ID = ?"
             self._cur.execute(sql, [node.dump_edit_to_db()[0], id])
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
         self._setnodetags(node)
         self._checktags()
@@ -167,7 +167,7 @@ class SQLiteDatabaseNewForm(Database):
             value = n.dump_edit_to_db()
             try:
                 self._cur.execute(sql, value)
-            except sqlite.DatabaseError, e:  # pragma: no cover
+            except sqlite.DatabaseError as e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
             idx = self._cur.lastrowid
             n._id = idx
@@ -182,7 +182,7 @@ class SQLiteDatabaseNewForm(Database):
                 sql = "DELETE FROM NODES WHERE ID = ?"
                 self._cur.execute(sql, [n._id])
 
-            except sqlite.DatabaseError, e:  # pragma: no cover
+            except sqlite.DatabaseError as e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
             self._deletenodetags(n)
 
@@ -215,13 +215,13 @@ class SQLiteDatabaseNewForm(Database):
             rows = self._cur.fetchall()
             ids = [row[0] for row in rows]
             return ids
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
 
     def _commit(self):
         try:
             self._con.commit()
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error commiting data to db [%s]" % (e))
@@ -240,7 +240,7 @@ class SQLiteDatabaseNewForm(Database):
         try:
             sql = "DELETE FROM LOOKUP WHERE NODE = ?"
             self._cur.execute(sql, [node._id])
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
@@ -249,7 +249,7 @@ class SQLiteDatabaseNewForm(Database):
         params = [node._id, tag_id]
         try:
             self._cur.execute(sql, params)
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
 
     def _tagids(self, tags):
@@ -269,7 +269,7 @@ class SQLiteDatabaseNewForm(Database):
                 else:
                     self._create_tag(tag)
                     ids.append(self._cur.lastrowid)
-            except sqlite.DatabaseError, e:  # pragma: no cover
+            except sqlite.DatabaseError as e:  # pragma: no cover
                 raise DatabaseException("SQLite: %s" % (e))
         return ids
 
@@ -284,7 +284,7 @@ class SQLiteDatabaseNewForm(Database):
             sql = "DELETE FROM TAGS WHERE ID NOT IN (SELECT TAG FROM" \
                 + " LOOKUP GROUP BY TAG)"
             self._cur.execute(sql)
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
@@ -319,7 +319,7 @@ class SQLiteDatabaseNewForm(Database):
             self._cur.execute("INSERT INTO DBVERSION VALUES('0.4')")
             try:
                 self._con.commit()
-            except DatabaseException, e:  # pragma: no cover
+            except DatabaseException as e:  # pragma: no cover
                 self._con.rollback()
                 raise e
 
@@ -336,7 +336,7 @@ class SQLiteDatabaseNewForm(Database):
         self._cur.execute(sql, values)
         try:
             self._con.commit()
-        except sqlite.DatabaseError, e:  # pragma: no cover
+        except sqlite.DatabaseError as e:  # pragma: no cover
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error saving key [%s]" % (e))

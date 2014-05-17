@@ -49,7 +49,7 @@ class PostgresqlDatabase(Database):
             self._password = config.get_value('Database', 'password')
             self._database = config.get_value('Database', 'database')
             self._prefix = config.get_value('Database', 'table_prefix')
-        except KeyError, e:
+        except KeyError as e:
             raise DatabaseException(
                 "Postgresql: missing parameter [%s]" % (e))
 
@@ -63,14 +63,14 @@ class PostgresqlDatabase(Database):
 #                                     password = self._password)
 #            self._cur = self._con.cursor()
             self._checktables()
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
 
     def _get_cur(self):
         try:
             if (self._con != None):
                 return self._con.cursor()
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             pass
         server = "%s:%s" % (self._server, self._port)
         self._con = pgdb.connect(host = server,
@@ -129,7 +129,7 @@ class PostgresqlDatabase(Database):
                 tags.append(tag)
                 row = cursor.fetchone()
             return tags
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
         
     def getnodes(self, ids):
@@ -158,7 +158,7 @@ class PostgresqlDatabase(Database):
                 node.set_id(row[0])
                 nodes.append(node)
                 row = cursor.fetchone()
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
         return nodes
 
@@ -171,7 +171,7 @@ class PostgresqlDatabase(Database):
             cursor.execute(sql, {"data":cPickle.dumps(node),
                                  "id": id})
             
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
         self._setnodetags(node)
         self._checktags()
@@ -186,7 +186,7 @@ class PostgresqlDatabase(Database):
             values = {"data": cPickle.dumps(n)}
             try:
                 cursor.execute(sql, values)
-            except pgdb.DatabaseError, e:
+            except pgdb.DatabaseError as e:
                 raise DatabaseException("Postgresql: %s" % (e))
             id = self._lastrowid("NODES")
             n.set_id(id)
@@ -203,7 +203,7 @@ class PostgresqlDatabase(Database):
                 sql = "DELETE FROM %sNODES WHERE ID = %%(id)d" % (self._prefix)
                 cursor.execute(sql, {"id": n.get_id()})
                 
-            except pgdb.DatabaseError, e:
+            except pgdb.DatabaseError as e:
                 raise DatabaseException("Postgresql: %s" % (e))
             self._deletenodetags(n)
 
@@ -241,13 +241,13 @@ class PostgresqlDatabase(Database):
                 ids.append(row[0])
                 row = cursor.fetchone()
             return ids
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
 
     def _commit(self):
         try:
             self._con.commit()
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "Postgresql: Error commiting data to db [%s]" % (e))
@@ -260,7 +260,7 @@ class PostgresqlDatabase(Database):
             try:
                 ids.append(self._tagidcache[pickled])
                 continue
-            except KeyError, e:
+            except KeyError as e:
                 pass # not in cache
             sql = "SELECT ID FROM %sTAGS WHERE DATA = %%(tag)s" % (self._prefix)
             if not isinstance(t, Tag): raise DatabaseException(
@@ -279,7 +279,7 @@ class PostgresqlDatabase(Database):
                     id = self._lastrowid("TAGS")
                     ids.append(id)
                     self._tagidcache[pickled] = id
-            except pgdb.DatabaseError, e:
+            except pgdb.DatabaseError as e:
                 raise DatabaseException("Postgresql: %s" % (e))
         return ids
 
@@ -289,7 +289,7 @@ class PostgresqlDatabase(Database):
             sql = "DELETE FROM %sLOOKUP WHERE NODE = %%(node)d" % (self._prefix)
             cursor.execute(sql, {"node":node.get_id()})
             
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
         
     def _setnodetags(self, node):
@@ -303,7 +303,7 @@ class PostgresqlDatabase(Database):
             try:
                 cursor = self._get_cur()
                 cursor.execute(sql, params)
-            except pgdb.DatabaseError, e:
+            except pgdb.DatabaseError as e:
                 raise DatabaseException("Postgresql: %s" % (e))
 
     def _checktags(self):
@@ -314,7 +314,7 @@ class PostgresqlDatabase(Database):
                    + "(SELECT TAG FROM %sLOOKUP GROUP BY TAG)") % (self._prefix,
                                                                    self._prefix)
             cursor.execute(sql)
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             raise DatabaseException("Postgresql: %s" % (e))
         self._commit()
 
@@ -355,7 +355,7 @@ class PostgresqlDatabase(Database):
             
             try:
                 self._con.commit()
-            except pgdb.DatabaseError, e:
+            except pgdb.DatabaseError as e:
                 self._con.rollback()
                 raise e
 
@@ -366,7 +366,7 @@ class PostgresqlDatabase(Database):
         cursor.execute(sql, values)
         try:
             self._con.commit()
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "Postgresql: Error saving key [%s]" % (e))

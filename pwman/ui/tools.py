@@ -41,7 +41,7 @@ else:  # pragma: no cover
     try:
         import pyreadline as readline
         _readline_available = True
-    except ImportError, e:
+    except ImportError as e:
         _readline_available = False
 
 _defaultwidth = 10
@@ -103,7 +103,7 @@ def text_to_clipboards(text):  # pragma: no cover
         # "clipboard":
         xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
         xsel_proc.communicate(text)
-    except OSError, e:
+    except OSError as e:
         print (e, "\nExecuting xsel failed, is it installed ?\n \
                please check your configuration file ... ")
 
@@ -118,7 +118,7 @@ def text_to_mcclipboard(text):  # pragma: no cover
     try:
         pbcopy_proc = sp.Popen(['pbcopy'], stdin=sp.PIPE)
         pbcopy_proc.communicate(text)
-    except OSError, e:
+    except OSError as e:
         print (e, "\nExecuting pbcoy failed...")
 
 
@@ -131,7 +131,7 @@ def open_url(link, macosx=False):  # pragma: no cover
         uopen = "open"
     try:
         sp.Popen([uopen, link], stdin=sp.PIPE)
-    except OSError, e:
+    except OSError as e:
         print ("Executing open_url failed with:\n", e)
 
 

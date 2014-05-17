@@ -43,7 +43,7 @@ class SQLiteDatabaseReader(Database):
 
         try:
             self._filename = config.get_value('Database', 'filename')
-        except KeyError, e:
+        except KeyError as e:
             raise DatabaseException(
                 "SQLite: missing parameter [%s]" % (e))
 
@@ -52,7 +52,7 @@ class SQLiteDatabaseReader(Database):
             self._con = sqlite.connect(self._filename)
             self._cur = self._con.cursor()
             self._checktables()
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
 
     def close(self):
@@ -71,7 +71,7 @@ class SQLiteDatabaseReader(Database):
                     node = cPickle.loads(str(row[0]))
                     node.set_id(i)
                     nodes.append(node)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
         return nodes
 
@@ -101,13 +101,13 @@ class SQLiteDatabaseReader(Database):
                 ids.append(row[0])
                 row = self._cur.fetchone()
             return ids
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
 
     def _commit(self):
         try:
             self._con.commit()
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error commiting data to db [%s]" % (e))
@@ -130,7 +130,7 @@ class SQLiteDatabaseReader(Database):
                     sql = "INSERT INTO TAGS(DATA) VALUES(?)"
                     self._cur.execute(sql, [data])
                     ids.append(self._cur.lastrowid)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
         return ids
 
@@ -156,7 +156,7 @@ class SQLiteDatabaseReader(Database):
             self._cur.execute("INSERT INTO KEY VALUES('')")
             try:
                 self._con.commit()
-            except DatabaseException, e:
+            except DatabaseException as e:
                 self._con.rollback()
                 raise e
 

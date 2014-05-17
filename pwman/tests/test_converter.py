@@ -36,7 +36,7 @@ class SQLiteDatabase(Database):
 
         try:
             self._filename = fname
-        except KeyError, e:
+        except KeyError as e:
             raise DatabaseException(
                 "SQLite: missing parameter [%s]" % (e))
 
@@ -45,7 +45,7 @@ class SQLiteDatabase(Database):
             self._con = sqlite.connect(self._filename)
             self._cur = self._con.cursor()
             self._checktables()
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
 
     def close(self):
@@ -91,7 +91,7 @@ class SQLiteDatabase(Database):
                 tags.append(tag)
                 row = self._cur.fetchone()
             return tags
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
 
     def getnodes(self, ids):
@@ -106,7 +106,7 @@ class SQLiteDatabase(Database):
                     node = cPickle.loads(str(row[0]))
                     node.set_id(i)
                     nodes.append(node)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
         return nodes
 
@@ -118,7 +118,7 @@ class SQLiteDatabase(Database):
             sql = "UPDATE NODES SET DATA = ? WHERE ID = ?"
             self._cur.execute(sql, [cPickle.dumps(node), id])
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
         self._setnodetags(node)
         self._checktags()
@@ -133,7 +133,7 @@ class SQLiteDatabase(Database):
             value = cPickle.dumps(n)
             try:
                 self._cur.execute(sql, [value])
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
             id = self._cur.lastrowid
             n.set_id(id)
@@ -150,7 +150,7 @@ class SQLiteDatabase(Database):
                 sql = "DELETE FROM NODES WHERE ID = ?"
                 self._cur.execute(sql, [n.get_id()])
 
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
             self._deletenodetags(n)
 
@@ -183,13 +183,13 @@ class SQLiteDatabase(Database):
                 ids.append(row[0])
                 row = self._cur.fetchone()
             return ids
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
 
     def _commit(self):
         try:
             self._con.commit()
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error commiting data to db [%s]" % (e))
@@ -212,7 +212,7 @@ class SQLiteDatabase(Database):
                     sql = "INSERT INTO TAGS(DATA) VALUES(?)"
                     self._cur.execute(sql, [data])
                     ids.append(self._cur.lastrowid)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
         return ids
 
@@ -221,7 +221,7 @@ class SQLiteDatabase(Database):
             sql = "DELETE FROM LOOKUP WHERE NODE = ?"
             self._cur.execute(sql, [node.get_id()])
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
@@ -235,7 +235,7 @@ class SQLiteDatabase(Database):
 
             try:
                 self._cur.execute(sql, params)
-            except sqlite.DatabaseError, e:
+            except sqlite.DatabaseError as e:
                 raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
@@ -244,7 +244,7 @@ class SQLiteDatabase(Database):
             sql = ("DELETE FROM TAGS WHERE ID NOT "
                    "IN (SELECT TAG FROM LOOKUP GROUP BY TAG)")
             self._cur.execute(sql)
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             raise DatabaseException("SQLite: %s" % (e))
         self._commit()
 
@@ -271,7 +271,7 @@ class SQLiteDatabase(Database):
 
             try:
                 self._con.commit()
-            except DatabaseException, e:
+            except DatabaseException as e:
                 self._con.rollback()
                 raise e
 
@@ -281,7 +281,7 @@ class SQLiteDatabase(Database):
         self._cur.execute(sql, values)
         try:
             self._con.commit()
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "SQLite: Error saving key [%s]" % (e))

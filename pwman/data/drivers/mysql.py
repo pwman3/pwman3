@@ -48,7 +48,7 @@ class MySQLDatabase(Database):
             self._password = config.get_value('Database', 'password')
             self._database = config.get_value('Database', 'database')
             self._prefix = config.get_value('Database', 'table_prefix')
-        except KeyError, e:
+        except KeyError as e:
             raise DatabaseException(
                 "MySQL: missing parameter [%s]" % (e))
 
@@ -62,14 +62,14 @@ class MySQLDatabase(Database):
 #                                     password = self._password)
 #            self._cur = self._con.cursor()
             self._checktables()
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
 
     def _get_cur(self):
         try:
             if (self._con != None):
                 return self._con.cursor()
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             pass
         self._con = MySQLdb.connect(host = self._server,
                                  port = int(self._port),
@@ -128,7 +128,7 @@ class MySQLDatabase(Database):
                 tags.append(tag)
                 row = cursor.fetchone()
             return tags
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
         
     def getnodes(self, ids):
@@ -157,7 +157,7 @@ class MySQLDatabase(Database):
                 node.set_id(row[0])
                 nodes.append(node)
                 row = cursor.fetchone()
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
         return nodes
 
@@ -169,7 +169,7 @@ class MySQLDatabase(Database):
             sql = "UPDATE %sNODES SET DATA = %%s WHERE ID = %%s" % (self._prefix)
             cursor.execute(sql, (cPickle.dumps(node), id))
             
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
         self._setnodetags(node)
         self._checktags()
@@ -184,7 +184,7 @@ class MySQLDatabase(Database):
             values = [cPickle.dumps(n)]
             try:
                 cursor.execute(sql, values)
-            except MySQLdb.DatabaseError, e:
+            except MySQLdb.DatabaseError as e:
                 raise DatabaseException("MySQL: %s" % (e))
             id = cursor.lastrowid
             print "id: %d" % (id)
@@ -202,7 +202,7 @@ class MySQLDatabase(Database):
                 sql = "DELETE FROM %sNODES WHERE ID = %%s" % (self._prefix)
                 cursor.execute(sql, [n.get_id()])
                 
-            except MySQLdb.DatabaseError, e:
+            except MySQLdb.DatabaseError as e:
                 raise DatabaseException("MySQL: %s" % (e))
             self._deletenodetags(n)
 
@@ -239,13 +239,13 @@ class MySQLDatabase(Database):
                 ids.append(row[0])
                 row = cursor.fetchone()
             return ids
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
 
     def _commit(self):
         try:
             self._con.commit()
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "MySQL: Error commiting data to db [%s]" % (e))
@@ -258,7 +258,7 @@ class MySQLDatabase(Database):
             try:
                 ids.append(self._tagidcache[pickled])
                 continue
-            except KeyError, e:
+            except KeyError as e:
                 pass # not in cache
             sql = "SELECT ID FROM %sTAGS WHERE DATA = %%s" % (self._prefix)
             if not isinstance(t, Tag): raise DatabaseException(
@@ -277,7 +277,7 @@ class MySQLDatabase(Database):
                     id = cursor.lastrowid
                     ids.append(id)
                     self._tagidcache[pickled] = id
-            except MySQLdb.DatabaseError, e:
+            except MySQLdb.DatabaseError as e:
                 raise DatabaseException("MySQLdb: %s" % (e))
         return ids
 
@@ -287,7 +287,7 @@ class MySQLDatabase(Database):
             sql = "DELETE FROM %sLOOKUP WHERE NODE = %%s" % (self._prefix)
             cursor.execute(sql, [node.get_id()])
             
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQLdb: %s" % (e))
         
     def _setnodetags(self, node):
@@ -301,7 +301,7 @@ class MySQLDatabase(Database):
             try:
                 cursor = self._get_cur()
                 cursor.execute(sql, params)
-            except MySQLdb.DatabaseError, e:
+            except MySQLdb.DatabaseError as e:
                 raise DatabaseException("MySQLdb: %s" % (e))
 
     def _checktags(self):
@@ -312,7 +312,7 @@ class MySQLDatabase(Database):
                    + "(SELECT TAG FROM %sLOOKUP GROUP BY TAG)") % (self._prefix,
                                                                    self._prefix)
             cursor.execute(sql)
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             raise DatabaseException("MySQL: %s" % (e))
         self._commit()
 
@@ -344,7 +344,7 @@ class MySQLDatabase(Database):
             
             try:
                 self._con.commit()
-            except MySQLdb.DatabaseError, e:
+            except MySQLdb.DatabaseError as e:
                 self._con.rollback()
                 raise e
 
@@ -355,7 +355,7 @@ class MySQLDatabase(Database):
         cursor.execute(sql, values)
         try:
             self._con.commit()
-        except MySQLdb.DatabaseError, e:
+        except MySQLdb.DatabaseError as e:
             self._con.rollback()
             raise DatabaseException(
                 "MySQL: Error saving key [%s]" % (e))
