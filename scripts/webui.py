@@ -38,21 +38,23 @@ TAGS = None
 tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
 <form action="/" method="POST">
-<select name="tag" onchange="this.form.submit()">
+<select multiple name="tag" onchange="this.form.submit()">
 %for tag in tags:
 <option value="{{tag}}">{{tag}}</option>
 %end
 </select>
 </form>
-<p>The open items are as follows:</p>
+<p>Click on username to view the details:</p>
 <table border="1">
 %for node in nodes:
-  <tr>
-  %for item in node:
-    <td>{{item}}</td>
+<tr>
+  %#for item in node:
+  %# <td><a href={{node._id}}><{{item}}</a></td>
+  <td><a href=/node/{{node._id}}>{{node.username}}@{{node.url}}</a></td>
+  <td>{{  ', '.join([t.strip() for t in filter(None, node.tags)]) }}</td>
+  <tr><td></td><td>edit</td></tr>
   %end
   </tr>
-  <tr><td></td><td>edit</td></tr>
 %end
 </table>
 """
@@ -140,6 +142,16 @@ def get_conf_options(args, OSX):
     return xselpath, dbtype
 
 
+@route('/node/:no')
+@validate(no=int)
+def view_node(no):
+    pass
+
+@route('/edit/:no', method='GET')
+@validate(no=int)
+def edit_node(no):
+    pass
+
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
 
@@ -185,16 +197,17 @@ def listnodes():
 
     nodesd = [''] * len(nodes)
     for idx, node in enumerate(nodes):
-        ntags = filter(None, node.tags)
-        nodesd[idx] = ('@'.join((node.username, node.url)), ','.join(ntags))
+        ntags = [t.strip() for t in filter(None, node.tags)]
+        print(node._id)
+        nodesd[idx] = ('@'.join((node.username, node.url)),
+                       ', '.join(ntags))
 
     if not TAGS:
         TAGS = list(set([''.join(node.tags).strip() for node in nodes]))
         TAGS.sort()
         TAGS.insert(0, 'None')
-        TAGS.insert(0, 'None')
         print(len(TAGS))
-    output = template(tmplt, nodes=nodesd, tags=TAGS)
+    output = template(tmplt, nodes=nodes, tags=TAGS)
     return output
 
 debug(True)
