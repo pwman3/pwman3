@@ -46,7 +46,7 @@ class Ferrum(unittest.TestCase):
                                            '../../scripts/pwman3') +
                               ' -k -e Blowfish -d '+OLD_DB_PATH,
                               logfile=logfile)
-        child.expect('[\s|\S]+Please enter your password:', timeout=5)
+        child.expect('[\s|\S]+Please enter your password:', timeout=10)
         self.assertEqual(6, child.sendline('12345'))
 
         rv = child.expect('pwman successfully converted the old database')
