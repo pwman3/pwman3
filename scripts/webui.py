@@ -34,6 +34,8 @@ from pwman.data.tags import TagNew
 
 AUTHENTICATED = False
 TAGS = None
+DB = None
+
 
 tmplt = """
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
@@ -143,14 +145,26 @@ def get_conf_options(args, OSX):
 
 
 @route('/node/:no')
-@validate(no=int)
 def view_node(no):
-    pass
+    global DB
+    node = DB.getnodes([no])
+    tmplt = """
+    <table border="1">
+    <tr><td>Username:</td> <td>{{ node.username }}</td></tr>
+    <tr><td>Password:</td> <td>{{ node.password }}</td></tr>
+    <tr><td>Url:</td> <td>{{node.url}} </td></tr>
+    <tr><td>Notes:</td> <td>{{node.notes}}</td></tr>
+    <tr><td>Tags:</td> <td>{{node.tags}}</td></tr>
+    </table>
+    """
+    output = template(tmplt, node=node[0])
+    return output
+
 
 @route('/edit/:no', method='GET')
-@validate(no=int)
 def edit_node(no):
     pass
+
 
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
@@ -170,15 +184,15 @@ def is_authenticated():
 @route('/', method=['GET', 'POST'])
 def listnodes():
 
-    global AUTHENTICATED, TAGS
+    global AUTHENTICATED, TAGS, DB
 
     _filter = None
     OSX = False
     args = parser_options().parse_args()
     xselpath, dbtype = get_conf_options(args, OSX)
     dbver = 0.4
-    db = pwman.data.factory.create(dbtype, dbver)
-    db.open()
+    DB = pwman.data.factory.create(dbtype, dbver)
+    DB.open()
 
     crypto = CryptoEngine.get()
 
@@ -188,17 +202,16 @@ def listnodes():
     if 'POST' in request.method:
         _filter = request.POST.get('tag')
         if _filter:
-            db._filtertags = [TagNew(_filter.strip())]
+            DB._filtertags = [TagNew(_filter.strip())]
         if _filter == 'None':
-            db._filtertags = []
+            DB._filtertags = []
 
-    nodeids = db.listnodes()
-    nodes = db.getnodes(nodeids)
+    nodeids = DB.listnodes()
+    nodes = DB.getnodes(nodeids)
 
     nodesd = [''] * len(nodes)
     for idx, node in enumerate(nodes):
         ntags = [t.strip() for t in filter(None, node.tags)]
-        print(node._id)
         nodesd[idx] = ('@'.join((node.username, node.url)),
                        ', '.join(ntags))
 
