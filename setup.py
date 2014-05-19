@@ -10,6 +10,7 @@ from setuptools.command.install import install
 import os
 from subprocess import Popen,  PIPE
 
+
 def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
     ver = des.stdout.readlines()
@@ -40,7 +41,6 @@ class PyCryptoInstallCommand(install):
         else:
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
-
 
 
 setup(name=pwman.appname,
