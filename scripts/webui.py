@@ -54,11 +54,22 @@ tmplt = """
   %# <td><a href={{node._id}}><{{item}}</a></td>
   <td><a href=/node/{{node._id}}>{{node.username}}@{{node.url}}</a></td>
   <td>{{  ', '.join([t.strip() for t in filter(None, node.tags)]) }}</td>
-  <tr><td></td><td>edit</td></tr>
+  <td>edit</td>
   %end
   </tr>
 %end
 </table>
+"""
+
+edit_node_tmplt = """
+<form action="/edit/" method="POST">
+Username: <input type="text" name="username"><br>
+Password: <input type="password" name="lastname"><br>
+Repeat Password: <input type="password" name="lastname"><br>
+Notes: <input type="text" name="notes"><br>
+Tags: <input type="text" name="tags"><br>
+ <input type="submit" value="Save edits">
+</form>
 """
 
 login = """
@@ -161,9 +172,15 @@ def view_node(no):
     return output
 
 
-@route('/edit/:no', method='GET')
-def edit_node(no):
+@route('/new', method=['GET', 'POST'])
+def new():
     pass
+
+
+@route('/edit/:no', method=['GET', 'POST'])
+def edit_node(no):
+    output = template(edit_node_tmplt,)
+    return output
 
 
 @route('/auth', method=['GET', 'POST'])
