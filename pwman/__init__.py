@@ -21,6 +21,10 @@
 import os
 import pkg_resources
 import argparse
+from util import config
+import sys
+import re
+import data.factory
 
 appname = "Pwman3"
 try:
@@ -33,6 +37,15 @@ author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "Pwman -a command line password management application."
 keywords = "password management sqlite crypto"
+
+_db_warn = ("pwman3 detected that you are using the old database format"
+            " which is insecure."
+            " pwman3 will try to automatically convert the database now."
+            "\n"
+            "If you choose not to convert the database, pwman3, will quit."
+            "\nYou can check the help (pwman3 -h) or look at the manpage how to convert "
+            " the database manually."
+            )
 
 
 def which(cmd):
@@ -80,3 +93,89 @@ def parser_options():
                         help=("The name of the newly created database after "
                               "converting."))
     return parser
+
+
+def get_conf(args):
+    config_dir = os.path.expanduser("~/.pwman")
+
+    if not os.path.isdir(config_dir):
+        os.mkdir(config_dir)
+
+    if not os.path.exists(args.cfile):
+        config.set_defaults(default_config)
+    else:
+        config.load(args.cfile)
+
+    return config
+
+
+def set_xsel(config, OSX):
+    if not OSX:
+        xselpath = which("xsel")
+        config.set_value("Global", "xsel", xselpath)
+    elif OSX:
+        pbcopypath = which("pbcopy")
+        config.set_value("Global", "xsel", pbcopypath)
+
+
+def set_win_colors(config):
+    if 'win' in sys.platform:
+        try:
+            import colorama
+            colorama.init()
+        except ImportError:
+            config.set_value("Global", "colors", 'no')
+
+
+def set_umask(config):
+    # set umask before creating/opening any files
+    try:
+        umask = config.get_value("Global", "umask")
+        if re.search(r'^\d{4}$', umask):
+            os.umask(int(umask))
+        else:
+            raise ValueError
+    except ValueError:
+        print("Could not determine umask from config!")
+        sys.exit(2)
+
+
+
+def set_db(args):
+    if args.dbase:
+        config.set_value("Database", "filename", args.dbase)
+        config.set_value("Global", "save", "False")
+
+
+def set_algorithm(args, config):
+    if args.algo:
+        config.set_value("Encryption", "algorithm", args.algo)
+        config.set_value("Global", "save", "False")
+
+def get_conf_options(args, OSX):
+
+    config = get_conf(args)
+    xselpath = config.get_value("Global", "xsel")
+    if not xselpath:
+        set_xsel(config, OSX)
+
+    set_win_colors(config)
+    set_db(args)
+    set_umask(config)
+    set_algorithm(args, config)
+    dbtype = config.get_value("Database", "type")
+    if not dbtype:
+        print("Could not read the Database type from the config!")
+        sys.exit(1)
+
+    return xselpath, dbtype
+
+
+def get_db_version(config, dbtype, args):
+    if os.path.exists(config.get_value("Database", "filename")):
+        dbver = data.factory.check_db_version(dbtype)
+        if dbver < 0.4 and not args.dbconvert:
+            print(_db_warn)
+    else:
+        dbver = 0.4
+    return dbver
