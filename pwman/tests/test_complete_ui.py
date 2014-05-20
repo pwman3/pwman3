@@ -30,17 +30,28 @@ _db_warn = ("pwman3 detected that you are using the old database format")
 
 
 class Ferrum(unittest.TestCase):
+    def clean_files(self):
+        lfile = 'convert-test.log'
+        with open(lfile) as l:
+            lines = l.readlines()
+            orig = lines[0].split(':')[-1].strip()
+            backup = lines[1].split()[-1].strip()
+        shutil.copy(backup, orig)
+        # do some cleaning
+        os.remove(lfile)
+        os.remove('test-chg_passwd.log')
+        os.remove(backup)
 
-    def test_db_warning(self):
+    def test_a_db_warning(self):
         "when trying to run with old db, we should see warning"
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
                               ' -d '+OLD_DB_PATH)
         self.assertEqual(0, child.expect(_db_warn, timeout=0.5))
 
-    def test_run_convert(self):
+    def test_b_run_convert(self):
         "invoke pwman with -k option to convert the old data"
-        lfile = 'test.log'
+        lfile = 'convert-test.log'
         logfile = open(lfile, 'w')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
@@ -52,16 +63,20 @@ class Ferrum(unittest.TestCase):
         rv = child.expect('pwman successfully converted the old database')
         self.assertEqual(0, rv)
         # if successfully converted, reset the converted database
-        if not rv:
-            with open(lfile) as l:
-                lines = l.readlines()
-                orig = lines[0].split(':')[-1].strip()
-                backup = lines[1].split()[-1].strip()
-            shutil.copy(backup, orig)
-            # do some cleaning
-            os.remove(lfile)
-            os.remove(backup)
         # todo - add test to run auto_convert
+
+    def test_c_change_pass(self):
+        lfile = 'test-chg_passwd.log'
+        logfile = open(lfile, 'w')
+        child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
+                                           '../../scripts/pwman3') +
+                              ' -e Blowfish -d '+OLD_DB_PATH, logfile=logfile)
+        child.sendline('passwd')
+        child.expect("Please enter your current password:")
+        child.sendline('12345')
+        child.sendline('foobar')
+        child.sendline('foobar')
+        self.clean_files()
 
 def suite():
     loader = unittest.TestLoader()
