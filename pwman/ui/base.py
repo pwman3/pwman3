@@ -48,7 +48,7 @@ def get_pass_conf():
     return numerics, leetify, special_chars
 
 
-class HelpUI(object):
+class HelpUI(object): # pragma: no cover
     """
     this class holds all the UI help functionality.
     in PwmanCliNew. The later inherits from this class
@@ -408,7 +408,7 @@ class BaseCommands(BaseUI, HelpUI):
     def do_passwd(self, args):
         try:
             key = self._db.changepassword()
-            self._db._save(key)
+            self._db.savekey(key)
         except Exception  as e:
             self.error(e)
 
@@ -637,7 +637,7 @@ class BaseCommands(BaseUI, HelpUI):
                                  reader=reader, length=length, leetify=leetify)
 
 
-class Aliases(BaseCommands):
+class Aliases(BaseCommands): # pragma: no cover
     """
     Define all the alias you want here...
     """
