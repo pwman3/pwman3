@@ -31,6 +31,7 @@ from pwman.util.crypto import CryptoEngine
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.tags import TagNew
+from pwman import parser_options, get_conf_options
 
 AUTHENTICATED = False
 TAGS = None
@@ -79,82 +80,6 @@ Password: <input type="password" name="pwd">
 </form>"""
 
 
-def get_conf(args):
-    config_dir = os.path.expanduser("~/.pwman")
-
-    if not os.path.isdir(config_dir):
-        os.mkdir(config_dir)
-
-    if not os.path.exists(args.cfile):
-        config.set_defaults(default_config)
-    else:
-        config.load(args.cfile)
-
-    return config
-
-
-def set_xsel(config, OSX):
-    if not OSX:
-        xselpath = which("xsel")
-        config.set_value("Global", "xsel", xselpath)
-    elif OSX:
-        pbcopypath = which("pbcopy")
-        config.set_value("Global", "xsel", pbcopypath)
-
-
-def set_win_colors(config):
-    if 'win' in sys.platform:
-        try:
-            import colorama
-            colorama.init()
-        except ImportError:
-            config.set_value("Global", "colors", 'no')
-
-
-def set_umask(config):
-    # set umask before creating/opening any files
-    try:
-        umask = config.get_value("Global", "umask")
-        if re.search(r'^\d{4}$', umask):
-            os.umask(int(umask))
-        else:
-            raise ValueError
-    except ValueError:
-        print("Could not determine umask from config!")
-        sys.exit(2)
-
-
-def set_db(args):
-    if args.dbase:
-        config.set_value("Database", "filename", args.dbase)
-        config.set_value("Global", "save", "False")
-
-
-def set_algorithm(args, config):
-    if args.algo:
-        config.set_value("Encryption", "algorithm", args.algo)
-        config.set_value("Global", "save", "False")
-
-
-def get_conf_options(args, OSX):
-
-    config = get_conf(args)
-    xselpath = config.get_value("Global", "xsel")
-    if not xselpath:
-        set_xsel(config, OSX)
-
-    set_win_colors(config)
-    set_db(args)
-    set_umask(config)
-    set_algorithm(args, config)
-    dbtype = config.get_value("Database", "type")
-    if not dbtype:
-        print("Could not read the Database type from the config!")
-        sys.exit(1)
-
-    return xselpath, dbtype
-
-
 @route('/node/:no')
 def view_node(no):
     global DB
@@ -196,7 +121,6 @@ def is_authenticated():
         redirect('/')
     else:
         return login
-
 
 @route('/', method=['GET', 'POST'])
 def listnodes():
