@@ -49,9 +49,7 @@ from Crypto.Cipher import ARC4 as cARC4
 from Crypto.Cipher import CAST as cCAST
 from Crypto.Cipher import DES as cDES
 from Crypto.Cipher import DES3 as cDES3
-
 from Crypto.Random import OSRNG
-
 
 from pwman.util.callback import Callback
 import pwman.util.config as config
@@ -59,6 +57,7 @@ import cPickle
 import time
 import sys
 import ctypes
+import hashlib
 
 
 def zerome(string):
@@ -349,8 +348,8 @@ password again")
         form PyCrypto
         """
         if (algo == "AES"):
-            key = self._padkey(key, [16, 24, 32])
-            cipher = cAES.new(key, cAES.MODE_ECB)
+            key = hashlib.sha256(key)
+            cipher = cAES.new(key.digest(), cAES.MODE_ECB)
         elif (algo == 'ARC2'):
             cipher = cARC2.new(key, cARC2.MODE_ECB)
         elif (algo == 'ARC4'):
