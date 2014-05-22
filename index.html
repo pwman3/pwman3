@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Pwman3 by pwman3</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Pwman3</h1>
+        <h2>Console based password management application</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/pwman3/pwman3/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/pwman3/pwman3/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/pwman3/pwman3" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="pwman3" class="anchor" href="#pwman3"><span class="octicon octicon-link"></span></a>PWMAN3</h1>
+
+<p><a href="https://travis-ci.org/pwman3/pwman3"><img src="https://travis-ci.org/pwman3/pwman3.png?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/r/pwman3/pwman3?branch=master"><img src="https://coveralls.io/repos/pwman3/pwman3/badge.png" alt="Coverage Status"></a></p>
+
+<p>A nice command line password manager, which is smart enough to use different SQL Databases (MySQL, SQLite, PostgreSQL).<br>
+Pwman3 can also copy passwords to the clipboard (on Mac and Linux) without exposing them, so you save
+some typing. 
+Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. </p>
+
+<h2>
+<a name="nice-features-in-pwman3" class="anchor" href="#nice-features-in-pwman3"><span class="octicon octicon-link"></span></a>Nice Features in pwman3:</h2>
+
+<ul>
+<li>copying of passwords to clipboard</li>
+<li>launching specific uri's with default browser</li>
+<li>password generators</li>
+<li>not really a user oriented feature. However, it guarantees the elimination of silly 
+bugs: pwman3 is test driven! </li>
+</ul><h2>
+<a name="a-very-important-note-about-security" class="anchor" href="#a-very-important-note-about-security"><span class="octicon octicon-link"></span></a>A very important note about security</h2>
+
+<p>If you are a concerned about security, please note:
+   PWMAN3 is a very very basic software, which was designed to be used in a safe environment. </p>
+
+<ul>
+<li>If you are afraid that PWMAN3 is to weak for your needs ... and you still want to try it, here
+ are a few recommendations:
+
+<ol>
+<li>Use the AES encryption, it is supposed to be better than Blowfish. </li>
+<li>Don't store your Password Database in the Obvious place, and if your extremely paranoind
+store it completely away from your computer on a separate USB key. </li>
+<li>Use a HARD to crack password to encrypt your database!</li>
+</ol>
+</li>
+<li>If you care, report bugs, and send patches. </li>
+<li>I would realy like you to use PWMAN3, so I could get feedback and more ideas, especially, if you
+know something about security (which is probably more than I know at the moment. </li>
+<li>Be patient, I am working on PWMAN on my free time, and for fun, so don't expect PWMAN3 to 
+ do to more than storing your passwords. </li>
+</ul><h2>
+<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
+
+<p>Pwman3 requires the following debian packages:</p>
+
+<p>python-colorama
+ python-crypto 
+ xsel - to copy password to clipboard on Linux</p>
+
+<p>Pwman only supports Python 2.7. </p>
+
+<p>To install from source:</p>
+
+<pre><code>$ python setup.py install
+</code></pre>
+
+<p>You can also install PWMAN3 using python pip:</p>
+
+<pre><code>$ pip install pwman3
+</code></pre>
+
+<h3>
+<a name="windows-users" class="anchor" href="#windows-users"><span class="octicon octicon-link"></span></a>Windows Users:</h3>
+
+<p>Before installing pwman3 you need to install PyCrypto. To you can install PyCrypto with:</p>
+
+<pre><code>python setup install_pycrypto
+</code></pre>
+
+<p>When done, issue:</p>
+
+<pre><code>python setup install
+</code></pre>
+
+<p>If you are more picky than than than you can compile PyCrypto using the instruction bellow.</p>
+
+<p>After you downloaded the source code of 
+pycrypto and extracted it do the following inisde the source code direcotry:</p>
+
+<pre><code>C:\Temp\pycrypto&gt; python setup.py build -c mingw32 
+C:\Temp\pycrypto&gt; python setup.py bdist_wininst
+</code></pre>
+
+<p>Now you should be able to run pwman3 on Windows.</p>
+
+<p>On Windows 7 64bit: </p>
+
+<p>PyCrypto builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
+The above setup commands won't work in the Windows command prompt. But they do work in 
+the msys command prompt. 
+You also need to edit the following file:</p>
+
+<pre><code>C:\Python27\Lib\distutils\cygwinccompiler.py
+</code></pre>
+
+<p>Before doing anything on this file make sure you create a backup! After that remove all references
+for `<code>-mno-cygwin</code>. </p>
+
+<p>and after all that, if you a security minded person, who is capable of using a command line password:
+Do your self a favor and skip Windows. Try Linux\BSD*Nix OS. </p>
+
+<h2>
+<a name="user-interface" class="anchor" href="#user-interface"><span class="octicon octicon-link"></span></a>User Interface</h2>
+
+<ol>
+<li>When xsel is install on a Linux system, you can copy passwords directly to clipboard with the copy command.</li>
+<li>The command 'open' will open the default browser if URL is specified.</li>
+<li>
+<p>An automatic 'clear screen' function is called after printing an entry in the database. 
+  The screen will be cleared after 5 seconds by default. However, this can be changed by changing the 
+  correct value in <code>~.pwman/config</code>:</p>
+
+<pre><code>  [Global]
+  ...
+  cls_timeout = 10
+</code></pre>
+
+<p>To disable the automatic 'clear screen' functionality set <code>cls_timeout</code> to a negative integer. </p>
+
+<pre><code>  [Global]
+  ...
+  cls_timeout = -1
+</code></pre>
+</li>
+</ol><h2>
+<a name="ikegams-function" class="anchor" href="#ikegams-function"><span class="octicon octicon-link"></span></a>ikegam's function</h2>
+
+<ul>
+<li>
+<p>making a password from the numeric character and the alphabet character ([A-Za-z0-9]).</p>
+
+<p>You can add a parameter for making the password to the config(~/.pwman/config).</p>
+
+<p>For Example:</p>
+
+<pre><code> [Generator]
+ numerics = true
+</code></pre>
+</li>
+<li>
+<p>Passwords can be l33tified similarly using the following.</p>
+
+<pre><code> [Generator]
+ leetify = true
+</code></pre>
+</li>
+<li>
+<p>Passwords can contain one of the following special signs:</p>
+
+<pre><code>specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
+                 "%", "^", "&amp;", "*", "(", ")", ":", ";",
+                 "{", "}", "+","-"]
+</code></pre>
+
+<p>The config file  must have the following option:</p>
+
+<pre><code>[Generator]
+special_signs = true
+</code></pre>
+</li>
+<li>
+<p>Individual password policy can be chosen with:</p>
+
+<pre><code> Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+ pwman&gt; n {'leetify':False, 'numerics':True, 'special_signs':True}
+ Username: username
+ Password length (default 7): 7
+ New password: Q1dab@7
+</code></pre>
+</li>
+<li>
+<p>Copying password to X11 or Mac clip board:</p>
+
+<ul>
+<li>On Mac OSX systems copying utilizes <code>pbcopy</code><br>
+</li>
+<li>
+<p>On X11 Systems  Specify the path to <code>xsel</code> if you already have <code>~/.pwman/config</code> </p>
+
+<pre><code>[Global]
+xsel = yes
+xselpath = /usr/bin/xsel
+</code></pre>
+
+<p>When launching <code>pwman</code> for the first time, it will try and look for 
+<code>xsel</code> and write the configuration properly. </p>
+</li>
+</ul>
+</li>
+</ul><h2>
+<a name="password-leetifying" class="anchor" href="#password-leetifying"><span class="octicon octicon-link"></span></a>Password leetifying</h2>
+
+<p>If you choose to leetify your passwords when generating passwords, 
+e.g. <code>leetify = true</code> in <code>~/.pwman/config</code>, password lengths may exceed the length chosen. 
+This is because certain letters will be replaced with 2 or more characters. 
+That is, if an initial random password was generated as : <code>Murkahm1</code> it will eventually be
+set to: <code>|\/|ur|&lt;ham1</code>. To see to full leet list checkout line 79 in <code>pwman/util/generator.py</code>
+or issue in your terminal: </p>
+
+<pre><code> python -c'from pwman.util import generator; print generator.leetlist'
+</code></pre>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
