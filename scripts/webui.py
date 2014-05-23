@@ -63,10 +63,10 @@ tmplt = """
 """
 
 edit_node_tmplt = """
-<form action="/edit/" method="POST">
-Username: <input type="text" name="username"><br>
-Password: <input type="password" name="lastname"><br>
-Repeat Password: <input type="password" name="lastname"><br>
+<form action="/edit/{{node._id}}" method="POST">
+Username: <input type="text" name="username" value="{{node.username}}"><br>
+Password: <input type="password" name="password" value="{{node.password}}"><br>
+Repeat Password: <input type="password" name="password" value="{{node.password}}"><br>
 Notes: <input type="text" name="notes"><br>
 Tags: <input type="text" name="tags"><br>
  <input type="submit" value="Save edits">
@@ -104,7 +104,9 @@ def new():
 
 @route('/edit/:no', method=['GET', 'POST'])
 def edit_node(no):
-    output = template(edit_node_tmplt,)
+    global DB
+    node = DB.getnodes([no])[0]
+    output = template(edit_node_tmplt, node=node)
     return output
 
 
