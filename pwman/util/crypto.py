@@ -359,33 +359,17 @@ password again")
         elif (algo == 'CAST'):
             cipher = cCAST.new(key, cCAST.MODE_ECB)
         elif (algo == 'DES'):
-            self._padkey(key, [8])
+            if len(key) != 8:
+                raise Exception("DES Encrypted keys must be 8 characters long!")
             cipher = cDES.new(key, cDES.MODE_ECB)
         elif (algo == 'DES3'):
-            key = self._padkey(key, [16, 24])
-            cipher = cDES3.new(key, cDES3.MODE_ECB)
+            key = hashlib.sha224(key)
+            cipher = cDES3.new(key.digest()[:24], cDES3.MODE_ECB)
         elif (algo == 'XOR'):
             raise CryptoUnsupportedException("XOR is currently unsupported")
         else:
             raise CryptoException("Invalid algorithm specified")
         return cipher
-
-    def _padkey(self, key, acceptable_lengths):
-        """
-        pad key with extra string
-        """
-        maxlen = max(acceptable_lengths)
-        keylen = len(key)
-        if (keylen > maxlen):
-            return key[0:maxlen]
-        acceptable_lengths.sort()
-        acceptable_lengths.reverse()
-        newkeylen = None
-        for i in acceptable_lengths:
-            if (i < keylen):
-                break
-            newkeylen = i
-        return key.ljust(newkeylen)
 
     def _preparedata(self, obj, blocksize):
         """
