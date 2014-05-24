@@ -408,7 +408,7 @@ class BaseCommands(BaseUI, HelpUI):
     def do_passwd(self, args):
         try:
             key = self._db.changepassword()
-            self._db._save(key)
+            self._db.savekey(key)
         except Exception, e:
             self.error(e)
 
