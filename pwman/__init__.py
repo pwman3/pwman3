@@ -26,12 +26,12 @@ appname = "Pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.5"
+    version = "0.5.1b"
 
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
-description = "Pwman -a command line password management application."
+description = "Pwman - a command line password management application."
 keywords = "password management sqlite crypto"
 
 
