@@ -18,17 +18,8 @@
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 from __future__ import print_function
-from bottle import route, run, debug, template, request, get, redirect
-import os
-import sys
-import re
-import shutil
-from pwman import default_config, which
-from pwman import parser_options
-from pwman.ui import get_ui_platform
-from pwman.ui.tools import CLICallback
+from bottle import route, run, debug, template, request, redirect
 from pwman.util.crypto import CryptoEngine
-import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
@@ -67,8 +58,8 @@ edit_node_tmplt = """
 Username: <input type="text" name="username" value="{{node.username}}"><br>
 Password: <input type="password" name="password" value="{{node.password}}"><br>
 Repeat Password: <input type="password" name="password" value="{{node.password}}"><br>
-Notes: <input type="text" name="notes"><br>
-Tags: <input type="text" name="tags"><br>
+Notes: <input type="text" name="notes" value="{{node.notes}}"><br>
+Tags: <input type="text" name="tags" value="{{node.tags}}"><br>
  <input type="submit" value="Save edits">
 </form>
 """
@@ -97,15 +88,28 @@ def view_node(no):
     return output
 
 
-@route('/new', method=['GET', 'POST'])
-def new():
-    pass
-
-
+@route('/new/', method=['GET', 'POST'])
 @route('/edit/:no', method=['GET', 'POST'])
-def edit_node(no):
+def edit_node(no=None):
     global DB
-    node = DB.getnodes([no])[0]
+    print("in new")
+    if no:
+        node = DB.getnodes([no])[0]
+    else:
+        print("in new")
+
+        class node(object):
+
+            def __init__(self):
+                self._id = None
+                self.username = ''
+                self.password = ''
+                self.url = ''
+                self.notes = ''
+                self.tags = ''
+
+        node = node()
+
     output = template(edit_node_tmplt, node=node)
     return output
 
@@ -123,6 +127,7 @@ def is_authenticated():
         redirect('/')
     else:
         return login
+
 
 @route('/', method=['GET', 'POST'])
 def listnodes():
