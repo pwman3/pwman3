@@ -88,15 +88,22 @@ def view_node(no):
     return output
 
 
+def submit_node(id, request):
+    # create new\update node based on request.params.items()
+    redirect('/')
+
+
 @route('/new/', method=['GET', 'POST'])
 @route('/edit/:no', method=['GET', 'POST'])
 def edit_node(no=None):
     global DB
-    print("in new")
+
+    if 'POST' in request.method:
+        submit_node(no, request)
+
     if no:
         node = DB.getnodes([no])[0]
     else:
-        print("in new")
 
         class node(object):
 
