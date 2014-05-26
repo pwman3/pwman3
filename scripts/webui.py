@@ -23,6 +23,12 @@ from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
+from pkg_resources import Requirement, resource_filename
+
+
+# TODO: split template info and put it in data file:
+# access them with
+filename = resource_filename("pwman","htmlfiles/index.html")
 
 AUTHENTICATED = False
 TAGS = None
