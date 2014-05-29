@@ -23,12 +23,12 @@ from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
-from pkg_resources import Requirement, resource_filename
+from pkg_resources import resource_filename
 
 
 # TODO: split template info and put it in data file:
 # access them with
-filename = resource_filename("pwman","htmlfiles/index.html")
+filename = resource_filename("pwman", "htmlfiles/index.html")
 
 AUTHENTICATED = False
 TAGS = None
@@ -36,6 +36,7 @@ DB = None
 
 
 tmplt = """
+% rebase('base.tpl')
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
 <form action="/" method="POST">
 <select multiple name="tag" onchange="this.form.submit()">
@@ -181,8 +182,8 @@ def listnodes():
         TAGS.sort()
         TAGS.insert(0, 'None')
         print(len(TAGS))
-    output = template(tmplt, nodes=nodes, tags=TAGS)
-    return output
+    html_nodes = template(tmplt, nodes=nodes, tags=TAGS)
+    return html_nodes
 
 debug(True)
 run(reloader=True)
