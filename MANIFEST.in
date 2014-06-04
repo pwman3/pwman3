@@ -1,4 +1,5 @@
 include ChangeLog
 include documentation/*
 include documentation/man_page/*
+include pwman/ui/templates/*
 include requirements.txt

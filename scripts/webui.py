@@ -181,8 +181,10 @@ def listnodes():
         TAGS = list(set([''.join(node.tags).strip() for node in nodes]))
         TAGS.sort()
         TAGS.insert(0, 'None')
-        print(len(TAGS))
-    html_nodes = template(tmplt, nodes=nodes, tags=TAGS)
+
+    html_nodes = template("main.tpl", nodes=nodes, tags=TAGS,
+                          template_lookup=[resource_filename('pwman',
+                                                             'ui/templates')])
     return html_nodes
 
 debug(True)
