@@ -25,51 +25,12 @@ from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
 from pkg_resources import resource_filename
 
-
-# TODO: split template info and put it in data file:
-# access them with
-filename = resource_filename("pwman", "htmlfiles/index.html")
+templates_path=[resource_filename('pwman', 'ui/templates')]
 
 AUTHENTICATED = False
 TAGS = None
 DB = None
 
-
-tmplt = """
-% rebase('base.tpl')
-%#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
-<form action="/" method="POST">
-<select multiple name="tag" onchange="this.form.submit()">
-%for tag in tags:
-<option value="{{tag}}">{{tag}}</option>
-%end
-</select>
-</form>
-<p>Click on username to view the details:</p>
-<table border="1">
-%for node in nodes:
-<tr>
-  %#for item in node:
-  %# <td><a href={{node._id}}><{{item}}</a></td>
-  <td><a href=/node/{{node._id}}>{{node.username}}@{{node.url}}</a></td>
-  <td>{{  ', '.join([t.strip() for t in filter(None, node.tags)]) }}</td>
-  <td>edit</td>
-  %end
-  </tr>
-%end
-</table>
-"""
-
-edit_node_tmplt = """
-<form action="/edit/{{node._id}}" method="POST">
-Username: <input type="text" name="username" value="{{node.username}}"><br>
-Password: <input type="password" name="password" value="{{node.password}}"><br>
-Repeat Password: <input type="password" name="password" value="{{node.password}}"><br>
-Notes: <input type="text" name="notes" value="{{node.notes}}"><br>
-Tags: <input type="text" name="tags" value="{{node.tags}}"><br>
- <input type="submit" value="Save edits">
-</form>
-"""
 
 login = """
 <p>Please enter your database password: <b>
@@ -124,7 +85,8 @@ def edit_node(no=None):
 
         node = node()
 
-    output = template(edit_node_tmplt, node=node)
+    output = template('edit.tpl', node=node,
+                      template_lookup=templates_path)
     return output
 
 
