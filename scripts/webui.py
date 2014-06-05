@@ -25,34 +25,18 @@ from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
 from pkg_resources import resource_filename
 
-templates_path=[resource_filename('pwman', 'ui/templates')]
+templates_path = [resource_filename('pwman', 'ui/templates')]
 
 AUTHENTICATED = False
 TAGS = None
 DB = None
 
 
-login = """
-<p>Please enter your database password: <b>
-<form action="/auth" method="POST">
-Password: <input type="password" name="pwd">
-</form>"""
-
-
 @route('/node/:no')
 def view_node(no):
     global DB
     node = DB.getnodes([no])
-    tmplt = """
-    <table border="1">
-    <tr><td>Username:</td> <td>{{ node.username }}</td></tr>
-    <tr><td>Password:</td> <td>{{ node.password }}</td></tr>
-    <tr><td>Url:</td> <td>{{node.url}} </td></tr>
-    <tr><td>Notes:</td> <td>{{node.notes}}</td></tr>
-    <tr><td>Tags:</td> <td>{{node.tags}}</td></tr>
-    </table>
-    """
-    output = template(tmplt, node=node[0])
+    output = template("view.tpl", node=node[0], template_lookup=templates_path)
     return output
 
 
@@ -73,7 +57,7 @@ def edit_node(no=None):
         node = DB.getnodes([no])[0]
     else:
 
-        class node(object):
+        class Node(object):
 
             def __init__(self):
                 self._id = None
@@ -83,7 +67,7 @@ def edit_node(no=None):
                 self.notes = ''
                 self.tags = ''
 
-        node = node()
+        node = Node()
 
     output = template('edit.tpl', node=node,
                       template_lookup=templates_path)
@@ -102,7 +86,7 @@ def is_authenticated():
         AUTHENTICATED = True
         redirect('/')
     else:
-        return login
+        return template("login.tpl", template_lookup=templates_path)
 
 
 @route('/', method=['GET', 'POST'])
