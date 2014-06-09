@@ -44,10 +44,18 @@ class Ferrum(unittest.TestCase):
 
     def test_a_db_warning(self):
         "when trying to run with old db, we should see warning"
+        lfile = 'convert-test.log'
+        logfile = open(lfile, 'w')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -d '+OLD_DB_PATH)
-        self.assertEqual(0, child.expect(_db_warn, timeout=0.5))
+                              ' -d '+OLD_DB_PATH, logfile=lfile)
+
+        rv = child.expect(_db_warn, timeout=5)
+        if rv != 0:
+            lfile.seek(0)
+            print lfile.readlines()
+
+        self.assertEqual(0, rv)
 
     def test_b_run_convert(self):
         "invoke pwman with -k option to convert the old data"
