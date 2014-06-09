@@ -48,7 +48,7 @@ class Ferrum(unittest.TestCase):
         logfile = open(lfile, 'w')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -d '+OLD_DB_PATH, logfile=lfile)
+                              ' -d '+OLD_DB_PATH, logfile=logfile)
 
         rv = child.expect(_db_warn, timeout=5)
         if rv != 0:
