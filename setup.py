@@ -9,7 +9,7 @@ import sys
 from setuptools.command.install import install
 import os
 from subprocess import Popen,  PIPE
-
+from build_manpage import build_manpage
 
 def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
@@ -74,6 +74,7 @@ setup(name=pwman.appname,
       ],
       test_suite='pwman.tests.suite',
       cmdclass={
-                'install_pycrypto': PyCryptoInstallCommand},
+                'install_pycrypto': PyCryptoInstallCommand,
+                'build_manpage': build_manpage},
 
       )

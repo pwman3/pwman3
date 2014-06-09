@@ -26,7 +26,7 @@ import sys
 import re
 import data.factory
 
-appname = "Pwman3"
+appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
