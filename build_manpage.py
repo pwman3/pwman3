@@ -60,7 +60,7 @@ class build_manpage(Command):
         ret.append('.SH NAME\n%s\n' % name)
 
         if isinstance(self._parser, argparse.ArgumentParser):
-            self._parser.prog = 'pwman3'
+            self._parser.prog = self.distribution.get_name()
             synopsis = self._parser.format_usage().split(':',1)[1]
         else:
             synopsis = self._parser.get_usage()
