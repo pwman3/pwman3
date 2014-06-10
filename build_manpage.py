@@ -7,20 +7,20 @@
 """
 
 import datetime
-from distutils.command.build import build
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
-import optparse
 import argparse
 
+
 class build_manpage(Command):
+
     """-O bla.1 --parser pwman:parser_options"""
     description = 'Generate man page from setup().'
 
     user_options = [
         ('output=', 'O', 'output file'),
         ('parser=', None, 'module path to optparser (e.g. mymod:func'),
-        ]
+    ]
 
     def initialize_options(self):
         self.output = None
@@ -36,10 +36,10 @@ class build_manpage(Command):
         try:
             mod = __import__(mod_name, fromlist=fromlist)
             self._parser = getattr(mod, func_name)()
-        except ImportError, err:
-            raise
-        self._parser.formatter = ManPageFormatter()
-        self._parser.formatter.set_parser(self._parser)
+        except ImportError as err:
+            raise err
+
+        self._parser.formatter_class = ManPageFormatter
         self.announce('Writing man page %s' % self.output)
         self._today = datetime.date.today()
 
@@ -61,21 +61,24 @@ class build_manpage(Command):
 
         if isinstance(self._parser, argparse.ArgumentParser):
             self._parser.prog = self.distribution.get_name()
-            synopsis = self._parser.format_usage().split(':',1)[1]
+            synopsis = self._parser.format_usage().split(':', 1)[1]
         else:
             synopsis = self._parser.get_usage()
         if synopsis:
             synopsis = synopsis.replace('%s ' % appname, '')
-            ret.append('.SH SYNOPSIS\n.B %s\n%s\n' % (self._markup(appname),
-                                                      synopsis))
+            ret.append('.SH SYNOPSIS\n \\fB%s\\fR %s\n' % (self._markup(appname),
+                                                           synopsis))
         long_desc = self.distribution.get_long_description()
         if long_desc:
+            long_desc = long_desc.replace('\n', '\n.br\n')
             ret.append('.SH DESCRIPTION\n%s\n' % self._markup(long_desc))
         return ''.join(ret)
 
     def _write_options(self):
         ret = ['.SH OPTIONS\n']
-        ret.append(self._parser.format_option_help())
+        self._parser.formatter_class = ManPageFormatter
+        ret.extend(self._parser.format_help().split('\n', 4)[4:])
+
         return ''.join(ret)
 
     def _write_footer(self):
@@ -88,7 +91,7 @@ class build_manpage(Command):
         homepage = self.distribution.get_url()
         ret.append(('.SH DISTRIBUTION\nThe latest version of %s may '
                     'be downloaded from\n'
-                    '.UR %s\n.UE\n'
+                    '%s\n\n'
                     % (self._markup(appname), self._markup(homepage),)))
         return ''.join(ret)
 
@@ -102,24 +105,8 @@ class build_manpage(Command):
         stream.close()
 
 
-class ManPageArgFormatter(argparse.HelpFormatter):
-    pass
-
-class ManPageFormatter(optparse.HelpFormatter):
-
-    def __init__(self,
-                 indent_increment=2,
-                 max_help_position=24,
-                 width=None,
-                 short_first=1):
-
-        # should be replace with super ?
-        optparse.HelpFormatter.__init__(self, indent_increment,
-                                        max_help_position, width, short_first)
-
-        # argparse.HelpFormatter(indent_increment, max_help_position, width,)
-        # no such option in argparse?                         short_first=1)
-
+class ManPageFormatter(argparse.HelpFormatter):
+    # TODO: Override the correct methods in this class!
     def _markup(self, txt):
         return txt.replace('-', '\\-')
 
@@ -141,5 +128,4 @@ class ManPageFormatter(optparse.HelpFormatter):
         return ''.join(result)
 
 
-#build.sub_commands.append(('build_manpage', None))
-
+#  build.sub_commands.append(('build_manpage', None))
