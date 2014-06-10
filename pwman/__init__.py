@@ -35,8 +35,13 @@ except pkg_resources.DistributionNotFound:  # pragma: no cover
 website = "http://github.com/pwman3/pwman3"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
-description = "Pwman -a command line password management application."
+description = "a command line password management application."
 keywords = "password management sqlite crypto"
+long_description = ("Pwman3 aims to provide a simple but powerful command line "
+                    "interface for password management.\nIt allows one to store your "
+                    "password in a SQLite database locked by a\nmaster password which "
+                    "can be encrypted with different algorithms (e.g AES, Blowfish, "
+                    "DES3, IDEA, etc.).")
 
 _db_warn = ("pwman3 detected that you are using the old database format"
             " which is insecure."
