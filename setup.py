@@ -8,8 +8,9 @@ import pwman
 import sys
 from setuptools.command.install import install
 import os
-from subprocess import Popen,  PIPE
+from subprocess import Popen, PIPE
 from build_manpage import build_manpage
+
 
 def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
@@ -20,8 +21,8 @@ def describe():
         return pwman.version
 
 
-
 class PyCryptoInstallCommand(install):
+
     """
     A Custom command to download and install pycrypto26
     binary from voidspace. Not optimal, but it should work ...
@@ -32,7 +33,7 @@ class PyCryptoInstallCommand(install):
     def run(self):
         base_path = "http://www.voidspace.org.uk/downloads/pycrypto26"
         if 'win32' in sys.platform:
-            if not 'AMD64' in sys.version:
+            if 'AMD64' not in sys.version:
                 pycrypto = 'pycrypto-2.6.win32-py2.7.exe'
             else:  # 'for AMD64'
                 pycrypto = 'pycrypto-2.6.win-amd64-py2.7.exe'
@@ -46,6 +47,7 @@ class PyCryptoInstallCommand(install):
 setup(name=pwman.appname,
       version=describe(),
       description=pwman.description,
+      long_description=pwman.long_description,
       author=pwman.author,
       author_email=pwman.authoremail,
       url=pwman.website,
@@ -74,7 +76,7 @@ setup(name=pwman.appname,
       ],
       test_suite='pwman.tests.suite',
       cmdclass={
-                'install_pycrypto': PyCryptoInstallCommand,
-                'build_manpage': build_manpage},
+          'install_pycrypto': PyCryptoInstallCommand,
+          'build_manpage': build_manpage},
 
       )
