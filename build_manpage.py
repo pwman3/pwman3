@@ -12,7 +12,7 @@ from distutils.errors import DistutilsOptionError
 import argparse
 
 
-class build_manpage(Command):
+class BuildManPage(Command):
 
     """-O pwman.1 --parser=pwman:parser_options"""
     description = 'Generate man page from setup().'
