@@ -37,12 +37,13 @@ import argparse
 
 class BuildManPage(Command):
 
-    """-O pwman.1 --parser=pwman:parser_options"""
-    description = 'Generate man page from setup().'
+    description = 'Generate man page from an ArgumentParser instance.'
 
     user_options = [
         ('output=', 'O', 'output file'),
-        ('parser=', None, 'module path to optparser (e.g. mymod:func'),
+        ('parser=', None, 'module path to an ArgumentParser instance'
+         '(e.g. mymod:func, where func is a method or function which return'
+         'an arparse.ArgumentParser instance.'),
     ]
 
     def initialize_options(self):
