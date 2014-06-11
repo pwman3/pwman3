@@ -2,8 +2,8 @@
 
 """build_manpage command -- Generate man page from setup()"""
 
-"""python setup.py build_manpage --output=bla.txt
-   --parser=scripts.pwman3:parser_optios
+"""python setup.py build_manpage --output=pwman.1
+   --parser=pwman:parser_optios
 """
 
 import datetime
@@ -14,7 +14,7 @@ import argparse
 
 class build_manpage(Command):
 
-    """-O bla.1 --parser pwman:parser_options"""
+    """-O pwman.1 --parser=pwman:parser_options"""
     description = 'Generate man page from setup().'
 
     user_options = [
@@ -35,7 +35,7 @@ class build_manpage(Command):
         fromlist = mod_name.split('.')
         try:
             mod = __import__(mod_name, fromlist=fromlist)
-            self._parser = getattr(mod, func_name)()
+            self._parser = getattr(mod, func_name)(formatter_class=ManPageFormatter)
         except ImportError as err:
             raise err
 
@@ -76,8 +76,7 @@ class build_manpage(Command):
 
     def _write_options(self):
         ret = ['.SH OPTIONS\n']
-        self._parser.formatter_class = ManPageFormatter
-        ret.extend(self._parser.format_help().split('\n', 4)[4:])
+        ret.extend(self._parser.formatter_class.format_options(self._parser))
 
         return ''.join(ret)
 
@@ -106,26 +105,55 @@ class build_manpage(Command):
 
 
 class ManPageFormatter(argparse.HelpFormatter):
-    # TODO: Override the correct methods in this class!
-    def _markup(self, txt):
-        return txt.replace('-', '\\-')
 
-    def format_usage(self, usage):
-        return self._markup(usage)
+    def _underline(self, string):
+        return "\\fI\\s-1" + string + "\\s0\\fR"
 
-    def format_heading(self, heading):
-        if self.level == 0:
-            return ''
-        return '.TP\n%s\n' % self._markup(heading.upper())
+    def _bold(self, string):
+        if not string.strip().startswith('\\fB'):
+            string = '\\fB' + string
+        if not string.strip().endswith('\\fR'):
+            string = string + '\\fR'
+        return string
 
-    def format_option(self, option):
-        result = []
-        opts = self.option_strings[option]
-        result.append('.TP\n.B %s\n' % self._markup(opts))
-        if option.help:
-            help_text = '%s\n' % self._markup(self.expand_default(option))
-            result.append(help_text)
-        return ''.join(result)
+    @staticmethod
+    def format_options(parser):
+        formatter = parser._get_formatter()
 
+        # positionals, optionals and user-defined groups
+        for action_group in parser._action_groups:
+            formatter.start_section(None)
+            formatter.add_text(None)
+            formatter.add_arguments(action_group._group_actions)
+            formatter.end_section()
+
+        # epilog
+        formatter.add_text(parser.epilog)
+
+        # determine help from format above
+        return formatter.format_help()
+
+    def _format_action_invocation(self, action):
+        if not action.option_strings:
+            metavar, = self._metavar_formatter(action, action.dest)(1)
+            return metavar
+
+        else:
+            parts = []
+
+            # if the Optional doesn't take a value, format is:
+            #    -s, --long
+            if action.nargs == 0:
+                parts.extend([self._bold(action_str) for action_str in action.option_strings])
+
+            # if the Optional takes a value, format is:
+            #    -s ARGS, --long ARGS
+            else:
+                default = self._underline(action.dest.upper())
+                args_string = self._format_args(action, default)
+                for option_string in action.option_strings:
+                    parts.append('%s %s' % (self._bold(option_string), args_string))
+
+            return ', '.join(parts)
 
 #  build.sub_commands.append(('build_manpage', None))

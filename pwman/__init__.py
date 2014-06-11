@@ -76,9 +76,10 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   }
 
 
-def parser_options():
+def parser_options(formatter_class=argparse.HelpFormatter):
     parser = argparse.ArgumentParser(description=('pwman3 - a command line '
-                                                  'password manager.'))
+                                                  'password manager.'),
+                                      formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
