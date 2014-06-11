@@ -1,10 +1,33 @@
 # -*- coding: utf-8 -*-
 
-"""build_manpage command -- Generate man page from setup()"""
+# This file is distributed under the same License of Python
+# Copyright (c) 2014 Oz Nahum Tiram  <nahumoz@gmail.com>
 
-"""python setup.py build_manpage --output=pwman.1
-   --parser=pwman:parser_optios
 """
+build_manpage.py
+
+Add a `build_manpage` command  to your setup.py.
+To use this Command class import the class to your setup.py,
+and add a command to call this class::
+
+    from build_manpage import BuildManPage
+
+    ...
+    ...
+
+    setup(
+    ...
+    ...
+    cmdclass={
+        'build_manpage': BuildManPage,
+    )
+
+You can then use the following setup command to produce a man page::
+
+    $ python setup.py build_manpage --output=prog.1 --parser=yourmodule:argparser
+
+"""
+
 
 import datetime
 from distutils.core import Command
