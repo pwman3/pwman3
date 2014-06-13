@@ -33,6 +33,7 @@ import datetime
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
 import argparse
+import re as _re
 
 
 class BuildManPage(Command):
@@ -71,36 +72,31 @@ class BuildManPage(Command):
         return txt.replace('-', '\\-')
 
     def _write_header(self):
-        
+
         appname = self.distribution.get_name()
         ret = []
-        
-        ret.append(self._parser.formatter_class._mk_title(self._parser._get_formatter(), 
+
+        ret.append(self._parser.formatter_class._mk_title(self._parser._get_formatter(),
                                                           appname))
         description = self.distribution.get_description()
-        
+
         if description:
             name = self._markup('%s - %s' % (self._markup(appname),
                                              description.splitlines()[0]))
         else:
             name = self._markup(appname)
         ret.append('.SH NAME\n%s\n' % name)
-        
 
         self._parser._prog = appname
-        ret.append(self._parser.formatter_class._mk_synopsis(self._parser._get_formatter(), 
-                                                        self._parser))
-                                                                                                         
-        ret.append(self._parser.formatter_class._mk_description(self._parser._get_formatter(), 
+        ret.append(self._parser.formatter_class._mk_synopsis(self._parser._get_formatter(),
+                                                             self._parser))
+
+        ret.append(self._parser.formatter_class._mk_description(self._parser._get_formatter(),
                                                                 self.distribution))
-        
         return ''.join(ret)
 
     def _write_options(self):
-        ret = ['.SH OPTIONS\n']
-        ret.extend(self._parser.formatter_class.format_options(self._parser))
-
-        return ''.join(ret)
+        return self._parser.formatter_class.format_options(self._parser)
 
     def _write_footer(self):
         ret = []
@@ -127,23 +123,23 @@ class BuildManPage(Command):
 
 
 class ManPageFormatter(argparse.HelpFormatter):
-    
+
     def __init__(self,
                  prog,
                  indent_increment=2,
                  max_help_position=24,
                  width=None,
                  section=1):
-        
+
         super(ManPageFormatter, self).__init__(prog)
-        
+
         self._prog = prog
         self._section = 1
         self._today = datetime.date.today().strftime('%Y\\-%m\\-%d')
-    
+
     def _markup(self, txt):
         return txt.replace('-', '\\-')
-        
+
     def _underline(self, string):
         return "\\fI\\s-1" + string + "\\s0\\fR"
 
@@ -153,37 +149,37 @@ class ManPageFormatter(argparse.HelpFormatter):
         if not string.strip().endswith('\\fR'):
             string = string + '\\fR'
         return string
-    
+
     def _mk_synopsis(self, parser):
-        self.add_usage(parser.usage, parser._actions, 
+        self.add_usage(parser.usage, parser._actions,
                        parser._mutually_exclusive_groups, prefix='')
         # TODO: Override _fromat_usage, work in progress
-        usage = self._format_usage(parser._prog, parser._actions, 
+        usage = self._format_usage(parser._prog, parser._actions,
                                    parser._mutually_exclusive_groups, '')
-        
+
         usage = usage.replace('%s ' % parser._prog, '')
         usage = '.SH SYNOPSIS\n \\fB%s\\fR %s\n' % (self._markup(parser._prog),
                                                        usage)
         return usage
-        
+
     def _mk_title(self, prog):
-        
-        return '.TH {0} {1} {2}\n'.format(prog, self._section, 
+
+        return '.TH {0} {1} {2}\n'.format(prog, self._section,
                                           self._today)
-    
+
     def _mk_description(self, distribution):
-        
+
         long_desc = distribution.get_long_description()
-        
+
         if long_desc:
             long_desc = long_desc.replace('\n', '\n.br\n')
             return '.SH DESCRIPTION\n%s\n' % self._markup(long_desc)
         else:
             return ''
-    
+
     @staticmethod
     def format_options(parser):
-        
+
         formatter = parser._get_formatter()
 
         # positionals, optionals and user-defined groups
@@ -197,7 +193,7 @@ class ManPageFormatter(argparse.HelpFormatter):
         formatter.add_text(parser.epilog)
 
         # determine help from format above
-        return formatter.format_help()
+        return '.SH OPTIONS\n' + formatter.format_help()
 
     def _format_action_invocation(self, action):
         if not action.option_strings:
@@ -221,9 +217,9 @@ class ManPageFormatter(argparse.HelpFormatter):
                     parts.append('%s %s' % (self._bold(option_string), args_string))
 
             return ', '.join(parts)
-    
+
     def _format_usage(self, prog, actions, groups, prefix):
-        
+
         # if usage is specified, use that
         # if usage is not None:
         #    usage = usage % dict(prog=self._prog)
