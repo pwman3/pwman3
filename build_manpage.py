@@ -26,15 +26,27 @@ You can then use the following setup command to produce a man page::
 
     $ python setup.py build_manpage --output=prog.1 --parser=yourmodule:argparser
 
+Alternatively, set the variable AUTO_BUILD to True, and just invoke::
+
+    $ python setup.py build
+
+If automatically want to build the man page every time you invoke your build,
+add to your ```setup.cfg``` the following::
+
+    [build_manpage]
+    output = <appname>.1
+    parser = <path_to_your_parser>
 """
 
 
 import datetime
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
+from distutils.command.build import build
 import argparse
 import re as _re
 
+AUTO_BUILD = False
 
 class BuildManPage(Command):
 
@@ -80,13 +92,8 @@ class BuildManPage(Command):
                                                           appname))
         description = self.distribution.get_description()
 
-        if description:
-            name = self._markup('%s - %s' % (self._markup(appname),
-                                             description.splitlines()[0]))
-        else:
-            name = self._markup(appname)
-        ret.append('.SH NAME\n%s\n' % name)
-
+        ret.append(self._parser.formatter_class._mk_name(self._parser._get_formatter(),
+                                                             self.distribution))
         self._parser._prog = appname
         ret.append(self._parser.formatter_class._mk_synopsis(self._parser._get_formatter(),
                                                              self._parser))
@@ -99,18 +106,23 @@ class BuildManPage(Command):
         return self._parser.formatter_class.format_options(self._parser)
 
     def _write_footer(self):
-        ret = []
+        """
+        Writing the footer allows one to add a lot of extra information.
+        Sections and and their content can be specified in the dictionary
+        sections which is passed to the formater method
+        """
         appname = self.distribution.get_name()
-        author = '%s <%s>' % (self.distribution.get_author(),
-                              self.distribution.get_author_email())
-        ret.append(('.SH AUTHORS\n.B %s\nwas written by %s.\n'
-                    % (self._markup(appname), self._markup(author))))
         homepage = self.distribution.get_url()
-        ret.append(('.SH DISTRIBUTION\nThe latest version of %s may '
-                    'be downloaded from\n'
-                    '%s\n\n'
-                    % (self._markup(appname), self._markup(homepage),)))
-        return ''.join(ret)
+        sections = {'authors': ("pwman3 was originally written by Ivan Kelly "
+                                "<ivan@ivankelly.net>. pwman3 is now maintained "
+                                "by Oz Nahum <nahumoz@gmail.com>."),
+                    'distribution': ("The latest version of {} may be "
+                                     "downloaded from {}".format(appname,
+                                                                 homepage))
+                    }
+
+        return self._parser.formatter_class._mk_footer(self._parser._get_formatter(),
+                                                       sections)
 
     def run(self):
         manpage = []
@@ -129,7 +141,9 @@ class ManPageFormatter(argparse.HelpFormatter):
                  indent_increment=2,
                  max_help_position=24,
                  width=None,
-                 section=1):
+                 section=1,
+                 authors=None,
+                 distribution=None):
 
         super(ManPageFormatter, self).__init__(prog)
 
@@ -153,8 +167,7 @@ class ManPageFormatter(argparse.HelpFormatter):
     def _mk_synopsis(self, parser):
         self.add_usage(parser.usage, parser._actions,
                        parser._mutually_exclusive_groups, prefix='')
-        # TODO: Override _fromat_usage, work in progress
-        usage = self._format_usage(parser._prog, parser._actions,
+        usage = self._format_usage(None, parser._actions,
                                    parser._mutually_exclusive_groups, '')
 
         usage = usage.replace('%s ' % parser._prog, '')
@@ -167,6 +180,14 @@ class ManPageFormatter(argparse.HelpFormatter):
         return '.TH {0} {1} {2}\n'.format(prog, self._section,
                                           self._today)
 
+    def _mk_name(self, distribution):
+        """
+        this method is in consitent with others ... it relies on
+        distribution
+        """
+        return '.SH NAME\n%s \\- %s\n' % (distribution.get_name(),
+                                          distribution.get_description())
+
     def _mk_description(self, distribution):
 
         long_desc = distribution.get_long_description()
@@ -176,6 +197,14 @@ class ManPageFormatter(argparse.HelpFormatter):
             return '.SH DESCRIPTION\n%s\n' % self._markup(long_desc)
         else:
             return ''
+
+    def _mk_footer(self, sections):
+        footer = []
+        for section, value in sections.iteritems():
+            part = ".SH {}\n {}".format(section.upper(), value)
+            footer.append(part)
+
+        return '\n'.join(footer)
 
     @staticmethod
     def format_options(parser):
@@ -218,95 +247,5 @@ class ManPageFormatter(argparse.HelpFormatter):
 
             return ', '.join(parts)
 
-    def _format_usage(self, prog, actions, groups, prefix):
-
-        # if usage is specified, use that
-        # if usage is not None:
-        #    usage = usage % dict(prog=self._prog)
-
-        # if no optionals or positionals are available, usage is just prog
-        #elif usage is None and not actions:
-        #    usage = '%(prog)s' % dict(prog=self._prog)
-
-        # if optionals and positionals are available, calculate usage
-        #elif usage is None:
-        if True:
-            prog = '%(prog)s' % dict(prog=prog)
-
-            # split optionals from positionals
-            optionals = []
-            positionals = []
-            for action in actions:
-                if action.option_strings:
-                    optionals.append(action)
-                else:
-                    positionals.append(action)
-
-            # build full usage string
-            format = self._format_actions_usage
-            action_usage = format(optionals + positionals, groups)
-            usage = ' '.join([s for s in [prog, action_usage] if s])
-
-            # wrap the usage parts if it's too long
-            text_width = self._width - self._current_indent
-            if len(prefix) + len(usage) > text_width:
-
-                # break usage into wrappable parts
-                part_regexp = r'\(.*?\)+|\[.*?\]+|\S+'
-                opt_usage = format(optionals, groups)
-                pos_usage = format(positionals, groups)
-                opt_parts = _re.findall(part_regexp, opt_usage)
-                pos_parts = _re.findall(part_regexp, pos_usage)
-                assert ' '.join(opt_parts) == opt_usage
-                assert ' '.join(pos_parts) == pos_usage
-
-                # helper for wrapping lines
-                def get_lines(parts, indent, prefix=None):
-                    lines = []
-                    line = []
-                    if prefix is not None:
-                        line_len = len(prefix) - 1
-                    else:
-                        line_len = len(indent) - 1
-                    for part in parts:
-                        if line_len + 1 + len(part) > text_width:
-                            lines.append(indent + ' '.join(line))
-                            line = []
-                            line_len = len(indent) - 1
-                        line.append(part)
-                        line_len += len(part) + 1
-                    if line:
-                        lines.append(indent + ' '.join(line))
-                    if prefix is not None:
-                        lines[0] = lines[0][len(indent):]
-                    return lines
-
-                # if prog is short, follow it with optionals or positionals
-                if len(prefix) + len(prog) <= 0.75 * text_width:
-                    indent = ' ' * (len(prefix) + len(prog) + 1)
-                    if opt_parts:
-                        lines = get_lines([prog] + opt_parts, indent, prefix)
-                        lines.extend(get_lines(pos_parts, indent))
-                    elif pos_parts:
-                        lines = get_lines([prog] + pos_parts, indent, prefix)
-                    else:
-                        lines = [prog]
-
-                # if prog is long, put it on its own line
-                else:
-                    indent = ' ' * len(prefix)
-                    parts = opt_parts + pos_parts
-                    lines = get_lines(parts, indent)
-                    if len(lines) > 1:
-                        lines = []
-                        lines.extend(get_lines(opt_parts, indent))
-                        lines.extend(get_lines(pos_parts, indent))
-                    lines = [prog] + lines
-
-                # join lines into usage
-                usage = '\n'.join(lines)
-
-        # prefix with 'usage:'
-        return '%s%s\n\n' % (prefix, usage)
-
-#  build.sub_commands.append(('build_manpage', None))
+if AUTO_BUILD:
+    build.sub_commands.append(('build_manpage', None))
