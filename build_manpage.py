@@ -76,7 +76,6 @@ class BuildManPage(Command):
         except ImportError as err:
             raise err
 
-        self._parser.formatter_class = ManPageFormatter
         self.announce('Writing man page %s' % self.output)
         self._today = datetime.date.today()
 
@@ -92,8 +91,8 @@ class BuildManPage(Command):
                                                           appname))
         description = self.distribution.get_description()
 
-        ret.append(self._parser.formatter_class._mk_name(self._parser._get_formatter(),
-                                                             self.distribution))
+        ret.append(self._parser.formatter_class._make_name(self._parser._get_formatter(),
+                                                             self._parser))
         self._parser._prog = appname
         ret.append(self._parser.formatter_class._mk_synopsis(self._parser._get_formatter(),
                                                              self._parser))
@@ -125,6 +124,7 @@ class BuildManPage(Command):
                                                        sections)
 
     def run(self):
+
         manpage = []
         manpage.append(self._write_header())
         manpage.append(self._write_options())
@@ -135,6 +135,20 @@ class BuildManPage(Command):
 
 
 class ManPageFormatter(argparse.HelpFormatter):
+    """
+    Formatter class to create man pages.
+    Ideally, this class should rely only on the parser, and not distutils.
+    The following shows a scenario for usage::
+
+        from pwman import parser_options
+        from build_manpage import ManPageFormatter
+
+        p = parser_options(ManPageFormatter)
+        p.format_help()
+
+    The last line would print all the options and help infomation wrapped with
+    man page macros where needed.
+    """
 
     def __init__(self,
                  prog,
@@ -142,6 +156,8 @@ class ManPageFormatter(argparse.HelpFormatter):
                  max_help_position=24,
                  width=None,
                  section=1,
+                 desc = None,
+                 long_desc = None,
                  authors=None,
                  distribution=None):
 
@@ -180,10 +196,16 @@ class ManPageFormatter(argparse.HelpFormatter):
         return '.TH {0} {1} {2}\n'.format(prog, self._section,
                                           self._today)
 
-    def _mk_name(self, distribution):
+    def _make_name(self, parser):
         """
         this method is in consitent with others ... it relies on
         distribution
+        """
+        return '.SH NAME\n%s \\- %s\n' % (parser.prog,
+                                          parser.description)
+    def _mk_name(self, distribution):
+        """
+        obsolete, replaced by _make_name
         """
         return '.SH NAME\n%s \\- %s\n' % (distribution.get_name(),
                                           distribution.get_description())
@@ -246,6 +268,23 @@ class ManPageFormatter(argparse.HelpFormatter):
                     parts.append('%s %s' % (self._bold(option_string), args_string))
 
             return ', '.join(parts)
+
+
+class ManPageCreator(object):
+    """
+    This class takes a little different approach. Instead of relying on
+    information from ArgumentParser, it relies on information retrieved
+    from distutils.
+    This class makes it easy for package maintainer to create man pages in cases,
+    that there is no ArgumentParser.
+    """
+    pass
+
+    def _mk_name(self, distribution):
+        """
+        """
+        return '.SH NAME\n%s \\- %s\n' % (distribution.get_name(),
+                                          distribution.get_description())
 
 if AUTO_BUILD:
     build.sub_commands.append(('build_manpage', None))
