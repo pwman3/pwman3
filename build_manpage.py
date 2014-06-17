@@ -73,6 +73,7 @@ class BuildManPage(Command):
         try:
             mod = __import__(mod_name, fromlist=fromlist)
             self._parser = getattr(mod, func_name)(formatter_class=ManPageFormatter)
+
         except ImportError as err:
             raise err
 
@@ -87,18 +88,18 @@ class BuildManPage(Command):
         appname = self.distribution.get_name()
         ret = []
 
-        ret.append(self._parser.formatter_class._mk_title(self._parser._get_formatter(),
-                                                          appname))
+        formater = self._parser._get_formatter()
+        ret.append(self._parser.formatter_class._mk_title(formater, appname))
         description = self.distribution.get_description()
 
-        ret.append(self._parser.formatter_class._make_name(self._parser._get_formatter(),
-                                                             self._parser))
+        ret.append(self._parser.formatter_class._make_name(formater,
+                                                           self._parser))
         self._parser._prog = appname
-        ret.append(self._parser.formatter_class._mk_synopsis(self._parser._get_formatter(),
+        ret.append(self._parser.formatter_class._mk_synopsis(formater,
                                                              self._parser))
+        formater.long_desc = self.distribution.get_description()
+        ret.append(self._parser.formatter_class._mk_description(formater))
 
-        ret.append(self._parser.formatter_class._mk_description(self._parser._get_formatter(),
-                                                                self.distribution))
         return ''.join(ret)
 
     def _write_options(self):
@@ -113,7 +114,7 @@ class BuildManPage(Command):
         appname = self.distribution.get_name()
         homepage = self.distribution.get_url()
         sections = {'authors': ("pwman3 was originally written by Ivan Kelly "
-                                "<ivan@ivankelly.net>. pwman3 is now maintained "
+                                "<ivan@ivankelly.net>.\n pwman3 is now maintained "
                                 "by Oz Nahum <nahumoz@gmail.com>."),
                     'distribution': ("The latest version of {} may be "
                                      "downloaded from {}".format(appname,
@@ -156,8 +157,8 @@ class ManPageFormatter(argparse.HelpFormatter):
                  max_help_position=24,
                  width=None,
                  section=1,
-                 desc = None,
-                 long_desc = None,
+                 desc=None,
+                 long_desc=None,
                  authors=None,
                  distribution=None):
 
@@ -166,6 +167,9 @@ class ManPageFormatter(argparse.HelpFormatter):
         self._prog = prog
         self._section = 1
         self._today = datetime.date.today().strftime('%Y\\-%m\\-%d')
+
+    def _get_formatter(self, **kwargs):
+        return self.formatter_class(prog=self.prog, **kwargs)
 
     def _markup(self, txt):
         return txt.replace('-', '\\-')
@@ -192,7 +196,6 @@ class ManPageFormatter(argparse.HelpFormatter):
         return usage
 
     def _mk_title(self, prog):
-
         return '.TH {0} {1} {2}\n'.format(prog, self._section,
                                           self._today)
 
@@ -203,19 +206,10 @@ class ManPageFormatter(argparse.HelpFormatter):
         """
         return '.SH NAME\n%s \\- %s\n' % (parser.prog,
                                           parser.description)
-    def _mk_name(self, distribution):
-        """
-        obsolete, replaced by _make_name
-        """
-        return '.SH NAME\n%s \\- %s\n' % (distribution.get_name(),
-                                          distribution.get_description())
 
-    def _mk_description(self, distribution):
-
-        long_desc = distribution.get_long_description()
-
-        if long_desc:
-            long_desc = long_desc.replace('\n', '\n.br\n')
+    def _mk_description(self):
+        if self.long_desc:
+            long_desc = self.long_desc.replace('\n', '\n.br\n')
             return '.SH DESCRIPTION\n%s\n' % self._markup(long_desc)
         else:
             return ''
