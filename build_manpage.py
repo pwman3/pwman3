@@ -80,39 +80,13 @@ class BuildManPage(Command):
         self.announce('Writing man page %s' % self.output)
         self._today = datetime.date.today()
 
-    def _markup(self, txt):
-        return txt.replace('-', '\\-')
+    def run(self):
 
-    def _write_header(self):
-
-        appname = self.distribution.get_name()
-        ret = []
-
-        formater = self._parser._get_formatter()
-        ret.append(self._parser.formatter_class._mk_title(formater, appname))
-        description = self.distribution.get_description()
-
-        ret.append(self._parser.formatter_class._make_name(formater,
-                                                           self._parser))
+        dist = self.distribution
+        homepage = dist.get_url()
+        appname = self._parser.prog
         self._parser._prog = appname
-        ret.append(self._parser.formatter_class._mk_synopsis(formater,
-                                                             self._parser))
-        formater.long_desc = self.distribution.get_description()
-        ret.append(self._parser.formatter_class._mk_description(formater))
 
-        return ''.join(ret)
-
-    def _write_options(self):
-        return self._parser.formatter_class.format_options(self._parser)
-
-    def _write_footer(self):
-        """
-        Writing the footer allows one to add a lot of extra information.
-        Sections and and their content can be specified in the dictionary
-        sections which is passed to the formater method
-        """
-        appname = self.distribution.get_name()
-        homepage = self.distribution.get_url()
         sections = {'authors': ("pwman3 was originally written by Ivan Kelly "
                                 "<ivan@ivankelly.net>.\n pwman3 is now maintained "
                                 "by Oz Nahum <nahumoz@gmail.com>."),
@@ -121,18 +95,15 @@ class BuildManPage(Command):
                                                                  homepage))
                     }
 
-        return self._parser.formatter_class._mk_footer(self._parser._get_formatter(),
-                                                       sections)
+        dist = self.distribution
+        mpf = ManPageFormatter(appname,
+                               desc=dist.get_description(),
+                               long_desc=dist.get_long_description(),
+                               ext_sections=sections)
+        m = mpf.format_man_page(self._parser)
 
-    def run(self):
-
-        manpage = []
-        manpage.append(self._write_header())
-        manpage.append(self._write_options())
-        manpage.append(self._write_footer())
-        stream = open(self.output, 'w')
-        stream.write(''.join(manpage))
-        stream.close()
+        with open(self.output, 'w') as f:
+            f.write(m)
 
 
 class ManPageFormatter(argparse.HelpFormatter):
@@ -159,14 +130,18 @@ class ManPageFormatter(argparse.HelpFormatter):
                  section=1,
                  desc=None,
                  long_desc=None,
+                 ext_sections=None,
                  authors=None,
-                 distribution=None):
+                 ):
 
         super(ManPageFormatter, self).__init__(prog)
 
         self._prog = prog
         self._section = 1
         self._today = datetime.date.today().strftime('%Y\\-%m\\-%d')
+        self._desc = desc
+        self._long_desc = long_desc
+        self._ext_sections = ext_sections
 
     def _get_formatter(self, **kwargs):
         return self.formatter_class(prog=self.prog, **kwargs)
@@ -208,19 +183,32 @@ class ManPageFormatter(argparse.HelpFormatter):
                                           parser.description)
 
     def _mk_description(self):
-        if self.long_desc:
-            long_desc = self.long_desc.replace('\n', '\n.br\n')
+        if self._long_desc:
+            long_desc = self._long_desc.replace('\n', '\n.br\n')
             return '.SH DESCRIPTION\n%s\n' % self._markup(long_desc)
         else:
             return ''
 
     def _mk_footer(self, sections):
+        if not hasattr(sections, '__iter__'):
+            return ''
+
         footer = []
         for section, value in sections.iteritems():
             part = ".SH {}\n {}".format(section.upper(), value)
             footer.append(part)
 
         return '\n'.join(footer)
+
+    def format_man_page(self, parser):
+        page = []
+        page.append(self._mk_title(self._prog))
+        page.append(self._mk_synopsis(parser))
+        page.append(self._mk_description())
+        page.append(self.format_options(parser))
+        page.append(self._mk_footer(self._ext_sections))
+
+        return ''.join(page)
 
     @staticmethod
     def format_options(parser):
