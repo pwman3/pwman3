@@ -46,7 +46,7 @@ from distutils.command.build import build
 import argparse
 import re as _re
 
-AUTO_BUILD = False
+AUTO_BUILD = True
 
 class BuildManPage(Command):
 
@@ -85,7 +85,6 @@ class BuildManPage(Command):
         dist = self.distribution
         homepage = dist.get_url()
         appname = self._parser.prog
-        self._parser._prog = appname
 
         sections = {'authors': ("pwman3 was originally written by Ivan Kelly "
                                 "<ivan@ivankelly.net>.\n pwman3 is now maintained "
@@ -100,6 +99,7 @@ class BuildManPage(Command):
                                desc=dist.get_description(),
                                long_desc=dist.get_long_description(),
                                ext_sections=sections)
+
         m = mpf.format_man_page(self._parser)
 
         with open(self.output, 'w') as f:
@@ -109,14 +109,25 @@ class BuildManPage(Command):
 class ManPageFormatter(argparse.HelpFormatter):
     """
     Formatter class to create man pages.
-    Ideally, this class should rely only on the parser, and not distutils.
+    This class relies only on the parser, and not distutils.
     The following shows a scenario for usage::
 
         from pwman import parser_options
         from build_manpage import ManPageFormatter
 
-        p = parser_options(ManPageFormatter)
-        p.format_help()
+        # example usage ...
+
+        dist = distribution
+        mpf = ManPageFormatter(appname,
+                               desc=dist.get_description(),
+                               long_desc=dist.get_long_description(),
+                               ext_sections=sections)
+
+        # parser is an ArgumentParser instance
+        m = mpf.format_man_page(parsr)
+
+        with open(self.output, 'w') as f:
+            f.write(m)
 
     The last line would print all the options and help infomation wrapped with
     man page macros where needed.
@@ -165,9 +176,9 @@ class ManPageFormatter(argparse.HelpFormatter):
         usage = self._format_usage(None, parser._actions,
                                    parser._mutually_exclusive_groups, '')
 
-        usage = usage.replace('%s ' % parser._prog, '')
-        usage = '.SH SYNOPSIS\n \\fB%s\\fR %s\n' % (self._markup(parser._prog),
-                                                       usage)
+        usage = usage.replace('%s ' % self._prog, '')
+        usage = '.SH SYNOPSIS\n \\fB%s\\fR %s\n' % (self._markup(self._prog),
+                                                    usage)
         return usage
 
     def _mk_title(self, prog):
@@ -205,13 +216,12 @@ class ManPageFormatter(argparse.HelpFormatter):
         page.append(self._mk_title(self._prog))
         page.append(self._mk_synopsis(parser))
         page.append(self._mk_description())
-        page.append(self.format_options(parser))
+        page.append(self._mk_options(parser))
         page.append(self._mk_footer(self._ext_sections))
 
         return ''.join(page)
 
-    @staticmethod
-    def format_options(parser):
+    def _mk_options(self, parser):
 
         formatter = parser._get_formatter()
 
