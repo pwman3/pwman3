@@ -75,6 +75,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python :: 2.7'
       ],
       test_suite='pwman.tests.suite',
+      tests_require=['pexpect'],
       cmdclass={
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage,
