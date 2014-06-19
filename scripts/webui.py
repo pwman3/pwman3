@@ -32,7 +32,17 @@ TAGS = None
 DB = None
 
 
+def require_auth(fn):
+    def check_auth(**kwargs):
+        if AUTHENTICATED:
+            return fn(**kwargs)
+        else:
+            redirect("/auth")
+    return check_auth
+
+
 @route('/node/:no')
+@require_auth
 def view_node(no):
     global DB
     node = DB.getnodes([no])
@@ -47,6 +57,7 @@ def submit_node(id, request):
 
 @route('/new/', method=['GET', 'POST'])
 @route('/edit/:no', method=['GET', 'POST'])
+@require_auth
 def edit_node(no=None):
     global DB
 
@@ -76,7 +87,6 @@ def edit_node(no=None):
 
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
-
     global AUTHENTICATED
     crypto = CryptoEngine.get()
 
@@ -90,22 +100,12 @@ def is_authenticated():
 
 
 @route('/', method=['GET', 'POST'])
-def listnodes():
+@require_auth
+def listnodes(apply=['require_login']):
 
     global AUTHENTICATED, TAGS, DB
 
     _filter = None
-    OSX = False
-    args = parser_options().parse_args()
-    xselpath, dbtype = get_conf_options(args, OSX)
-    dbver = 0.4
-    DB = pwman.data.factory.create(dbtype, dbver)
-    DB.open()
-
-    crypto = CryptoEngine.get()
-
-    if not AUTHENTICATED:
-        redirect('/auth')
 
     if 'POST' in request.method:
         _filter = request.POST.get('tag')
@@ -133,5 +133,16 @@ def listnodes():
                                                              'ui/templates')])
     return html_nodes
 
-debug(True)
-run(reloader=True)
+
+if __name__ == '__main__':
+    OSX = False
+    args = parser_options().parse_args()
+    xselpath, dbtype = get_conf_options(args, OSX)
+    dbver = 0.4
+    DB = pwman.data.factory.create(dbtype, dbver)
+    DB.open()
+
+    crypto = CryptoEngine.get()
+
+    debug(True)
+    run(reloader=True)
