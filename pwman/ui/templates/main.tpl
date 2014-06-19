@@ -17,3 +17,6 @@
   </tr>
 %end
 </table>
+<form action="/forget" method="POST">
+<input type="submit" value="Forget password">
+</form>

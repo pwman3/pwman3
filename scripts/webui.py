@@ -85,6 +85,16 @@ def edit_node(no=None):
     return output
 
 
+@route('/forget', method=['GET', 'POST'])
+def forget():
+    global AUTHENTICATED
+    AUTHENTICATED = False
+    enc = CryptoEngine.get()
+    enc.forget()
+
+    redirect('/auth')
+
+
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
     global AUTHENTICATED
