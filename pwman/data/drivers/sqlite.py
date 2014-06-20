@@ -22,6 +22,7 @@
 
 """SQLite Database implementation."""
 from pwman.data.database import Database, DatabaseException
+from pwman.data.database import __DB_FORMAT__
 from pwman.data.nodes import NewNode
 from pwman.util.crypto import CryptoEngine
 import sqlite3 as sqlite
@@ -302,21 +303,23 @@ class SQLiteDatabaseNewForm(Database):
             # SQLite does have constraints implemented at the moment
             # so datatype will just be a string
             self._cur.execute("CREATE TABLE NODES (ID INTEGER PRIMARY KEY"
-                              + " AUTOINCREMENT,DATA BLOB NOT NULL)")
+                              " AUTOINCREMENT,DATA BLOB NOT NULL)")
             self._cur.execute("CREATE TABLE TAGS"
-                              + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                              + "DATA BLOB NOT NULL UNIQUE)")
+                              "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                              "DATA BLOB NOT NULL UNIQUE)")
             self._cur.execute("CREATE TABLE LOOKUP"
-                              + "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
-                              + " PRIMARY KEY(NODE, TAG))")
+                              "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
+                              " PRIMARY KEY(NODE, TAG))")
 
             self._cur.execute("CREATE TABLE KEY"
-                              + "(THEKEY TEXT NOT NULL DEFAULT '')")
+                              "(THEKEY TEXT NOT NULL DEFAULT '')")
             self._cur.execute("INSERT INTO KEY VALUES('')")
             # create a table to hold DB version info
             self._cur.execute("CREATE TABLE DBVERSION"
-                              + "(DBVERSION TEXT NOT NULL DEFAULT '0.4')")
-            self._cur.execute("INSERT INTO DBVERSION VALUES('0.4')")
+                              "(DBVERSION TEXT NOT NULL DEFAULT '%s')" %
+                              __DB_FORMAT__)
+            self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
+                              __DB_FORMAT__ )
             try:
                 self._con.commit()
             except DatabaseException as e:  # pragma: no cover

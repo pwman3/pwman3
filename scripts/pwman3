@@ -20,7 +20,6 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 from __future__ import print_function
-import os
 import sys
 import shutil
 from pwman import get_conf_options, get_db_version
@@ -70,8 +69,8 @@ def auto_convert():
 def main(args):
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype = get_conf_options(args, OSX)
-    enc = CryptoEngine.get()
     dbver = get_db_version(config, dbtype, args)
+    enc = CryptoEngine.get(dbver)
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)

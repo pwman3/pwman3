@@ -53,9 +53,9 @@ def create(dbtype, version=None, filename=None):
     """
     if dbtype == "SQLite":
         from pwman.data.drivers import sqlite
-        if version == 0.4 and filename:
+        if version >= 0.4 and filename:
             db = sqlite.SQLiteDatabaseNewForm(filename)
-        elif version == 0.4:
+        elif version >= 0.4:
             db = sqlite.SQLiteDatabaseNewForm()
         else:
             db = None

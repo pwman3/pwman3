@@ -25,8 +25,11 @@ from util import config
 import sys
 import re
 import data.factory
+from pwman.data.database import __DB_FORMAT__
 
 appname = "pwman3"
+
+
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
@@ -183,5 +186,5 @@ def get_db_version(config, dbtype, args):
         if dbver < 0.4 and not args.dbconvert:
             print(_db_warn)
     else:
-        dbver = 0.4
+        dbver = __DB_FORMAT__
     return dbver

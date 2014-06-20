@@ -45,7 +45,6 @@ plaintext = cyypto.decrypt(ciphertext)
 from Crypto.Cipher import Blowfish as cBlowfish
 from Crypto.Cipher import AES as cAES
 from Crypto.Cipher import ARC2 as cARC2
-from Crypto.Cipher import ARC4 as cARC4
 from Crypto.Cipher import CAST as cCAST
 from Crypto.Cipher import DES as cDES
 from Crypto.Cipher import DES3 as cDES3
@@ -115,13 +114,25 @@ class CryptoPasswordMismatchException(CryptoException):
 
 
 class CryptoEngine(object):
-    """Cryptographic Engine"""
+    """
+    Cryptographic Engine, overrides CryptoEngineOld.
+    The main change is that _getcipher_real is now hashing the key
+    before encrypting it.
+
+    This method can eventually remove the call to _retrievedata,
+    which used to strip the _TAG from the plain text string or return
+    the cPickle object as string.
+    Since we don't use cPickle to serialize object anymore, we can
+    safely aim towards removing this method. Thus, removing also
+    the _TAG in the beginning of each string as per recommendation of
+    Ralf Herzog.
+    """
     _timeoutcount = 0
     _instance = None
     _callback = None
 
     @classmethod
-    def get(cls):
+    def get(cls, dbver=None):
         """
         CryptoEngine.get() -> CryptoEngine
         Return an instance of CryptoEngine.
@@ -131,8 +142,11 @@ class CryptoEngine(object):
             algo = config.get_value("Encryption", "algorithm")
             if algo == "Dummy":
                 CryptoEngine._instance = DummyCryptoEngine()
-            else:
+            elif dbver < 0.5:
+                CryptoEngine._instance = CryptoEngineOld()
+            elif dbver == 0.5:
                 CryptoEngine._instance = CryptoEngine()
+
         return CryptoEngine._instance
 
     def __init__(self):
@@ -179,7 +193,6 @@ class CryptoEngine(object):
         key = self._retrievedata(plainkey)
         key = str(key).decode('base64')
         self._cipher = self._getcipher_real(key, self._algo)
-
 
     def encrypt(self, obj):
         """
@@ -375,7 +388,7 @@ password again")
         """
         prepare data before encrypting
         """
-        #plaintext = cPickle.dumps(obj)
+        # plaintext = cPickle.dumps(obj)
         plaintext = _TAG + obj
         numblocks = (len(plaintext)/blocksize) + 1
         newdatasize = blocksize*numblocks
@@ -419,3 +432,51 @@ class DummyCryptoEngine(CryptoEngine):
 
     def changepassword(self):
         return ''
+
+
+class CryptoEngineOld(CryptoEngine):
+
+    def _getcipher_real(self, key, algo):
+        """
+        do the real job of decrypting using functions
+        form PyCrypto
+        """
+        if (algo == "AES"):
+            key = self._padkey(key, [16, 24, 32])
+            cipher = cAES.new(key, cAES.MODE_ECB)
+        elif (algo == 'ARC2'):
+            cipher = cARC2.new(key, cARC2.MODE_ECB)
+        elif (algo == 'ARC4'):
+            raise CryptoUnsupportedException("ARC4 is currently unsupported")
+        elif (algo == 'Blowfish'):
+            cipher = cBlowfish.new(key, cBlowfish.MODE_ECB)
+        elif (algo == 'CAST'):
+            cipher = cCAST.new(key, cCAST.MODE_ECB)
+        elif (algo == 'DES'):
+            self._padkey(key, [8])
+            cipher = cDES.new(key, cDES.MODE_ECB)
+        elif (algo == 'DES3'):
+            key = self._padkey(key, [16, 24])
+            cipher = cDES3.new(key, cDES3.MODE_ECB)
+        elif (algo == 'XOR'):
+            raise CryptoUnsupportedException("XOR is currently unsupported")
+        else:
+            raise CryptoException("Invalid algorithm specified")
+        return cipher
+
+    def _padkey(self, key, acceptable_lengths):
+        """
+        pad key with extra string
+        """
+        maxlen = max(acceptable_lengths)
+        keylen = len(key)
+        if (keylen > maxlen):
+            return key[0:maxlen]
+        acceptable_lengths.sort()
+        acceptable_lengths.reverse()
+        newkeylen = None
+        for i in acceptable_lengths:
+            if (i < keylen):
+                break
+            newkeylen = i
+        return key.ljust(newkeylen)
