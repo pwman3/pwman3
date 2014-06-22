@@ -240,12 +240,6 @@ class CryptoEngine(object):
         """
         return self._callback
 
-    #def get_user_password(self):
-    #    "get the password from the user"
-    #    if self._callback is None:
-    #        raise CryptoNoCallbackException("No call back class has been "
-    #                                        "specified")
-
     def changepassword(self):
         """
         Creates a new key. The key itself is actually stored in
@@ -388,22 +382,24 @@ password again")
         """
         prepare data before encrypting
         """
+        return obj
         # plaintext = cPickle.dumps(obj)
-        plaintext = _TAG + obj
-        numblocks = (len(plaintext)/blocksize) + 1
-        newdatasize = blocksize*numblocks
-        return plaintext.ljust(newdatasize)
+        # plaintext = _TAG + obj
+        # numblocks = (len(plaintext)/blocksize) + 1
+        # newdatasize = blocksize*numblocks
+        # return plaintext.ljust(newdatasize)
 
     def _retrievedata(self, plaintext):
         """
         retrieve encrypted data
         """
-        if (plaintext.startswith(_TAG)):
-            plaintext = plaintext[len(_TAG):]
-        else:
-            raise CryptoBadKeyException("Error decrypting, bad key")
+        return plaintext
+        #if (plaintext.startswith(_TAG)):
+        #    plaintext = plaintext[len(_TAG):]
+        #else:
+        #    raise CryptoBadKeyException("Error decrypting, bad key")
 
-        try:
+        #try:
             # old db version used to write stuff to db with
             # plaintext = cPickle.dumps(obj)
             # TODO: completely remove this block, and convert
@@ -411,9 +407,9 @@ password again")
 
             # This implies that the coversion from OLD DATABASE FORMAT has
             # to plain strings too ...
-            return cPickle.loads(plaintext)
-        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
-            return plaintext
+        #    return cPickle.loads(plaintext)
+        #except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
+        #    return plaintext
 
 
 class DummyCryptoEngine(CryptoEngine):
@@ -433,8 +429,8 @@ class DummyCryptoEngine(CryptoEngine):
     def changepassword(self):
         return ''
 
-
-class CryptoEngineOld(CryptoEngine):
+# TODO: add database that passes here
+class CryptoEngineOld(CryptoEngine): # pragma: no cover
 
     def _getcipher_real(self, key, algo):
         """
@@ -480,3 +476,34 @@ class CryptoEngineOld(CryptoEngine):
                 break
             newkeylen = i
         return key.ljust(newkeylen)
+
+    def _preparedata(self, obj, blocksize):
+        """
+        prepare data before encrypting
+        """
+        # plaintext = cPickle.dumps(obj)
+        plaintext = _TAG + obj
+        numblocks = (len(plaintext)/blocksize) + 1
+        newdatasize = blocksize*numblocks
+        return plaintext.ljust(newdatasize)
+
+    def _retrievedata(self, plaintext):
+        """
+        retrieve encrypted data
+        """
+        if (plaintext.startswith(_TAG)):
+            plaintext = plaintext[len(_TAG):]
+        else:
+            raise CryptoBadKeyException("Error decrypting, bad key")
+
+        try:
+            # old db version used to write stuff to db with
+            # plaintext = cPickle.dumps(obj)
+            # TODO: completely remove this block, and convert
+            # the DB to a completely plain text ...
+
+            # This implies that the coversion from OLD DATABASE FORMAT has
+            # to plain strings too ...
+            return cPickle.loads(plaintext)
+        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
+            return plaintext
