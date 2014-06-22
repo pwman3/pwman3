@@ -37,6 +37,10 @@ import os
 import os.path
 import sys
 
+
+# TODO: fix hard coded db versions! 0.4 should be replaced with
+#  from pwman.data.database import __DB_FORMAT__
+
 _saveconfig = False
 
 PwmanCliNew, OSX = get_ui_platform(sys.platform)

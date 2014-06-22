@@ -228,17 +228,18 @@ class CryptoEngine(object):
         """
         return self._keycrypted
 
-    #def set_callback(self, callback):
-    #    """
-    #    set the callback function
-    #    """
-    #    self._callback = callback
+    def set_callback(self, callback):
+        """
+        set the callback function
+        """
+        self._callback = callback
 
-    #def get_callback(self):
-    #    """
-    #    return call back function
-    #    """
-    #    return self._callback
+    @property
+    def callback(self):
+        """
+        return call back function
+        """
+        return self._callback
 
     def changepassword(self):
         """
@@ -476,7 +477,6 @@ class CryptoEngineOld(CryptoEngine):
         """
         prepare data before encrypting
         """
-        # plaintext = cPickle.dumps(obj)
         plaintext = _TAG + obj
         numblocks = (len(plaintext)/blocksize) + 1
         newdatasize = blocksize*numblocks
