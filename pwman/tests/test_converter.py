@@ -22,7 +22,9 @@ import sys
 import os
 sys.path.insert(0, os.getcwd())
 from pwman.data.database import Database, DatabaseException
-from pwman.data.convertdb import Tag, Node
+from pwman.data.drivers.sqlite import SQLiteDatabaseNewForm
+from pwman.data.nodes import Node
+from pwman.data.tags import Tag
 import sqlite3 as sqlite
 import cPickle
 
@@ -298,11 +300,15 @@ class SQLiteDatabase(Database):
 class CreateTestDataBase(object):
 
     def __init__(self):
-        self.db = SQLiteDatabase('konverter.db')
+        self.db1 = SQLiteDatabaseNewForm('konverter-v0.4.db', dbformat=0.4)
+        self.db2 = SQLiteDatabaseNewForm('konverter-v0.5.db', dbformat=0.5)
 
     def run(self):
-        self.db._open()
-        self.db.close()
+        self.db1._open()
+        self.db2._open()
+        self.db1.close()
+        self.db2.close()
+
 
 
 if __name__ == '__main__':
