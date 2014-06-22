@@ -340,7 +340,7 @@ password again")
                 tries += 1
 
         if not key:
-            raise Exception("Wrong password entered %s times; giving up"
+            raise CryptoBadKeyException("Wrong password entered %s times; giving up"
                             % max_tries)
         try:
             key = str(key).decode('base64')
@@ -478,10 +478,20 @@ class CryptoEngineOld(CryptoEngine):
         """
         retrieve encrypted data
         """
+
+        # startswith(_TAG) is to make sure the decryption
+        # is correct! However this method is SHIT! It is dangerous,
+        # and exposes the datebase.
+        # Instead we sould make sure that the string is composed of legal
+        # printable stuff and not garbage
+        # string.printable is one such set
+        try:
+            plaintext.decode('utf-8')
+        except UnicodeDecodeError:
+            raise CryptoBadKeyException("Error decrypting, bad key")
+
         if (plaintext.startswith(_TAG)):
             plaintext = plaintext[len(_TAG):]
-        #else:
-        #    raise CryptoBadKeyException("Error decrypting, bad key")
 
         try:
             # old db version used to write stuff to db with
