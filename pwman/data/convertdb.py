@@ -37,7 +37,7 @@ _NEWVERSION = 0.4
 class SQLiteDatabaseReader(Database):
     """SQLite Database implementation"""
 
-    def __init__(self):
+    def __init__(self, filename=None):
         """Initialise SQLitePwmanDatabase instance."""
         Database.__init__(self)
 
@@ -45,7 +45,7 @@ class SQLiteDatabaseReader(Database):
             self._filename = config.get_value('Database', 'filename')
         except KeyError as e:
             raise DatabaseException(
-                "SQLite: missing parameter [%s]" % (e))
+                "SQLite: missing config parameter [%s]" % (e))
 
     def _open(self):
         try:
@@ -280,5 +280,21 @@ class PwmanConvertDB(DBConverter):
 
     def save_old_key(self):
         enc = CryptoEngine.get()
+        self.oldkey = enc.get_cryptedkey()
+        self.newdb.savekey(self.oldkey)
+
+
+class PwmanConvertKey(DBConverter):
+
+    def read_old_db(self):
+        enc = CryptoEngine.get()
+        enc.set_callback(CLICallback())
+        self.db.open()
+        self.oldnodes = self.db.listnodes()
+        self.oldnodes = self.db.getnodes(self.oldnodes)
+
+    def save_old_key(self):
+        CryptoEngine._instance = None
+        enc = CryptoEngine.get(0.5)
         self.oldkey = enc.get_cryptedkey()
         self.newdb.savekey(self.oldkey)
