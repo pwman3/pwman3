@@ -184,12 +184,11 @@ class CLICallback(Callback):
         return getpass.getpass(question + ":")
 
 
-class PwmanConvertDB(object):
+class DBConverter(object):
     """
-    Class to migrate from DB in version 0.3 to
-    DB used in later versions.
+    A general class to provide a base template for converting a database
+    from one version to another
     """
-
     def __init__(self, args, config):
         self.dbname = config.get_value('Database', 'filename')
         self.dbtype = config.get_value("Database", "type")
@@ -210,24 +209,40 @@ class PwmanConvertDB(object):
         print("backup created in ", backup)
 
     def read_old_db(self):
-        "read the old db and get all nodes"
-
-        self.db = SQLiteDatabaseReader()
-        enc = CryptoEngine.get()
-        enc.set_callback(CLICallback())
-        self.db.open()
-        self.oldnodes = self.db.listnodes()
-        self.oldnodes = self.db.getnodes(self.oldnodes)
+        raise Exception("This methodod should be overriden")
 
     def create_new_db(self):
         if os.path.exists(self.newdb_name):
-            #print("%s already exists, please move this file!" % dest)
-            #sys.exit(2)
             os.remove(self.newdb_name)
 
         self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
                                                self.newdb_name)
         self.newdb._open()
+
+    def convert_nodes(self):
+        raise Exception("This methodod should be overriden")
+
+    def save_new_nodes_to_db(self):
+        self.newdb.addnodes(self.NewNodes)
+        self.newdb._commit()
+
+    def save_old_key(self):
+        raise Exception("This methodod should be overriden")
+
+    def print_success(self):
+        print("pwman successfully converted the old database to the new "
+              "format.\nPlease run `pwman3 -d %s` to make sure your password "
+              "and data are still correct. If you found errors, please "
+              "report a bug in Pwman homepage in github. " % self.newdb_name)
+
+    def run(self):
+        self.backup_old_db()
+        self.read_old_db()
+        self.create_new_db()
+        self.convert_nodes()
+        self.save_new_nodes_to_db()
+        self.save_old_key()
+        self.print_success()
 
     def convert_nodes(self):
         """convert old nodes instances to new format"""
@@ -247,26 +262,23 @@ class PwmanConvertDB(object):
             newNode.tags = tags_strings
             self.NewNodes.append(newNode)
 
-    def save_new_nodes_to_db(self):
-        self.newdb.addnodes(self.NewNodes)
-        self.newdb._commit()
+
+class PwmanConvertDB(DBConverter):
+    """
+    Class to migrate from DB in version 0.3 to
+    DB used in version 0.4 to 0.5.
+    """
+    def read_old_db(self):
+        "read the old db and get all nodes"
+
+        self.db = SQLiteDatabaseReader()
+        enc = CryptoEngine.get()
+        enc.set_callback(CLICallback())
+        self.db.open()
+        self.oldnodes = self.db.listnodes()
+        self.oldnodes = self.db.getnodes(self.oldnodes)
 
     def save_old_key(self):
         enc = CryptoEngine.get()
         self.oldkey = enc.get_cryptedkey()
         self.newdb.savekey(self.oldkey)
-
-    def print_success(self):
-        print("pwman successfully converted the old database to the new "
-              "format.\nPlease run `pwman3 -d %s` to make sure your password "
-              "and data are still correct. If you found errors, please "
-              "report a bug in Pwman homepage in github. " % self.newdb_name)
-
-    def run(self):
-        self.backup_old_db()
-        self.read_old_db()
-        self.create_new_db()
-        self.convert_nodes()
-        self.save_new_nodes_to_db()
-        self.save_old_key()
-        self.print_success()
