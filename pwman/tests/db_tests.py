@@ -166,6 +166,7 @@ class DBTests(unittest.TestCase):
         self.db.addnodes([node])
         idx_created = node._id
         new_node = self.db.getnodes([idx_created])[0]
+
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
             self.assertEquals(attr, getattr(new_node, key))

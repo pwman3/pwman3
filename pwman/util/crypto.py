@@ -342,8 +342,12 @@ password again")
         if not key:
             raise Exception("Wrong password entered %s times; giving up"
                             % max_tries)
+        try:
+            key = str(key).decode('base64')
+        except Exception:
+            key = cPickle.loads(key)
+            key = str(key).decode('base64')
 
-        key = str(key).decode('base64')
         self._cipher = self._getcipher_real(key,
                                             self._algo)
 
@@ -384,29 +388,17 @@ password again")
         prepare data before encrypting
         """
         plaintext = obj
-        return plaintext
+        numblocks = (len(plaintext)/blocksize) + 1
+        newdatasize = blocksize*numblocks
+        return plaintext.ljust(newdatasize)
 
     def _retrievedata(self, plaintext):
         """
         retrieve encrypted data
         """
+        if (plaintext.startswith(_TAG)):
+            plaintext = plaintext[len(_TAG):]
         return plaintext
-        #if (plaintext.startswith(_TAG)):
-        #    plaintext = plaintext[len(_TAG):]
-        #else:
-        #    raise CryptoBadKeyException("Error decrypting, bad key")
-
-        #try:
-            # old db version used to write stuff to db with
-            # plaintext = cPickle.dumps(obj)
-            # TODO: completely remove this block, and convert
-            # the DB to a completely plain text ...
-
-            # This implies that the coversion from OLD DATABASE FORMAT has
-            # to plain strings too ...
-        #    return cPickle.loads(plaintext)
-        #except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
-        #    return plaintext
 
 
 class DummyCryptoEngine(CryptoEngine):
@@ -488,8 +480,8 @@ class CryptoEngineOld(CryptoEngine):
         """
         if (plaintext.startswith(_TAG)):
             plaintext = plaintext[len(_TAG):]
-        else:
-            raise CryptoBadKeyException("Error decrypting, bad key")
+        #else:
+        #    raise CryptoBadKeyException("Error decrypting, bad key")
 
         try:
             # old db version used to write stuff to db with
