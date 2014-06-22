@@ -49,9 +49,10 @@ def check_db_version():
 class SQLiteDatabaseNewForm(Database):
     """SQLite Database implementation"""
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, dbformat=__DB_FORMAT__):
         """Initialise SQLitePwmanDatabase instance."""
-        Database.__init__(self)
+        #Database.__init__(self)
+        super(SQLiteDatabaseNewForm, self).__init__()
         # error handling is implemented in config.get_value
         # so there's no need to try... except here...
         if not filename:
@@ -62,6 +63,7 @@ class SQLiteDatabaseNewForm(Database):
         if not self._filename:
             raise DatabaseException(("SQLite: missing config parameter:"
                                     " filename"))
+        self.dbformat = dbformat
 
     def _open(self):
         try:
@@ -317,9 +319,9 @@ class SQLiteDatabaseNewForm(Database):
             # create a table to hold DB version info
             self._cur.execute("CREATE TABLE DBVERSION"
                               "(DBVERSION TEXT NOT NULL DEFAULT '%s')" %
-                              __DB_FORMAT__)
+                              self.dbformat)
             self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
-                              __DB_FORMAT__ )
+                              self.dbformat)
             try:
                 self._con.commit()
             except DatabaseException as e:  # pragma: no cover
