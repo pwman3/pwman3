@@ -38,6 +38,17 @@ import os.path
 import sys
 
 
+def node_factory(username, password, url, notes, tags=None):
+    node = NewNode()
+    node.username = username
+    node.password = password
+    node.url = url
+    node.notes = notes
+    tags = [TagNew(tn) for tn in tags]
+    node.tags = tags
+    
+    return node
+
 # TODO: fix hard coded db versions! 0.4 should be replaced with
 #  from pwman.data.database import __DB_FORMAT__
 
@@ -100,13 +111,15 @@ default_config['Database'] = {'type': 'SQLite',
 
 class SetupTester(object):
 
-    def __init__(self):
+    def __init__(self, dbver=None):
         config.set_defaults(default_config)
         if not OSX:
             self.xselpath = which("xsel")
             config.set_value("Global", "xsel", self.xselpath)
         else:
             self.xselpath = "xsel"
+
+        self.dbver = dbver
 
     def clean(self):
         if os.path.exists(config.get_value('Database', 'filename')):
@@ -118,9 +131,8 @@ class SetupTester(object):
                                    'testing_config'))
 
     def create(self):
-        dbver = 0.4
         dbtype = config.get_value("Database", "type")
-        db = factory.create(dbtype, dbver)
+        db = factory.create(dbtype, self.dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
 
 
@@ -132,7 +144,7 @@ class DBTests(unittest.TestCase):
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
         self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester()
+        self.tester = SetupTester(dbver)
         self.tester.create()
 
     def test_db_created(self):
@@ -243,7 +255,7 @@ class CLITests(unittest.TestCase):
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
         self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester()
+        self.tester = SetupTester(dbver)
         self.tester.create()
 
     def test_input(self):
@@ -395,7 +407,7 @@ class ConfigTest(unittest.TestCase):
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
         self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester()
+        self.tester = SetupTester(dbver)
         self.tester.create()
 
     def test_config_write(self):
