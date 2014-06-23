@@ -24,8 +24,14 @@ sys.path.insert(0, os.getcwd())
 from pwman.data.database import Database, DatabaseException
 from pwman.data.drivers.sqlite import SQLiteDatabaseNewForm
 from pwman.data.nodes import Node
+from pwman.data.nodes import NewNode
+from pwman.util.crypto import CryptoEngine
 from pwman.data.tags import Tag
+from db_tests import node_factory 
+from pwman.util.callback import CLICallback
 import sqlite3 as sqlite
+import pwman.util.config as config
+from pwman import default_config
 import cPickle
 
 
@@ -300,15 +306,38 @@ class SQLiteDatabase(Database):
 class CreateTestDataBase(object):
 
     def __init__(self):
+        config.set_defaults(default_config)
+        enc = CryptoEngine.get()
+        enc.set_callback(CLICallback())
         self.db1 = SQLiteDatabaseNewForm('konverter-v0.4.db', dbformat=0.4)
         self.db2 = SQLiteDatabaseNewForm('konverter-v0.5.db', dbformat=0.5)
 
-    def run(self):
+    def open_dbs(self):
         self.db1._open()
         self.db2._open()
         self.db1.close()
         self.db2.close()
 
+    def add_nodes_to_db1(self):
+        username = 'tester'
+        password = 'Password'
+        url = 'example.org'
+        notes = 'some notes'
+        node = node_factory(username, password, url, notes, 
+                ['testing1', 'testing2']) 
+        self.db.open()
+        self.db.addnodes([node])
+        idx_created = node._id
+        new_node = self.db.getnodes([idx_created])[0]
+
+        for key, attr in {'password': password, 'username': username,
+                          'url': url, 'notes': notes}.iteritems():
+            self.assertEquals(attr, getattr(new_node, key))
+        self.db.close()
+    
+    def run(self):
+        self.open_dbs()
+        self.add_nodes_to_db1()
 
 
 if __name__ == '__main__':
