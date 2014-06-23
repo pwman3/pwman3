@@ -104,7 +104,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):
     return parser
 
 
-def get_conf(args):
+def get_conf_file(args):
     config_dir = os.path.expanduser("~/.pwman")
 
     if not os.path.isdir(config_dir):
@@ -162,8 +162,7 @@ def set_algorithm(args, config):
 
 
 def get_conf_options(args, OSX):
-
-    config = get_conf(args)
+    config = get_conf_file(args)
     xselpath = config.get_value("Global", "xsel")
     if not xselpath:
         set_xsel(config, OSX)
@@ -174,8 +173,7 @@ def get_conf_options(args, OSX):
     set_algorithm(args, config)
     dbtype = config.get_value("Database", "type")
     if not dbtype:
-        print("Could not read the Database type from the config!")
-        sys.exit(1)
+        raise Exception("Could not read the Database type from the config!")
 
     return xselpath, dbtype
 

@@ -30,6 +30,7 @@ from pwman import which, default_config
 from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
+from pwman import parser_options, get_conf_options
 
 import unittest
 import StringIO
@@ -46,7 +47,7 @@ def node_factory(username, password, url, notes, tags=None):
     node.notes = notes
     tags = [TagNew(tn) for tn in tags]
     node.tags = tags
-    
+
     return node
 
 # TODO: fix hard coded db versions! 0.4 should be replaced with
@@ -137,6 +138,7 @@ class SetupTester(object):
 
 
 class DBTests(unittest.TestCase):
+
     """test everything related to db"""
 
     def setUp(self):
@@ -236,8 +238,8 @@ class TestDBFalseConfig(unittest.TestCase):
         self.fname = config._conf['Database'].pop('filename')
 
     def test_db_missing_conf_parameter(self):
-            self.assertRaises(DatabaseException, factory.create,
-                              'SQLite', 0.4)
+        self.assertRaises(DatabaseException, factory.create,
+                          'SQLite', 0.4)
 
     def tearDown(self):
         config.set_value('Database', 'filename', self.fname)
@@ -246,6 +248,7 @@ class TestDBFalseConfig(unittest.TestCase):
 
 
 class CLITests(unittest.TestCase):
+
     """
     test command line functionallity
     """
@@ -308,7 +311,7 @@ class CLITests(unittest.TestCase):
     # the node is still not added !
 
     def test_add_new_entry(self):
-        #node = NewNode('alice', 'dough!', 'example.com',
+        # node = NewNode('alice', 'dough!', 'example.com',
         #               'lorem impsum')
 
         node = NewNode()
@@ -456,3 +459,30 @@ class ConfigTest(unittest.TestCase):
         self.assertRaises(config.ConfigException, config.load,
                           'TestConfig.ini')
         os.remove('TestConfig.ini')
+
+    def test_all_config(self):
+        sys.argv = ['pwman3']
+        default_config['Database'] = {'type': '',
+                                      'filename': ''}
+        _save_conf = config._conf.copy()
+        config._conf = {}
+        with open('dummy.conf', 'w') as dummy:
+            dummy.write("""
+[Encryption]
+
+[Readline]
+
+[Global]
+xsel = /usr/bin/xsel
+colors = yes
+umask = 0100
+cls_timeout = 5
+
+[Database]
+""")
+        sys.argv = ['pwman3', '-d', '', '-c', 'dummy.conf']
+        p2 = parser_options()
+        args = p2.parse_args()
+        self.assertRaises(Exception, get_conf_options, args, False)
+        config._conf = _save_conf.copy()
+        os.unlink('dummy.conf')
