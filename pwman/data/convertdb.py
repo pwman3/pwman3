@@ -244,24 +244,6 @@ class DBConverter(object):
         self.save_old_key()
         self.print_success()
 
-    def convert_nodes(self):
-        """convert old nodes instances to new format"""
-        self.NewNodes = []
-        for node in self.oldnodes:
-            username = node.get_username()
-            password = node.get_password()
-            url = node.get_url()
-            notes = node.get_notes()
-            tags = node.get_tags()
-            tags_strings = [tag._name for tag in tags]
-            newNode = NewNode()
-            newNode.username = username
-            newNode.password = password
-            newNode.url = url
-            newNode.notes = notes
-            newNode.tags = tags_strings
-            self.NewNodes.append(newNode)
-
 
 class PwmanConvertDB(DBConverter):
     """
@@ -282,6 +264,24 @@ class PwmanConvertDB(DBConverter):
         enc = CryptoEngine.get()
         self.oldkey = enc.get_cryptedkey()
         self.newdb.savekey(self.oldkey)
+    
+    def convert_nodes(self):
+        """convert old nodes instances to new format"""
+        self.NewNodes = []
+        for node in self.oldnodes:
+            username = node.get_username()
+            password = node.get_password()
+            url = node.get_url()
+            notes = node.get_notes()
+            tags = node.get_tags()
+            tags_strings = [tag._name for tag in tags]
+            newNode = NewNode()
+            newNode.username = username
+            newNode.password = password
+            newNode.url = url
+            newNode.notes = notes
+            newNode.tags = tags_strings
+            self.NewNodes.append(newNode)
 
 
 class PwmanConvertKey(DBConverter):
