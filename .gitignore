@@ -1,5 +1,5 @@
 *.pyc
-Pwman3.egg-info/*
+pwman3.egg-info/*
 *swo
 build/*
 dist/*
@@ -9,3 +9,4 @@ dist/*
 env/*
 MANIFEST
 .coverage
+htmlcov/*
