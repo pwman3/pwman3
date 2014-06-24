@@ -25,18 +25,32 @@ from pwman.util import config
 from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
-
-from pwman import which, default_config
+from pwman import which, default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 from pwman import parser_options, get_conf_options
+from pwman.data.database import __DB_FORMAT__
 
 import unittest
 import StringIO
 import os
 import os.path
 import sys
+
+dummyfile = """
+[Encryption]
+
+[Readline]
+
+[Global]
+xsel = /usr/bin/xsel
+colors = yes
+umask = 0100
+cls_timeout = 5
+
+[Database]
+"""
 
 
 def node_factory(username, password, url, notes, tags=None):
@@ -143,7 +157,7 @@ class DBTests(unittest.TestCase):
 
     def setUp(self):
         "test that the right db instance was created"
-        dbver = 0.4
+        dbver = __DB_FORMAT__
         self.dbtype = config.get_value("Database", "type")
         self.db = factory.create(self.dbtype, dbver)
         self.tester = SetupTester(dbver)
@@ -239,7 +253,7 @@ class TestDBFalseConfig(unittest.TestCase):
 
     def test_db_missing_conf_parameter(self):
         self.assertRaises(DatabaseException, factory.create,
-                          'SQLite', 0.4)
+                          'SQLite', __DB_FORMAT__)
 
     def tearDown(self):
         config.set_value('Database', 'filename', self.fname)
@@ -255,10 +269,9 @@ class CLITests(unittest.TestCase):
 
     def setUp(self):
         "test that the right db instance was created"
-        dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
-        self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester(dbver)
+        self.db = factory.create(self.dbtype, __DB_FORMAT__)
+        self.tester = SetupTester(__DB_FORMAT__)
         self.tester.create()
 
     def test_input(self):
@@ -467,22 +480,17 @@ class ConfigTest(unittest.TestCase):
         _save_conf = config._conf.copy()
         config._conf = {}
         with open('dummy.conf', 'w') as dummy:
-            dummy.write("""
-[Encryption]
-
-[Readline]
-
-[Global]
-xsel = /usr/bin/xsel
-colors = yes
-umask = 0100
-cls_timeout = 5
-
-[Database]
-""")
+            dummy.write(dummyfile)
         sys.argv = ['pwman3', '-d', '', '-c', 'dummy.conf']
         p2 = parser_options()
         args = p2.parse_args()
         self.assertRaises(Exception, get_conf_options, args, False)
         config._conf = _save_conf.copy()
         os.unlink('dummy.conf')
+
+    def test_set_xsel(self):
+        set_xsel(config, False)
+
+        set_xsel(config, True)
+        if sys.platform == 'linux2':
+            self.assertEqual(None, config._conf['Global']['xsel'])
