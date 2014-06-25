@@ -40,6 +40,7 @@ SetupTester().clean()
 
 class Dumb(unittest.TestCase):
     def test_stupid(self):
+        os.system("df -h /")
         self.assertTrue(True)
 
 
@@ -47,13 +48,13 @@ def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     #suite.addTest(loader.loadTestsFromTestCase(DBTests))
-    suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
-    suite.addTest(loader.loadTestsFromTestCase(CLITests))
-    suite.addTest(loader.loadTestsFromTestCase(ConfigTest))
-    suite.addTest(loader.loadTestsFromTestCase(FactoryTest))
-    suite.addTest(loader.loadTestsFromTestCase(TestDBFalseConfig))
+    #suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
+    #suite.addTest(loader.loadTestsFromTestCase(CLITests))
+    #suite.addTest(loader.loadTestsFromTestCase(ConfigTest))
+    #suite.addTest(loader.loadTestsFromTestCase(FactoryTest))
+    #suite.addTest(loader.loadTestsFromTestCase(TestDBFalseConfig))
     suite.addTest(loader.loadTestsFromTestCase(Dumb))
-    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
+    #suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
 
 if __name__ == '__main__':
