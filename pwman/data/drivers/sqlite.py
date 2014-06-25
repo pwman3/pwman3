@@ -67,6 +67,7 @@ class SQLiteDatabaseNewForm(Database):
 
     def _open(self):
         #try:
+        print(self._filename)
         self._con = sqlite.connect(self._filename)
         self._cur = self._con.cursor()
         self._checktables()

@@ -55,6 +55,12 @@ class DummyCallback4(Callback):
         return u'newsecret'
 
 
+default_config['Database'] = {'type': 'SQLite',
+                              'filename':
+                              os.path.join(os.path.dirname(__file__),
+                                           "test.pwman.db")
+                              }
+
 class SetupTester(object):
 
     def __init__(self, dbver=None, filename=None):
