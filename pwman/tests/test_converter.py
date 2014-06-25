@@ -27,13 +27,13 @@ from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
 from pwman.util.crypto import CryptoEngine
 from pwman.data.tags import Tag
-from db_tests import node_factory 
+from db_tests import node_factory
 from pwman.util.callback import CLICallback
 import sqlite3 as sqlite
 import pwman.util.config as config
 from pwman import default_config
 import cPickle
-
+from test_tools import SetupTester
 
 class SQLiteDatabase(Database):
     """SQLite Database implementation"""
@@ -303,7 +303,7 @@ class SQLiteDatabase(Database):
             return keyrow[0]
 
 
-class CreateTestDataBase(object):
+class CreateTestDataBases(object):
 
     def __init__(self):
         config.set_defaults(default_config)
@@ -323,8 +323,8 @@ class CreateTestDataBase(object):
         password = 'Password'
         url = 'example.org'
         notes = 'some notes'
-        node = node_factory(username, password, url, notes, 
-                ['testing1', 'testing2']) 
+        node = node_factory(username, password, url, notes,
+                            ['testing1', 'testing2'])
         self.db.open()
         self.db.addnodes([node])
         idx_created = node._id
@@ -334,12 +334,12 @@ class CreateTestDataBase(object):
                           'url': url, 'notes': notes}.iteritems():
             self.assertEquals(attr, getattr(new_node, key))
         self.db.close()
-    
+
     def run(self):
         self.open_dbs()
         self.add_nodes_to_db1()
 
 
 if __name__ == '__main__':
-    tester = CreateTestDataBase()
+    tester = CreateTestDataBases()
     tester.run()

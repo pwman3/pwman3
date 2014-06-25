@@ -22,10 +22,9 @@ from pwman.data.tags import TagNew
 from pwman.data import factory
 from pwman.data.drivers.sqlite import DatabaseException
 from pwman.util import config
-from pwman.util.callback import Callback
 from pwman.util.generator import leetlist
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
-from pwman import which, default_config, set_xsel
+from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
@@ -72,83 +71,8 @@ _saveconfig = False
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 
-class DummyCallback(Callback):
-
-    def getsecret(self, question):
-        return u'12345'
-
-    def getnewsecret(self, question):
-        return u'12345'
-
-
-class DummyCallback2(Callback):
-
-    def getinput(self, question):
-        return u'newsecret'
-
-    def getsecret(self, question):
-        return u'wrong'
-
-    def getnewsecret(self, question):
-        return u'newsecret'
-
-
-class DummyCallback3(Callback):
-
-    def getinput(self, question):
-        return u'newsecret'
-
-    def getsecret(self, question):
-        return u'12345'
-
-    def getnewsecret(self, question):
-        return u'newsecret'
-
-
-class DummyCallback4(Callback):
-
-    def getinput(self, question):
-        return u'newsecret'
-
-    def getsecret(self, question):
-        return u'newsecret'
-
-    def getnewsecret(self, question):
-        return u'newsecret'
-
-
-default_config['Database'] = {'type': 'SQLite',
-                              'filename':
-                              os.path.join(os.path.dirname(__file__),
-                                           "test.pwman.db")
-                              }
-
-
-class SetupTester(object):
-
-    def __init__(self, dbver=None):
-        config.set_defaults(default_config)
-        if not OSX:
-            self.xselpath = which("xsel")
-            config.set_value("Global", "xsel", self.xselpath)
-        else:
-            self.xselpath = "xsel"
-
-        self.dbver = dbver
-
-    def clean(self):
-        if os.path.exists(config.get_value('Database', 'filename')):
-            os.remove(config.get_value('Database', 'filename'))
-
-        if os.path.exists(os.path.join(os.path.dirname(__file__),
-                                       'testing_config')):
-            os.remove(os.path.join(os.path.dirname(__file__),
-                                   'testing_config'))
-
-    def create(self):
-        dbtype = config.get_value("Database", "type")
-        db = factory.create(dbtype, self.dbver)
-        self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
+from test_tools import (SetupTester, DummyCallback2,
+                        DummyCallback3, DummyCallback4)
 
 
 class DBTests(unittest.TestCase):
