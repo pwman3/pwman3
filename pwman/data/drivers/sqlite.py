@@ -66,12 +66,12 @@ class SQLiteDatabaseNewForm(Database):
         self.dbformat = dbformat
 
     def _open(self):
-        try:
-            self._con = sqlite.connect(self._filename)
-            self._cur = self._con.cursor()
-            self._checktables()
-        except sqlite.DatabaseError as e:  # pragma: no cover
-            raise DatabaseException("SQLite: %s" % (e))
+        #try:
+        self._con = sqlite.connect(self._filename)
+        self._cur = self._con.cursor()
+        self._checktables()
+        #except sqlite.DatabaseError as e:  # pragma: no cover
+        #    raise DatabaseException("SQLite: %s" % (e))
 
     def close(self):
         self._cur.close()
