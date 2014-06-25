@@ -47,7 +47,7 @@ class Dumb(unittest.TestCase):
 def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    #suite.addTest(loader.loadTestsFromTestCase(DBTests))
+    suite.addTest(loader.loadTestsFromTestCase(DBTests))
     #suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
     #suite.addTest(loader.loadTestsFromTestCase(CLITests))
     #suite.addTest(loader.loadTestsFromTestCase(ConfigTest))
