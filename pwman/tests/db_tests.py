@@ -96,76 +96,76 @@ class DBTests(unittest.TestCase):
         # it will have a file name associated
         self.assertTrue(hasattr(self.db, '_filename'))
 
-   # def test_create_node(self):
-   #     "test that a node can be successfuly created"
-   #     # this method does not test do_new
-   #     # which is a UI method, rather we test
-   #     # _db.addnodes
-   #     username = 'tester'
-   #     password = 'Password'
-   #     url = 'example.org'
-   #     notes = 'some notes'
-   #     #node = NewNode(username, password, url, notes)
-   #     node = NewNode()
-   #     node.username = username
-   #     node.password = password
-   #     node.url = url
-   #     node.notes = notes
-   #     #node = NewNode(username, password, url, notes)
-   #     tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
-   #     node.tags = tags
-   #     self.db.open()
-   #     self.db.addnodes([node])
-   #     idx_created = node._id
-   #     new_node = self.db.getnodes([idx_created])[0]
+    def test_create_node(self):
+        "test that a node can be successfuly created"
+        # this method does not test do_new
+        # which is a UI method, rather we test
+        # _db.addnodes
+        username = 'tester'
+        password = 'Password'
+        url = 'example.org'
+        notes = 'some notes'
+        #node = NewNode(username, password, url, notes)
+        node = NewNode()
+        node.username = username
+        node.password = password
+        node.url = url
+        node.notes = notes
+        #node = NewNode(username, password, url, notes)
+        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
+        node.tags = tags
+        self.db.open()
+        self.db.addnodes([node])
+        idx_created = node._id
+        new_node = self.db.getnodes([idx_created])[0]
 
-   #     for key, attr in {'password': password, 'username': username,
-   #                       'url': url, 'notes': notes}.iteritems():
-   #         self.assertEquals(attr, getattr(new_node, key))
-   #     self.db.close()
+        for key, attr in {'password': password, 'username': username,
+                          'url': url, 'notes': notes}.iteritems():
+            self.assertEquals(attr, getattr(new_node, key))
+        self.db.close()
 
-   # def test_tags(self):
-   #     enc = CryptoEngine.get()
-   #     got_tags = self.tester.cli._tags(enc)
-   #     self.assertEqual(2, len(got_tags))
+    def test_tags(self):
+        enc = CryptoEngine.get()
+        got_tags = self.tester.cli._tags(enc)
+        self.assertEqual(2, len(got_tags))
 
-   # def test_change_pass(self):
-   #     enc = CryptoEngine.get()
-   #     enc._callback = DummyCallback2()
-   #     self.assertRaises(CryptoBadKeyException,
-   #                       self.tester.cli._db.changepassword)
+    def test_change_pass(self):
+        enc = CryptoEngine.get()
+        enc._callback = DummyCallback2()
+        self.assertRaises(CryptoBadKeyException,
+                          self.tester.cli._db.changepassword)
 
-   # def test_db_change_pass(self):
-   #     "fuck yeah, we change the password and the new dummy works"
-   #     enc = CryptoEngine.get()
-   #     enc._callback = DummyCallback3()
-   #     self.tester.cli._db.changepassword()
-   #     self.tester.cli.do_forget('')
-   #     enc._callback = DummyCallback4()
-   #     self.tester.cli.do_ls('')
+    def test_db_change_pass(self):
+        "fuck yeah, we change the password and the new dummy works"
+        enc = CryptoEngine.get()
+        enc._callback = DummyCallback3()
+        self.tester.cli._db.changepassword()
+        self.tester.cli.do_forget('')
+        enc._callback = DummyCallback4()
+        self.tester.cli.do_ls('')
 
-   # def test_db_list_tags(self):
-   #     # tags are return as ecrypted strings
-   #     tags = self.tester.cli._db.listtags()
-   #     self.assertEqual(2, len(tags))
-   #     self.tester.cli.do_filter('testing1')
-   #     tags = self.tester.cli._db.listtags()
-   #     self.assertEqual(2, len(tags))
-   #     self.tester.cli.do_ls('')
+    def test_db_list_tags(self):
+        # tags are return as ecrypted strings
+        tags = self.tester.cli._db.listtags()
+        self.assertEqual(2, len(tags))
+        self.tester.cli.do_filter('testing1')
+        tags = self.tester.cli._db.listtags()
+        self.assertEqual(2, len(tags))
+        self.tester.cli.do_ls('')
 
-   # def test_db_remove_node(self):
-   #     node = self.tester.cli._db.getnodes([1])
-   #     self.tester.cli._db.removenodes(node)
-   #     # create the removed node again
-   #     node = NewNode()
-   #     node.username = 'tester'
-   #     node.password = 'Password'
-   #     node.url = 'example.org'
-   #     node.notes = 'some notes'
-   #     tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
-   #     node.tags = tags
-   #     self.db.open()
-   #     self.db.addnodes([node])
+    def test_db_remove_node(self):
+        node = self.tester.cli._db.getnodes([1])
+        self.tester.cli._db.removenodes(node)
+        # create the removed node again
+        node = NewNode()
+        node.username = 'tester'
+        node.password = 'Password'
+        node.url = 'example.org'
+        node.notes = 'some notes'
+        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
+        node.tags = tags
+        self.db.open()
+        self.db.addnodes([node])
 
 
 class TestDBFalseConfig(unittest.TestCase):
