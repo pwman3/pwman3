@@ -52,7 +52,7 @@ class Callback(object):  # pragma: no cover
         pass
 
 
-class CLICallback(Callback):
+class CLICallback(Callback):  # pragma: no cover
     def getinput(self, question):
         return raw_input(question)
 

@@ -29,6 +29,7 @@ import sqlite3 as sqlite
 import pwman.util.config as config
 import itertools
 
+
 def check_db_version():
     """
     check the data base version query the right table
@@ -208,7 +209,8 @@ class SQLiteDatabaseNewForm(Database):
                         " TAGS.ID WHERE TAGS.DATA LIKE ? ")
                 # this is correct if tags are ciphertext
                 p = t._name.strip()
-                # this is wrong, it will work when tags are stored as plain text
+                # this is wrong, it will work when tags are stored as plain
+                # text
                 # p = t.name.strip()
                 p = '%'+p+'%'
                 params = [p]
@@ -266,8 +268,9 @@ class SQLiteDatabaseNewForm(Database):
                     self._cur.execute(sql, [tag])
                 else:
                     self._cur.execute(sql, [tag._name+'%'])
+
                 values = self._cur.fetchall()
-                if values:
+                if values:  # tags already exist in the database
                     ids.extend(list(itertools.chain(*values)))
                 else:
                     self._create_tag(tag)

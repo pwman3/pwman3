@@ -20,7 +20,7 @@
 from pwman.data.nodes import NewNode
 from pwman.data.tags import TagNew
 from pwman.data import factory
-from pwman.data.drivers.sqlite import DatabaseException
+from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
 from pwman.util import config
 from pwman.util.generator import leetlist
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
@@ -167,6 +167,9 @@ class DBTests(unittest.TestCase):
         self.db.open()
         self.db.addnodes([node])
 
+    def test_sqlite_init(self):
+        db = SQLiteDatabaseNewForm("test")
+        self.assertEquals("test", db._filename)
 
 class TestDBFalseConfig(unittest.TestCase):
 
@@ -270,6 +273,19 @@ class CLITests(unittest.TestCase):
         # the second was added just now.
         # This will pass only when running all the tests then ...
         self.assertEqual(len(rows), 2)
+
+        node = NewNode()
+        node.username = 'alice'
+        node.password = 'dough!'
+        node.url = 'example.com'
+        node.notes = 'somenotes'
+        node.tags = 'lorem ipsum'
+
+        tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
+        node.tags = tags
+        self.tester.cli._db.addnodes([node])
+
+
 
     def test_get_ids(self):
         # used by do_cp or do_open,
