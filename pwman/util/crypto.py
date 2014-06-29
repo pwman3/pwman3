@@ -139,10 +139,7 @@ class CryptoEngine(object):
         If no instance is found, a CryptoException is raised.
         """
         if CryptoEngine._instance is None:
-            algo = config.get_value("Encryption", "algorithm")
-            if algo == "Dummy":
-                CryptoEngine._instance = DummyCryptoEngine()
-            elif dbver < 0.5:
+            if dbver < 0.5:
                 CryptoEngine._instance = CryptoEngineOld()
             elif dbver == 0.5:
                 CryptoEngine._instance = CryptoEngine()
@@ -340,8 +337,8 @@ password again")
                 tries += 1
 
         if not key:
-            raise CryptoBadKeyException("Wrong password entered %s times; giving up"
-                            % max_tries)
+            raise CryptoBadKeyException("Wrong password entered {x} times; "
+                                        "giving up ".format(x=max_tries))
         try:
             key = str(key).decode('base64')
         except Exception:
@@ -372,7 +369,8 @@ password again")
             cipher = cCAST.new(key, cCAST.MODE_ECB)
         elif (algo == 'DES'):
             if len(key) != 8:
-                raise Exception("DES Encrypted keys must be 8 characters long!")
+                raise Exception("DES Encrypted keys must be 8 characters "
+                                "long!")
             cipher = cDES.new(key, cDES.MODE_ECB)
         elif (algo == 'DES3'):
             key = hashlib.sha224(key)
@@ -400,23 +398,6 @@ password again")
             plaintext = plaintext[len(_TAG):]
         return plaintext
 
-
-class DummyCryptoEngine(CryptoEngine):
-    """Dummy CryptoEngine used when database doesn't ask for encryption.
-    Only for testing and debugging the DB drivers really."""
-    def __init__(self):
-        pass
-
-    def encrypt(self, strng):
-        """Return the object pickled."""
-        return strng.upper()
-
-    def decrypt(self, strng):
-        """Unpickle the object."""
-        return strng.lower()
-
-    def changepassword(self):
-        return ''
 
 class CryptoEngineOld(CryptoEngine):
 
