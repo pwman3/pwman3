@@ -25,6 +25,8 @@ Callback interface
 To be used when UI needs to be back to get info from user.
 """
 
+import getpass
+
 
 # this class is just a base class no real method to test
 class Callback(object):  # pragma: no cover
@@ -48,3 +50,14 @@ class Callback(object):  # pragma: no cover
     def notice(self, warning):
         """Present notice to user"""
         pass
+
+
+class CLICallback(Callback):
+    def getinput(self, question):
+        return raw_input(question)
+
+    def getsecret(self, question):
+        return getpass.getpass(question + ":")
+
+    def getnewsecret(self, question):
+        return getpass.getpass(question + ":")

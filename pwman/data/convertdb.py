@@ -20,10 +20,9 @@ from __future__ import print_function
 import os
 import shutil
 import time
-import getpass
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
-from pwman.util.callback import Callback
+from pwman.util.callback import CLICallback
 from pwman.data.nodes import NewNode
 from pwman.data.tags import Tag
 from pwman.data.database import Database, DatabaseException
@@ -173,17 +172,6 @@ class SQLiteDatabaseReader(Database):
             return keyrow[0]
 
 
-class CLICallback(Callback):
-    def getinput(self, question):
-        return raw_input(question)
-
-    def getsecret(self, question):
-        return getpass.getpass(question + ":")
-
-    def getnewsecret(self, question):
-        return getpass.getpass(question + ":")
-
-
 class DBConverter(object):
     """
     A general class to provide a base template for converting a database
@@ -264,7 +252,7 @@ class PwmanConvertDB(DBConverter):
         enc = CryptoEngine.get()
         self.oldkey = enc.get_cryptedkey()
         self.newdb.savekey(self.oldkey)
-    
+
     def convert_nodes(self):
         """convert old nodes instances to new format"""
         self.NewNodes = []
