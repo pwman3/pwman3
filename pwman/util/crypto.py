@@ -107,12 +107,6 @@ class CryptoNoCallbackException(CryptoException):
         return "CryptoNoCallbackException: " + self.message
 
 
-class CryptoPasswordMismatchException(CryptoException):
-    """Entered passwords do not match."""
-    def __str__(self):
-        return "CryptoPasswordMismatchException: " + self.message
-
-
 class CryptoEngine(object):
     """
     Cryptographic Engine, overrides CryptoEngineOld.
