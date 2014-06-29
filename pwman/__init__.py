@@ -26,6 +26,7 @@ import sys
 import re
 import data.factory
 from pwman.data.database import __DB_FORMAT__
+import colorama
 
 appname = "pwman3"
 
@@ -40,19 +41,19 @@ author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "a command line password management application."
 keywords = "password management sqlite crypto"
-long_description = ("Pwman3 aims to provide a simple but powerful command line "
-                    "interface for password management.\nIt allows one to store your "
-                    "password in a SQLite database locked by a\nmaster password which "
-                    "can be encrypted with different algorithms (e.g AES, Blowfish, "
-                    "DES3, IDEA, etc.).")
+long_description = ("Pwman3 aims to provide a simple but powerful command "
+                    "line interface for password management.\nIt allows one "
+                    "to store your password in a SQLite database locked by "
+                    "a\nmaster password which can be encrypted with different "
+                    "algorithms (e.g AES, Blowfish, DES3, IDEA, etc.).")
 
 _db_warn = ("pwman3 detected that you are using the old database format"
             " which is insecure."
             " pwman3 will try to automatically convert the database now."
             "\n"
             "If you choose not to convert the database, pwman3, will quit."
-            "\nYou can check the help (pwman3 -h) or look at the manpage how to convert "
-            " the database manually."
+            "\nYou can check the help (pwman3 -h) or look at the manpage how "
+            "to convert the database manually."
             )
 
 
@@ -127,13 +128,9 @@ def set_xsel(config, OSX):
         config.set_value("Global", "xsel", pbcopypath)
 
 
-def set_win_colors(config):
+def set_win_colors(config):  # pragma: no cover
     if 'win' in sys.platform:
-        try:
-            import colorama
-            colorama.init()
-        except ImportError:
-            config.set_value("Global", "colors", 'no')
+        colorama.init()
 
 
 def set_umask(config):
