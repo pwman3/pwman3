@@ -40,3 +40,10 @@ class CryptoTest(unittest.TestCase):
         self.assertFalse(isinstance(new_engine, CryptoEngineOld))
         CryptoEngine._instance = None
         old_engine = CryptoEngine.get()
+
+    def test_alive(self):
+        old_engine = CryptoEngine.get()
+        self.assertTrue(old_engine.alive())
+        old_engine._cipher = None
+        self.assertFalse(old_engine.alive())
+        CryptoEngine.get()
