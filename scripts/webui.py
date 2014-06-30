@@ -144,9 +144,11 @@ def listnodes(apply=['require_login']):
                                                              'ui/templates')])
     return html_nodes
 
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root=statics)
+
 
 if __name__ == '__main__':
     OSX = False

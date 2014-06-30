@@ -2,5 +2,7 @@ include ChangeLog
 include documentation/*
 include documentation/man_page/*
 include pwman/ui/templates/*
-include pwman/ui/templates/static/*
+include pwman/ui/templates/static/css/*
+include pwman/ui/templates/static/js/*
+include pwman/ui/templates/static/js/modernizr/*
 include requirements.txt
