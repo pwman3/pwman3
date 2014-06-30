@@ -57,4 +57,5 @@ dist: clean
 	ls -l dist
 
 install:
+	pip uninstall -y pwman3
 	python setup.py -q install 
