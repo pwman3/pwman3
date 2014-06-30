@@ -171,6 +171,7 @@ class DBTests(unittest.TestCase):
         db = SQLiteDatabaseNewForm("test")
         self.assertEquals("test", db._filename)
 
+
 class TestDBFalseConfig(unittest.TestCase):
 
     def setUp(self):
@@ -284,8 +285,6 @@ class CLITests(unittest.TestCase):
         tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         node.tags = tags
         self.tester.cli._db.addnodes([node])
-
-
 
     def test_get_ids(self):
         # used by do_cp or do_open,
