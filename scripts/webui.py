@@ -18,7 +18,7 @@
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 from __future__ import print_function
-from bottle import route, run, debug, template, request, redirect
+from bottle import route, run, debug, template, request, redirect, static_file
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.data.tags import TagNew
@@ -26,6 +26,7 @@ from pwman import parser_options, get_conf_options
 from pkg_resources import resource_filename
 
 templates_path = [resource_filename('pwman', 'ui/templates')]
+statics = [resource_filename('pwman', 'ui/templates/static')][0]
 
 AUTHENTICATED = False
 TAGS = None
@@ -143,6 +144,9 @@ def listnodes(apply=['require_login']):
                                                              'ui/templates')])
     return html_nodes
 
+@route('/static/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath, root=statics)
 
 if __name__ == '__main__':
     OSX = False
@@ -155,4 +159,4 @@ if __name__ == '__main__':
     crypto = CryptoEngine.get()
 
     debug(True)
-    run(reloader=True)
+    run(reloader=True, port=9030)
