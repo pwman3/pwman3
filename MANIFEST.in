@@ -4,5 +4,5 @@ include documentation/man_page/*
 include pwman/ui/templates/*
 include pwman/ui/templates/static/css/*
 include pwman/ui/templates/static/js/*
-include pwman/ui/templates/static/js/modernizr/*
+include pwman/ui/templates/static/js/vendor/*
 include requirements.txt

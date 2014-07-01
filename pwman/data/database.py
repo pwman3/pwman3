@@ -29,10 +29,11 @@ class DatabaseException(Exception):
 
 class Database(object):
 
-    def __init__(self):
+    def __init__(self, dbver=None):
         self._filtertags = []
+        self.dbver = dbver
 
-    def open(self):
+    def open(self, dbver=None):
         """
         Open the database, by calling the _open method of the
         class inherited for the specific database.
@@ -42,7 +43,7 @@ class Database(object):
         key = self.loadkey()
         """
         self._open()
-        enc = CryptoEngine.get()
+        enc = CryptoEngine.get(dbver=dbver)
         key = self.loadkey()
         if key is not None:
             enc.set_cryptedkey(key)

@@ -24,6 +24,7 @@ import pwman.data.factory
 from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
 from pkg_resources import resource_filename
+import itertools
 
 templates_path = [resource_filename('pwman', 'ui/templates')]
 statics = [resource_filename('pwman', 'ui/templates/static')][0]
@@ -32,7 +33,11 @@ AUTHENTICATED = False
 TAGS = None
 DB = None
 
+# BUG: Error: SQLite: Incorrect number of bindings supplied.
+# The current statement uses 2, and there are 1 supplied.
+# When issuing multiple times filter
 
+# WEB GUI shows multiple tags as one tag!
 def require_auth(fn):
     def check_auth(**kwargs):
         if AUTHENTICATED:
@@ -99,7 +104,7 @@ def forget():
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
     global AUTHENTICATED
-    crypto = CryptoEngine.get()
+    crypto = CryptoEngine.get(dbver=0.5)
 
     if request.method == 'POST':
         key = request.POST.get('pwd', '')
@@ -135,7 +140,9 @@ def listnodes(apply=['require_login']):
                        ', '.join(ntags))
 
     if not TAGS:
-        TAGS = list(set([''.join(node.tags).strip() for node in nodes]))
+        t = [node.tags for node in nodes]
+        t1 = list(itertools.chain.from_iterable(t))
+        TAGS = list(set(t1))
         TAGS.sort()
         TAGS.insert(0, 'None')
 
@@ -154,11 +161,11 @@ if __name__ == '__main__':
     OSX = False
     args = parser_options().parse_args()
     xselpath, dbtype = get_conf_options(args, OSX)
-    dbver = 0.4
+    dbver = 0.5
     DB = pwman.data.factory.create(dbtype, dbver)
-    DB.open()
+    DB.open(dbver=0.5)
 
-    crypto = CryptoEngine.get()
+    crypto = CryptoEngine.get(dbver=0.5)
 
     debug(True)
     run(reloader=True, port=9030)
