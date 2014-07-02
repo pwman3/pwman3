@@ -36,7 +36,7 @@ try:
 except pkg_resources.DistributionNotFound:  # pragma: no cover
     version = "0.5"
 
-website = "http://github.com/pwman3/pwman3"
+website = "http://pwman3.github.io/pwman3/"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "a command line password management application."
