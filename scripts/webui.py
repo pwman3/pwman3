@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -14,17 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 from __future__ import print_function
 from bottle import route, run, debug, template, request, redirect, static_file
 from pwman.util.crypto import CryptoEngine
 import pwman.data.factory
 from pwman.data.tags import TagNew
 from pwman import parser_options, get_conf_options
+from daemon import Daemon
 from pkg_resources import resource_filename
 import itertools
+import argparse
+import sys
+from os.path import expanduser, join
 
 templates_path = [resource_filename('pwman', 'ui/templates')]
 statics = [resource_filename('pwman', 'ui/templates/static')][0]
@@ -38,6 +42,8 @@ DB = None
 # When issuing multiple times filter
 
 # WEB GUI shows multiple tags as one tag!
+
+
 def require_auth(fn):
     def check_auth(**kwargs):
         if AUTHENTICATED:
@@ -157,15 +163,87 @@ def server_static(filepath):
     return static_file(filepath, root=statics)
 
 
+class Pwman3WebDaemon(Daemon):
+
+    def startd(self):
+        """
+        Start the daemon
+        """
+        # Check for a pidfile to see if the daemon already runs
+        self.exit_running()
+        #if not os.path.exists(self.pidfile):
+        # Start the daemon
+        self.daemonize()
+        # after self.daemonize()
+        # all output is redirected
+        print(open(self.pidfile).read())
+        self.run()
+
+    def run(self):
+        global AUTHENTICATED, TAGS, DB
+
+        OSX = False
+        sys.argv = []
+
+        args = parser_options().parse_args()
+        xselpath, dbtype = get_conf_options(args, OSX)
+        dbver = 0.5
+        DB = pwman.data.factory.create(dbtype, dbver)
+        DB.open(dbver=0.5)
+        print(dir(DB))
+        CryptoEngine.get(dbver=0.5)
+        print(pwman.config._conf)
+        debug(True)
+        run(port=9030)
+
+
 if __name__ == '__main__':
-    OSX = False
-    args = parser_options().parse_args()
-    xselpath, dbtype = get_conf_options(args, OSX)
-    dbver = 0.5
-    DB = pwman.data.factory.create(dbtype, dbver)
-    DB.open(dbver=0.5)
 
-    crypto = CryptoEngine.get(dbver=0.5)
+    parser = argparse.ArgumentParser(
+        description="Start the webui of pwman3",
+        usage='%(prog)s start|stop|restart|status [-p|-d]\n',
+        )
+    parser.add_argument('-D', '--NoDaemon',
+                        help='Do not fork, start in foreground',
+                        action="store_true", default=False)
 
-    debug(True)
-    run(reloader=True, port=9030)
+    ext_usage = ("{prog} start - starts the webui."
+                 "{prog} stop - stops the webui."
+                 "{prog} status - check if the process is already running."
+                 "".format(prog=parser.prog))
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
+    action = sys.argv[1]
+
+    if action not in ['start', 'stop', 'restart', 'status']:
+        parser.print_help()
+        print(ext_usage)
+        sys.exit(1)
+
+    sys.argv = sys.argv[1:]
+
+    path = join(expanduser("~"), '.pwman')
+    daemon = Pwman3WebDaemon(parser.prog, join(path, '%s.pid' % parser.prog),
+                             noisy=True)
+
+    args = parser.parse_args()
+
+    if action == 'status':
+        running = daemon.check_proc()
+        if running:
+            print("%s already runs with pid: %d" % (parser.prog, running))
+    if action == 'start' and args.NoDaemon:
+        try:
+            daemon.start()
+        except KeyboardInterrupt:
+            daemon.set_level("auto")
+            daemon.stop()
+    if action == 'start' and not args.NoDaemon:
+        daemon.startd()
+    if action == "restart":
+        daemon.restart()
+    if action == "stop":
+        daemon.stop()
