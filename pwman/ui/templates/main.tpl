@@ -18,6 +18,17 @@
         <div class="main-container">
             <div class="main wrapper clearfix">
 
+                <aside>
+                <h3>Select filter</h3>
+                <form action="/" method="POST">
+                <select multiple name="tag" onchange="this.form.submit()">
+                %for tag in tags:
+                <option value="{{tag}}">{{tag}}</option>
+                %end
+                </select>
+                </form>
+                </aside>
+                
                 <article>
                     <header>
                     </header>
@@ -34,16 +45,6 @@
                     </section>
                 </article>
 
-                <aside>
-                <h3>Select filter</h3>
-                <form action="/" method="POST">
-                <select multiple name="tag" onchange="this.form.submit()">
-                %for tag in tags:
-                <option value="{{tag}}">{{tag}}</option>
-                %end
-                </select>
-                </form>
-                </aside>
 
             </div> <!-- #main -->
         </div> <!-- #main-container -->
