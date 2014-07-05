@@ -42,7 +42,6 @@
                       </tr>
                     %end
                     </table>
-                    </section>
                 </article>
 
 
