@@ -17,7 +17,6 @@
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
 
-
 def get_ui_platform(platform):
     if 'darwin' in platform:
         from mac import PwmanCliMacNew as PwmanCliNew

@@ -20,18 +20,20 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 """
-
-
 from pwman.ui.cli import PwmanCliNew
 from pwman.data.nodes import NewNode
 from pwman.ui import tools
 import time
-import msvcrt
+
 import pwman.util.config as config
 import ast
 from pwman.util.crypto import zerome
 from colorama import Fore
 
+try:
+    import msvcrt
+except ImportError:
+    pass
 
 class PwmanCliWinNew(PwmanCliNew):
     """

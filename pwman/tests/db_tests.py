@@ -30,6 +30,8 @@ from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 from pwman import parser_options, get_conf_options
 from pwman.data.database import __DB_FORMAT__
+from pwman.ui.mac import PwmanCliMacNew
+from pwman.ui.win import PwmanCliWinNew
 
 import unittest
 import StringIO
@@ -182,6 +184,16 @@ class TestDBFalseConfig(unittest.TestCase):
     def test_db_missing_conf_parameter(self):
         self.assertRaises(DatabaseException, factory.create,
                           'SQLite', __DB_FORMAT__)
+
+    def test_get_ui_platform(self):
+        uiclass, osx = get_ui_platform('windows')
+        self.assertFalse(osx)
+        self.assertEqual(uiclass.__name__, PwmanCliWinNew.__name__)
+        uiclass, osx = get_ui_platform('darwin')
+        self.assertTrue(osx)
+        self.assertEqual(uiclass.__name__, PwmanCliMacNew.__name__)
+        del(uiclass)
+        del(osx)
 
     def tearDown(self):
         config.set_value('Database', 'filename', self.fname)

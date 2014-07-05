@@ -21,14 +21,15 @@
 # pylint: disable=I0011
 
 "all mac os  related classes"
-from pwman.ui.cli import PwmanCli
+
+from pwman.ui.cli import PwmanCliNew
 from pwman.ui import tools
 import time
 
 # pylint: disable=R0904
 
 
-class PwmanCliMac(PwmanCli):
+class PwmanCliMac(PwmanCliNew):
     """
     inherit from PwmanCli, override the right functions...
     """
