@@ -108,10 +108,12 @@ def parser_options(formatter_class=argparse.HelpFormatter):
 def get_conf_file(args):
     config_dir = os.path.expanduser("~/.pwman")
 
-    if not os.path.isdir(config_dir):
+    if not os.path.isdir(config_dir):  # pragma: no cover
         os.mkdir(config_dir)
 
     if not os.path.exists(args.cfile):
+        # instead of setting the defaults, the defaults should
+        # be read ! This should be fixed !
         config.set_defaults(default_config)
     else:
         config.load(args.cfile)

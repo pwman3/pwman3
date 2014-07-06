@@ -28,10 +28,11 @@ from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
-from pwman import parser_options, get_conf_options
+from pwman import (parser_options, get_conf_options, get_conf_file)
 from pwman.data.database import __DB_FORMAT__
 from pwman.ui.mac import PwmanCliMacNew
 from pwman.ui.win import PwmanCliWinNew
+from collections import namedtuple
 
 import unittest
 import StringIO
@@ -445,3 +446,15 @@ class ConfigTest(unittest.TestCase):
         set_xsel(config, True)
         if sys.platform == 'linux2':
             self.assertEqual(None, config._conf['Global']['xsel'])
+
+    def test_get_conf_file(self):
+
+        Args = namedtuple('args', 'cfile')
+        args = Args(cfile='nosuchfile')
+        # setting the default
+        # in case the user specifies cfile as command line option
+        # and that file does not exist!
+        get_conf_file(args)
+        # args.cfile does not exist, hence the config values
+        # should be the same as in the defaults
+        # Fix this issue, see comment LN155 in config.py
