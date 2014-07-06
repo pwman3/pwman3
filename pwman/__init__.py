@@ -114,7 +114,8 @@ def get_conf_file(args):
     if not os.path.exists(args.cfile):
         # instead of setting the defaults, the defaults should
         # be read ! This should be fixed !
-        config.set_defaults(default_config)
+        # config.set_defaults(default_config)
+        config.set_config(default_config)
     else:
         config.load(args.cfile)
 

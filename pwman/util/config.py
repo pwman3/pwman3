@@ -29,7 +29,8 @@ class ConfigException(Exception):
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (self.__class__.__name__, self.message)  # pragma: no cover
+        return "{}: {}".format(self.__class__.__name__,
+                               self.message)  # pragma: no cover
 
 
 class ConfigNoConfigException(ConfigException):
@@ -58,14 +59,14 @@ def get_value(section, name):
     global _conf, _defaults
     try:
         return _conf[section][name]
-    except KeyError as e:
+    except KeyError:
         pass
 
     try:
         value = _defaults[section][name]
         set_value(section, name, value)
         return value
-    except KeyError as e:
+    except KeyError:
         pass
 
     return ''
@@ -112,6 +113,11 @@ def load(filename):
     for section in parser.sections():
         for option in parser.options(section):
             set_value(section, option, parser.get(section, option))
+
+
+def set_config(config_dict):
+    global _conf
+    _conf = config_dict
 
 
 def save(filename=None):

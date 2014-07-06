@@ -38,7 +38,8 @@ def auto_convert():
         # This step is done already in get_db_version
         dbconvertor = PwmanConvertDB(args, config)
 
-        #2) copy the old database : cp ~/.pwman3/pwman.db ~/.pwman3/pwman.backup-2013-11-23-23:15.db
+        #2) copy the old database :
+        # cp ~/.pwman3/pwman.db  ~/.pwman3/pwman.backup-2013-11-23-23:15.db
         #3) Display a message about the backup file path
         # These steps are done by PwmanConvertDB.backup_old_db()
         dbconvertor.backup_old_db()
@@ -57,7 +58,8 @@ def auto_convert():
         # add message here ...
         #5b) close connection
         dbconvertor.db.close()
-        print("Your datbase %s was successfully converted " % dbconvertor.dbname)
+        print("Your datbase %s was successfully converted " %
+              dbconvertor.dbname)
         #5c) rename the newly created db to the old name!
         shutil.move(dbconvertor.newdb_name, dbconvertor.dbname)
         #6) Start the pwman3 normally if all went ok
@@ -70,7 +72,7 @@ def main(args):
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype = get_conf_options(args, OSX)
     dbver = get_db_version(config, dbtype, args)
-    enc = CryptoEngine.get(dbver)
+    CryptoEngine.get(dbver)
 
     if args.dbconvert:
         dbconvertor = PwmanConvertDB(args, config)
@@ -78,8 +80,8 @@ def main(args):
         sys.exit(0)
 
     if dbver < 0.4:
-        ans = raw_input("Would you like to proceed with the conversion of the database"
-                        " before starting pwman3 [y/N]?")
+        ans = raw_input("Would you like to proceed with the conversion of the "
+                        "database before starting pwman3 [y/N]?")
         if ans.lower() != "y":
             sys.exit(1)
 

@@ -448,13 +448,13 @@ class ConfigTest(unittest.TestCase):
             self.assertEqual(None, config._conf['Global']['xsel'])
 
     def test_get_conf_file(self):
-
         Args = namedtuple('args', 'cfile')
         args = Args(cfile='nosuchfile')
         # setting the default
         # in case the user specifies cfile as command line option
         # and that file does not exist!
+        foo = config._conf.copy()
         get_conf_file(args)
         # args.cfile does not exist, hence the config values
         # should be the same as in the defaults
-        # Fix this issue, see comment LN155 in config.py
+        config.set_config(foo)
