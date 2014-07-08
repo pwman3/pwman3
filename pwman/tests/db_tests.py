@@ -377,6 +377,8 @@ class ConfigTest(unittest.TestCase):
         self.db = factory.create(self.dbtype, dbver)
         self.tester = SetupTester(dbver)
         self.tester.create()
+        self.orig_config = config._conf.copy()
+        self.orig_config['Encryption'] = {'algorithm': 'AES'}
 
     def test_config_write(self):
         _filename = os.path.join(os.path.dirname(__file__),
@@ -403,6 +405,7 @@ class ConfigTest(unittest.TestCase):
     def test_add_default(self):
         config.add_defaults({'Section1': {'name': 'value'}})
         self.assertIn('Section1', config._defaults)
+        config._defaults.pop('Section1')
 
     def test_get_conf(self):
         cnf = config.get_conf()
@@ -458,3 +461,15 @@ class ConfigTest(unittest.TestCase):
         # args.cfile does not exist, hence the config values
         # should be the same as in the defaults
         config.set_config(foo)
+
+    def test_get_conf_options(self):
+        Args = namedtuple('args', 'cfile, dbase, algo')
+        args = Args(cfile='nosuchfile', dbase='dummy.db', algo='AES')
+        self.assertRaises(Exception, get_conf_options, (args, 'False'))
+        config._defaults['Database']['type'] = 'SQLite'
+        # config._conf['Database']['type'] = 'SQLite'
+        xsel, dbtype = get_conf_options(args, 'True')
+        self.assertEqual(dbtype, 'SQLite')
+
+    def tearDown(self):
+        config._conf = self.orig_config.copy()

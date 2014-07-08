@@ -41,6 +41,11 @@ _conf = dict()
 _defaults = dict()
 
 
+def set_conf(conf_dict):
+    global _conf
+    _conf = conf_dict
+
+
 def set_defaults(defaults):
     global _defaults
     _defaults = defaults
@@ -49,7 +54,7 @@ def set_defaults(defaults):
 def add_defaults(defaults):
     global _defaults
     for n in defaults.keys():
-        if not n in _defaults:
+        if n not in _defaults:
             _defaults[n] = dict()
         for k in defaults[n].keys():
             _defaults[n][k] = defaults[n][k]
@@ -74,7 +79,7 @@ def get_value(section, name):
 
 def set_value(section, name, value):
     global _conf
-    if not section in _conf:
+    if section not in _conf:
         _conf[section] = dict()
     _conf[section][name] = value
 
