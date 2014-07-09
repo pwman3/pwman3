@@ -59,13 +59,13 @@ def create(dbtype, version=None, filename=None):
             db = sqlite.SQLiteDatabaseNewForm()
         else:
             db = None
-    elif dbtype == "Postgresql":
+    elif dbtype == "Postgresql":  # pragma: no cover
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
         except ImportError:
             raise DatabaseException("python-pygresql not installed")
-    elif dbtype == "MySQL":
+    elif dbtype == "MySQL":  # pragma: no cover
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()

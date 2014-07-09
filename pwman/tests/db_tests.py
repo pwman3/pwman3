@@ -362,10 +362,22 @@ class CLITests(unittest.TestCase):
         self.assertTrue(self.tester.cli.do_exit(''))
 
 
+class FakeSqlite(object):
+
+    def check_db_version(self):
+        return ""
+
+
 class FactoryTest(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
         self.assertEquals(factory.check_db_version('SQLite'), 0.5)
+
+    def test_factory_check_db_file(self):
+        orig_sqlite = getattr(factory, 'sqlite')
+        factory.sqlite = FakeSqlite()
+        self.assertEquals(factory.check_db_version('SQLite'), 0.3)
+        factory.sqlite = orig_sqlite
 
 
 class ConfigTest(unittest.TestCase):
