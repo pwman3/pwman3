@@ -28,7 +28,7 @@ from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
-from pwman import (parser_options, get_conf_options, get_conf_file)
+from pwman import (parser_options, get_conf_options, get_conf_file, set_umask)
 from pwman.data.database import __DB_FORMAT__
 from pwman.ui.mac import PwmanCliMacNew
 from pwman.ui.win import PwmanCliWinNew
@@ -379,6 +379,14 @@ class FactoryTest(unittest.TestCase):
         self.assertEquals(factory.check_db_version('SQLite'), 0.3)
         factory.sqlite = orig_sqlite
 
+    def test_factory_create(self):
+        db = factory.create('SQLite', filename='foo.db')
+        db._open()
+        self.assertTrue(os.path.exists('foo.db'))
+        os.unlink('foo.db')
+        self.assertIsInstance(db, SQLiteDatabaseNewForm)
+        self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
+
 
 class ConfigTest(unittest.TestCase):
 
@@ -482,6 +490,17 @@ class ConfigTest(unittest.TestCase):
         # config._conf['Database']['type'] = 'SQLite'
         xsel, dbtype = get_conf_options(args, 'True')
         self.assertEqual(dbtype, 'SQLite')
+
+    def test_set_conf(self):
+        set_conf_f = getattr(config,'set_conf')
+        private_conf = getattr(config, '_conf')
+        set_conf_f({'Config':'OK'})
+        self.assertDictEqual({'Config':'OK'}, config._conf)
+        config._conf = private_conf
+
+    def test_umask(self):
+        config._defaults = {'Global': {}}
+        self.assertRaises(config.ConfigException, set_umask, config)
 
     def tearDown(self):
         config._conf = self.orig_config.copy()

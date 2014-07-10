@@ -137,16 +137,11 @@ def set_win_colors(config):  # pragma: no cover
 
 
 def set_umask(config):
-    # set umask before creating/opening any files
-    try:
-        umask = config.get_value("Global", "umask")
-        if re.search(r'^\d{4}$', umask):
-            os.umask(int(umask))
-        else:
-            raise ValueError
-    except ValueError:
-        print("Could not determine umask from config!")
-        sys.exit(2)
+    umask = config.get_value("Global", "umask")
+    if re.search(r'^\d{4}$', umask):
+        os.umask(int(umask))
+    else:
+        raise config.ConfigException("Could not determine umask from config!")
 
 
 def set_db(args):

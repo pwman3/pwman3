@@ -35,6 +35,7 @@ from pwman import default_config
 import cPickle
 from test_tools import SetupTester
 
+
 class SQLiteDatabase(Database):
     """SQLite Database implementation"""
 
@@ -337,6 +338,15 @@ class CreateTestDataBases(object):
 
     def run(self):
         self.open_dbs()
+        # before add nodes to db1 we have to create an encryption key!
+        #enc = CryptoEngine.get(dbver=dbver)
+        #key = db.loadkey()
+        #if key is not None:
+        #enc.set_cryptedkey(key)
+
+
+        #else:
+        #    self.get_user_password()
         self.add_nodes_to_db1()
 
 
