@@ -148,6 +148,14 @@ The config file  must have the following option:
      Password length (default 7): 7
      New password: Q1dab@7
      ``` 
+ 
+ * Default password length can be changed by: 
+
+    ```
+    [Generator]
+    default_pw_length = 42
+    ```
+
    
  * Copying password to X11 or Mac clip board:
   - On Mac OSX systems copying utilizes `pbcopy`  

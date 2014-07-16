@@ -146,7 +146,11 @@ def getpassword(question, argsgiven=None,
     if argsgiven == 1 or length:
         while not length:
             try:
-                length = getinput("Password length (default 7): ", default='7')
+                default_length = config.get_value(
+                    'Generator', 'default_pw_length') or '7'
+                length = getinput(
+                    "Password length (default %s): " % default_length,
+                    default=default_length)
                 length = int(length)
             except ValueError:
                 print("please enter a proper integer")
