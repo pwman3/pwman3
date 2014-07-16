@@ -145,3 +145,10 @@ def save(filename=None):
         fp.close()
     except IOError as e:
         raise ConfigException(str(e))
+
+def get_pass_conf():
+    numerics = get_value("Generator", "numerics").lower() == 'true'
+    # TODO: allow custom leetifying through the config
+    leetify = get_value("Generator", "leetify").lower() == 'true'
+    special_chars = get_value("Generator", "special_chars").lower() == 'true'
+    return numerics, leetify, special_chars

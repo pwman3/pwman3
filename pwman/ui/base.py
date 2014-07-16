@@ -30,6 +30,7 @@ import os
 import time
 import select as uselect
 import ast
+from pwman.util.config import get_pass_conf
 from pwman.ui import tools
 from pwman.ui.tools import CliMenuItem
 from colorama import Fore
@@ -37,16 +38,6 @@ from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
-
-
-def get_pass_conf():
-    numerics = config.get_value("Generator", "numerics").lower() == 'true'
-    # TODO: allow custom leetifying through the config
-    leetify = config.get_value("Generator", "leetify").lower() == 'true'
-    special_chars = config.get_value("Generator", "special_chars"
-                                     ).lower() == 'true'
-    return numerics, leetify, special_chars
-
 
 class HelpUI(object): # pragma: no cover
     """
@@ -560,7 +551,7 @@ class BaseCommands(BaseUI, HelpUI):
                 numerics, leet, s_chars = get_pass_conf()
                 password = self.get_password(argsgiven=0,
                                              numerics=numerics,
-                                             symbols=leet,
+                                             leetify=leet,
                                              special_signs=s_chars)
             url = self.get_url()
             notes = self.get_notes()
@@ -634,7 +625,9 @@ class BaseCommands(BaseUI, HelpUI):
                      symbols=False, special_signs=False,
                      reader=getpass.getpass, length=None):
         return tools.getpassword("Password (Blank to generate): ",
-                                 reader=reader, length=length, leetify=leetify)
+                                 reader=reader, length=length, leetify=leetify,
+                                 special_signs=special_signs, symbols=symbols,
+                                 numerics=numerics)
 
 
 class Aliases(BaseCommands): # pragma: no cover
