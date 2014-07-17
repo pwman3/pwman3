@@ -29,6 +29,7 @@ import struct
 import os
 import colorama
 from pwman.data.tags import TagNew as Tag
+from pwman.util.config import get_pass_conf
 import pwman.util.generator as generator
 
 if sys.platform != 'win32':
@@ -151,17 +152,19 @@ def getpassword(question, argsgiven=None,
             except ValueError:
                 print("please enter a proper integer")
 
-        password, dumpme = generator.generate_password(length, length,
-                                                       True, leetify,
-                                                       numerics,
-                                                       special_signs)
+        password, dumpme = generator.generate_password(
+            length, length, True, symbols=leetify, numerics=numerics,
+            special_chars=special_signs)
         print ("New password: %s" % (password))
         return password
     # no args given
     while True:
         a1 = reader(question.ljust(width))
         if not a1:
-            return getpassword('', argsgiven=1)
+            return getpassword(
+                    '', argsgiven=1, width=width, echo=echo, reader=reader,
+                    numerics=numerics, leetify=leetify, symbols=symbols,
+                    special_signs=special_signs, length=length)
         a2 = reader("[Repeat] %s" % (question.ljust(width)))
         if a1 == a2:
             if leetify:
@@ -264,7 +267,10 @@ class CMDLoop(object):  # pragma: no cover
                     self.items[0].getter = new_node.username
                     self.items[0].setter = new_node.username
                 elif selection == 1:  # for password
-                    new_node.password = getpassword('New Password:')
+                    numerics, leet, s_chars = get_pass_conf()
+                    new_node.password = getpassword(
+                            'New Password:', numerics=numerics, leetify=leet,
+                            special_signs=s_chars)
                     self.items[1].getter = new_node.password
                     self.items[1].setter = new_node.password
                 elif selection == 2:

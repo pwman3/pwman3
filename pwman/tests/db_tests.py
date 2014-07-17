@@ -22,11 +22,11 @@ from pwman.data.tags import TagNew
 from pwman.data import factory
 from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
 from pwman.util import config
+from pwman.util.config import get_pass_conf
 from pwman.util.generator import leetlist
 from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
 from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
-from pwman.ui.base import get_pass_conf
 from pwman.ui.tools import CMDLoop, CliMenuItem
 from pwman import (parser_options, get_conf_options, get_conf_file, set_umask)
 from pwman.data.database import __DB_FORMAT__
