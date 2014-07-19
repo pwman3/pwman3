@@ -471,11 +471,11 @@ class CryptoEngineOld(CryptoEngine):
         try:
             # old db version used to write stuff to db with
             # plaintext = cPickle.dumps(obj)
-            # TODO: completely remove this block, and convert
+            # DONE: completely remove this block, and convert
             # the DB to a completely plain text ...
-
+            # See the above CryptoEngine
             # This implies that the coversion from OLD DATABASE FORMAT has
-            # to plain strings too ...
+            # plain strings too ...
             return cPickle.loads(plaintext)
         except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
             return plaintext

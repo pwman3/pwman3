@@ -326,28 +326,38 @@ class CreateTestDataBases(object):
         notes = 'some notes'
         node = node_factory(username, password, url, notes,
                             ['testing1', 'testing2'])
-        self.db.open()
-        self.db.addnodes([node])
+        self.db1.addnodes([node])
         idx_created = node._id
-        new_node = self.db.getnodes([idx_created])[0]
+        new_node = self.db1.getnodes([idx_created])[0]
 
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
-            self.assertEquals(attr, getattr(new_node, key))
-        self.db.close()
+                assert attr == getattr(new_node, key)
+        self.db1.close()
+
+    def add_nodes_to_db2(self):
+        username = 'tester'
+        password = 'Password'
+        url = 'example.org'
+        notes = 'some notes'
+        node = node_factory(username, password, url, notes,
+                            ['testing1', 'testing2'])
+        self.db2.addnodes([node])
+        idx_created = node._id
+        new_node = self.db2.getnodes([idx_created])[0]
+
+        for key, attr in {'password': password, 'username': username,
+                          'url': url, 'notes': notes}.iteritems():
+                assert attr == getattr(new_node, key)
+        self.db2.close()
 
     def run(self):
-        self.open_dbs()
         # before add nodes to db1 we have to create an encryption key!
-        #enc = CryptoEngine.get(dbver=dbver)
-        #key = db.loadkey()
-        #if key is not None:
-        #enc.set_cryptedkey(key)
-
-
-        #else:
-        #    self.get_user_password()
+        # this is handeld by the open method
+        self.db1.open()
         self.add_nodes_to_db1()
+        self.db2.open()
+        self.add_nodes_to_db2()
 
 
 if __name__ == '__main__':
