@@ -267,7 +267,6 @@ class CLITests(unittest.TestCase):
     def test_add_new_entry(self):
         # node = NewNode('alice', 'dough!', 'example.com',
         #               'lorem impsum')
-
         node = NewNode()
         node.username = 'alice'
         node.password = 'dough!'
@@ -492,10 +491,10 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(dbtype, 'SQLite')
 
     def test_set_conf(self):
-        set_conf_f = getattr(config,'set_conf')
+        set_conf_f = getattr(config, 'set_conf')
         private_conf = getattr(config, '_conf')
-        set_conf_f({'Config':'OK'})
-        self.assertDictEqual({'Config':'OK'}, config._conf)
+        set_conf_f({'Config': 'OK'})
+        self.assertDictEqual({'Config': 'OK'}, config._conf)
         config._conf = private_conf
 
     def test_umask(self):
