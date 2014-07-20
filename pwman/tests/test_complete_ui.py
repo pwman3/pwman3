@@ -46,9 +46,9 @@ class Ferrum(unittest.TestCase):
         "when trying to run with old db, we should see warning"
         lfile = 'convert-test.log'
         logfile = open(lfile, 'w')
-        child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../../scripts/pwman3') +
-                              ' -d '+OLD_DB_PATH, logfile=logfile)
+        cmd = os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
+                           ) + ' -d '+OLD_DB_PATH
+        child = pexpect.spawn(cmd, logfile=logfile)
 
         rv = child.expect(_db_warn, timeout=5)
         if rv != 0:
@@ -61,10 +61,9 @@ class Ferrum(unittest.TestCase):
         "invoke pwman with -k option to convert the old data"
         lfile = 'convert-test.log'
         logfile = open(lfile, 'w')
-        child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../../scripts/pwman3') +
-                              ' -k -e Blowfish -d '+OLD_DB_PATH,
-                              logfile=logfile)
+        cmd = (os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
+                            ) + ' -k -e Blowfish -d ' + OLD_DB_PATH)
+        child = pexpect.spawn(cmd, logfile=logfile)
         child.expect('[\s|\S]+Please enter your password:', timeout=10)
         self.assertEqual(6, child.sendline('12345'))
 
@@ -86,6 +85,7 @@ class Ferrum(unittest.TestCase):
         child.sendline('foobar')
         self.clean_files()
 
+
 def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
@@ -95,5 +95,3 @@ def suite():
 if __name__ == '__main__':
     unittest.TextTestRunner(verbosity=2).run(suite())
     os.remove(NEW_DB_PATH)
-
-
