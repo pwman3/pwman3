@@ -303,15 +303,23 @@ class SQLiteDatabase(Database):
         else:
             return keyrow[0]
 
+import copy
+
 
 class CreateTestDataBases(object):
 
     def __init__(self):
         config.set_defaults(default_config)
-        enc = CryptoEngine.get()
+        enc = CryptoEngine.get(dbver=0.4)
         enc.set_callback(CLICallback())
+        self.enc1 = copy.copy(enc)
+        enc = CryptoEngine.get(dbver=0.5)
+        enc.set_callback(CLICallback())
+        self.enc2 = copy.copy(enc)
+
         self.db1 = SQLiteDatabaseNewForm('konverter-v0.4.db', dbformat=0.4)
         self.db2 = SQLiteDatabaseNewForm('konverter-v0.5.db', dbformat=0.5)
+        assert self.enc1 is not self.enc2
 
     def open_dbs(self):
         self.db1._open()
@@ -354,10 +362,39 @@ class CreateTestDataBases(object):
     def run(self):
         # before add nodes to db1 we have to create an encryption key!
         # this is handeld by the open method
-        self.db1.open()
+        import copy
+        self.db1._open()
+        enc1 = CryptoEngine.get(dbver=0.4)
+        enc1.set_callback(CLICallback())
+        key = self.db1.loadkey()
+        if key is not None:
+            enc1.set_cryptedkey(key)
+        else:
+            newkey = enc1.changepassword()
+            self.db1.savekey(newkey)
+
+        enc1c = copy.copy(enc1)
+        if key is not None:
+            enc1.set_cryptedkey(key)
+
         self.add_nodes_to_db1()
-        self.db2.open()
+        self.db2._open()
+        enc2 = CryptoEngine.get(dbver=0.5)
+        enc2.set_callback(CLICallback())
+        key = self.db2.loadkey()
+        if key is not None:
+            enc2.set_cryptedkey(key)
+        else:
+            newkey = enc2.changepassword()
+            self.db2.savekey(newkey)
+
+        enc2c = copy.copy(enc2)
+        if key is not None:
+            enc2.set_cryptedkey(key)
+
         self.add_nodes_to_db2()
+        assert enc1 is not enc2
+        assert enc1c is not enc2c
 
 
 if __name__ == '__main__':
