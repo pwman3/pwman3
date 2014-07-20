@@ -123,6 +123,7 @@ class CryptoEngine(object):
     """
     _timeoutcount = 0
     _instance = None
+    _instance_new = None
     _callback = None
 
     @classmethod
@@ -132,13 +133,14 @@ class CryptoEngine(object):
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
-        if CryptoEngine._instance is None:
-            if dbver < 0.5:
+        if dbver < 0.5:
+            if not CryptoEngine._instance:
                 CryptoEngine._instance = CryptoEngineOld()
-            elif dbver == 0.5:
-                CryptoEngine._instance = CryptoEngine()
-
-        return CryptoEngine._instance
+            return CryptoEngine._instance
+        elif dbver == 0.5:
+            if not CryptoEngine._instance_new:
+                CryptoEngine._instance_new = CryptoEngine()
+            return CryptoEngine._instance_new
 
     def __init__(self):
         """Initialise the Cryptographic Engine
