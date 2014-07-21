@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 
 """
 Encryption Module used by PwmanDatabase
@@ -256,16 +256,16 @@ class CryptoEngine(object):
             plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
 
-        newpassword1 = self._callback.getnewsecret("Please enter your new \
-password")
-        newpassword2 = self._callback.getnewsecret("Please enter your new \
-password again")
+        newpassword1 = self._callback.getnewsecret(("Please enter your new"
+                                                    " password"))
+        newpassword2 = self._callback.getnewsecret(("Please enter your new"
+                                                   "password again"))
         while newpassword1 != newpassword2:
             print "Passwords do not match!"
-            newpassword1 = self._callback.getnewsecret("Please enter your new \
-password")
-            newpassword2 = self._callback.getnewsecret("Please enter your new \
-password again")
+            newpassword1 = self._callback.getnewsecret(("Please enter your new"
+                                                        " password"))
+            newpassword2 = self._callback.getnewsecret(("Please enter your new"
+                                                        " password again"))
 
         newcipher = self._getcipher_real(newpassword1, self._algo)
         self._keycrypted = str(newcipher.encrypt(
@@ -353,6 +353,9 @@ password again")
         form PyCrypto
         """
         if (algo == "AES"):
+            for i in range(1000):
+                key = hashlib.sha256(key)
+                key = key.digest()
             key = hashlib.sha256(key)
             cipher = cAES.new(key.digest(), cAES.MODE_ECB)
         elif (algo == 'ARC2'):
