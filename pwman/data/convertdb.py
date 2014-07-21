@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 from __future__ import print_function
 import os
 import shutil
@@ -185,6 +185,22 @@ class DBConverter(object):
         else:
             self.newdb_name = '.new-%s'.join(os.path.splitext(self.dbname))
 
+    @staticmethod
+    def detect_db_version(self, filename):
+        """
+        This method should accept a pwman db file name, and it should try to
+        detect which database version it is.
+        """
+        pass
+
+    @staticmethod
+    def invoke_converter(dbversion, future_version):
+        """
+        this method should accept the two parameters and according to them
+        invoke the right converter
+        """
+        pass
+
     def backup_old_db(self):
         print("Will convert the following Database: %s " % self.dbname)
         if os.path.exists(config.get_value("Database", "filename")):
@@ -199,11 +215,11 @@ class DBConverter(object):
     def read_old_db(self):
         raise Exception("This methodod should be overriden")
 
-    def create_new_db(self):
+    def create_new_db(self, new_version=_NEWVERSION):
         if os.path.exists(self.newdb_name):
             os.remove(self.newdb_name)
 
-        self.newdb = pwman.data.factory.create(self.dbtype, _NEWVERSION,
+        self.newdb = pwman.data.factory.create(self.dbtype, new_version,
                                                self.newdb_name)
         self.newdb._open()
 

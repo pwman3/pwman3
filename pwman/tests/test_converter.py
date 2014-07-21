@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # pylint: disable=I0011
 
 import sys
@@ -33,7 +33,9 @@ import sqlite3 as sqlite
 import pwman.util.config as config
 from pwman import default_config
 import cPickle
-from test_tools import SetupTester
+from test_tools import SetupTester, DummyCallback4
+import copy
+import unittest
 
 
 class SQLiteDatabase(Database):
@@ -303,18 +305,16 @@ class SQLiteDatabase(Database):
         else:
             return keyrow[0]
 
-import copy
-
 
 class CreateTestDataBases(object):
 
     def __init__(self):
         config.set_defaults(default_config)
         enc = CryptoEngine.get(dbver=0.4)
-        enc.set_callback(CLICallback())
+        enc.set_callback(DummyCallback4())
         self.enc1 = copy.copy(enc)
         enc = CryptoEngine.get(dbver=0.5)
-        enc.set_callback(CLICallback())
+        enc.set_callback(DummyCallback4())
         self.enc2 = copy.copy(enc)
 
         self.db1 = SQLiteDatabaseNewForm('konverter-v0.4.db', dbformat=0.4)
@@ -362,10 +362,9 @@ class CreateTestDataBases(object):
     def run(self):
         # before add nodes to db1 we have to create an encryption key!
         # this is handeld by the open method
-        import copy
         self.db1._open()
         enc1 = CryptoEngine.get(dbver=0.4)
-        enc1.set_callback(CLICallback())
+        enc1.set_callback(DummyCallback4())
         key = self.db1.loadkey()
         if key is not None:
             enc1.set_cryptedkey(key)
@@ -380,7 +379,7 @@ class CreateTestDataBases(object):
         self.add_nodes_to_db1()
         self.db2._open()
         enc2 = CryptoEngine.get(dbver=0.5)
-        enc2.set_callback(CLICallback())
+        enc2.set_callback(DummyCallback4())
         key = self.db2.loadkey()
         if key is not None:
             enc2.set_cryptedkey(key)
@@ -397,6 +396,18 @@ class CreateTestDataBases(object):
         assert enc1c is not enc2c
 
 
+class TestConverter(unittest.TestCase):
+
+    pass
+
 if __name__ == '__main__':
     tester = CreateTestDataBases()
     tester.run()
+
+    # afther the test databases are created, invoking
+    # pwman3 -d konverter-v0.5.db
+    # initiates an OldCrypto instance, which can not
+    # decrypt the database, which is expected!
+    # However, this database has the false database version
+    # select DBVERSION from DBVERSION
+    # returns -> 0.4, which is wrong. This should be 0.5
