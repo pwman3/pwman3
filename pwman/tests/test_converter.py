@@ -17,7 +17,7 @@
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
 # pylint: disable=I0011
-
+from __future__ import print_function
 import sys
 import os
 sys.path.insert(0, os.getcwd())
@@ -34,6 +34,7 @@ import pwman.util.config as config
 from pwman import default_config
 import cPickle
 from test_tools import SetupTester, DummyCallback4
+from pwman.data.convertdb import DBConverter
 import copy
 import unittest
 
@@ -403,7 +404,6 @@ class TestConverter(unittest.TestCase):
 if __name__ == '__main__':
     tester = CreateTestDataBases()
     tester.run()
-
     # afther the test databases are created, invoking
     # pwman3 -d konverter-v0.5.db
     # initiates an OldCrypto instance, which can not
@@ -411,3 +411,5 @@ if __name__ == '__main__':
     # However, this database has the false database version
     # select DBVERSION from DBVERSION
     # returns -> 0.4, which is wrong. This should be 0.5
+    assert "0.4" == DBConverter.detect_db_version('konverter-v0.4.db')
+    assert "0.5" == DBConverter.detect_db_version('konverter-v0.5.db')

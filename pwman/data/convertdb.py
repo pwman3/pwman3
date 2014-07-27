@@ -186,12 +186,19 @@ class DBConverter(object):
             self.newdb_name = '.new-%s'.join(os.path.splitext(self.dbname))
 
     @staticmethod
-    def detect_db_version(self, filename):
+    def detect_db_version(filename):
         """
         This method should accept a pwman db file name, and it should try to
         detect which database version it is.
         """
-        pass
+        con = sqlite.connect(filename)
+        cur = con.cursor()
+        cur.execute("SELECT DBVERSION FROM DBVERSION")
+        row = cur.fetchone()
+        if not row:
+            return "0.3"  # pragma: no cover
+        else:
+            return row[0]
 
     @staticmethod
     def invoke_converter(dbversion, future_version):
