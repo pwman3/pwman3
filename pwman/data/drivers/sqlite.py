@@ -39,7 +39,7 @@ def check_db_version():
     cur = con.cursor()
     cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
     row = cur.fetchone()
-    if row is None:
+    if not row:
         return "0.3"  # pragma: no cover
     try:
         return row[-2]
