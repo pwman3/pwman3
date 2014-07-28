@@ -32,7 +32,8 @@ class CryptoTest(unittest.TestCase):
         self.assertTrue(True)
 
     def test_get(self):
-        old_engine = CryptoEngine.get()
+        CryptoEngine._instance_new = None
+        old_engine = CryptoEngine.get(0.4)
         self.assertIsInstance(old_engine, CryptoEngineOld)
         CryptoEngine._instance = None
         new_engine = CryptoEngine.get(dbver=0.5)

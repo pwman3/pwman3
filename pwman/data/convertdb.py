@@ -196,7 +196,7 @@ class DBConverter(object):
         cur.execute("SELECT DBVERSION FROM DBVERSION")
         row = cur.fetchone()
         if not row:
-            return "0.3"  # pragma: no cover
+            return "0.3"
         else:
             return row[0]
 

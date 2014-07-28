@@ -378,6 +378,8 @@ class CreateTestDataBases(object):
             enc1.set_cryptedkey(key)
 
         self.add_nodes_to_db1()
+        CryptoEngine._instance = None
+
         self.db2._open()
         enc2 = CryptoEngine.get(dbver=0.5)
         enc2.set_callback(DummyCallback4())
@@ -406,10 +408,8 @@ if __name__ == '__main__':
     tester.run()
     # afther the test databases are created, invoking
     # pwman3 -d konverter-v0.5.db
-    # initiates an OldCrypto instance, which can not
-    # decrypt the database, which is expected!
-    # However, this database has the false database version
-    # select DBVERSION from DBVERSION
-    # returns -> 0.4, which is wrong. This should be 0.5
     assert "0.4" == DBConverter.detect_db_version('konverter-v0.4.db')
     assert "0.5" == DBConverter.detect_db_version('konverter-v0.5.db')
+
+    # python scripts/pwman3 -d konverter-v0.5.db -e AES,
+    # works !
