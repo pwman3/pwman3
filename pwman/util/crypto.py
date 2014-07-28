@@ -127,19 +127,23 @@ class CryptoEngine(object):
     _callback = None
 
     @classmethod
-    def get(cls, dbver=None):
+    def get(cls, dbver=0.5):
         """
         CryptoEngine.get() -> CryptoEngine
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
-        if dbver < 0.5:
-            if not CryptoEngine._instance:
-                CryptoEngine._instance = CryptoEngineOld()
+        if CryptoEngine._instance:
             return CryptoEngine._instance
-        elif dbver == 0.5:
-            if not CryptoEngine._instance_new:
-                CryptoEngine._instance_new = CryptoEngine()
+        if CryptoEngine._instance_new:
+            return CryptoEngine._instance_new
+
+        if dbver < 0.5:
+            CryptoEngine._instance = CryptoEngineOld()
+            return CryptoEngine._instance
+
+        if dbver >= 0.5:
+            CryptoEngine._instance_new = CryptoEngine()
             return CryptoEngine._instance_new
 
     def __init__(self):
@@ -165,7 +169,7 @@ class CryptoEngine(object):
             self._callback = None
 
         keycrypted = config.get_value("Encryption", "keycrypted")
-        if len(keycrypted) > 0:
+        if keycrypted:
             self._keycrypted = keycrypted
         else:
             self._keycrypted = None
@@ -393,8 +397,10 @@ class CryptoEngine(object):
         """
         retrieve encrypted data
         """
-        if (plaintext.startswith(_TAG)):
-            plaintext = plaintext[len(_TAG):]
+        try:
+            plaintext.decode('utf-8')
+        except UnicodeDecodeError:
+            raise CryptoBadKeyException("Error decrypting, bad key")
         return plaintext
 
 
