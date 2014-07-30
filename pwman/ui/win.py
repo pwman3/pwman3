@@ -1,5 +1,5 @@
 """"
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 """
+from __future__ import print_function
 from pwman.ui.cli import PwmanCliNew
 from pwman.data.nodes import NewNode
 from pwman.ui import tools
@@ -34,6 +35,7 @@ try:
     import msvcrt
 except ImportError:
     pass
+
 
 class PwmanCliWinNew(PwmanCliNew):
     """
@@ -77,7 +79,7 @@ class PwmanCliWinNew(PwmanCliNew):
             tags = self.get_tags()
             node.tags = tags
             self._db.addnodes([node])
-            print "Password ID: %d" % (node._id)
+            print("Password ID: %d" % (node._id))
             # when done with node erase it
             zerome(password)
         except Exception as e:
@@ -85,18 +87,16 @@ class PwmanCliWinNew(PwmanCliNew):
 
     def print_node(self, node):
         width = str(tools._defaultwidth)
-        print "Node %d." % (node.get_id())
-        print ("%" + width+"s %s") % (tools.typeset("Username:", Fore.RED),
-                                    node.get_username())
-        print ("%"+width+"s %s") % (tools.typeset("Password:", Fore.RED),
-                                    node.get_password())
-        print ("%"+width+"s %s") % (tools.typeset("Url:", Fore.RED),
-                                    node.get_url())
-        print ("%"+width+"s %s") % (tools.typeset("Notes:", Fore.RED),
-                                    node.get_notes())
-        print tools.typeset("Tags: ", Fore.RED),
-        for t in node.get_tags():
-            print " %s \n" % t.get_name(),
+        print("Node {}.".format(node._id))
+        print("{} {}".format(tools.typeset("Username:", Fore.RED).ljust(width),
+                             node.username))
+        print ("{} {}".format(tools.typeset("Password:", Fore.RED).ljust(width),
+                              node.password))
+        print("{} {}".format(tools.typeset("Url:", Fore.RED).ljust(width), node.url))
+        print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width), node.notes))
+        print("{}".format(tools.typeset("Tags: ", Fore.RED)), end=" ")
+        for t in node.tags:
+            print(t.name)
 
         def heardEnterWin():
             c = msvcrt.kbhit()
@@ -117,6 +117,6 @@ class PwmanCliWinNew(PwmanCliNew):
 
         flushtimeout = int(config.get_value("Global", "cls_timeout"))
         if flushtimeout > 0:
-            print "Press any key to flush screen (autoflash "\
-                + "in %d sec.)" % flushtimeout
+            print("Press any key to flush screen (autoflash "
+                  "in %d sec.)" % flushtimeout)
             waituntil_enter(heardEnterWin, flushtimeout)

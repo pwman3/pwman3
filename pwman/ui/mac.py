@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,13 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 # pylint: disable=I0011
-
+from __future__ import print_function
 "all mac os  related classes"
 
 from pwman.ui.cli import PwmanCliNew
@@ -36,13 +36,13 @@ class PwmanCliMac(PwmanCliNew):
     def do_copy(self, args):
         ids = self.get_ids(args)
         if len(ids) > 1:
-            print "Can only 1 password at a time..."
+            print("Can only 1 password at a time...")
         try:
             node = self._db.getnodes(ids)
             node[0].get_password()
             tools.text_to_mcclipboard(node[0].get_password())
-            print "copied password for {}@{} clipboard".format(
-                node[0].get_username(), node[0].get_url())
+            print("copied password for {}@{} clipboard".format(
+                  node[0].get_username(), node[0].get_url()))
             time.sleep(10)
             tools.text_to_clipboards("")
         except Exception as e:
@@ -57,7 +57,7 @@ class PwmanCliMac(PwmanCliNew):
             self.help_open()
             return
         if len(ids) > 1:
-            print "Can open only 1 link at a time ..."
+            print("Can open only 1 link at a time ...")
             return None
         try:
             node = self._db.getnodes(ids)
@@ -70,19 +70,19 @@ class PwmanCliMac(PwmanCliNew):
         self.do_open(args)
 
     ##
-    ## Help functions
+    # Help functions
     ##
     def help_open(self):
         self.usage("open <ID>")
-        print "Launch default browser with 'open url',\n" \
-              + "the url must contain http:// or https://."
+        print("Launch default browser with 'open url',\n"
+              "the url must contain http:// or https://.")
 
     def help_o(self):
         self.help_open()
 
     def help_copy(self):
         self.usage("copy <ID>")
-        print "Copy password to Cocoa clipboard using pbcopy"
+        print("Copy password to Cocoa clipboard using pbcopy")
 
     def help_cp(self):
         self.help_copy()
