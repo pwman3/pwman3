@@ -21,7 +21,7 @@
 import os
 import pkg_resources
 import argparse
-from util import config
+from pwman.util import config
 import sys
 import re
 import data.factory

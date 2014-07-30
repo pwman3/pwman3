@@ -64,7 +64,7 @@ def auto_convert():
         shutil.move(dbconvertor.newdb_name, dbconvertor.dbname)
         #6) Start the pwman3 normally if all went ok
         return True
-    except Exception, e:
+    except Exception as e:
         raise e
 
 
@@ -93,13 +93,13 @@ def main(args):
 
     try:
         cli.cmdloop()
-    except KeyboardInterrupt, e:
+    except KeyboardInterrupt as e:
         print(e)
 
     if config.get_value("Global", "save") == "True":
         try:
             config.save(args.cfile)
-        except Exception, e:
+        except Exception as e:
             print ("Error: %s" % e)
             sys.exit(-1)
 

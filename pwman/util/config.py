@@ -18,8 +18,12 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+import sys
 
-from ConfigParser import ConfigParser, ParsingError
+if sys.version_info.major > 2:
+    from configparser import ConfigParser, ParsingError
+else:
+    from ConfigParser import ConfigParser, ParsingError
 import copy
 
 
