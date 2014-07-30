@@ -32,6 +32,9 @@ from pwman.data.tags import TagNew as Tag
 from pwman.util.config import get_pass_conf
 import pwman.util.generator as generator
 
+if sys.version_info.major > 2:
+    raw_input = input
+
 if sys.platform != 'win32':
     import termios
     import fcntl

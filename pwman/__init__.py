@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,18 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 import os
 import pkg_resources
 import argparse
 from pwman.util import config
 import sys
 import re
-import data.factory
+from pwman.data import factory
 from pwman.data.database import __DB_FORMAT__
 import colorama
 
@@ -34,20 +34,20 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.5"
+    version = u"0.5"
 
 website = "http://pwman3.github.io/pwman3/"
 author = "Oz Nahum"
 authoremail = "nahumoz@gmail.com"
 description = "a command line password management application."
 keywords = "password management sqlite crypto"
-long_description = ("Pwman3 aims to provide a simple but powerful command "
+long_description = (u"Pwman3 aims to provide a simple but powerful command "
                     "line interface for password management.\nIt allows one "
                     "to store your password in a SQLite database locked by "
                     "a\nmaster password which can be encrypted with different "
                     "algorithms (e.g AES, Blowfish, DES3, IDEA, etc.).")
 
-_db_warn = ("pwman3 detected that you are using the old database format"
+_db_warn = (u"pwman3 detected that you are using the old database format"
             " which is insecure."
             " pwman3 will try to automatically convert the database now."
             "\n"
@@ -99,7 +99,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):
                               " one found in the config file, or the one given"
                               " as command line argument."))
     parser.add_argument('-O', '--output', dest='output',
-                        #default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
+                        # default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
                         help=("The name of the newly created database after "
                               "converting."))
     return parser
@@ -175,7 +175,7 @@ def get_conf_options(args, OSX):
 
 def get_db_version(config, dbtype, args):
     if os.path.exists(config.get_value("Database", "filename")):
-        dbver = data.factory.check_db_version(dbtype)
+        dbver = factory.check_db_version(dbtype)
         if dbver < 0.4 and not args.dbconvert:
             print(_db_warn)
     else:

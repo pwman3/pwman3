@@ -48,3 +48,7 @@ class CryptoTest(unittest.TestCase):
         old_engine._cipher = None
         self.assertFalse(old_engine.alive())
         CryptoEngine.get()
+
+
+if __name__ == '__main__':
+    unittest.main()

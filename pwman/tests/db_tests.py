@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 
 from pwman.data.nodes import NewNode
 from pwman.data.tags import TagNew
@@ -33,12 +33,14 @@ from pwman.data.database import __DB_FORMAT__
 from pwman.ui.mac import PwmanCliMacNew
 from pwman.ui.win import PwmanCliWinNew
 from collections import namedtuple
-
+import sys
 import unittest
-import StringIO
+if sys.version_info.major > 2:
+    from io import StringIO
+else:
+    import StringIO
 import os
 import os.path
-import sys
 
 dummyfile = """
 [Encryption]
@@ -105,13 +107,13 @@ class DBTests(unittest.TestCase):
         password = 'Password'
         url = 'example.org'
         notes = 'some notes'
-        #node = NewNode(username, password, url, notes)
+        # node = NewNode(username, password, url, notes)
         node = NewNode()
         node.username = username
         node.password = password
         node.url = url
         node.notes = notes
-        #node = NewNode(username, password, url, notes)
+        # node = NewNode(username, password, url, notes)
         tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
         node.tags = tags
         self.db.open()
@@ -175,7 +177,7 @@ class DBTests(unittest.TestCase):
 class TestDBFalseConfig(unittest.TestCase):
 
     def setUp(self):
-        #filename = default_config['Database'].pop('filename')
+        # filename = default_config['Database'].pop('filename')
         self.fname1 = default_config['Database'].pop('filename')
         self.fname = config._conf['Database'].pop('filename')
 

@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # pylint: disable=I0011
-
+from __future__ import print_function
 import pexpect
 import unittest
 import os
@@ -53,7 +53,7 @@ class Ferrum(unittest.TestCase):
         rv = child.expect(_db_warn, timeout=5)
         if rv != 0:
             lfile.seek(0)
-            print lfile.readlines()
+            print(lfile.readlines())
 
         self.assertEqual(0, rv)
 

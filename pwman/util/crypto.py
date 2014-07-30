@@ -41,7 +41,7 @@ crypto = CryptoEngine.get()
 ciphertext = crypto.encrypt("plaintext")
 plaintext = cyypto.decrypt(ciphertext)
 """
-
+from __future__ import print_function
 from Crypto.Cipher import Blowfish as cBlowfish
 from Crypto.Cipher import AES as cAES
 from Crypto.Cipher import ARC2 as cARC2
@@ -52,12 +52,15 @@ from Crypto.Random import OSRNG
 
 from pwman.util.callback import Callback
 import pwman.util.config as config
-import cPickle
+try:
+    import cPickle
+except ImportError:
+    import pickle as cPickle
 import time
 import sys
 import ctypes
 import hashlib
-
+import base64
 
 def zerome(string):
     """
@@ -252,7 +255,10 @@ class CryptoEngine(object):
             # Generate a new key, 32 byts in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
             random = OSRNG.new()
-            key = str(random.read(32)).encode('base64')
+            try:
+                key = str(random.read(32)).encode('base64')
+            except LookupError:
+                key = str(base64.b64encode(random.read(32)).decode('utf-8'))
         else:
             password = self._callback.getsecret(("Please enter your current "
                                                  "password"))
@@ -265,7 +271,7 @@ class CryptoEngine(object):
         newpassword2 = self._callback.getnewsecret(("Please enter your new"
                                                    "password again"))
         while newpassword1 != newpassword2:
-            print "Passwords do not match!"
+            print("Passwords do not match!")
             newpassword1 = self._callback.getnewsecret(("Please enter your new"
                                                         " password"))
             newpassword2 = self._callback.getnewsecret(("Please enter your new"
@@ -333,7 +339,7 @@ class CryptoEngine(object):
                 key = self._retrievedata(plainkey)
                 break
             except CryptoBadKeyException:
-                print "Wrong password."
+                print("Wrong password.")
                 tries += 1
 
         if not key:
@@ -357,11 +363,15 @@ class CryptoEngine(object):
         form PyCrypto
         """
         if (algo == "AES"):
+            if sys.version_info.major > 2:
+                key = key.encode('utf-8')
             for i in range(1000):
-                key = hashlib.sha256(key)
-                key = key.digest()
+               key = hashlib.sha256(key)
+               key = key.digest()
+
             key = hashlib.sha256(key)
             cipher = cAES.new(key.digest(), cAES.MODE_ECB)
+
         elif (algo == 'ARC2'):
             cipher = cARC2.new(key, cARC2.MODE_ECB)
         elif (algo == 'ARC4'):

@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # pylint: disable=I0011
 """
 Define the base CLI interface for pwman3
@@ -38,8 +38,11 @@ from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
+if sys.version_info.major > 2:
+    raw_input = input
 
-class HelpUI(object): # pragma: no cover
+
+class HelpUI(object):  # pragma: no cover
     """
     this class holds all the UI help functionality.
     in PwmanCliNew. The later inherits from this class
@@ -400,7 +403,7 @@ class BaseCommands(BaseUI, HelpUI):
         try:
             key = self._db.changepassword()
             self._db.savekey(key)
-        except Exception  as e:
+        except Exception as e:
             self.error(e)
 
     def do_save(self, args):
@@ -437,7 +440,7 @@ class BaseCommands(BaseUI, HelpUI):
         # strings = []
         tags = self._db.listtags(True)
         # for t in tags:
-            # strings.append(t.get_name())
+        #    strings.append(t.get_name())
         #    strings.append(t)
 
         strings = [t for t in tags]
@@ -460,8 +463,8 @@ class BaseCommands(BaseUI, HelpUI):
 
     def do_list(self, args):
 
-        #crypto  = CryptoEngine.get()
-        #crypto.auth('YOURPASSWORD')
+        # crypto  = CryptoEngine.get()
+        # crypto.auth('YOURPASSWORD')
 
         if len(args.split()) > 0:
             self.do_clear('')
@@ -560,7 +563,7 @@ class BaseCommands(BaseUI, HelpUI):
             node.password = password
             node.url = url
             node.notes = notes
-            #node = NewNode(username, password, url, notes)
+            # node = NewNode(username, password, url, notes)
             node.tags = self.get_tags()
             self._db.addnodes([node])
             print ("Password ID: %d" % (node._id))
@@ -630,7 +633,7 @@ class BaseCommands(BaseUI, HelpUI):
                                  numerics=numerics)
 
 
-class Aliases(BaseCommands): # pragma: no cover
+class Aliases(BaseCommands):  # pragma: no cover
     """
     Define all the alias you want here...
     """

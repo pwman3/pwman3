@@ -1,4 +1,4 @@
-import test_pwman
+from . import test_pwman
 
 def suite():
     import unittest

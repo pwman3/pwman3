@@ -4,19 +4,19 @@ script to install pwman3
 """
 
 from setuptools import setup
-import pwman
 import sys
 from setuptools.command.install import install
 import os
 from subprocess import Popen, PIPE
 from build_manpage import BuildManPage
+import pwman
 
 
 def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
     ver = des.stdout.readlines()
     if ver:
-        return ver[0].strip()
+        return ver[0].strip().decode('utf-8')
     else:
         return pwman.version
 
@@ -78,7 +78,7 @@ setup(name=pwman.appname,
       tests_require=['pexpect'],
       cmdclass={
           'install_pycrypto': PyCryptoInstallCommand,
-          'build_manpage': BuildManPage,
+          'build_manpage': BuildManPage
       }
 
       )
