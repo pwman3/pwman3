@@ -169,8 +169,7 @@ class CryptoEngine(object):
         """
         Initialise the Cryptographic Engine
         """
-        algo = config.get_value("Encryption", "algorithm")
-        self._algo = algo if algo else None
+        self._algo = algorithm
         self._keycrypted = keycrypted if keycrypted else None
         self._timeout = timeout
         self._cipher = None
