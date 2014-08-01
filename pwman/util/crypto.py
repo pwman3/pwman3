@@ -230,6 +230,8 @@ class CryptoEngine(object):
     def callback(self, callback):
         if isinstance(callback, Callback):
             self._callback = callback
+            self._getsecret = callback.getsecret
+            self._getnewsecret = callback.getnewsecret
         else:
             raise CryptoNoCallbackException("callback must be an instance of"
                                             " Callback!")
@@ -250,22 +252,19 @@ class CryptoEngine(object):
             randombytes = random.read(32)
             key = base64.b64encode(str(randombytes))+'\n'
         else:
-            password = self._callback.getsecret(("Please enter your current "
-                                                 "password"))
+            password = self._getsecret("Please enter your current password")
             cipher = self._getcipher_real(password, self._algo)
-            plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
+            plainkey = cipher.decrypt(base64.b64decode(self._keycrypted))
+            # python2 only ...
+            # plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
 
-        newpassword1 = self._callback.getnewsecret(("Please enter your new"
-                                                    " password"))
-        newpassword2 = self._callback.getnewsecret(("Please enter your new"
-                                                   "password again"))
+        newpassword1 = self._getnewsecret("Please enter your new password")
+        newpassword2 = self._getnewsecret("Please enter your new password again")
         while newpassword1 != newpassword2:
             print("Passwords do not match!")
-            newpassword1 = self._callback.getnewsecret(("Please enter your new"
-                                                        " password"))
-            newpassword2 = self._callback.getnewsecret(("Please enter your new"
-                                                        " password again"))
+            newpassword1 = self._getnewsecret("Please enter your new password")
+            newpassword2 = self._getnewsecret("Please enter your new password again")
 
         newcipher = self._getcipher_real(newpassword1, self._algo)
         self._keycrypted = str(newcipher.encrypt(
@@ -325,7 +324,7 @@ class CryptoEngine(object):
 
         while tries < max_tries:
             try:
-                password = self._callback.getsecret("Please enter your "
+                password = self._getsecret("Please enter your "
                                                     "password")
                 tmpcipher = self._getcipher_real(password, self._algo)
                 plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
