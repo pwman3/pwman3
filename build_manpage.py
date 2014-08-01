@@ -205,7 +205,7 @@ class ManPageFormatter(argparse.HelpFormatter):
             return ''
 
         footer = []
-        for section, value in sections.iteritems():
+        for section, value in sections.items():
             part = ".SH {}\n {}".format(section.upper(), value)
             footer.append(part)
 
