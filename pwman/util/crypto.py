@@ -149,35 +149,30 @@ class CryptoEngine(object):
         if not algo:
             raise CryptoException("Parameters missing, no algorithm given")
 
+        try:
+            timeout = int(config.get_value("Encryption", "timeout"))
+        except ValueError:
+            timeout = -1
+
+        kwargs = {'keycrypted': keycrypted, 'algorithm': algo,
+                  'timeout': timeout}
+
         if dbver < 0.5:
-            CryptoEngine._instance = CryptoEngineOld(keycrypted=keycrypted,
-                                                     algorithm=algo)
+            CryptoEngine._instance = CryptoEngineOld(**kwargs)
             return CryptoEngine._instance
 
         if dbver >= 0.5:
-            CryptoEngine._instance_new = CryptoEngine(keycrypted=keycrypted,
-                                                      algorithm=algo)
+            CryptoEngine._instance_new = CryptoEngine(**kwargs)
             return CryptoEngine._instance_new
 
-    def __init__(self, keycrypted=None, algorithm='AES'):
-        """Initialise the Cryptographic Engine
-
-        params is a dictionary. Valid keys are:
-        algorithm: Which cipher to use
-        callback:  Callback class.
-        keycrypted: This should be set by the database layer.
-        timeout:   Time after which key will be forgotten.
-                             Default is -1 (disabled).
+    def __init__(self, keycrypted=None, algorithm='AES', timeout=-1):
+        """
+        Initialise the Cryptographic Engine
         """
         algo = config.get_value("Encryption", "algorithm")
         self._algo = algo if algo else None
         self._keycrypted = keycrypted if keycrypted else None
-
-        timeout = config.get_value("Encryption", "timeout")
-        if timeout.isdigit():
-            self._timeout = timeout
-        else:
-            self._timeout = -1
+        self._timeout = timeout
         self._cipher = None
 
     def auth(self, key):
