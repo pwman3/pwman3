@@ -193,8 +193,13 @@ class CryptoEngine(object):
         cipher = self._getcipher()
         plaintext = self._preparedata(obj, cipher.block_size)
         ciphertext = cipher.encrypt(plaintext)
+        if sys.version_info.major > 2:
+            rv = base64.b64encode(ciphertext) + b'\n'
+        else:
+            rv = base64.b64encode(ciphertext) + '\n'
 
-        return str(ciphertext).encode('base64')
+        #rv = str(ciphertext).encode('base64')
+        return rv
 
     def decrypt(self, ciphertext):
         """
@@ -242,7 +247,10 @@ class CryptoEngine(object):
             # too long for the Cipher, _getCipherReal will sort it out
             random = OSRNG.new()
             randombytes = random.read(32)
-            key = base64.b64encode(str(randombytes))+'\n'
+            if sys.version_info.major > 2:
+                key = base64.b64encode(randombytes)+b'\n'
+            else:
+                key = base64.b64encode(str(randombytes))+'\n'
         else:
             password = self._getsecret("Please enter your current password")
             cipher = self._getcipher_real(password, self._algo)
@@ -259,6 +267,7 @@ class CryptoEngine(object):
         The key itself is actually stored in the database as
         a chiper text. This key is encrypted using a random byte string.
         """
+
         if self._callback is None:
             raise CryptoNoCallbackException("No call back class has been "
                                             "specified")
@@ -274,7 +283,10 @@ class CryptoEngine(object):
         newcipher = self._getcipher_real(newpassword1, self._algo)
         pkey = self._preparedata(key, newcipher.block_size)
         ciphertext = newcipher.encrypt(pkey)
-        k = base64.b64encode(str(ciphertext)) + '\n'
+        if sys.version_info.major > 2:
+            k = base64.b64encode(ciphertext) + b'\n'
+        else:
+            k = base64.b64encode(str(ciphertext)) + '\n'
         # python2 only
         # self._keycrypted = str(ciphertext).encode('base64')
         self._keycrypted = k
@@ -287,7 +299,11 @@ class CryptoEngine(object):
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
         if self._cipher is None:
-            key = base64.b64decode(str(key))
+            if sys.version_info.major > 2:
+                key = base64.b64decode(key)
+            else:
+                key = base64.b64decode(str(key))
+
             self._cipher = self._getcipher_real(key, self._algo)
             CryptoEngine._timeoutcount = time.time()
 
@@ -366,7 +382,7 @@ class CryptoEngine(object):
         form PyCrypto
         """
         if (algo == "AES"):
-            if sys.version_info.major > 2:
+            if sys.version_info.major > 2 and isinstance(key, str):
                 key = key.encode('utf-8')
             for i in range(1000):
                 key = hashlib.sha256(key)
@@ -402,7 +418,7 @@ class CryptoEngine(object):
         prepare data before encrypting
         """
         plaintext = obj
-        numblocks = (len(plaintext)/blocksize) + 1
+        numblocks = (len(plaintext)//blocksize) + 1
         newdatasize = blocksize*numblocks
         return plaintext.ljust(newdatasize)
 

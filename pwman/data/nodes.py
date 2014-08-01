@@ -49,18 +49,18 @@ class NewNode(object):
                                      tags)
 
     def dump_edit_to_db(self):
-        dump = ""
-        dump += "username:"+self._username+"##"
-        dump += "password:"+self._password+"##"
-        dump += "url:"+self._url+"##"
-        dump += "notes:"+self._notes+"##"
-        dump += "tags:"
-        tagsloc = ""
+        dump = u""
+        dump += u"username:"+self._username.decode()+u"##"
+        dump += u"password:"+self._password.decode()+u"##"
+        dump += u"url:"+self._url.decode()+u"##"
+        dump += u"notes:"+self._notes.decode()+u"##"
+        dump += u"tags:"
+        tagsloc = u""
         for tag in self._tags:
             if isinstance(tag, str):
-                tagsloc += "tag:"+tag.strip()+"**endtag**"
+                tagsloc += u"tag:"+tag.strip()+u"**endtag**"
             else:
-                tagsloc += "tag:"+tag._name+"**endtag**"
+                tagsloc += u"tag:"+tag._name.decode()+u"**endtag**"
 
         dump += tagsloc
         dump = [dump]

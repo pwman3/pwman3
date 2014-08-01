@@ -28,7 +28,11 @@ from pwman.data.tags import Tag
 from pwman.data.database import Database, DatabaseException
 import sqlite3 as sqlite
 import pwman.util.config as config
-import cPickle
+import sys
+if sys.platform_info.major > 2:
+    import pickle as cPickle
+else:
+    import cPickle
 
 _NEWVERSION = 0.4
 

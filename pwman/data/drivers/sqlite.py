@@ -96,7 +96,7 @@ class SQLiteDatabaseNewForm(Database):
 
                 sql += ("SELECT NODE FROM LOOKUP LEFT JOIN TAGS ON TAG = "
                         " TAGS.ID WHERE TAGS.DATA LIKE ?")
-                params.append(t._name+'%')
+                params.append(t._name.decode()+u'%')
             sql += ") EXCEPT SELECT DATA FROM TAGS WHERE "
             first = True
             for t in self._filtertags:
@@ -267,7 +267,7 @@ class SQLiteDatabaseNewForm(Database):
                     tag = enc.encrypt(tag)
                     self._cur.execute(sql, [tag])
                 else:
-                    self._cur.execute(sql, [tag._name+'%'])
+                    self._cur.execute(sql, [tag._name.decode()+u'%'])
 
                 values = self._cur.fetchall()
                 if values:  # tags already exist in the database

@@ -42,7 +42,7 @@ class TagNew(object):
     @property
     def name(self):
         enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
+        return enc.decrypt(self._name.decode())
 
     @name.setter
     def name(self, value):

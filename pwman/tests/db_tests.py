@@ -73,8 +73,8 @@ _saveconfig = False
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 
-from test_tools import (SetupTester, DummyCallback2,
-                        DummyCallback3, DummyCallback4)
+from .test_tools import (SetupTester, DummyCallback2,
+                         DummyCallback3, DummyCallback4)
 
 
 class DBTests(unittest.TestCase):
@@ -103,10 +103,10 @@ class DBTests(unittest.TestCase):
         # this method does not test do_new
         # which is a UI method, rather we test
         # _db.addnodes
-        username = 'tester'
-        password = 'Password'
-        url = 'example.org'
-        notes = 'some notes'
+        username = u'tester'
+        password = u'Password'
+        url = u'example.org'
+        notes = u'some notes'
         # node = NewNode(username, password, url, notes)
         node = NewNode()
         node.username = username
@@ -122,8 +122,8 @@ class DBTests(unittest.TestCase):
         new_node = self.db.getnodes([idx_created])[0]
 
         for key, attr in {'password': password, 'username': username,
-                          'url': url, 'notes': notes}.iteritems():
-            self.assertEquals(attr, getattr(new_node, key))
+                          'url': url, 'notes': notes}.items():
+            self.assertEqual(attr, getattr(new_node, key).decode())
         self.db.close()
 
     def test_tags(self):
@@ -171,7 +171,7 @@ class DBTests(unittest.TestCase):
 
     def test_sqlite_init(self):
         db = SQLiteDatabaseNewForm("test")
-        self.assertEquals("test", db._filename)
+        self.assertEqual("test", db._filename)
 
 
 class TestDBFalseConfig(unittest.TestCase):
