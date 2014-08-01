@@ -203,7 +203,7 @@ class CryptoEngine(object):
         If key is bad, a CryptoBadKeyException is raised
         Can also raise a CryptoException and CryptoUnsupportedException"""
         cipher = self._getcipher()
-        ciphertext = str(ciphertext).decode('base64')
+        ciphertext = base64.b64decode(str(ciphertext))
         plaintext = cipher.decrypt(ciphertext)
         return self._retrievedata(plaintext)
 

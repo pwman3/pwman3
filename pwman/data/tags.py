@@ -35,9 +35,9 @@ class TagNew(object):
         else:
             return False
 
-    def __str__(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
+    #def __str__(self):
+    #    enc = CryptoEngine.get()
+    #    return enc.decrypt(self._name)
 
     @property
     def name(self):
