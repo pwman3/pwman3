@@ -179,9 +179,10 @@ class CryptoEngine(object):
         authenticate using a given key
         """
         tmpcipher = self._getcipher_real(key, self._algo)
-        plainkey = tmpcipher.decrypt(str(self._keycrypted).decode('base64'))
+        s = base64.b64decode(self._keycrypted)
+        plainkey = tmpcipher.decrypt(s)
         key = self._retrievedata(plainkey)
-        key = str(key).decode('base64')
+        key = base64.b64decode(str(key))
         self._cipher = self._getcipher_real(key, self._algo)
 
     def encrypt(self, obj):

@@ -351,7 +351,9 @@ class CLITests(unittest.TestCase):
 
     def test_do_auth(self):
         crypto = CryptoEngine.get()
-        crypto.auth('12345')
+        rv = crypto.auth('12345')
+        self.assertIs(rv, None)
+        self.assertRaises(CryptoBadKeyException, crypto.auth, 'WRONG')
 
     def test_do_clear(self):
         self.tester.cli.do_clear('')
