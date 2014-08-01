@@ -20,8 +20,10 @@ import unittest
 class CryptoTest(unittest.TestCase):
 
     def test_no_algorithm(self):
+        CryptoEngine._instance_new = None
         config.set_value('Encryption', 'algorithm', '')
-        self.assertRaises((CryptoException,), CryptoEngine)
+        self.assertRaises((CryptoException,), CryptoEngine.get)
+        config.set_value('Encryption', 'algorithm', 'AES')
 
     def test_getcipher(self):
         crypto = CryptoEngine()

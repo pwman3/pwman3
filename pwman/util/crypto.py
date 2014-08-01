@@ -137,22 +137,29 @@ class CryptoEngine(object):
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
-        keycrypted = config.get_value("Encryption", "keycrypted")
 
         if CryptoEngine._instance:
             return CryptoEngine._instance
         if CryptoEngine._instance_new:
             return CryptoEngine._instance_new
 
+        keycrypted = config.get_value("Encryption", "keycrypted")
+        algo = config.get_value("Encryption", "algorithm")
+
+        if not algo:
+            raise CryptoException("Parameters missing, no algorithm given")
+
         if dbver < 0.5:
-            CryptoEngine._instance = CryptoEngineOld(keycrypted=keycrypted)
+            CryptoEngine._instance = CryptoEngineOld(keycrypted=keycrypted,
+                                                     algorithm=algo)
             return CryptoEngine._instance
 
         if dbver >= 0.5:
-            CryptoEngine._instance_new = CryptoEngine()
+            CryptoEngine._instance_new = CryptoEngine(keycrypted=keycrypted,
+                                                      algorithm=algo)
             return CryptoEngine._instance_new
 
-    def __init__(self, keycrypted=None):
+    def __init__(self, keycrypted=None, algorithm='AES'):
         """Initialise the Cryptographic Engine
 
         params is a dictionary. Valid keys are:
@@ -163,16 +170,8 @@ class CryptoEngine(object):
                              Default is -1 (disabled).
         """
         algo = config.get_value("Encryption", "algorithm")
-        if algo:
-            self._algo = algo
-        else:
-            raise CryptoException("Parameters missing, no algorithm given")
-
-        keycrypted = config.get_value("Encryption", "keycrypted")
-        if keycrypted:
-            self._keycrypted = keycrypted
-        else:
-            self._keycrypted = None
+        self._algo = algo if algo else None
+        self._keycrypted = keycrypted if keycrypted else None
 
         timeout = config.get_value("Encryption", "timeout")
         if timeout.isdigit():
