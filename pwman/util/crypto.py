@@ -137,20 +137,22 @@ class CryptoEngine(object):
         Return an instance of CryptoEngine.
         If no instance is found, a CryptoException is raised.
         """
+        keycrypted = config.get_value("Encryption", "keycrypted")
+
         if CryptoEngine._instance:
             return CryptoEngine._instance
         if CryptoEngine._instance_new:
             return CryptoEngine._instance_new
 
         if dbver < 0.5:
-            CryptoEngine._instance = CryptoEngineOld()
+            CryptoEngine._instance = CryptoEngineOld(keycrypted=keycrypted)
             return CryptoEngine._instance
 
         if dbver >= 0.5:
             CryptoEngine._instance_new = CryptoEngine()
             return CryptoEngine._instance_new
 
-    def __init__(self):
+    def __init__(self, keycrypted=None):
         """Initialise the Cryptographic Engine
 
         params is a dictionary. Valid keys are:
@@ -165,12 +167,6 @@ class CryptoEngine(object):
             self._algo = algo
         else:
             raise CryptoException("Parameters missing, no algorithm given")
-
-        callback = config.get_value("Encryption", "callback")
-        if isinstance(callback, Callback):
-            self._callback = callback
-        else:
-            self._callback = None
 
         keycrypted = config.get_value("Encryption", "keycrypted")
         if keycrypted:
@@ -229,12 +225,6 @@ class CryptoEngine(object):
         """
         return self._keycrypted
 
-    # def set_callback(self, callback):
-    #     """
-    #     set the callback function
-    #     """
-    #     self._callback = callback
-
     @property
     def callback(self):
         """
@@ -244,7 +234,11 @@ class CryptoEngine(object):
 
     @callback.setter
     def callback(self, callback):
-        self._callback = callback
+        if isinstance(callback, Callback):
+            self._callback = callback
+        else:
+            raise CryptoNoCallbackException("callback must be an instance of"
+                                            " Callback!")
 
     def changepassword(self):
         """
