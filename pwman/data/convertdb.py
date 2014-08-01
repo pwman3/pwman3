@@ -266,7 +266,7 @@ class PwmanConvertDB(DBConverter):
 
         self.db = SQLiteDatabaseReader()
         enc = CryptoEngine.get()
-        enc.set_callback(CLICallback())
+        enc.callback = CLICallback()
         self.db.open()
         self.oldnodes = self.db.listnodes()
         self.oldnodes = self.db.getnodes(self.oldnodes)
@@ -299,7 +299,7 @@ class PwmanConvertKey(DBConverter):
 
     def read_old_db(self):
         enc = CryptoEngine.get()
-        enc.set_callback(CLICallback())
+        enc.callback = CLICallback()
         self.db.open()
         self.oldnodes = self.db.listnodes()
         self.oldnodes = self.db.getnodes(self.oldnodes)

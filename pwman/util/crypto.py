@@ -229,11 +229,11 @@ class CryptoEngine(object):
         """
         return self._keycrypted
 
-    def set_callback(self, callback):
-        """
-        set the callback function
-        """
-        self._callback = callback
+    # def set_callback(self, callback):
+    #     """
+    #     set the callback function
+    #     """
+    #     self._callback = callback
 
     @property
     def callback(self):
