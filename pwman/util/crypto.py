@@ -236,15 +236,7 @@ class CryptoEngine(object):
             raise CryptoNoCallbackException("callback must be an instance of"
                                             " Callback!")
 
-    def changepassword(self):
-        """
-        Creates a new key from a user given password.
-        The key itself is actually stored in the database as
-        a chiper text. This key is encrypted using a random byte string.
-        """
-        if self._callback is None:
-            raise CryptoNoCallbackException("No call back class has been "
-                                            "specified")
+    def _get_keycrypted(self):
         if self._keycrypted is None:
             # Generate a new key, 32 byts in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
@@ -259,6 +251,19 @@ class CryptoEngine(object):
             # plainkey = cipher.decrypt(str(self._keycrypted).decode('base64'))
             key = self._retrievedata(plainkey)
 
+        return key
+
+    def changepassword(self):
+        """
+        Creates a new key from a user given password.
+        The key itself is actually stored in the database as
+        a chiper text. This key is encrypted using a random byte string.
+        """
+        if self._callback is None:
+            raise CryptoNoCallbackException("No call back class has been "
+                                            "specified")
+        key = self._get_keycrypted()
+
         newpassword1 = self._getnewsecret("Please enter your new password")
         newpassword2 = self._getnewsecret("Please enter your new password again")
         while newpassword1 != newpassword2:
@@ -267,10 +272,12 @@ class CryptoEngine(object):
             newpassword2 = self._getnewsecret("Please enter your new password again")
 
         newcipher = self._getcipher_real(newpassword1, self._algo)
-        self._keycrypted = str(newcipher.encrypt(
-                               self._preparedata(key,
-                                                 newcipher.block_size)
-                               )).encode('base64')
+        pkey = self._preparedata(key, newcipher.block_size)
+        ciphertext = newcipher.encrypt(pkey)
+        k = base64.b64encode(str(ciphertext)) + '\n'
+        # python2 only
+        # self._keycrypted = str(ciphertext).encode('base64')
+        self._keycrypted = k
         # newpassword1, newpassword2 are not needed any more so we erase
         # them
         zerome(newpassword1)
@@ -280,9 +287,10 @@ class CryptoEngine(object):
         # we also want to create the cipher if there isn't one already
         # so this CryptoEngine can be used from now on
         if self._cipher is None:
-            self._cipher = self._getcipher_real(str(key).decode('base64'),
-                                                self._algo)
+            key = base64.b64decode(str(key))
+            self._cipher = self._getcipher_real(key, self._algo)
             CryptoEngine._timeoutcount = time.time()
+
         return self._keycrypted
 
     def alive(self):
@@ -324,11 +332,12 @@ class CryptoEngine(object):
 
         while tries < max_tries:
             try:
-                password = self._getsecret("Please enter your "
-                                                    "password")
+                password = self._getsecret("Please enter your password")
                 tmpcipher = self._getcipher_real(password, self._algo)
-                plainkey = tmpcipher.decrypt(str(self._keycrypted).decode(
-                    'base64'))
+                # python2 code only
+                #ciphertext = str(self._keycrypted).decode('base64')
+                tc = base64.b64decode(str(self._keycrypted))
+                plainkey = tmpcipher.decrypt(tc)
                 key = self._retrievedata(plainkey)
                 break
             except CryptoBadKeyException:
@@ -339,13 +348,14 @@ class CryptoEngine(object):
             raise CryptoBadKeyException("Wrong password entered {x} times; "
                                         "giving up ".format(x=max_tries))
         try:
-            key = str(key).decode('base64')
+            key = base64.b64decode(str(key))
+            #key = str(key).decode('base64')
         except Exception:
             key = cPickle.loads(key)
-            key = str(key).decode('base64')
+            key = base64.b64decode(str(key))
+            #key = str(key).decode('base64')
 
-        self._cipher = self._getcipher_real(key,
-                                            self._algo)
+        self._cipher = self._getcipher_real(key, self._algo)
 
         CryptoEngine._timeoutcount = time.time()
         return self._cipher
