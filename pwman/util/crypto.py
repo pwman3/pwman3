@@ -311,10 +311,7 @@ class CryptoEngine(object):
         """
         self._cipher = None
 
-    def _getcipher(self):
-        """
-        get cypher from user, to decrypt DB
-        """
+    def _pre_check_get_chiper(self):
         if (self._cipher is not None
             and (self._timeout == -1
                  or (time.time() -
@@ -324,6 +321,15 @@ class CryptoEngine(object):
             raise CryptoNoCallbackException("No Callback exception")
         if self._keycrypted is None:
             raise CryptoNoKeyException("Encryption key has not been generated")
+
+
+
+    def _getcipher(self):
+        """
+        get cypher from user, to decrypt DB
+        """
+        if self._pre_check_get_chiper():
+            return self._cipher
 
         max_tries = 5
         tries = 0
