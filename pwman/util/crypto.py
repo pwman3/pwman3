@@ -236,11 +236,10 @@ class CryptoEngine(object):
 
     def changepassword(self):
         """
-        Creates a new key. The key itself is actually stored in
-        the database in crypted form. This key is encrypted using the
-        password that the user provides. This makes it easy to change the
-        password for the database.
-        If oldKeyCrypted is none, then a new password is generated."""
+        Creates a new key from a user given password.
+        The key itself is actually stored in the database as
+        a chiper text. This key is encrypted using a random byte string.
+        """
         if self._callback is None:
             raise CryptoNoCallbackException("No call back class has been "
                                             "specified")
@@ -248,10 +247,8 @@ class CryptoEngine(object):
             # Generate a new key, 32 byts in length, if that's
             # too long for the Cipher, _getCipherReal will sort it out
             random = OSRNG.new()
-            try:
-                key = str(random.read(32)).encode('base64')
-            except LookupError:
-                key = str(base64.b64encode(random.read(32)).decode('utf-8'))
+            randombytes = random.read(32)
+            key = base64.b64encode(str(randombytes))+'\n'
         else:
             password = self._callback.getsecret(("Please enter your current "
                                                  "password"))
