@@ -62,6 +62,7 @@ import ctypes
 import hashlib
 import base64
 
+
 def zerome(string):
     """
     securely erase strings ...
@@ -241,6 +242,10 @@ class CryptoEngine(object):
         """
         return self._callback
 
+    @callback.setter
+    def callback(self, callback):
+        self._callback = callback
+
     def changepassword(self):
         """
         Creates a new key. The key itself is actually stored in
@@ -322,8 +327,6 @@ class CryptoEngine(object):
         if self._keycrypted is None:
             raise CryptoNoKeyException("Encryption key has not been generated")
 
-
-
     def _getcipher(self):
         """
         get cypher from user, to decrypt DB
@@ -372,8 +375,8 @@ class CryptoEngine(object):
             if sys.version_info.major > 2:
                 key = key.encode('utf-8')
             for i in range(1000):
-               key = hashlib.sha256(key)
-               key = key.digest()
+                key = hashlib.sha256(key)
+                key = key.digest()
 
             key = hashlib.sha256(key)
             cipher = cAES.new(key.digest(), cAES.MODE_ECB)

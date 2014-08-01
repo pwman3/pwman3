@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 # pylint: disable=I0011
 """
 Define the CLI interface for pwman3 and the helper functions
@@ -53,7 +53,7 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
         self.hasxsel = hasxsel
         try:
             enc = CryptoEngine.get()
-            enc._callback = callback()
+            enc.callback = callback()
             self._db = db
             #  this cascades down all the way to setting the database key
             self._db.open()

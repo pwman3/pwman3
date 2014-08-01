@@ -89,4 +89,5 @@ class SetupTester(object):
             db = factory.create(dbtype, self.dbver, self.filename)
         else:
             db = factory.create(dbtype, self.dbver)
+
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
