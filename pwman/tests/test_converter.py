@@ -312,10 +312,10 @@ class CreateTestDataBases(object):
     def __init__(self):
         config.set_defaults(default_config)
         enc = CryptoEngine.get(dbver=0.4)
-        enc.set_callback(DummyCallback4())
+        enc.callback = DummyCallback4()
         self.enc1 = copy.copy(enc)
         enc = CryptoEngine.get(dbver=0.5)
-        enc.set_callback(DummyCallback4())
+        enc.callback = DummyCallback4()
         self.enc2 = copy.copy(enc)
 
         self.db1 = SQLiteDatabaseNewForm('konverter-v0.4.db', dbformat=0.4)
@@ -365,7 +365,7 @@ class CreateTestDataBases(object):
         # this is handeld by the open method
         self.db1._open()
         enc1 = CryptoEngine.get(dbver=0.4)
-        enc1.set_callback(DummyCallback4())
+        enc1.callback = DummyCallback4()
         key = self.db1.loadkey()
         if key is not None:
             enc1.set_cryptedkey(key)
@@ -382,7 +382,7 @@ class CreateTestDataBases(object):
 
         self.db2._open()
         enc2 = CryptoEngine.get(dbver=0.5)
-        enc2.set_callback(DummyCallback4())
+        enc2.callback = DummyCallback4()
         key = self.db2.loadkey()
         if key is not None:
             enc2.set_cryptedkey(key)

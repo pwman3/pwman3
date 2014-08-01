@@ -133,17 +133,17 @@ class DBTests(unittest.TestCase):
 
     def test_change_pass(self):
         enc = CryptoEngine.get()
-        enc._callback = DummyCallback2()
+        enc.callback = DummyCallback2()
         self.assertRaises(CryptoBadKeyException,
                           self.tester.cli._db.changepassword)
 
     def test_db_change_pass(self):
         "fuck yeah, we change the password and the new dummy works"
         enc = CryptoEngine.get()
-        enc._callback = DummyCallback3()
+        enc.callback = DummyCallback3()
         self.tester.cli._db.changepassword()
         self.tester.cli.do_forget('')
-        enc._callback = DummyCallback4()
+        enc.callback = DummyCallback4()
         self.tester.cli.do_ls('')
 
     def test_db_list_tags(self):
