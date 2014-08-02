@@ -29,7 +29,7 @@ from pwman.data.database import Database, DatabaseException
 import sqlite3 as sqlite
 import pwman.util.config as config
 import sys
-if sys.platform_info.major > 2:
+if sys.version_info.major > 2:
     import pickle as cPickle
 else:
     import cPickle

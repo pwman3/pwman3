@@ -43,7 +43,8 @@ if sys.platform != 'win32':
     _readline_available = True
 else:  # pragma: no cover
     try:
-        import pyreadline as readline
+        #import pyreadline as readline
+        import readline
         _readline_available = True
     except ImportError as e:
         _readline_available = False
