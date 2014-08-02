@@ -75,7 +75,11 @@ class PwmanCliWinNew(PwmanCliNew):
                                              special_signs=special_chars)
             url = self.get_url()
             notes = self.get_notes()
-            node = NewNode(username, password, url, notes)
+            node = NewNode()
+            node.username = username
+            node.password = password
+            node.url = url
+            node.notes = notes
             tags = self.get_tags()
             node.tags = tags
             self._db.addnodes([node])
