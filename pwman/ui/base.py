@@ -233,10 +233,10 @@ class BaseCommands(BaseUI, HelpUI):
             try:
                 node = self._db.getnodes(ids)
                 tools.text_to_clipboards(node[0].password)
-                print ("copied password for {}@{} clipboard".format(
-                       node[0].username, node[0].url))
+                print("copied password for {}@{} clipboard".format(
+                      node[0].username, node[0].url))
 
-                print ("erasing in 10 sec...")
+                print("erasing in 10 sec...")
                 time.sleep(10)
                 tools.text_to_clipboards("")
             except Exception as e:
