@@ -525,7 +525,7 @@ class BaseCommands(BaseUI, HelpUI):
             if len(tags) == 0:
                 print ("None",)
             for t in tags:
-                print ("%s " % t)
+                print ("%s " % t.name)
             print
         except Exception as e:
             self.error(e)
