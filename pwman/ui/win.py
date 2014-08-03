@@ -90,7 +90,7 @@ class PwmanCliWinNew(PwmanCliNew):
             self.error(e)
 
     def print_node(self, node):
-        width = str(tools._defaultwidth)
+        width = tools._defaultwidth
         print("Node {}.".format(node._id))
         print("{} {}".format(tools.typeset("Username:", Fore.RED).ljust(width),
                              node.username))
