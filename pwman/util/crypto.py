@@ -426,6 +426,8 @@ class CryptoEngine(object):
         """
         retrieve encrypted data
         """
+        if sys.version_info.major > 2:
+            return plaintext
         try:
             plaintext.decode('utf-8')
         except UnicodeDecodeError:

@@ -37,7 +37,8 @@ class DummyCallback3(Callback):
         return u'newsecret'
 
     def getsecret(self, question):
-        return u'12345'
+        ans = '12345'
+        return ans
 
     def getnewsecret(self, question):
         return u'newsecret'
