@@ -261,7 +261,7 @@ class CMDLoop(object):  # pragma: no cover
 
                 print ("%s - %s: %s" % (i, x.name, currentstr))
             print("X - Finish editing")
-            option = getonechar("Enter your choice:")
+            option = raw_input("Enter your choice:")[0]
             try:
                 print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
@@ -301,7 +301,7 @@ class CMDLoop(object):  # pragma: no cover
                 if (option.upper() == 'X'):
                     break
                 print("Invalid selection")
-
+            
 
 def getonechar(question, width=_defaultwidth):  # pragma: no cover
     question = "%s " % (question)
