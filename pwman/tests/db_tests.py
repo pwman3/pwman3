@@ -383,6 +383,7 @@ class FactoryTest(unittest.TestCase):
         db = factory.create('SQLite', filename='foo.db')
         db._open()
         self.assertTrue(os.path.exists('foo.db'))
+        db.close()
         os.unlink('foo.db')
         self.assertIsInstance(db, SQLiteDatabaseNewForm)
         self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
