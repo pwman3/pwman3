@@ -131,7 +131,7 @@ class PwmanCliWinNew(PwmanCliNew):
         print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width), node.notes))
         print("{}".format(tools.typeset("Tags: ", Fore.RED)), end=" ")
         for t in node.tags:
-            print(t.name)
+            print(t)
 
         def heardEnterWin():
             c = msvcrt.kbhit()
@@ -188,3 +188,6 @@ class PwmanCliWinNew(PwmanCliNew):
             os.system("start "+url)
         except Exception as e:
             self.error(e)
+
+    def do_cls(self, args):
+        os.system('cls')
