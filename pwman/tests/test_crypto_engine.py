@@ -22,12 +22,11 @@ give_key = lambda msg: "verysecretkey"
 
 class CryptoEngineTest(unittest.TestCase):
 
-
-    def test_write_password(self):
+    def test_a_write_password(self):
         write_password(reader=give_key)
 
-    def test_save_secret(self):
+    def test_b_save_secret(self):
         save_a_secret_message(reader=give_key)
 
-    def test_read_secret(self):
+    def test_c_read_secret(self):
         read_a_secret_message(reader=give_key)
