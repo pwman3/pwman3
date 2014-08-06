@@ -21,21 +21,52 @@
 # ============================================================================
 """
 from __future__ import print_function
-from pwman.ui.cli import PwmanCliNew
-from pwman.data.nodes import NewNode
-from pwman.ui import tools
 import time
-
-import pwman.util.config as config
+import ctypes
 import ast
-from pwman.util.crypto import zerome
-from colorama import Fore
-
+import os
 try:
     import msvcrt
 except ImportError:
     pass
 
+from colorama import Fore
+import pwman.util.config as config
+from pwman.ui.cli import PwmanCliNew
+from pwman.data.nodes import NewNode
+from pwman.ui import tools
+from pwman.util.crypto import zerome
+
+
+def winGetClipboard():
+    ctypes.windll.user32.OpenClipboard(0)
+    pcontents = ctypes.windll.user32.GetClipboardData(1) # 1 is CF_TEXT
+    data = ctypes.c_char_p(pcontents).value
+    #ctypes.windll.kernel32.GlobalUnlock(pcontents)
+    ctypes.windll.user32.CloseClipboard()
+    return data
+
+def winSetClipboard(text):
+    text = str(text)
+    GMEM_DDESHARE = 0x2000
+    ctypes.windll.user32.OpenClipboard(0)
+    ctypes.windll.user32.EmptyClipboard()
+    try:
+        # works on Python 2 (bytes() only takes one argument)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text))+1)
+    except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text, 'ascii'))+1)
+    pchData = ctypes.windll.kernel32.GlobalLock(hCd)
+    try:
+        # works on Python 2 (bytes() only takes one argument)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text))
+    except TypeError:
+        # works on Python 3 (bytes() requires an encoding)
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text, 'ascii'))
+    ctypes.windll.kernel32.GlobalUnlock(hCd)
+    ctypes.windll.user32.SetClipboardData(1, hCd)
+    ctypes.windll.user32.CloseClipboard()
 
 class PwmanCliWinNew(PwmanCliNew):
     """
@@ -100,7 +131,7 @@ class PwmanCliWinNew(PwmanCliNew):
         print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width), node.notes))
         print("{}".format(tools.typeset("Tags: ", Fore.RED)), end=" ")
         for t in node.tags:
-            print(t.name)
+            print(t)
 
         def heardEnterWin():
             c = msvcrt.kbhit()
@@ -124,3 +155,39 @@ class PwmanCliWinNew(PwmanCliNew):
             print("Press any key to flush screen (autoflash "
                   "in %d sec.)" % flushtimeout)
             waituntil_enter(heardEnterWin, flushtimeout)
+
+    def do_copy(self, args):
+        ids = self.get_ids(args)
+        if len(ids) > 1:
+            print ("Can copy only 1 password at a time...")
+            return None
+        try:
+            node = self._db.getnodes(ids)
+            winSetClipboard(node[0].password)
+            print("copied password for {}@{} clipboard".format(
+                  node[0].username, node[0].url))
+            print("erasing in 10 sec...")
+            time.sleep(10)
+            winSetClipboard("")
+        except Exception as e:
+            self.error(e)
+        
+    def do_open(self, args):
+        ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
+        if len(ids) > 1:
+            print ("Can open only 1 link at a time ...")
+            return None
+        try:
+            node = self._db.getnodes(ids)
+            url = node[0].url
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
+            os.system("start "+url)
+        except Exception as e:
+            self.error(e)
+
+    def do_cls(self, args):
+        os.system('cls')
