@@ -193,13 +193,20 @@ class CryptoEngine(object):  # pagma: no cover
         """
         salt = base64.b64encode(os.urandom(32))
         passwd = reader("Please type in the secret key:")
-        key = get_digest(passwd, salt)
+        key = self._get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         return hpk.decode('utf-8')
 
     def changepassword(self, reader=raw_input):
         self._keycrypted = self._create_password(reader=reader)
         return self._keycrypted
+
+    def _get_digest(self, password, salt):
+        """
+        Get a digest based on clear text password
+        """
+        iterations = 5000
+        return PBKDF2(password, salt, dkLen=32, count=iterations)
 
     def __init__(self, keycrypted=None, algorithm='AES', timeout=-1):
         """

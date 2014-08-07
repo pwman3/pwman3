@@ -34,4 +34,11 @@ class CryptoEngineTest(unittest.TestCase):
 
     def test_d_get_crypto(self):
         ce = CryptoEngine.get()
-        secret = ce.changepassword(reader=give_key)
+        secret2 = ce.changepassword(reader=give_key)
+        secret1 = ce.changepassword(reader=give_key)
+        # althouth the same secret key is used,
+        # the secret hash is not the same, because a
+        # different random seed is used when calling
+        # CryptoEngine._get_digest
+        self.assertNotEqual(secret1, secret2)
+
