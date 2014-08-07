@@ -2,7 +2,8 @@ import unittest
 import pwman.util.config as config
 import os
 from pwman.util.crypto_engine import (write_password, save_a_secret_message,
-                                      read_a_secret_message)
+                                      read_a_secret_message,
+                                      CryptoEngine)
 
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
@@ -30,3 +31,7 @@ class CryptoEngineTest(unittest.TestCase):
 
     def test_c_read_secret(self):
         read_a_secret_message(reader=give_key)
+
+    def test_d_get_crypto(self):
+        ce = CryptoEngine.get()
+        secret = ce.changepassword(reader=give_key)

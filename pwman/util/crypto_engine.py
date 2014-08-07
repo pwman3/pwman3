@@ -139,7 +139,7 @@ def read_a_secret_message(reader=raw_input):
         print(decoded)
 
 
-class CryptoEngine(object):  # pragma: no cover
+class CryptoEngine(object):  # pagma: no cover
     _timeoutcount = 0
     _instance = None
     _instance_new = None
@@ -186,19 +186,19 @@ class CryptoEngine(object):  # pragma: no cover
         else:
             raise Exception("callback must be an instance of Callback!")
 
-    def _create_password(self):
+    def _create_password(self, reader=raw_input):
         """
-        Write a secret password as a hash and the salt used for this hash
-        to a file
+        Create a secret password as a hash and the salt used for this hash.
+        Change reader to manipulate how input is given.
         """
         salt = base64.b64encode(os.urandom(32))
-        passwd = raw_input("Please type in the secret key:")
+        passwd = reader("Please type in the secret key:")
         key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         return hpk.decode('utf-8')
 
-    def changepassword(self):
-        self._keycrypted = self._create_password()
+    def changepassword(self, reader=raw_input):
+        self._keycrypted = self._create_password(reader=reader)
         return self._keycrypted
 
     def __init__(self, keycrypted=None, algorithm='AES', timeout=-1):
