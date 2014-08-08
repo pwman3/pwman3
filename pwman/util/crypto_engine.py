@@ -163,12 +163,36 @@ class CryptoEngine(object):  # pagma: no cover
         except ValueError:
             timeout = -1
 
-        kwargs = {'keycrypted': keycrypted, 'algorithm': algo,
-                  'timeout': timeout}
+        salt, digest = get_digest_from_file('passwords.txt')
+
+        kwargs = {'algorithm': algo,
+                  'timeout': timeout, 'salt': salt, 'digest': digest}
 
         if dbver >= 0.5:
             CryptoEngine._instance_new = CryptoEngine(**kwargs)
             return CryptoEngine._instance_new
+
+    def __init__(self, salt=None, digest=None, algorithm='AES',
+                 timeout=-1):
+        """
+        Initialise the Cryptographic Engine
+        """
+        self._algo = algorithm
+        self._digest = digest if digest else None
+        self._salt = salt if salt else None
+        self._timeout = timeout
+        self._cipher = None
+
+    def authenticate(self, password):
+        """
+        salt and digest are stored in a file or a database
+        """
+        dig = get_digest(password, self._salt)
+        return binascii.hexlify(dig) == self._digest
+
+    def changepassword(self, reader=raw_input):
+        self._keycrypted = self._create_password(reader=reader)
+        return self._keycrypted
 
     @property
     def callback(self):
@@ -197,25 +221,12 @@ class CryptoEngine(object):  # pagma: no cover
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         return hpk.decode('utf-8')
 
-    def changepassword(self, reader=raw_input):
-        self._keycrypted = self._create_password(reader=reader)
-        return self._keycrypted
-
     def _get_digest(self, password, salt):
         """
         Get a digest based on clear text password
         """
         iterations = 5000
         return PBKDF2(password, salt, dkLen=32, count=iterations)
-
-    def __init__(self, keycrypted=None, algorithm='AES', timeout=-1):
-        """
-        Initialise the Cryptographic Engine
-        """
-        self._algo = algorithm
-        self._keycrypted = keycrypted if keycrypted else None
-        self._timeout = timeout
-        self._cipher = None
 
 
 if __name__ == '__main__':  # pragma: no cover

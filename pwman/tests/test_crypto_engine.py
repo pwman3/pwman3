@@ -42,3 +42,6 @@ class CryptoEngineTest(unittest.TestCase):
         # CryptoEngine._get_digest
         self.assertNotEqual(secret1, secret2)
 
+    def test_e_authenticate(self):
+        ce = CryptoEngine.get()
+        self.assertTrue(ce.authenticate('verysecretkey'))
