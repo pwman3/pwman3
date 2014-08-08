@@ -4,6 +4,7 @@ import os
 from pwman.util.crypto_engine import (write_password, save_a_secret_message,
                                       read_a_secret_message,
                                       CryptoEngine)
+import time
 
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
@@ -34,6 +35,7 @@ class CryptoEngineTest(unittest.TestCase):
 
     def test_d_get_crypto(self):
         ce = CryptoEngine.get()
+
         secret2 = ce.changepassword(reader=give_key)
         secret1 = ce.changepassword(reader=give_key)
         # althouth the same secret key is used,
@@ -44,4 +46,16 @@ class CryptoEngineTest(unittest.TestCase):
 
     def test_e_authenticate(self):
         ce = CryptoEngine.get()
+        self.assertFalse(ce.authenticate('verywrong'))
         self.assertTrue(ce.authenticate('verysecretkey'))
+        self.assertTrue(ce._is_authenticated())
+
+    def test_is_timedout(self):
+        ce = CryptoEngine.get()
+        ce._timeout = 1
+        time.sleep(1.1)
+        self.assertTrue(ce._is_timedout())
+        self.assertIsNone(ce._cipher)
+        self.assertFalse(ce._is_authenticated())
+        #:self.assertFalse(ce._is_timedout())
+

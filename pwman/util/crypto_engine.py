@@ -24,7 +24,7 @@ import base64
 import os
 import sys
 import binascii
-
+import time
 from pwman.util.callback import Callback
 import pwman.util.config as config
 
@@ -152,7 +152,6 @@ class CryptoEngine(object):  # pagma: no cover
         if CryptoEngine._instance_new:
             return CryptoEngine._instance_new
 
-        keycrypted = config.get_value("Encryption", "keycrypted")
         algo = config.get_value("Encryption", "algorithm")
 
         if not algo:
@@ -188,7 +187,23 @@ class CryptoEngine(object):  # pagma: no cover
         salt and digest are stored in a file or a database
         """
         dig = get_digest(password, self._salt)
-        return binascii.hexlify(dig) == self._digest
+        if binascii.hexlify(dig) == self._digest:
+            CryptoEngine._timeoutcount = time.time()
+            self._cipher = get_cipher(password, self._salt)
+            return True
+        return False
+
+    def _is_authenticated(self):
+        if not self._is_timedout() and self._cipher is not None:
+            return True
+        return False
+
+    def _is_timedout(self):
+        if self._timeout > 0:
+            if (time.time() - CryptoEngine._timeoutcount) > self._timeout:
+                self._cipher = None
+            return True
+        return False
 
     def changepassword(self, reader=raw_input):
         self._keycrypted = self._create_password(reader=reader)
