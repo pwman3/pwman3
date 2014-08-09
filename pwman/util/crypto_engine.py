@@ -35,6 +35,10 @@ EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip()
 
 
+class CryptoException(Exception):
+    pass
+
+
 def get_digest(password, salt):
     """
     Get a digest based on clear text password
@@ -91,10 +95,17 @@ def cli_auth(reader=raw_input):
     are read from the file.
     """
     salt, digest = get_digest_from_file('passwords.txt')
-    while True:
-        password = reader("Please type in your password:").encode('utf-8')
+    tries = 0
+    while tries < 5:
+        password = reader("Please type in your master password:"
+                          ).encode('utf-8')
         if authenticate(password, salt, digest):
             return password, salt
+
+        print("You entered a wrong password...")
+        tries += 1
+
+    raise CryptoException("You entered wrong password 5 times..")
 
 
 def prepare_data(text, block_size):
@@ -172,7 +183,7 @@ class CryptoEngine(object):  # pagma: no cover
             return CryptoEngine._instance_new
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
-                 timeout=-1):
+                 timeout=-1, reader=raw_input):
         """
         Initialise the Cryptographic Engine
         """
@@ -181,6 +192,7 @@ class CryptoEngine(object):  # pagma: no cover
         self._salt = salt if salt else None
         self._timeout = timeout
         self._cipher = None
+        self._reader = reader
 
     def authenticate(self, password):
         """
@@ -192,6 +204,25 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = get_cipher(password, self._salt)
             return True
         return False
+
+    def encrypt(self, text):
+        if not self._is_authenticated():
+            p, s = cli_auth(self._reader)
+            cipher = get_cipher(p, s)
+            del(p)
+            return EncodeAES(cipher, prepare_data(text, AES.block_size))
+
+        return EncodeAES(self._cipher, prepare_data(text, AES.block_size))
+
+    def decrypt(self, cipher_text):
+        if not self._is_authenticated():
+            p, s = cli_auth(self._reader)
+            cipher = get_cipher(p, s)
+            del(p)
+            return DecodeAES(cipher, prepare_data(cipher_text, AES.block_size))
+
+        return DecodeAES(self._cipher, prepare_data(cipher_text,
+                                                    AES.block_size))
 
     def _is_authenticated(self):
         if not self._is_timedout() and self._cipher is not None:
