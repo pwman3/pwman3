@@ -25,16 +25,16 @@ give_wrong_key = lambda msg: "verywrongtkey"
 
 class CryptoEngineTest(unittest.TestCase):
 
-    def test_a_write_password(self):
+    def test1_a_write_password(self):
         write_password(reader=give_key)
 
-    def test_b_save_secret(self):
+    def test2_b_save_secret(self):
         save_a_secret_message(reader=give_key)
 
-    def test_c_read_secret(self):
+    def test3_c_read_secret(self):
         read_a_secret_message(reader=give_key)
 
-    def test_d_get_crypto(self):
+    def test4_d_get_crypto(self):
         ce = CryptoEngine.get()
 
         secret2 = ce.changepassword(reader=give_key)
@@ -45,12 +45,20 @@ class CryptoEngineTest(unittest.TestCase):
         # CryptoEngine._get_digest
         self.assertNotEqual(secret1, secret2)
 
-    def test_e_authenticate(self):
+    def test5_e_authenticate(self):
         ce = CryptoEngine.get()
         self.assertFalse(ce.authenticate('verywrong'))
         self.assertTrue(ce.authenticate('verysecretkey'))
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
+
+    def test6_hhh_is_timedout(self):
+        ce = CryptoEngine.get()
+        ce._timeout = 1
+        time.sleep(1.1)
+        self.assertTrue(ce._is_timedout())
+        self.assertIsNone(ce._cipher)
+        self.assertFalse(ce._is_authenticated())
 
     def test_f_encrypt_decrypt(self):
         ce = CryptoEngine.get()
@@ -73,10 +81,3 @@ class CryptoEngineTest(unittest.TestCase):
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt, "topsecret")
 
-    def test__hhh_is_timedout(self):
-        ce = CryptoEngine.get()
-        ce._timeout = 1
-        time.sleep(1.1)
-        self.assertTrue(ce._is_timedout())
-        self.assertIsNone(ce._cipher)
-        self.assertFalse(ce._is_authenticated())
