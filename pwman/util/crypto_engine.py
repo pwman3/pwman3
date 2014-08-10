@@ -183,7 +183,7 @@ class CryptoEngine(object):  # pagma: no cover
             return CryptoEngine._instance_new
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
-                 timeout=-1, reader=raw_input):
+                 timeout=-1, reader=None):
         """
         Initialise the Cryptographic Engine
         """
@@ -193,6 +193,7 @@ class CryptoEngine(object):  # pagma: no cover
         self._timeout = timeout
         self._cipher = None
         self._reader = reader
+        self._callback = None
 
     def authenticate(self, password):
         """
@@ -205,9 +206,28 @@ class CryptoEngine(object):  # pagma: no cover
             return True
         return False
 
+    def _auth(self):
+        """
+        Read password from the user, if the password is correct,
+        finish the execution an return the password and salt which
+        are read from the file.
+        """
+        salt, digest = get_digest_from_file('passwords.txt')
+        tries = 0
+        while tries < 5:
+            password = self._getsecret("Please type in your master password:"
+                                       ).encode('utf-8')
+            if authenticate(password, salt, digest):
+                return password, salt
+
+            print("You entered a wrong password...")
+            tries += 1
+
+        raise CryptoException("You entered wrong password 5 times..")
+
     def encrypt(self, text):
         if not self._is_authenticated():
-            p, s = cli_auth(self._reader)
+            p, s = self._auth()
             cipher = get_cipher(p, s)
             del(p)
             return EncodeAES(cipher, prepare_data(text, AES.block_size))
@@ -224,6 +244,12 @@ class CryptoEngine(object):  # pagma: no cover
         return DecodeAES(self._cipher, prepare_data(cipher_text,
                                                     AES.block_size))
 
+    def forget(self):
+        """
+        discard cipher
+        """
+        self._cipher = None
+
     def _is_authenticated(self):
         if not self._is_timedout() and self._cipher is not None:
             return True
@@ -237,7 +263,10 @@ class CryptoEngine(object):  # pagma: no cover
         return False
 
     def changepassword(self, reader=raw_input):
-        self._keycrypted = self._create_password(reader=reader)
+        if self._callback is None:
+            raise CryptoException("No callback class has been "
+                                  "specified")
+        self._keycrypted = self._create_password()
         return self._keycrypted
 
     @property
@@ -256,13 +285,13 @@ class CryptoEngine(object):  # pagma: no cover
         else:
             raise Exception("callback must be an instance of Callback!")
 
-    def _create_password(self, reader=raw_input):
+    def _create_password(self):
         """
         Create a secret password as a hash and the salt used for this hash.
         Change reader to manipulate how input is given.
         """
         salt = base64.b64encode(os.urandom(32))
-        passwd = reader("Please type in the secret key:")
+        passwd = self._getsecret("Please type in the secret key:")
         key = self._get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         return hpk.decode('utf-8')
@@ -273,6 +302,18 @@ class CryptoEngine(object):  # pagma: no cover
         """
         iterations = 5000
         return PBKDF2(password, salt, dkLen=32, count=iterations)
+
+    def set_cryptedkey(self, key):
+        # TODO: rename this method!
+        salt, digest = key.split('$6$')
+        self._digest = digest.encode('utf-8')
+        self._salt = salt.encode('utf-8'),
+    def get_cryptedkey(self):
+        # TODO: rename this method!
+        """
+        return _keycrypted
+        """
+        return self._keycrypted
 
 
 if __name__ == '__main__':  # pragma: no cover

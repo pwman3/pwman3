@@ -521,3 +521,5 @@ class CryptoEngineOld(CryptoEngine):
             return cPickle.loads(plaintext)
         except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
             return plaintext
+
+from crypto_engine import CryptoEngine

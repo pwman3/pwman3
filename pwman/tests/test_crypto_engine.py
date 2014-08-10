@@ -52,7 +52,7 @@ class CryptoEngineTest(unittest.TestCase):
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
 
-    def test6_hhh_is_timedout(self):
+    def test6_is_timedout(self):
         ce = CryptoEngine.get()
         ce._timeout = 1
         time.sleep(1.1)

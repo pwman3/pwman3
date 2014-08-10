@@ -12,6 +12,9 @@ PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 class DummyCallback(Callback):
 
+    def getinput(self, question):
+        return u'12345'
+
     def getsecret(self, question):
         return u'12345'
 
@@ -62,6 +65,7 @@ default_config['Database'] = {'type': 'SQLite',
                                            "test.pwman.db")
                               }
 
+
 class SetupTester(object):
 
     def __init__(self, dbver=None, filename=None):
@@ -90,5 +94,4 @@ class SetupTester(object):
             db = factory.create(dbtype, self.dbver, self.filename)
         else:
             db = factory.create(dbtype, self.dbver)
-
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
