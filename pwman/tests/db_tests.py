@@ -24,7 +24,7 @@ from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
 from pwman.util import config
 from pwman.util.config import get_pass_conf
 from pwman.util.generator import leetlist
-from pwman.util.crypto import CryptoEngine, CryptoBadKeyException
+from pwman.util.crypto import CryptoEngine, CryptoException
 from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CMDLoop, CliMenuItem
@@ -351,9 +351,9 @@ class CLITests(unittest.TestCase):
 
     def test_do_auth(self):
         crypto = CryptoEngine.get()
-        rv = crypto.auth('12345')
-        self.assertIs(rv, None)
-        self.assertRaises(CryptoBadKeyException, crypto.auth, 'WRONG')
+        rv = crypto.authenticate('12345')
+        self.assertTrue(rv)
+        self.assertFalse(crypto.authenticate('WRONG'))
 
     def test_do_clear(self):
         self.tester.cli.do_clear('')
