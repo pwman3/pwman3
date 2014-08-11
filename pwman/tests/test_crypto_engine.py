@@ -48,7 +48,7 @@ class CryptoEngineTest(unittest.TestCase):
     def test5_e_authenticate(self):
         ce = CryptoEngine.get()
         self.assertFalse(ce.authenticate('verywrong'))
-        self.assertTrue(ce.authenticate('verysecretkey'))
+        self.assertTrue(ce.authenticate('12345'))
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
 
@@ -74,9 +74,9 @@ class CryptoEngineTest(unittest.TestCase):
     def test_g_encrypt_decrypt_wrong_pass(self):
         ce = CryptoEngine.get()
         ce._cipher = None
-        ce._reader = give_wrong_key
+        ce._getsecret = give_wrong_key
         self.assertRaises(CryptoException, ce.encrypt, "secret")
-        ce._reader = give_key
+        ce._getsecret = lambda x: '12345'
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt, "topsecret")
