@@ -55,29 +55,6 @@ def authenticate(password, salt, digest):
     return binascii.hexlify(dig) == digest
 
 
-def write_password(reader=raw_input):
-    """
-    Write a secret password as a hash and the salt used for this hash
-    to a file
-    """
-    salt = base64.b64encode(os.urandom(32))
-    passwd = reader("Please type in the secret key:")
-    key = get_digest(passwd, salt)
-    f = open('passwords.txt', 'wt')
-    hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
-    f.write(hpk.decode('utf-8'))
-    f.close()
-
-
-def get_digest_from_file(filename):
-    """
-    Read a digested password and salt from the file
-    """
-    f = open(filename, 'rt')
-    salt, digest = f.readline().split('$6$')
-    return salt.encode('utf-8'), digest.encode('utf-8')
-
-
 def get_cipher(password, salt):
     """
     Create a chiper object from a hashed password
@@ -88,26 +65,6 @@ def get_cipher(password, salt):
     return chiper
 
 
-def cli_auth(reader=raw_input):
-    """
-    Read password from the user, if the password is correct,
-    finish the execution an return the password and salt which
-    are read from the file.
-    """
-    salt, digest = get_digest_from_file('passwords.txt')
-    tries = 0
-    while tries < 5:
-        password = reader("Please type in your master password:"
-                          ).encode('utf-8')
-        if authenticate(password, salt, digest):
-            return password, salt
-
-        print("You entered a wrong password...")
-        tries += 1
-
-    raise CryptoException("You entered wrong password 5 times..")
-
-
 def prepare_data(text, block_size):
     """
     prepare data before encryption so the lenght matches the expected
@@ -116,38 +73,6 @@ def prepare_data(text, block_size):
     num_blocks = len(text)//block_size + 1
     newdatasize = block_size*num_blocks
     return text.ljust(newdatasize)
-
-
-def save_a_secret_message(reader=raw_input):
-    """
-    PoC to show we can encrypt a message
-    """
-    secret_msg = """This is a very important message! Learn Cryptography!!!"""
-    # the secret message will be encrypted with the secret password found
-    # in the file
-    passwd, salt = cli_auth(reader=reader)
-    cipher = get_cipher(passwd, salt)
-    # explictly destroy password, so now there is no clear text reference
-    # to the input given by the user
-    del(passwd)
-    msg = EncodeAES(cipher, prepare_data(secret_msg, AES.block_size))
-    with open('secret.enc', 'wt') as s:
-        s.write(msg.decode())
-    print("The cipher message is:", msg.decode())
-
-
-def read_a_secret_message(reader=raw_input):
-    """
-    PoC to show we can decrypt a message
-    """
-    passwd, salt = cli_auth(reader)
-    cipher = get_cipher(passwd, salt)
-    del(passwd)
-    with open('secret.enc') as s:
-        msg = s.readline()
-        print("The decrypted secret message is:")
-        decoded = DecodeAES(cipher, msg)
-        print(decoded)
 
 
 class CryptoEngine(object):  # pagma: no cover
@@ -173,10 +98,8 @@ class CryptoEngine(object):  # pagma: no cover
         except ValueError:
             timeout = -1
 
-        salt, digest = get_digest_from_file('passwords.txt')
-
         kwargs = {'algorithm': algo,
-                  'timeout': timeout, 'salt': salt, 'digest': digest}
+                  'timeout': timeout}
 
         if dbver >= 0.5:
             CryptoEngine._instance_new = CryptoEngine(**kwargs)
@@ -314,10 +237,3 @@ class CryptoEngine(object):  # pagma: no cover
         return _keycrypted
         """
         return self._salt + '$6$' + self._digest
-
-
-if __name__ == '__main__':  # pragma: no cover
-    if '-i' in sys.argv:
-        write_password()
-    save_a_secret_message()
-    read_a_secret_message()

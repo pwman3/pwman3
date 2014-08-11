@@ -1,9 +1,7 @@
 import unittest
 import pwman.util.config as config
 import os
-from pwman.util.crypto_engine import (write_password, save_a_secret_message,
-                                      read_a_secret_message,
-                                      CryptoEngine, CryptoException)
+from pwman.util.crypto_engine import (CryptoEngine, CryptoException)
 import time
 
 # set cls_timout to negative number (e.g. -1) to disable
@@ -24,15 +22,6 @@ give_wrong_key = lambda msg: "verywrongtkey"
 
 
 class CryptoEngineTest(unittest.TestCase):
-
-    def test1_a_write_password(self):
-        write_password(reader=give_key)
-
-    def test2_b_save_secret(self):
-        save_a_secret_message(reader=give_key)
-
-    def test3_c_read_secret(self):
-        read_a_secret_message(reader=give_key)
 
     def test4_d_get_crypto(self):
         ce = CryptoEngine.get()
@@ -80,4 +69,3 @@ class CryptoEngineTest(unittest.TestCase):
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt, "topsecret")
-
