@@ -21,8 +21,7 @@
 Define the base CLI interface for pwman3
 """
 from __future__ import print_function
-from pwman.util.crypto import CryptoEngine
-from pwman.util.crypto import zerome
+from pwman.util.crypto_engine import CryptoEngine, zerome
 import pwman.util.config as config
 import re
 import sys

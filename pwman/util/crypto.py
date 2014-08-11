@@ -19,28 +19,6 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 
-"""
-Encryption Module used by PwmanDatabase
-
-Supports AES, ARC2, Blowfish, CAST, DES, DES3, IDEA, RC5.
-
-Usage:
-import pwman.util.crypto.CryptoEngine as CryptoEngine
-from pwman.util.crypto import CryptoEngine
-
-class myCallback(CryptoEngine.Callback):
-    def execute(self):
-        return "mykey"
-
-params = {'encryptionAlgorithm': 'AES',
-          'encryptionCallback': callbackFunction}
-
-CryptoEngine.init(params)
-
-crypto = CryptoEngine.get()
-ciphertext = crypto.encrypt("plaintext")
-plaintext = cyypto.decrypt(ciphertext)
-"""
 from __future__ import print_function
 from Crypto.Cipher import Blowfish as cBlowfish
 from Crypto.Cipher import AES as cAES
@@ -63,14 +41,6 @@ import hashlib
 import base64
 
 
-def zerome(string):
-    """
-    securely erase strings ...
-    for windows: ctypes.cdll.msvcrt.memset
-    """
-    bufsize = len(string) + 1
-    offset = sys.getsizeof(string) - bufsize
-    ctypes.memset(id(string) + offset, 0, bufsize)
 
 # Use this to tell if crypto is successful or not
 _TAG = "PWMANCRYPTO"
@@ -111,7 +81,7 @@ class CryptoNoCallbackException(CryptoException):
         return "CryptoNoCallbackException: " + self.message
 
 
-class CryptoEngine(object):
+class CryptoEngineO(object):
     """
     Cryptographic Engine, overrides CryptoEngineOld.
     The main change is that _getcipher_real is now hashing the key
@@ -435,7 +405,7 @@ class CryptoEngine(object):
         return plaintext
 
 
-class CryptoEngineOld(CryptoEngine):
+class CryptoEngineOld(CryptoEngineO):
 
     def _getcipher_real(self, key, algo):
         """
@@ -521,5 +491,3 @@ class CryptoEngineOld(CryptoEngine):
             return cPickle.loads(plaintext)
         except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
             return plaintext
-
-from crypto_engine import CryptoEngine

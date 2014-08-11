@@ -35,7 +35,7 @@ import pwman.util.config as config
 from pwman.ui.cli import PwmanCliNew
 from pwman.data.nodes import NewNode
 from pwman.ui import tools
-from pwman.util.crypto import zerome
+from pwman.util.crypto_engine import zerome
 
 
 def winGetClipboard():
@@ -171,7 +171,7 @@ class PwmanCliWinNew(PwmanCliNew):
             winSetClipboard("")
         except Exception as e:
             self.error(e)
-        
+
     def do_open(self, args):
         ids = self.get_ids(args)
         if not args:

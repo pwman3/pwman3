@@ -24,7 +24,7 @@
 from pwman.data.database import Database, DatabaseException
 from pwman.data.database import __DB_FORMAT__
 from pwman.data.nodes import NewNode
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 import sqlite3 as sqlite
 import pwman.util.config as config
 import itertools

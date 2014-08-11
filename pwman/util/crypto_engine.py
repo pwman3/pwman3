@@ -27,12 +27,23 @@ import binascii
 import time
 from pwman.util.callback import Callback
 import pwman.util.config as config
+import ctypes
 
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip()
+
+
+def zerome(string):
+    """
+    securely erase strings ...
+    for windows: ctypes.cdll.msvcrt.memset
+    """
+    bufsize = len(string) + 1
+    offset = sys.getsizeof(string) - bufsize
+    ctypes.memset(id(string) + offset, 0, bufsize)
 
 
 class CryptoException(Exception):

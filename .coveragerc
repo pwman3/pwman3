@@ -2,5 +2,6 @@
 omit = pwman/tests/*.py, pwman/ui/mac.py, pwman/ui/win.py, \
        pwman/data/convertdb.py, pwman/data/nodes_multiple_approach.py, \
        pwman/data/models.py, pwman/data/drivers/postgresql.py, \
-       pwman/data/drivers/mysql.py, pwman/exchange/importer.py, pwman/ui/base.py
+       pwman/data/drivers/mysql.py, pwman/exchange/importer.py, pwman/ui/base.py,
+       pwman/util/crypto.py 
 source = pwman

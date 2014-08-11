@@ -29,7 +29,7 @@ from pwman.ui.tools import CLICallback
 import pwman.util.config as config
 import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 
 
 def auto_convert():

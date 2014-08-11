@@ -25,7 +25,7 @@ from pwman.data.database import Database, DatabaseException
 from pwman.data.drivers.sqlite import SQLiteDatabaseNewForm
 from pwman.data.nodes import Node
 from pwman.data.nodes import NewNode
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 from pwman.data.tags import Tag
 from db_tests import node_factory
 from pwman.util.callback import CLICallback

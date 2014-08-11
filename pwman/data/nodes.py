@@ -20,7 +20,7 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 
 
 class NewNode(object):

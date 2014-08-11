@@ -20,7 +20,7 @@ from __future__ import print_function
 import os
 import shutil
 import time
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 import pwman.data.factory
 from pwman.util.callback import CLICallback
 from pwman.data.nodes import NewNode

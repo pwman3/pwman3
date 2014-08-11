@@ -1,7 +1,6 @@
 import pwman.util.config as config
 import os
-from pwman.util.crypto import (CryptoEngine, CryptoException,
-                               CryptoNoCallbackException, CryptoEngineOld)
+from pwman.util.crypto_engine import (CryptoEngine, CryptoException)
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '5'

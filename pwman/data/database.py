@@ -19,9 +19,10 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 
 __DB_FORMAT__ = 0.5
+
 
 class DatabaseException(Exception):
     pass  # prage: no cover

@@ -21,14 +21,14 @@
 import os
 import sys
 import unittest
-from .db_tests import (DBTests, SetupTester, CLITests, ConfigTest,
+from db_tests import (DBTests, SetupTester, CLITests, ConfigTest,
                        TestDBFalseConfig, FactoryTest)
 
-from .crypto_tests import CryptoTest
-from .test_crypto_engine import CryptoEngineTest
+#from .crypto_tests import CryptoTest
+from test_crypto_engine import CryptoEngineTest
 
 if 'win' not in sys.platform:
-    from .test_complete_ui import Ferrum, NEW_DB_PATH
+    from test_complete_ui import Ferrum, NEW_DB_PATH
 
     if os.path.exists(NEW_DB_PATH):
         os.remove(NEW_DB_PATH)

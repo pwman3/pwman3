@@ -24,7 +24,7 @@ from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
 from pwman.util import config
 from pwman.util.config import get_pass_conf
 from pwman.util.generator import leetlist
-from pwman.util.crypto import CryptoEngine, CryptoException
+from pwman.util.crypto_engine import CryptoEngine
 from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CMDLoop, CliMenuItem
@@ -134,8 +134,6 @@ class DBTests(unittest.TestCase):
         enc = CryptoEngine.get()
         enc.callback = DummyCallback2()
         self.tester.cli._db.changepassword()
-        #self.assertRaises(CryptoBadKeyException,
-        #                  self.tester.cli._db.changepassword, reader=lambda x: "newsecret")
 
     def test_6_db_change_pass(self):
         "fuck yeah, we change the password and the new dummy works"
