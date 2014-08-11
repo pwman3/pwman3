@@ -107,7 +107,6 @@ class DBTests(unittest.TestCase):
         password = u'Password'
         url = u'example.org'
         notes = u'some notes'
-        # node = NewNode(username, password, url, notes)
         node = NewNode()
         node.username = username
         node.password = password

@@ -212,7 +212,7 @@ class CryptoEngine(object):  # pagma: no cover
         finish the execution an return the password and salt which
         are read from the file.
         """
-        salt, digest = get_digest_from_file('passwords.txt')
+        salt, digest = self._salt, self._digest
         tries = 0
         while tries < 5:
             password = self._getsecret("Please type in your master password:"
@@ -222,7 +222,6 @@ class CryptoEngine(object):  # pagma: no cover
 
             print("You entered a wrong password...")
             tries += 1
-
         raise CryptoException("You entered wrong password 5 times..")
 
     def encrypt(self, text):
@@ -236,7 +235,7 @@ class CryptoEngine(object):  # pagma: no cover
 
     def decrypt(self, cipher_text):
         if not self._is_authenticated():
-            p, s = cli_auth(self._reader)
+            p, s = self._auth()
             cipher = get_cipher(p, s)
             del(p)
             return DecodeAES(cipher, prepare_data(cipher_text, AES.block_size))
@@ -307,13 +306,14 @@ class CryptoEngine(object):  # pagma: no cover
         # TODO: rename this method!
         salt, digest = key.split('$6$')
         self._digest = digest.encode('utf-8')
-        self._salt = salt.encode('utf-8'),
+        self._salt = salt.encode('utf-8')
+
     def get_cryptedkey(self):
         # TODO: rename this method!
         """
         return _keycrypted
         """
-        return self._keycrypted
+        return self._salt + '$6$' + self._digest
 
 
 if __name__ == '__main__':  # pragma: no cover
