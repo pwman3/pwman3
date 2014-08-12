@@ -31,6 +31,9 @@ import pwman.data.factory
 from pwman.data.convertdb import PwmanConvertDB
 from pwman.util.crypto_engine import CryptoEngine
 
+if sys.version_info.major > 2:
+    raw_input = input
+
 
 def auto_convert():
     try:

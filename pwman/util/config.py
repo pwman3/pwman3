@@ -110,7 +110,10 @@ def load(filename):
     try:
         try:
             fp = open(filename, "r")
-            parser.readfp(fp)
+            try:
+                parser.read_file(fp)
+            except AttributeError:
+                parser.readfp(fp)
         except ParsingError as e:
             raise ConfigException(e)
         except IOError as e:
@@ -144,7 +147,7 @@ def save(filename=None):
             for optionkey in sectiondict.keys():
                 parser.set(key, optionkey, sectiondict[optionkey])
     try:
-        fp = file(filename, "w+")
+        fp = open(filename, "w+")
         parser.write(fp)
         fp.close()
     except IOError as e:

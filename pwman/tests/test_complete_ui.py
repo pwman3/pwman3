@@ -45,7 +45,7 @@ class Ferrum(unittest.TestCase):
     def test_a_db_warning(self):
         "when trying to run with old db, we should see warning"
         lfile = 'convert-test.log'
-        logfile = open(lfile, 'w')
+        logfile = open(lfile, 'wb')
         cmd = os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
                            ) + ' -d '+OLD_DB_PATH
         child = pexpect.spawn(cmd, logfile=logfile)
@@ -60,7 +60,7 @@ class Ferrum(unittest.TestCase):
     def test_b_run_convert(self):
         "invoke pwman with -k option to convert the old data"
         lfile = 'convert-test.log'
-        logfile = open(lfile, 'w')
+        logfile = open(lfile, 'wb')
         cmd = (os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
                             ) + ' -k -e Blowfish -d ' + OLD_DB_PATH)
         child = pexpect.spawn(cmd, logfile=logfile)
@@ -74,7 +74,7 @@ class Ferrum(unittest.TestCase):
 
     def test_c_change_pass(self):
         lfile = 'test-chg_passwd.log'
-        logfile = open(lfile, 'w')
+        logfile = open(lfile, 'wb')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
                               ' -e Blowfish -d '+OLD_DB_PATH, logfile=logfile)
