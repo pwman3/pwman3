@@ -73,8 +73,8 @@ _saveconfig = False
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 
-from test_tools import (SetupTester, DummyCallback2,
-                        DummyCallback3, DummyCallback4)
+from .test_tools import (SetupTester, DummyCallback2,
+                         DummyCallback3, DummyCallback4)
 
 
 class DBTests(unittest.TestCase):

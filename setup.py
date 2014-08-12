@@ -11,6 +11,8 @@ from subprocess import Popen, PIPE
 from build_manpage import BuildManPage
 import pwman
 
+sys.path.insert(0, os.getcwd())
+
 
 def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
@@ -81,7 +83,7 @@ setup(name=pwman.appname,
           'Programming Language :: Python :: 2.7'
       ],
       test_suite='pwman.tests.suite',
-      tests_require=test_requirements, 
+      tests_require=test_requirements,
       cmdclass={
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
