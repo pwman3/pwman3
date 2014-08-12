@@ -265,11 +265,11 @@ class CLITests(unittest.TestCase):
         # node = NewNode('alice', 'dough!', 'example.com',
         #               'lorem impsum')
         node = NewNode()
-        node.username = 'alice'
-        node.password = 'dough!'
-        node.url = 'example.com'
-        node.notes = 'somenotes'
-        node.tags = 'lorem ipsum'
+        node.username = b'alice'
+        node.password = b'dough!'
+        node.url = b'example.com'
+        node.notes = b'somenotes'
+        node.tags = b'lorem ipsum'
 
         tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         node.tags = tags
@@ -285,11 +285,11 @@ class CLITests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
 
         node = NewNode()
-        node.username = 'alice'
-        node.password = 'dough!'
-        node.url = 'example.com'
-        node.notes = 'somenotes'
-        node.tags = 'lorem ipsum'
+        node.username = b'alice'
+        node.password = b'dough!'
+        node.url = b'example.com'
+        node.notes = b'somenotes'
+        node.tags = b'lorem ipsum'
 
         tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
         node.tags = tags
@@ -503,3 +503,12 @@ class ConfigTest(unittest.TestCase):
 
     def tearDown(self):
         config._conf = self.orig_config.copy()
+
+if __name__ == '__main__':
+    # make sure we use local pwman
+    sys.path.insert(0, os.getcwd())
+    # check if old DB exists, if so remove it.
+    # excuted only once when invoked upon import or
+    # upon run
+    SetupTester().clean()
+    unittest.main(verbosity=1, failfast=True)
