@@ -204,6 +204,7 @@ class BaseUI(object):
                     _tags.append(t)
                     del(e)
             _tags = filter(None, _tags)
+            _tags = list(_tags)
             return _tags
 
 
@@ -399,11 +400,12 @@ class BaseCommands(BaseUI, HelpUI):
             waituntil_enter(heardEnter, flushtimeout)
 
     def do_passwd(self, args):
-        try:
-            key = self._db.changepassword()
-            self._db.savekey(key)
-        except Exception as e:
-            self.error(e)
+        raise Exception("Not Implemented ...")
+        #try:
+        #    key = self._db.changepassword()
+        #    self._db.savekey(key)
+        #except Exception as e:
+        #    self.error(e)
 
     def do_save(self, args):
         argstrs = args.split()
@@ -461,9 +463,6 @@ class BaseCommands(BaseUI, HelpUI):
         return tags
 
     def do_list(self, args):
-
-        # crypto  = CryptoEngine.get()
-        # crypto.auth('YOURPASSWORD')
 
         if len(args.split()) > 0:
             self.do_clear('')
