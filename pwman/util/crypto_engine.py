@@ -66,7 +66,7 @@ def authenticate(password, salt, digest):
     salt and digest are stored in a file or a database
     """
     dig = get_digest(password, salt)
-    return binascii.hexlify(dig) == digest
+    return binascii.hexlify(dig) == binascii.hexlify(digest)
 
 
 def get_cipher(password, salt):
@@ -137,7 +137,7 @@ class CryptoEngine(object):  # pagma: no cover
         salt and digest are stored in a file or a database
         """
         dig = get_digest(password, self._salt)
-        if binascii.hexlify(dig) == self._digest:
+        if binascii.hexlify(dig) == binascii.hexlify(self._digest):
             CryptoEngine._timeoutcount = time.time()
             self._cipher = get_cipher(password, self._salt)
             return True
@@ -187,6 +187,8 @@ class CryptoEngine(object):  # pagma: no cover
         self._cipher = None
 
     def _is_authenticated(self):
+        if not self._digest and not self._salt:
+            self._create_password()
         if not self._is_timedout() and self._cipher is not None:
             return True
         return False
@@ -200,8 +202,7 @@ class CryptoEngine(object):  # pagma: no cover
 
     def changepassword(self, reader=raw_input):
         if self._callback is None:
-            raise CryptoException("No callback class has been "
-                                  "specified")
+            raise CryptoException("No callback class has been specified")
         self._keycrypted = self._create_password()
         return self._keycrypted
 
@@ -230,6 +231,9 @@ class CryptoEngine(object):  # pagma: no cover
         passwd = self._getsecret("Please type in the secret key:")
         key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
+        self._digest = key
+        self._salt = salt
+        self._cipher = get_cipher(passwd, salt)
         return hpk.decode('utf-8')
 
     def set_cryptedkey(self, key):
