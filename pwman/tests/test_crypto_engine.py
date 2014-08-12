@@ -21,20 +21,20 @@ config.set_defaults(default_config)
 give_key = lambda msg: "verysecretkey"
 give_wrong_key = lambda msg: "verywrongtkey"
 
-salt = b"jwGGiQsG/JIzxWL31/QptaI61lphARqOJbQ2UqwmukE="
-digest = b"3185bbf9ff483b2ddbd21bfeba6d5f54e62f45711e341c85c5b935ee26143650"
+salt = 'cUDHNMJdTRxiIDPXuT163UMvi4fd2pXz/bRg2Zm8ajE='
+digest = '9eaec7dc1ee647338406739c54dbf9c4881c74702008eb978622811cfc46a07f'
 
 
 class DummyCallback(Callback):
 
     def getinput(self, question):
-        return u'verysecretkey'
+        return u'12345'
 
     def getsecret(self, question):
-        return u'verysecretkey'
+        return u'12345'
 
     def getnewsecret(self, question):
-        return u'verysecretkey'
+        return u'12345'
 
 
 class CryptoEngineTest(unittest.TestCase):
@@ -57,9 +57,8 @@ class CryptoEngineTest(unittest.TestCase):
             ce._salt = salt
         if not ce._digest:
             ce._digest = digest
-        ce.authenticate('verywrong')
         self.assertFalse(ce.authenticate('verywrong'))
-        self.assertTrue(ce.authenticate('verysecretkey'))
+        self.assertTrue(ce.authenticate('12345'))
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
 
@@ -89,7 +88,7 @@ class CryptoEngineTest(unittest.TestCase):
         ce._cipher = None
         ce._getsecret = give_wrong_key
         self.assertRaises(CryptoException, ce.encrypt, "secret")
-        ce._getsecret = lambda x: u'verysecretkey'
+        ce._getsecret = lambda x: u'12345'
         secret = ce.encrypt(u"topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
