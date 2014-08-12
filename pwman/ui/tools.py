@@ -236,7 +236,7 @@ class CMDLoop(object):  # pragma: no cover
         else:
             print (item.__class__)
 
-    def run(self, new_node=None):
+    def run(self, new_node=None, reader=raw_input):
         while True:
             i = 0
             for x in self.items:
@@ -247,13 +247,14 @@ class CMDLoop(object):  # pragma: no cover
                     current = x
 
                 # when printing tags, we have list ...
-                currentstr = ''
+                currentstr = b''
                 if type(current) == list:
                     for c in current:
+                        print(c, type(c))
                         try:
-                            currentstr += ' ' + c
+                            currentstr += b' ' + c
                         except TypeError:
-                            currentstr += ' ' + c.name
+                            currentstr += b' ' + c.name
                 # for the case we are not dealing with
                 # a list of tags
                 else:
@@ -261,7 +262,7 @@ class CMDLoop(object):  # pragma: no cover
 
                 print ("%s - %s: %s" % (i, x.name, currentstr))
             print("X - Finish editing")
-            option = raw_input("Enter your choice:")[0]
+            option = reader("Enter your choice:")[0]
             try:
                 print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
@@ -287,7 +288,7 @@ class CMDLoop(object):  # pragma: no cover
                     self.items[2].setter = new_node.url
                 elif selection == 3:  # for notes
                     # new_node.notes = getinput("Notes:")
-                    new_node.notes = getinput("Notes:")
+                    new_node.notes = reader("Notes:")
                     self.items[3].getter = new_node.notes
                     self.items[3].setter = new_node.notes
                 elif selection == 4:
@@ -301,7 +302,7 @@ class CMDLoop(object):  # pragma: no cover
                 if (option.upper() == 'X'):
                     break
                 print("Invalid selection")
-            
+
 
 def getonechar(question, width=_defaultwidth):  # pragma: no cover
     question = "%s " % (question)

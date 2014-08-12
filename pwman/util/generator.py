@@ -1,15 +1,15 @@
 #============================================================================
 # This file is part of Pwman3.
-# 
+#
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
-# as published by the Free Software Foundation; 
-# 
+# as published by the Free Software Foundation;
+#
 # Pwman3 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -75,7 +75,7 @@ def random_special_sign(password):
     this will do the following:
     In [203]: for i in range(10):
     print random_special_sign("secret")
-    .....:     
+    .....:
     secre%
     sec\et
     secre?
@@ -89,7 +89,7 @@ def random_special_sign(password):
     note: numbers are not replaced:
     In [5]: for i in range(10):
     print random_special_sign(password)
-   ...:     
+   ...:
     s3cr?t
     s3cr$t
     s3cre#
@@ -100,12 +100,12 @@ def random_special_sign(password):
     s3*ret
     s3cre:
     s3cr@t
-    
+
     In [6]: password = "v3r71mp0rt4nt"
-    
+
     In [7]: for i in range(10):
         print random_special_sign(password)
-   ...:     
+   ...:
     v3r71mp0rt4)t
     v3r71m&0rt4nt
     v3r71mp0rt4-t
@@ -121,11 +121,11 @@ def random_special_sign(password):
     specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
                      "%", "^", "&", "*", "(", ")", ":", ";",
                      "{", "}", "+","-"]
-     
+
     place = int(random.randint(0, len(password)-1))
     while password[place].isdigit():
         place = int(random.randint(0, len(password)-1))
-    
+
     randomsign = specialsigns[int(random.randint(0, len(specialsigns)-1))]
     for idx, letter in enumerate(password):
         if not idx == place:
@@ -133,7 +133,7 @@ def random_special_sign(password):
         if idx == place:
             newpass = newpass + randomsign
     return newpass
-    
+
 def change_numerics(password):
     newpassword = str()
     for l in password:
@@ -1569,7 +1569,7 @@ def _random_word(pwlen):
         #
         # Append the syllable units to the word units.
         #
-        word_units = word_units + syllable_units
+        word_units = word_units + list(syllable_units)
 
         #
         # If the word has been improperly formed, throw out
@@ -1728,6 +1728,7 @@ def _have_initial_y(units):
         #
         # Count vowels.
         #
+        units = list(units)
         if (gram_rules[units[unit_count]] & VOWEL):
             vowel_count = vowel_count + 1
 
@@ -1759,6 +1760,7 @@ def _have_final_split(units):
     # Count all the vowels in the word.
     #
     for unit_count in range(len(units)):
+        units = list(units)
         if (gram_rules[units[unit_count]] & VOWEL):
             vowel_count = vowel_count + 1
 

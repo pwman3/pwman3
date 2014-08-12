@@ -40,17 +40,32 @@ class NewNode(object):
 
     def dump_edit_to_db(self):
         dump = u""
-        dump += u"username:"+self._username.decode()+u"##"
-        dump += u"password:"+self._password.decode()+u"##"
-        dump += u"url:"+self._url.decode()+u"##"
-        dump += u"notes:"+self._notes.decode()+u"##"
+        try:
+            dump += u"username:"+self._username.decode()+u"##"
+        except AttributeError:
+            dump += u"username:"+self._username+u"##"
+        try:
+            dump += u"password:"+self._password.decode()+u"##"
+        except AttributeError:
+            dump += u"password:"+self._password+u"##"
+        try:
+            dump += u"url:"+self._url.decode()+u"##"
+        except AttributeError:
+            dump += u"url:"+self._url+u"##"
+        try:
+            dump += u"notes:"+self._notes.decode()+u"##"
+        except AttributeError:
+            dump += u"notes:"+self._notes+u"##"
         dump += u"tags:"
         tagsloc = u""
         for tag in self._tags:
             if isinstance(tag, str):
                 tagsloc += u"tag:"+tag.strip()+u"**endtag**"
-            else:
-                tagsloc += u"tag:"+tag._name.decode()+u"**endtag**"
+            if isinstance(tag, bytes):
+                try:
+                    tagsloc += u"tag:"+tag.decode()+u"**endtag**"
+                except:
+                    tagsloc += u"tag:"+tag+u"**endtag**"
 
         dump += tagsloc
         dump = [dump]

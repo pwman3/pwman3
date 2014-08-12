@@ -38,7 +38,7 @@ import unittest
 if sys.version_info.major > 2:
     from io import StringIO
 else:
-    import StringIO
+    from StringIO import StringIO
 import os
 import os.path
 
@@ -329,13 +329,21 @@ class CLITests(unittest.TestCase):
                              node.tags,
                              node.tags))
 
-        dummy_stdin = StringIO.StringIO('4\n\nX')
-        self.assertTrue(len(dummy_stdin.readlines()))
-        dummy_stdin.seek(0)
-        sys.stdin = dummy_stdin
-        menu.run(node)
+        dummy_stdin = StringIO('4\n\nX')
+
+        class dummy_stdin(object):
+
+            def __init__(self):
+                self.idx = -1
+                self.ans = ['4', 'some fucking notes','X']
+
+            def __call__(self, msg):
+                self.idx += 1
+                return self.ans[self.idx]
+
+        dstin = dummy_stdin()
+        menu.run(node, reader=dstin)
         self.tester.cli._db.editnode(2, node)
-        sys.stdin = sys.__stdin__
 
     def test_get_pass_conf(self):
         numerics, leet, s_chars = get_pass_conf()
