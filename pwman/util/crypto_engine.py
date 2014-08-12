@@ -137,7 +137,7 @@ class CryptoEngine(object):  # pagma: no cover
         salt and digest are stored in a file or a database
         """
         dig = get_digest(password, self._salt)
-        if binascii.hexlify(dig) == binascii.hexlify(self._digest):
+        if binascii.hexlify(dig) == self._digest or dig == self._digest:
             CryptoEngine._timeoutcount = time.time()
             self._cipher = get_cipher(password, self._salt)
             return True
