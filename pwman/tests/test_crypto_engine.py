@@ -18,7 +18,7 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
 
 config.set_defaults(default_config)
 
-give_key = lambda msg: "verysecretkey"
+give_key = lambda msg: "12345"
 give_wrong_key = lambda msg: "verywrongtkey"
 
 salt = b'cUDHNMJdTRxiIDPXuT163UMvi4fd2pXz/bRg2Zm8ajE='
@@ -53,10 +53,6 @@ class CryptoEngineTest(unittest.TestCase):
     def test5_e_authenticate(self):
         ce = CryptoEngine.get()
         ce._reader = give_key
-        if not ce._salt:
-            ce._salt = salt
-        if not ce._digest:
-            ce._digest = digest
         self.assertFalse(ce.authenticate('verywrong'))
         self.assertTrue(ce.authenticate('12345'))
         ce._timeout = -1
@@ -94,4 +90,4 @@ class CryptoEngineTest(unittest.TestCase):
         self.assertEqual(decrypt.decode(), "topsecret")
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=1, failfast=True)
