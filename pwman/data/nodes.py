@@ -25,16 +25,6 @@ from pwman.util.crypto_engine import CryptoEngine
 
 class NewNode(object):
 
-    #def __init__(self, username="", password="", url="", notes="", tags=""):
-    #    """Initialise everything to null."""
-    #
-    #    self._id = 0
-    #    self._username = username
-    #    self._password = password
-    #    self._url = url
-    #    self._notes = notes
-    #    self._tags = tags
-
     def __str__(self):  # pragma: no cover
         enc = CryptoEngine.get()
         try:

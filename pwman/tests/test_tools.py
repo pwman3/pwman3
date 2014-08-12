@@ -18,9 +18,6 @@ class DummyCallback(Callback):
     def getsecret(self, question):
         return u'12345'
 
-    def getnewsecret(self, question):
-        return u'12345'
-
 
 class DummyCallback2(Callback):
 
@@ -29,9 +26,6 @@ class DummyCallback2(Callback):
 
     def getsecret(self, question):
         return u'wrong'
-
-    def getnewsecret(self, question):
-        return u'newsecret'
 
 
 class DummyCallback3(Callback):
@@ -43,9 +37,6 @@ class DummyCallback3(Callback):
         ans = '12345'
         return ans
 
-    def getnewsecret(self, question):
-        return u'newsecret'
-
 
 class DummyCallback4(Callback):
 
@@ -53,9 +44,6 @@ class DummyCallback4(Callback):
         return u'newsecret'
 
     def getsecret(self, question):
-        return u'newsecret'
-
-    def getnewsecret(self, question):
         return u'newsecret'
 
 

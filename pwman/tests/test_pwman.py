@@ -56,5 +56,5 @@ def suite():
     return suite
 
 if __name__ == '__main__':
-    unittest.main(verbosity=1, failfast=True)
-    #unittest.TextTestRunner(verbosity=2).run(suite())
+    #unittest.main(verbosity=1, failfast=True)
+    unittest.TextTestRunner(verbosity=2, failfast=True).run(suite())

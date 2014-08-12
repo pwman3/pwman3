@@ -57,16 +57,7 @@ def get_digest(password, salt):
     iterations = 5000
     if isinstance(password, bytes):
         password = password.decode()
-    #print(type(password), type(salt))
     return PBKDF2(password, salt, dkLen=32, count=iterations)
-
-
-def authenticate(password, salt, digest):
-    """
-    salt and digest are stored in a file or a database
-    """
-    dig = get_digest(password, salt)
-    return binascii.hexlify(dig) == binascii.hexlify(digest)
 
 
 def get_cipher(password, salt):
@@ -149,12 +140,12 @@ class CryptoEngine(object):  # pagma: no cover
         finish the execution an return the password and salt which
         are read from the file.
         """
-        salt, digest = self._salt, self._digest
+        salt = self._salt
         tries = 0
         while tries < 5:
-            password = self._getsecret("Please type in your master password:"
+            password = self._getsecret("Please type in your master password"
                                        ).encode('utf-8')
-            if authenticate(password, salt, digest):
+            if self.authenticate(password):
                 return password, salt
 
             print("You entered a wrong password...")
@@ -203,7 +194,12 @@ class CryptoEngine(object):  # pagma: no cover
     def changepassword(self, reader=raw_input):
         if self._callback is None:
             raise CryptoException("No callback class has been specified")
+        #if not self._is_authenticated():
+        #    p, s = self._auth()
+        # if you change the password of the database you have to Change
+        # all the cipher texts in the databse!!!
         self._keycrypted = self._create_password()
+        self.set_cryptedkey(self._keycrypted)
         return self._keycrypted
 
     @property
@@ -218,7 +214,6 @@ class CryptoEngine(object):  # pagma: no cover
         if isinstance(callback, Callback):
             self._callback = callback
             self._getsecret = callback.getsecret
-            self._getnewsecret = callback.getnewsecret
         else:
             raise Exception("callback must be an instance of Callback!")
 
@@ -228,7 +223,7 @@ class CryptoEngine(object):  # pagma: no cover
         Change reader to manipulate how input is given.
         """
         salt = base64.b64encode(os.urandom(32))
-        passwd = self._getsecret("Please type in the secret key:")
+        passwd = self._getsecret("Please type in the master password")
         key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         self._digest = key
