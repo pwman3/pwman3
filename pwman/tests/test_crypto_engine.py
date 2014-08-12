@@ -21,8 +21,8 @@ config.set_defaults(default_config)
 give_key = lambda msg: "verysecretkey"
 give_wrong_key = lambda msg: "verywrongtkey"
 
-salt = 'cUDHNMJdTRxiIDPXuT163UMvi4fd2pXz/bRg2Zm8ajE='
-digest = '9eaec7dc1ee647338406739c54dbf9c4881c74702008eb978622811cfc46a07f'
+salt = b'cUDHNMJdTRxiIDPXuT163UMvi4fd2pXz/bRg2Zm8ajE='
+digest = b'9eaec7dc1ee647338406739c54dbf9c4881c74702008eb978622811cfc46a07f'
 
 
 class DummyCallback(Callback):
