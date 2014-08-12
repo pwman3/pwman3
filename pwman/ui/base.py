@@ -524,7 +524,7 @@ class BaseCommands(BaseUI, HelpUI):
             if len(tags) == 0:
                 print ("None",)
             for t in tags:
-                print ("%s " % t.name)
+                print ("%s " % t.name.decode())
             print
         except Exception as e:
             self.error(e)

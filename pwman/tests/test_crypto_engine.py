@@ -54,11 +54,11 @@ class CryptoEngineTest(unittest.TestCase):
         ce._reader = give_key
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
-        self.assertEqual(decrypt, "topsecret")
+        self.assertEqual(decrypt.decode(), "topsecret")
         ce._cipher = None
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
-        self.assertEqual(decrypt, "topsecret")
+        self.assertEqual(decrypt.decode(), "topsecret")
 
     def test_g_encrypt_decrypt_wrong_pass(self):
         ce = CryptoEngine.get()
@@ -68,4 +68,4 @@ class CryptoEngineTest(unittest.TestCase):
         ce._getsecret = lambda x: '12345'
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
-        self.assertEqual(decrypt, "topsecret")
+        self.assertEqual(decrypt.decode(), "topsecret")

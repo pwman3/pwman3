@@ -73,8 +73,8 @@ _saveconfig = False
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
 
-from .test_tools import (SetupTester, DummyCallback2,
-                         DummyCallback3, DummyCallback4)
+from test_tools import (SetupTester, DummyCallback2,
+                        DummyCallback3, DummyCallback4)
 
 
 class DBTests(unittest.TestCase):
@@ -255,8 +255,8 @@ class CLITests(unittest.TestCase):
         for t in tags:
             self.assertIsInstance(t, TagNew)
 
-        for t, n in zip(tags, 'looking glass'.split()):
-            self.assertEqual(t.name.strip(), n)
+        for t, n in zip(tags, u'looking glass'.split()):
+            self.assertEqual(t.name.strip().decode(), n)
 
     # creating all the components of the node does
     # the node is still not added !
