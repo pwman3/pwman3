@@ -1,5 +1,6 @@
 import unittest
 import pwman.util.config as config
+from pwman.util.callback import Callback
 import os
 from pwman.util.crypto_engine import (CryptoEngine, CryptoException)
 import time
@@ -20,12 +21,27 @@ config.set_defaults(default_config)
 give_key = lambda msg: "verysecretkey"
 give_wrong_key = lambda msg: "verywrongtkey"
 
+salt = b"jwGGiQsG/JIzxWL31/QptaI61lphARqOJbQ2UqwmukE="
+digest = b"3185bbf9ff483b2ddbd21bfeba6d5f54e62f45711e341c85c5b935ee26143650"
+
+
+class DummyCallback(Callback):
+
+    def getinput(self, question):
+        return u'verysecretkey'
+
+    def getsecret(self, question):
+        return u'verysecretkey'
+
+    def getnewsecret(self, question):
+        return u'verysecretkey'
+
 
 class CryptoEngineTest(unittest.TestCase):
 
     def test4_d_get_crypto(self):
         ce = CryptoEngine.get()
-
+        ce.callback = DummyCallback()
         secret2 = ce.changepassword(reader=give_key)
         secret1 = ce.changepassword(reader=give_key)
         # althouth the same secret key is used,
@@ -36,8 +52,14 @@ class CryptoEngineTest(unittest.TestCase):
 
     def test5_e_authenticate(self):
         ce = CryptoEngine.get()
+        ce._reader = give_key
+        if not ce._salt:
+            ce._salt = salt
+        if not ce._digest:
+            ce._digest = digest
+        ce.authenticate('verywrong')
         self.assertFalse(ce.authenticate('verywrong'))
-        self.assertTrue(ce.authenticate('12345'))
+        self.assertTrue(ce.authenticate('verysecretkey'))
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
 
@@ -52,6 +74,8 @@ class CryptoEngineTest(unittest.TestCase):
     def test_f_encrypt_decrypt(self):
         ce = CryptoEngine.get()
         ce._reader = give_key
+        if not ce._salt:
+            ce._salt = salt
         secret = ce.encrypt("topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
@@ -65,7 +89,10 @@ class CryptoEngineTest(unittest.TestCase):
         ce._cipher = None
         ce._getsecret = give_wrong_key
         self.assertRaises(CryptoException, ce.encrypt, "secret")
-        ce._getsecret = lambda x: '12345'
-        secret = ce.encrypt("topsecret")
+        ce._getsecret = lambda x: u'verysecretkey'
+        secret = ce.encrypt(u"topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
+
+if __name__ == '__main__':
+    unittest.main()

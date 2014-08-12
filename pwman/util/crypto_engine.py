@@ -55,6 +55,9 @@ def get_digest(password, salt):
     Get a digest based on clear text password
     """
     iterations = 5000
+    if isinstance(password, bytes):
+        password = password.decode()
+    #print(type(password), type(salt))
     return PBKDF2(password, salt, dkLen=32, count=iterations)
 
 
@@ -225,16 +228,9 @@ class CryptoEngine(object):  # pagma: no cover
         """
         salt = base64.b64encode(os.urandom(32))
         passwd = self._getsecret("Please type in the secret key:")
-        key = self._get_digest(passwd, salt)
+        key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         return hpk.decode('utf-8')
-
-    def _get_digest(self, password, salt):
-        """
-        Get a digest based on clear text password
-        """
-        iterations = 5000
-        return PBKDF2(password, salt, dkLen=32, count=iterations)
 
     def set_cryptedkey(self, key):
         # TODO: rename this method!
