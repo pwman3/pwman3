@@ -1,6 +1,10 @@
+2014-Aug-13 Oz Nahum Tiram  <nahumoz@gmail.com>
+    * Add export function 
+	* Version 0.5.1c 
+
 2014-May-24 Oz Nahum <nahumoz@gmail.com>
     * Fix for issue #29 - crash when changing the database password 
-	* Vesion 0.5.1b
+	* Version 0.5.1b
 
 2014-May-5 Oz Nahum <nahumoz@gmail.com>
     * Version 0.5.1
