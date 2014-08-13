@@ -37,6 +37,8 @@ from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
+import csv
+
 if sys.version_info.major > 2:
     raw_input = input
 
@@ -104,18 +106,14 @@ class HelpUI(object):  # pragma: no cover
     def help_edit(self):
         self.usage("edit <ID|tag> ... ")
         print ("Edits a nodes.")
-        self._mult_id_help()
 
     def help_import(self):
         self.usage("import [filename] ...")
         print ("Not implemented...")
 
     def help_export(self):
-        self.usage("export <ID|tag> ... ")
-        print ("Exports a list of ids to an external format. If no IDs or",
-               " tags are specified, then all nodes under the current",
-               " filter are exported.")
-        self._mult_id_help()
+        self.usage("export [{'filename': 'foo.csv', 'delimiter':'|'}] ")
+        print("All nodes under the current filter are exported.")
 
     def help_new(self):
         self.usage("new")
@@ -249,8 +247,29 @@ class BaseCommands(BaseUI, HelpUI):
         self._db.close()
         return True
 
-    def do_export(self, arg):
-        print('Not implemented...')
+    def do_export(self, args):
+        try:
+            args = ast.literal_eval(args)
+        except Exception:
+            args = {}
+
+        filename = args.get('filename', 'pwman-export.csv')
+        delim = args.get('delimiter', ';')
+        nodeids = self._db.listnodes()
+        nodes = self._db.getnodes(nodeids)
+        with open(filename, 'w') as csvfile:
+            writer = csv.writer(csvfile, delimiter=delim)
+            writer.writerow(['Username', 'URL', 'Password', 'Notes',
+                             'Tags'])
+            for n in nodes:
+                tags = n.tags
+                tags = filter(None, tags)
+                tags = ','.join(t.strip() for t in tags)
+                writer.writerow([n.username, n.url, n.password, n.notes,
+                                 tags])
+
+        print("Successfuly exported database to {}".format(
+            os.path.join(os.getcwd(), filename)))
 
     def do_forget(self, args):
         try:
@@ -589,7 +608,8 @@ class BaseCommands(BaseUI, HelpUI):
                 while True:
                     ans = tools.getinput(("Are you sure you want to"
                                          " delete '%s@%s' ([y/N])?"
-                                          ) % (n.username, n.url)).lower().strip('\n')
+                                          ) % (n.username, n.url)
+                                         ).lower().strip('\n')
                     if ans == '' or ans == 'y' or ans == 'n':
                         break
             if ans == 'y':
