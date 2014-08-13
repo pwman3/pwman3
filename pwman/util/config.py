@@ -145,7 +145,7 @@ def save(filename=None):
         sectiondict = _conf[key]
         if isinstance(sectiondict, dict):
             for optionkey in sectiondict.keys():
-                parser.set(key, optionkey, sectiondict[optionkey])
+                parser.set(key, optionkey, str(sectiondict[optionkey]))
     try:
         fp = open(filename, "w+")
         parser.write(fp)
