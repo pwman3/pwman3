@@ -48,31 +48,3 @@ class TagNew(object):
     def name(self, value):
         enc = CryptoEngine.get()  # pragma: no cover
         self._name = enc.encrypt(value)  # pragma: no cover
-
-
-class Tag(object):  # pragma: no cover
-    """
-    tags are specific strings used to classify nodes
-    the methods in this class override some built-ins
-    for strings.
-    """
-    #def __init__(self, name):
-    #    self.set_name(name)
-
-    def __eq__(self, other):
-        if other._name == self._name:
-            return True
-        else:
-            return False
-
-    def get_name(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
-
-    def set_name(self, name):
-        enc = CryptoEngine.get()
-        self._name = enc.encrypt(name)
-
-    def __str__(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name)
