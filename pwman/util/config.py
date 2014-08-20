@@ -19,12 +19,27 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 import sys
+import os
 
 if sys.version_info.major > 2:
     from configparser import ConfigParser, ParsingError
 else:
     from ConfigParser import ConfigParser, ParsingError
 import copy
+
+config_dir = os.path.expanduser("~/.pwman")
+
+default_config = {'Global': {'umask': '0100', 'colors': 'yes',
+                             'cls_timeout': '5',
+                             'save': 'True'
+                             },
+                  'Database': {'type': 'SQLite',
+                               'filename': os.path.join(config_dir,
+                                                        "pwman.db")},
+                  'Encryption': {'algorithm': 'AES'},
+                  'Readline': {'history': os.path.join(config_dir,
+                                                       "history")}
+                  }
 
 
 class ConfigException(Exception):
@@ -43,6 +58,49 @@ class ConfigNoConfigException(ConfigException):
 _file = None
 _conf = dict()
 _defaults = dict()
+
+"""
+Add a global wide defaults, without regarding any section!
+"""
+defaults = {}
+
+
+class Config(object):
+
+    def __init__(self, filename=None, defaults=None, **kwargs):
+
+        self.filename = filename
+        self.parser = self._load(defaults)
+
+    def _load(self, defaults):
+        try:
+            parser = ConfigParser(defaults)
+            with open(self.filename) as f:
+                try:
+                    parser.read_file(f)
+                except AttributeError:
+                    parser.readfp(f)
+        except ParsingError as e:
+            raise ConfigException(e)
+
+        self._add_defaults(defaults, parser)
+
+        return parser
+
+    def _add_defaults(self, defaults, parser):
+        for section, options in defaults.items():
+            if not parser.has_section(section):
+                parser.add_section(section)
+
+            for key, value in options.items():
+                if not parser.has_option(section, key):
+                    parser.set(section, key, value)
+
+    def get_value(self, section, name):
+        return self.parser.get(section, name)
+
+    def set_value(self, section, name, value):
+        self.parser.set(section, name, value)
 
 
 def set_conf(conf_dict):
@@ -152,6 +210,7 @@ def save(filename=None):
         fp.close()
     except IOError as e:
         raise ConfigException(str(e))
+
 
 def get_pass_conf():
     numerics = get_value("Generator", "numerics").lower() == 'true'

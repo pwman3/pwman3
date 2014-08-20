@@ -42,6 +42,7 @@ class FactoryException(Exception):
     def __str__(self):
         return self.message
 
+
 def check_db_version(type):
     if type == "SQLite":
         ver = sqlite.check_db_version()
