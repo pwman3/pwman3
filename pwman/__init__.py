@@ -88,9 +88,6 @@ def parser_options(formatter_class=argparse.HelpFormatter):
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
-    parser.add_argument('-e', '--encryption', dest="algo",
-                        help=("Possible options are: AES(default), ARC2, ARC4,"
-                              " Blowfish, CAST, DES, DES3, IDEA, RC5"))
     parser.add_argument('-k', '--convert', dest='dbconvert',
                         action='store_true', default=False,
                         # os.path.expanduser('~/.pwman/pwman.db'),
@@ -112,9 +109,6 @@ def get_conf_file(args):
         os.mkdir(config_dir)
 
     if not os.path.exists(args.cfile):
-        # instead of setting the defaults, the defaults should
-        # be read ! This should be fixed !
-        # config.set_defaults(default_config)
         config.set_config(default_config)
     else:
         config.load(args.cfile)
@@ -150,12 +144,6 @@ def set_db(args):
         config.set_value("Global", "save", "False")
 
 
-def set_algorithm(args, config):
-    if args.algo:
-        config.set_value("Encryption", "algorithm", args.algo)
-        config.set_value("Global", "save", "False")
-
-
 def get_conf_options(args, OSX):
     config = get_conf_file(args)
     xselpath = config.get_value("Global", "xsel")
@@ -165,7 +153,6 @@ def get_conf_options(args, OSX):
     set_win_colors(config)
     set_db(args)
     set_umask(config)
-    set_algorithm(args, config)
     dbtype = config.get_value("Database", "type")
     if not dbtype:
         raise Exception("Could not read the Database type from the config!")
