@@ -59,11 +59,6 @@ _file = None
 _conf = dict()
 _defaults = dict()
 
-"""
-Add a global wide defaults, without regarding any section!
-"""
-defaults = {}
-
 
 class Config(object):
 
