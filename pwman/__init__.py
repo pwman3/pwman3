@@ -96,7 +96,8 @@ def parser_options(formatter_class=argparse.HelpFormatter):
                               " one found in the config file, or the one given"
                               " as command line argument."))
     parser.add_argument('-O', '--output', dest='output',
-                        # default=os.path.expanduser('~/.pwman/pwman-newdb.db'),
+                        # default=os.path.expanduser(
+                        #'~/.pwman/pwman-newdb.db'),
                         help=("The name of the newly created database after "
                               "converting."))
     return parser
@@ -110,10 +111,10 @@ def get_conf_file(args):
 
     if not os.path.exists(args.cfile):
         config.set_config(default_config)
+        return config
     else:
-        config.load(args.cfile)
-
-    return config
+        configp = config.Config(args.cfile)
+        return configp
 
 
 def set_xsel(config, OSX):

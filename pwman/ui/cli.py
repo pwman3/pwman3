@@ -41,7 +41,7 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
-    def __init__(self, db, hasxsel, callback):
+    def __init__(self, db, hasxsel, callback, config_parser=None):
         """
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
@@ -49,8 +49,13 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
         cmd.Cmd.__init__(self)
         self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
                                               pwman.website)
-        self._historyfile = config.get_value("Readline", "history")
+        if not config_parser:
+            self._historyfile = config.get_value("Readline", "history")
+        else:
+            self._historyfile = config_parser.get_value("Readline", "history")
+
         self.hasxsel = hasxsel
+        self.config = config_parser
         try:
             enc = CryptoEngine.get()
             enc.callback = callback()
