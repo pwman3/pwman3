@@ -22,9 +22,9 @@ import sys
 import os
 
 if sys.version_info.major > 2:
-    from configparser import ConfigParser, ParsingError
+    from configparser import ConfigParser, ParsingError, NoOptionError
 else:
-    from ConfigParser import ConfigParser, ParsingError
+    from ConfigParser import ConfigParser, ParsingError, NoOptionError
 import copy
 
 config_dir = os.path.expanduser("~/.pwman")
@@ -92,7 +92,10 @@ class Config(object):
                     parser.set(section, key, value)
 
     def get_value(self, section, name):
-        return self.parser.get(section, name)
+        try:
+            return self.parser.get(section, name)
+        except NoOptionError:
+            return ''
 
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)

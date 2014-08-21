@@ -93,17 +93,12 @@ class CryptoEngine(object):  # pagma: no cover
         if CryptoEngine._instance_new:
             return CryptoEngine._instance_new
 
-        algo = config.get_value("Encryption", "algorithm")
-
-        if not algo:
-            raise Exception("Parameters missing, no algorithm given")
-
         try:
             timeout = int(config.get_value("Encryption", "timeout"))
         except ValueError:
             timeout = -1
 
-        kwargs = {'algorithm': algo,
+        kwargs = {'algorithm': 'AES',
                   'timeout': timeout}
 
         if dbver >= 0.5:

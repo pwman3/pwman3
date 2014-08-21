@@ -74,7 +74,6 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Database': {'type': 'SQLite',
                                'filename': os.path.join(config_dir,
                                                         "pwman.db")},
-                  'Encryption': {'algorithm': 'AES'},
                   'Readline': {'history': os.path.join(config_dir,
                                                        "history")}
                   }
@@ -88,18 +87,6 @@ def parser_options(formatter_class=argparse.HelpFormatter):
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
-    parser.add_argument('-k', '--convert', dest='dbconvert',
-                        action='store_true', default=False,
-                        # os.path.expanduser('~/.pwman/pwman.db'),
-                        help=("Convert old DB format to version >= 0.4."
-                              " The database that will be converted is the"
-                              " one found in the config file, or the one given"
-                              " as command line argument."))
-    parser.add_argument('-O', '--output', dest='output',
-                        # default=os.path.expanduser(
-                        #'~/.pwman/pwman-newdb.db'),
-                        help=("The name of the newly created database after "
-                              "converting."))
     return parser
 
 
@@ -164,8 +151,6 @@ def get_conf_options(args, OSX):
 def get_db_version(config, dbtype, args):
     if os.path.exists(config.get_value("Database", "filename")):
         dbver = factory.check_db_version(dbtype)
-        if dbver < 0.4 and not args.dbconvert:
-            print(_db_warn)
     else:
         dbver = __DB_FORMAT__
     return dbver
