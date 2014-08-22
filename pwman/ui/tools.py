@@ -53,6 +53,7 @@ _defaultwidth = 10
 
 
 class ANSI(object):
+
     """
     ANSI Colors
     """
@@ -70,11 +71,12 @@ class ANSI(object):
     White = 37
 
 
-def typeset(text, color, bold=False, underline=False):  # pragma: no cover
+def typeset(text, color, bold=False, underline=False,
+            has_colorama=True):  # pragma: no cover
     """
     print colored strings using colorama
     """
-    if not config.get_value("Global", "colors") == 'yes':
+    if not has_colorama:
         return text
     if bold:
         text = colorama.Style.BRIGHT + text
@@ -152,7 +154,7 @@ def getpassword(question, argsgiven=None,
         while not length:
             try:
                 default_length = config.get_value(
-                    'Generator', 'default_pw_length') or '7'
+                    'Generator', 'default_pw_length') or '8'
                 length = getinput(
                     "Password length (default %s): " % default_length,
                     default=default_length)
@@ -170,9 +172,9 @@ def getpassword(question, argsgiven=None,
         a1 = reader(question.ljust(width))
         if not a1:
             return getpassword(
-                    '', argsgiven=1, width=width, echo=echo, reader=reader,
-                    numerics=numerics, leetify=leetify, symbols=symbols,
-                    special_signs=special_signs, length=length)
+                '', argsgiven=1, width=width, echo=echo, reader=reader,
+                numerics=numerics, leetify=leetify, symbols=symbols,
+                special_signs=special_signs, length=length)
         a2 = reader("[Repeat] %s" % (question.ljust(width)))
         if a1 == a2:
             if leetify:
@@ -224,9 +226,11 @@ def getinput(question, default="", reader=raw_input,
 
 
 class CMDLoop(object):  # pragma: no cover
+
     """
     The menu that drives editing of a node
     """
+
     def __init__(self):
         self.items = []
 
@@ -278,8 +282,8 @@ class CMDLoop(object):  # pragma: no cover
                 elif selection == 1:  # for password
                     numerics, leet, s_chars = get_pass_conf()
                     new_node.password = getpassword(
-                            'New Password:', numerics=numerics, leetify=leet,
-                            special_signs=s_chars)
+                        'New Password:', numerics=numerics, leetify=leet,
+                        special_signs=s_chars)
                     self.items[1].getter = new_node.password
                     self.items[1].setter = new_node.password
                 elif selection == 2:
@@ -331,6 +335,7 @@ def getonechar(question, width=_defaultwidth):  # pragma: no cover
 
 
 class CliMenuItem(object):  # pragma: no cover
+
     def __init__(self, name, editor, getter, setter):
         self.name = name
         self.editor = editor
