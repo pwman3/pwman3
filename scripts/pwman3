@@ -25,7 +25,6 @@ from pwman import get_conf_options, get_db_version
 from pwman import parser_options
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CLICallback
-import pwman.util.config as config
 import pwman.data.factory
 from pwman.util.crypto_engine import CryptoEngine
 
@@ -35,12 +34,12 @@ if sys.version_info.major > 2:
 
 def main(args):
     PwmanCliNew, OSX = get_ui_platform(sys.platform)
-    xselpath, dbtype = get_conf_options(args, OSX)
+    xselpath, dbtype, config = get_conf_options(args, OSX)
     dbver = get_db_version(config, dbtype, args)
     CryptoEngine.get(dbver)
-
-    db = pwman.data.factory.create(dbtype, dbver)
-    cli = PwmanCliNew(db, xselpath, CLICallback)
+    fname = config.get_value('Database', 'filename')
+    db = pwman.data.factory.create(dbtype, dbver, fname)
+    cli = PwmanCliNew(db, xselpath, CLICallback, config)
 
     try:
         cli.cmdloop()

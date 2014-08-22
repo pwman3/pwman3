@@ -90,18 +90,14 @@ def parser_options(formatter_class=argparse.HelpFormatter):
     return parser
 
 
-def get_conf_file(args):
+def get_conf(args):
     config_dir = os.path.expanduser("~/.pwman")
 
     if not os.path.isdir(config_dir):  # pragma: no cover
         os.mkdir(config_dir)
 
-    if not os.path.exists(args.cfile):
-        config.set_config(default_config)
-        return config
-    else:
-        configp = config.Config(args.cfile)
-        return configp
+    configp = config.Config(args.cfile, default_config)
+    return configp
 
 
 def set_xsel(config, OSX):
@@ -126,31 +122,32 @@ def set_umask(config):
         raise config.ConfigException("Could not determine umask from config!")
 
 
-def set_db(args):
+def set_db(args, configp):
     if args.dbase:
-        config.set_value("Database", "filename", args.dbase)
-        config.set_value("Global", "save", "False")
+        configp.set_value("Database", "filename", args.dbase)
+        configp.set_value("Global", "save", "False")
 
 
 def get_conf_options(args, OSX):
-    config = get_conf_file(args)
-    xselpath = config.get_value("Global", "xsel")
+    configp = get_conf(args)
+    xselpath = configp.get_value("Global", "xsel")
     if not xselpath:
-        set_xsel(config, OSX)
+        set_xsel(configp, OSX)
 
-    set_win_colors(config)
-    set_db(args)
-    set_umask(config)
-    dbtype = config.get_value("Database", "type")
+    set_win_colors(configp)
+    set_db(args, configp)
+    set_umask(configp)
+    dbtype = configp.get_value("Database", "type")
     if not dbtype:
         raise Exception("Could not read the Database type from the config!")
 
-    return xselpath, dbtype
+    return xselpath, dbtype, configp
 
 
 def get_db_version(config, dbtype, args):
     if os.path.exists(config.get_value("Database", "filename")):
-        dbver = factory.check_db_version(dbtype)
+        dbver = factory.check_db_version(dbtype, config.get_value("Database",
+                                                                  "filename"))
     else:
         dbver = __DB_FORMAT__
     return dbver
