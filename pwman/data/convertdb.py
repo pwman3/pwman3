@@ -24,7 +24,6 @@ from pwman.util.crypto_engine import CryptoEngine
 import pwman.data.factory
 from pwman.util.callback import CLICallback
 import sqlite3 as sqlite
-import pwman.util.config as config
 
 _NEWVERSION = 0.4
 
@@ -67,9 +66,6 @@ class DBConverter(object):
 
     def backup_old_db(self):
         print("Will convert the following Database: %s " % self.dbname)
-        if os.path.exists(config.get_value("Database", "filename")):
-            dbver = pwman.data.factory.check_db_version(self.dbtype)
-            self.dbver = float(dbver)
         backup = '.backup-%s'.join(os.path.splitext(self.dbname)) % \
             time.strftime(
                 '%Y-%m-%d-%H:%M')

@@ -22,10 +22,11 @@ import sys
 import os
 
 if sys.version_info.major > 2:
-    from configparser import ConfigParser, ParsingError, NoOptionError
+    from configparser import (ConfigParser, ParsingError, NoOptionError,
+                              NoSectionError)
 else:
-    from ConfigParser import ConfigParser, ParsingError, NoOptionError
-import copy
+    from ConfigParser import (ConfigParser, ParsingError, NoOptionError,
+                              NoSectionError)
 
 config_dir = os.path.expanduser("~/.pwman")
 
@@ -54,10 +55,6 @@ class ConfigException(Exception):
 
 class ConfigNoConfigException(ConfigException):
     pass
-
-_file = None
-_conf = dict()
-_defaults = dict()
 
 
 class Config(object):
@@ -94,98 +91,13 @@ class Config(object):
     def get_value(self, section, name):
         try:
             return self.parser.get(section, name)
-        except NoOptionError:
+        except (NoOptionError, NoSectionError):
             return ''
 
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)
 
 
-def set_conf(conf_dict):
-    global _conf
-    _conf = conf_dict
-
-
-def set_defaults(defaults):
-    global _defaults
-    _defaults = defaults
-
-
-def add_defaults(defaults):
-    global _defaults
-    for n in defaults.keys():
-        if n not in _defaults:
-            _defaults[n] = dict()
-        for k in defaults[n].keys():
-            _defaults[n][k] = defaults[n][k]
-
-
-def get_value(section, name):
-    global _conf, _defaults
-    try:
-        return _conf[section][name]
-    except KeyError:
-        pass
-
-    try:
-        value = _defaults[section][name]
-        set_value(section, name, value)
-        return value
-    except KeyError:
-        pass
-
-    return ''
-
-
-def set_value(section, name, value):
-    global _conf
-    if section not in _conf:
-        _conf[section] = dict()
-    _conf[section][name] = value
-
-
-def get_conf():
-    """
-    Get a copy of the config.
-    Modifications have no effect.
-    This function only serves for allowing applications
-    to output the config to the user"""
-    global _conf
-    return copy.deepcopy(_conf)
-
-
-def load(filename):
-    """Load configuration from 'filename'."""
-    global _conf, _file
-
-    _file = filename
-
-    parser = ConfigParser()
-
-    fp = None
-    try:
-        try:
-            fp = open(filename, "r")
-            try:
-                parser.read_file(fp)
-            except AttributeError:
-                parser.readfp(fp)
-        except ParsingError as e:
-            raise ConfigException(e)
-        except IOError as e:
-            raise ConfigNoConfigException(e)
-    finally:
-        if (fp):
-            fp.close()
-
-    for section in parser.sections():
-        for option in parser.options(section):
-            set_value(section, option, parser.get(section, option))
-
-
-def set_config(config_dict):
-    global _conf
-    _conf = config_dict
 
 
 def save(filename=None):
@@ -210,9 +122,10 @@ def save(filename=None):
         raise ConfigException(str(e))
 
 
-def get_pass_conf():
-    numerics = get_value("Generator", "numerics").lower() == 'true'
+def get_pass_conf(config):
+    numerics = config.get_value("Generator", "numerics").lower() == 'true'
     # TODO: allow custom leetifying through the config
-    leetify = get_value("Generator", "leetify").lower() == 'true'
-    special_chars = get_value("Generator", "special_chars").lower() == 'true'
+    leetify = config.get_value("Generator", "leetify").lower() == 'true'
+    special_chars = config.get_value("Generator",
+                                     "special_chars").lower() == 'true'
     return numerics, leetify, special_chars
