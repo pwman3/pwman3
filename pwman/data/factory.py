@@ -43,9 +43,9 @@ class FactoryException(Exception):
         return self.message
 
 
-def check_db_version(type):
-    if type == "SQLite":
-        ver = sqlite.check_db_version()
+def check_db_version(ftype, filename):
+    if ftype == "SQLite":
+        ver = sqlite.SQLiteDatabaseNewForm.check_db_version(filename)
         try:
             return float(ver.strip("\'"))
         except ValueError:
@@ -61,10 +61,7 @@ def create(dbtype, version=None, filename=None):
     """
     if dbtype == "SQLite":
         from pwman.data.drivers import sqlite
-        if filename:
-            db = sqlite.SQLiteDatabaseNewForm(filename)
-        elif version >= 0.4:
-            db = sqlite.SQLiteDatabaseNewForm()
+        db = sqlite.SQLiteDatabaseNewForm(filename)
     elif dbtype == "Postgresql":  # pragma: no cover
         try:
             from pwman.data.drivers import postgresql

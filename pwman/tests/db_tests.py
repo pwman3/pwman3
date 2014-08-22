@@ -76,6 +76,8 @@ PwmanCliNew, OSX = get_ui_platform(sys.platform)
 from .test_tools import (SetupTester, DummyCallback2,
                          DummyCallback3, DummyCallback4)
 
+testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+
 
 class DBTests(unittest.TestCase):
 
@@ -85,8 +87,8 @@ class DBTests(unittest.TestCase):
         "test that the right db instance was created"
         dbver = __DB_FORMAT__
         self.dbtype = config.get_value("Database", "type")
-        self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester(dbver)
+        self.db = factory.create(self.dbtype, dbver, testdb)
+        self.tester = SetupTester(dbver, testdb)
         self.tester.create()
 
     def test_1_db_created(self):
@@ -181,6 +183,7 @@ class TestDBFalseConfig(unittest.TestCase):
         self.fname1 = default_config['Database'].pop('filename')
         self.fname = config._conf['Database'].pop('filename')
 
+    @unittest.skip("Legacy test. Database and file should always be given")
     def test_db_missing_conf_parameter(self):
         self.assertRaises(DatabaseException, factory.create,
                           'SQLite', __DB_FORMAT__)
@@ -210,8 +213,8 @@ class CLITests(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         self.dbtype = config.get_value("Database", "type")
-        self.db = factory.create(self.dbtype, __DB_FORMAT__)
-        self.tester = SetupTester(__DB_FORMAT__)
+        self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
+        self.tester = SetupTester(__DB_FORMAT__, testdb)
         self.tester.create()
 
     def test_input(self):
@@ -335,7 +338,7 @@ class CLITests(unittest.TestCase):
 
             def __init__(self):
                 self.idx = -1
-                self.ans = ['4', 'some fucking notes','X']
+                self.ans = ['4', 'some fucking notes', 'X']
 
             def __call__(self, msg):
                 self.idx += 1
@@ -370,22 +373,15 @@ class CLITests(unittest.TestCase):
         self.assertTrue(self.tester.cli.do_exit(''))
 
 
-class FakeSqlite(object):
-
-    def check_db_version(self):
-        return ""
-
-
 class FactoryTest(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
-        self.assertEquals(factory.check_db_version('SQLite'), 0.5)
+        self.assertEquals(factory.check_db_version('SQLite', testdb), 0.5)
 
     def test_factory_check_db_file(self):
-        orig_sqlite = getattr(factory, 'sqlite')
-        factory.sqlite = FakeSqlite()
-        self.assertEquals(factory.check_db_version('SQLite'), 0.3)
-        factory.sqlite = orig_sqlite
+        factory.create('SQLite', version='0.3', filename='baz.db')
+        self.assertEquals(factory.check_db_version('SQLite', 'baz.db'), 0.3)
+        os.unlink('baz.db')
 
     def test_factory_create(self):
         db = factory.create('SQLite', filename='foo.db')
@@ -403,8 +399,8 @@ class ConfigTest(unittest.TestCase):
         "test that the right db instance was created"
         dbver = 0.4
         self.dbtype = config.get_value("Database", "type")
-        self.db = factory.create(self.dbtype, dbver)
-        self.tester = SetupTester(dbver)
+        self.db = factory.create(self.dbtype, dbver, testdb)
+        self.tester = SetupTester(dbver, testdb)
         self.tester.create()
         self.orig_config = config._conf.copy()
         self.orig_config['Encryption'] = {'algorithm': 'AES'}

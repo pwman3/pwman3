@@ -26,44 +26,32 @@ from pwman.data.database import __DB_FORMAT__
 from pwman.data.nodes import NewNode
 from pwman.util.crypto_engine import CryptoEngine
 import sqlite3 as sqlite
-import pwman.util.config as config
 import itertools
-
-
-def check_db_version():
-    """
-    check the data base version query the right table
-    """
-    filename = config.get_value('Database', 'filename')
-    con = sqlite.connect(filename)
-    cur = con.cursor()
-    cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
-    row = cur.fetchone()
-    if not row:
-        return "0.3"  # pragma: no cover
-    try:
-        return row[-2]
-    except IndexError:  # pragma: no cover
-        raise DatabaseException("Something seems fishy with the DB")
 
 
 class SQLiteDatabaseNewForm(Database):
     """SQLite Database implementation"""
 
-    def __init__(self, filename=None, dbformat=__DB_FORMAT__):
-        """Initialise SQLitePwmanDatabase instance."""
-        #Database.__init__(self)
-        super(SQLiteDatabaseNewForm, self).__init__()
-        # error handling is implemented in config.get_value
-        # so there's no need to try... except here...
-        if not filename:
-            self._filename = config.get_value('Database', 'filename')
-        else:
-            self._filename = filename
+    @classmethod
+    def check_db_version(cls, fname):
+        """
+        check the data base version.
+        """
+        con = sqlite.connect(fname)
+        cur = con.cursor()
+        cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
+        row = cur.fetchone()
+        if not row:
+            return "0.3"  # pragma: no cover
+        try:
+            return row[-2]
+        except IndexError:  # pragma: no cover
+            raise DatabaseException("Something seems fishy with the DB")
 
-        if not self._filename:
-            raise DatabaseException(("SQLite: missing config parameter:"
-                                    " filename"))
+    def __init__(self, filename, dbformat=__DB_FORMAT__):
+        """Initialise SQLitePwmanDatabase instance."""
+        super(SQLiteDatabaseNewForm, self).__init__()
+        self._filename = filename
         self.dbformat = dbformat
 
     def _open(self):

@@ -78,8 +78,6 @@ class SetupTester(object):
 
     def create(self):
         dbtype = config.get_value("Database", "type")
-        if self.filename:
-            db = factory.create(dbtype, self.dbver, self.filename)
-        else:
-            db = factory.create(dbtype, self.dbver)
+        db = factory.create(dbtype, self.dbver, self.filename)
+
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
