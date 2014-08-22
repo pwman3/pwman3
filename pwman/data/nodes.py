@@ -67,6 +67,9 @@ class NewNode(object):
                 except:
                     tagsloc += u"tag:"+tag+u"**endtag**"
 
+            else:
+                tagsloc += u'tag:'+tag._name+u'**endtag**'
+
         dump += tagsloc
         dump = [dump]
         return dump
