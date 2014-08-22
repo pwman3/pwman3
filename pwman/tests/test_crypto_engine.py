@@ -16,7 +16,7 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                                        "history")}
                   }
 
-config.set_defaults(default_config)
+#config.set_defaults(default_config)
 
 give_key = lambda msg: "12345"
 give_wrong_key = lambda msg: "verywrongtkey"

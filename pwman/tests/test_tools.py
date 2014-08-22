@@ -53,14 +53,34 @@ default_config['Database'] = {'type': 'SQLite',
                                            "test.pwman.db")
                               }
 
+with open(os.path.join(os.path.dirname(__file__), 'test.conf'), 'w') as f:
+    f.write("""
+[Encryption]
+algorithm = Blowfish
+
+[Global]
+xsel = /usr/bin/xsel
+colors = yes
+umask = 0100
+cls_timeout = 5
+
+[Database]
+type = SQLite
+""")
+
 
 class SetupTester(object):
 
     def __init__(self, dbver=None, filename=None):
-        config.set_defaults(default_config)
+        self.configp = config.Config(os.path.join(os.path.dirname(__file__),
+                                                  "test.conf"),
+                                     default_config)
+        self.configp.set_value('Database', 'filename',
+                               os.path.join(os.path.dirname(__file__),
+                                            "test.pwman.db"))
         if not OSX:
             self.xselpath = which("xsel")
-            config.set_value("Global", "xsel", self.xselpath)
+            self.configp.set_value("Global", "xsel", self.xselpath)
         else:
             self.xselpath = "xsel"
 
@@ -68,8 +88,8 @@ class SetupTester(object):
         self.filename = filename
 
     def clean(self):
-        if os.path.exists(config.get_value('Database', 'filename')):
-            os.remove(config.get_value('Database', 'filename'))
+        if os.path.exists(self.configp.get_value('Database', 'filename')):
+            os.remove(self.configp.get_value('Database', 'filename'))
 
         if os.path.exists(os.path.join(os.path.dirname(__file__),
                                        'testing_config')):
@@ -77,7 +97,7 @@ class SetupTester(object):
                                    'testing_config'))
 
     def create(self):
-        dbtype = config.get_value("Database", "type")
+        dbtype = 'SQLite'
         db = factory.create(dbtype, self.dbver, self.filename)
-
-        self.cli = PwmanCliNew(db, self.xselpath, DummyCallback)
+        self.cli = PwmanCliNew(db, self.xselpath, DummyCallback,
+                               config_parser=self.configp)
