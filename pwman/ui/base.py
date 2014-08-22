@@ -141,20 +141,6 @@ class HelpUI(object):  # pragma: no cover
         self.usage("exit")
         print("Exits the application.")
 
-    def help_save(self):
-        self.usage("save [filename]")
-        print("Saves the current configuration to [filename]. If no filename ",
-              "is given, the configuration is saved to the file from which ",
-              "the initial configuration was loaded.")
-
-    def help_set(self):
-        self.usage("set [configoption] [value]")
-        print("Sets a configuration option. If no value is specified, the ",
-              "current value for [configoption] is output. If neither ",
-              "[configoption] nor [value] are specified, the whole current ",
-              "configuration is output. [configoption] must be of the ",
-              "format <section>.<option>")
-
     def help_passwd(self):
         self.usage("passwd")
         print("Changes the password on the database. ")
@@ -278,37 +264,6 @@ class BaseCommands(BaseUI, HelpUI):
         except Exception as e:
             self.error(e)
 
-    def do_set(self, args):
-        argstrs = args.split()
-        try:
-            if len(argstrs) == 0:
-                conf = config.get_conf()
-                for s in conf.keys():
-                    for n in conf[s].keys():
-                        print ("%s.%s = %s" % (s, n, conf[s][n]))
-            elif len(argstrs) == 1:
-                r = re.compile("(.+)\.(.+)")
-                m = r.match(argstrs[0])
-                if m is None or len(m.groups()) != 2:
-                    print ("Invalid option format")
-                    self.help_set()
-                    return
-                print ("%s.%s = %s" % (m.group(1), m.group(2),
-                                       config.get_value(m.group(1),
-                                                        m.group(2))))
-            elif len(argstrs) == 2:
-                r = re.compile("(.+)\.(.+)")
-                m = r.match(argstrs[0])
-                if m is None or len(m.groups()) != 2:
-                    print ("Invalid option format")
-                    self.help_set()
-                    return
-                config.set_value(m.group(1), m.group(2), argstrs[1])
-            else:
-                self.help_set()
-        except Exception as e:
-            self.error(e)
-
     def get_username(self, default="", reader=raw_input):
         return tools.getinput("Username: ", default, reader)
 
@@ -425,17 +380,6 @@ class BaseCommands(BaseUI, HelpUI):
         #    self._db.savekey(key)
         #except Exception as e:
         #    self.error(e)
-
-    def do_save(self, args):
-        argstrs = args.split()
-        try:
-            if len(argstrs) > 0:
-                config.save(argstrs[0])
-            else:
-                config.save()
-            print ("Config saved.")
-        except Exception as e:
-            self.error(e)
 
     def do_tags(self, arg):
         enc = CryptoEngine.get()
