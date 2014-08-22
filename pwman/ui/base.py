@@ -22,7 +22,6 @@ Define the base CLI interface for pwman3
 """
 from __future__ import print_function
 from pwman.util.crypto_engine import CryptoEngine, zerome
-import pwman.util.config as config
 import re
 import sys
 import os
@@ -364,7 +363,7 @@ class BaseCommands(BaseUI, HelpUI):
             self.do_cls('')
 
         try:
-            flushtimeout = int(config.get_value("Global", "cls_timeout"))
+            flushtimeout = int(self.config.get_value("Global", "cls_timeout"))
         except ValueError:
             flushtimeout = 10
 
@@ -406,7 +405,6 @@ class BaseCommands(BaseUI, HelpUI):
         # for t in tags:
         #    strings.append(t.get_name())
         #    strings.append(t)
-
         strings = [t for t in tags]
 
         def complete(text, state):
