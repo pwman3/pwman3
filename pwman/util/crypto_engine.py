@@ -26,7 +26,6 @@ import sys
 import binascii
 import time
 from pwman.util.callback import Callback
-import pwman.util.config as config
 import ctypes
 
 if sys.version_info.major > 2:  # pragma: no cover
@@ -87,23 +86,12 @@ class CryptoEngine(object):  # pagma: no cover
     _callback = None
 
     @classmethod
-    def get(cls, dbver=0.5):
-        if CryptoEngine._instance:
-            return CryptoEngine._instance
+    def get(cls, dbver=None, timeout=-1):
         if CryptoEngine._instance_new:
             return CryptoEngine._instance_new
 
-        try:
-            timeout = int(config.get_value("Encryption", "timeout"))
-        except ValueError:
-            timeout = -1
-
-        kwargs = {'algorithm': 'AES',
-                  'timeout': timeout}
-
-        if dbver >= 0.5:
-            CryptoEngine._instance_new = CryptoEngine(**kwargs)
-            return CryptoEngine._instance_new
+        CryptoEngine._instance_new = CryptoEngine(timeout)
+        return CryptoEngine._instance_new
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
                  timeout=-1, reader=None):
