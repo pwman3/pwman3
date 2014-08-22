@@ -97,29 +97,9 @@ class Config(object):
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)
 
-
-
-
-def save(filename=None):
-    """Save the configuration to 'filename'."""
-    global _conf, _file
-    if not filename:
-        filename = _file
-
-    parser = ConfigParser()
-    for key in _conf.keys():
-        if not parser.has_section(key):
-            parser.add_section(key)
-        sectiondict = _conf[key]
-        if isinstance(sectiondict, dict):
-            for optionkey in sectiondict.keys():
-                parser.set(key, optionkey, str(sectiondict[optionkey]))
-    try:
-        fp = open(filename, "w+")
-        parser.write(fp)
-        fp.close()
-    except IOError as e:
-        raise ConfigException(str(e))
+    def save(self, filename):
+        with open(filename, "w+") as fp:
+            self.parser.write(fp)
 
 
 def get_pass_conf(config):
