@@ -21,7 +21,6 @@ Define the CLI interface for pwman3 and the helper functions
 """
 from __future__ import print_function
 from pwman.util.callback import Callback
-import pwman.util.config as config
 import subprocess as sp
 import getpass
 import sys
@@ -146,10 +145,7 @@ def getpassword(question, argsgiven=None,
                 width=_defaultwidth, echo=False,
                 reader=getpass.getpass, numerics=False, leetify=False,
                 symbols=False, special_signs=False,
-                length=None):  # pragma: no cover
-    # TODO: getpassword should recieve a config insatnce
-    #       and generate the policy according to it,
-    #       so that getpassword in cli would be simplified
+                length=None, config=None):  # pragma: no cover
     if argsgiven == 1 or length:
         while not length:
             try:
@@ -174,7 +170,7 @@ def getpassword(question, argsgiven=None,
             return getpassword(
                 '', argsgiven=1, width=width, echo=echo, reader=reader,
                 numerics=numerics, leetify=leetify, symbols=symbols,
-                special_signs=special_signs, length=length)
+                special_signs=special_signs, length=length, config=config)
         a2 = reader("[Repeat] %s" % (question.ljust(width)))
         if a1 == a2:
             if leetify:

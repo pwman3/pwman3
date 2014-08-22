@@ -25,7 +25,6 @@ Define the CLI interface for pwman3 and the helper functions
 from __future__ import print_function
 import pwman
 from pwman.util.crypto_engine import CryptoEngine
-import pwman.util.config as config
 import sys
 import cmd
 from pwman.ui.base import Aliases, BaseCommands

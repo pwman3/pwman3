@@ -512,7 +512,7 @@ class BaseCommands(BaseUI, HelpUI):
                     raise Exception(errmsg)
                 password = self.get_password(argsgiven=1, **args)
             else:
-                numerics, leet, s_chars = get_pass_conf()
+                numerics, leet, s_chars = get_pass_conf(self.config)
                 password = self.get_password(argsgiven=0,
                                              numerics=numerics,
                                              leetify=leet,
@@ -592,7 +592,7 @@ class BaseCommands(BaseUI, HelpUI):
         return tools.getpassword("Password (Blank to generate): ",
                                  reader=reader, length=length, leetify=leetify,
                                  special_signs=special_signs, symbols=symbols,
-                                 numerics=numerics)
+                                 numerics=numerics, config=self.config)
 
 
 class Aliases(BaseCommands):  # pragma: no cover
