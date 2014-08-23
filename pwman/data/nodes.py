@@ -61,14 +61,8 @@ class NewNode(object):
         for tag in self._tags:
             if isinstance(tag, str):
                 tagsloc += u"tag:"+tag.strip()+u"**endtag**"
-            if isinstance(tag, bytes):
-                try:
-                    tagsloc += u"tag:"+tag.decode()+u"**endtag**"
-                except:
-                    tagsloc += u"tag:"+tag+u"**endtag**"
-
             else:
-                tagsloc += u'tag:'+tag._name+u'**endtag**'
+                tagsloc += u'tag:'+tag._name.decode()+u'**endtag**'
 
         dump += tagsloc
         dump = [dump]

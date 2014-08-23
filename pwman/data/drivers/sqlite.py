@@ -24,6 +24,7 @@
 from pwman.data.database import Database, DatabaseException
 from pwman.data.database import __DB_FORMAT__
 from pwman.data.nodes import NewNode
+from pwman.data.tags import TagNew
 from pwman.util.crypto_engine import CryptoEngine
 import sqlite3 as sqlite
 import itertools
@@ -226,8 +227,10 @@ class SQLiteDatabaseNewForm(Database):
 
         if isinstance(tag, str):
             self._cur.execute(sql, [tag])
-        else:
+        elif isinstance(tag, TagNew):
             self._cur.execute(sql, [tag._name])
+        else:
+            self._cur.execute(sql, [tag.decode()])
 
     def _deletenodetags(self, node):
         try:
@@ -248,14 +251,17 @@ class SQLiteDatabaseNewForm(Database):
     def _tagids(self, tags):
         ids = []
         sql = "SELECT ID FROM TAGS WHERE DATA LIKE ?"
+
         for tag in tags:
             try:
                 if isinstance(tag, str):
                     enc = CryptoEngine.get()
                     tag = enc.encrypt(tag)
                     self._cur.execute(sql, [tag])
-                else:
+                elif isinstance(tag, TagNew):
                     self._cur.execute(sql, [tag._name.decode()+u'%'])
+                else:
+                    self._cur.execute(sql, [tag.decode()+u'%'])
 
                 values = self._cur.fetchall()
                 if values:  # tags already exist in the database
