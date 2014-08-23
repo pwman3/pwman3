@@ -354,3 +354,34 @@ class SQLiteDatabaseNewForm(Database):
             return None
         else:
             return keyrow[0]
+
+
+class SQLite(SQLiteDatabaseNewForm):
+
+    def _create_tables(self):
+        self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "
+                          "AUTOINCREMENT, "
+                          "USER TEXT NOT NULL, "
+                          "PASSWORD TEXT NOT NULL, "
+                          "URL TEXT NOT NULL,"
+                          "NOTES TEXT NOT NULL)")
+
+        self._cur.execute("CREATE TABLE TAG"
+                          "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                          "DATA BLOB NOT NULL UNIQUE)")
+
+        self._cur.execute("CREATE TABLE LOOKUP ("
+                          "nodeid INTEGER NOT NULL, "
+                          "tagid INTEGER NOT NULL, "
+                          "FOREIGN KEY nodeid REFERENCES NODE(ID),"
+                          "FOREIGN KEY tagid REFERENCES TAG(ID))")
+
+        self._cur.execute("CREATE TABLE KEY"
+                          "(THEKEY TEXT NOT NULL DEFAULT '')")
+        self._cur.execute("INSERT INTO KEY VALUES('')")
+        # create a table to hold DB version info
+        self._cur.execute("CREATE TABLE DBVERSION"
+                          "(DBVERSION TEXT NOT NULL DEFAULT '%s')" %
+                          self.dbformat)
+        self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
+                          self.dbformat)
