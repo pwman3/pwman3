@@ -16,7 +16,6 @@
 #============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
 #============================================================================
-#============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
 
@@ -358,6 +357,16 @@ class SQLiteDatabaseNewForm(Database):
 
 class SQLite(SQLiteDatabaseNewForm):
 
+    def __init__(self, filename, dbformat=0.6):
+        """Initialise SQLitePwmanDatabase instance."""
+        self._filename = filename
+        self.dbformat = dbformat
+
+    def _open(self):
+        self._con = sqlite.connect(self._filename)
+        self._cur = self._con.cursor()
+        self._create_tables()
+
     def _create_tables(self):
         self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "
                           "AUTOINCREMENT, "
@@ -373,15 +382,26 @@ class SQLite(SQLiteDatabaseNewForm):
         self._cur.execute("CREATE TABLE LOOKUP ("
                           "nodeid INTEGER NOT NULL, "
                           "tagid INTEGER NOT NULL, "
-                          "FOREIGN KEY nodeid REFERENCES NODE(ID),"
-                          "FOREIGN KEY tagid REFERENCES TAG(ID))")
+                          "FOREIGN KEY(nodeid) REFERENCES NODE(ID),"
+                          "FOREIGN KEY(tagid) REFERENCES TAG(ID))")
 
-        self._cur.execute("CREATE TABLE KEY"
-                          "(THEKEY TEXT NOT NULL DEFAULT '')")
-        self._cur.execute("INSERT INTO KEY VALUES('')")
+        self._cur.execute("CREATE TABLE CRYPTO"
+                          "(SALT TEXT,"
+                          " DIGEST TEXT)")
+
         # create a table to hold DB version info
         self._cur.execute("CREATE TABLE DBVERSION"
                           "(DBVERSION TEXT NOT NULL DEFAULT '%s')" %
                           self.dbformat)
         self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
                           self.dbformat)
+        try:
+            self._con.commit()
+        except DatabaseException as e:  # pragma: no cover
+            self._con.rollback()
+            raise e
+
+    def fetch_crypto_info(self):
+        self._cur.execute("SELECT * FROM CRYPTO")
+        keyrow = self._cur.fetchone()
+        return keyrow[0]
