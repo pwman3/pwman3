@@ -21,14 +21,21 @@ import unittest
 from pwman.data.drivers.sqlite import SQLite
 
 
-class TestConfig(unittest.TestCase):
+class TestSQLite(unittest.TestCase):
     def setUp(self):
         self.db = SQLite('test.db')
-
-    def test_create_tables(self):
-        # the method _open calls _create_tables
         self.db._open()
 
+    def test_1_create_tables(self):
+        self.db._create_tables()
+        self.db._con.commit()
+        # the method _open calls _create_tables
+        self.db.save_crypto_info("foo", "bar")
+
+    def test_2_crypto_info(self):
+        self.db.save_crypto_info("foo", "bar")
+        f = self.db.fetch_crypto_info()
+        self.assertListEqual([u'foo', u'bar'], list(f))
 
 if __name__ == '__main__':
     try:

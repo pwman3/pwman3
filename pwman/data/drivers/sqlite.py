@@ -365,9 +365,12 @@ class SQLite(SQLiteDatabaseNewForm):
     def _open(self):
         self._con = sqlite.connect(self._filename)
         self._cur = self._con.cursor()
-        self._create_tables()
 
     def _create_tables(self):
+        self._cur.execute("PRAGMA TABLE_INFO(NODE)")
+        if self._cur.fetchone() is not None:
+            return
+
         self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "
                           "AUTOINCREMENT, "
                           "USER TEXT NOT NULL, "
@@ -386,7 +389,7 @@ class SQLite(SQLiteDatabaseNewForm):
                           "FOREIGN KEY(tagid) REFERENCES TAG(ID))")
 
         self._cur.execute("CREATE TABLE CRYPTO"
-                          "(SALT TEXT,"
+                          "(SEED TEXT,"
                           " DIGEST TEXT)")
 
         # create a table to hold DB version info
@@ -404,4 +407,11 @@ class SQLite(SQLiteDatabaseNewForm):
     def fetch_crypto_info(self):
         self._cur.execute("SELECT * FROM CRYPTO")
         keyrow = self._cur.fetchone()
-        return keyrow[0]
+        return keyrow
+
+    def save_crypto_info(self, seed, digest):
+        """save the random seed and the digested key"""
+        #self._open()
+        self._cur.execute("DELETE  FROM CRYPTO")
+        self._cur.execute("INSERT INTO CRYPTO VALUES(?, ?)", [seed, digest])
+        self._con.commit()

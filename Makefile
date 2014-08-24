@@ -13,6 +13,7 @@ help:
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
+	rm test.db
 
 clean-build:
 	rm -fr build/
