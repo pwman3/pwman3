@@ -405,7 +405,7 @@ password again")
             # This implies that the coversion from OLD DATABASE FORMAT has
             # to plain strings too ...
             return cPickle.loads(plaintext)
-        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError):
+        except (TypeError, ValueError, cPickle.UnpicklingError, EOFError, AttributeError):
             return plaintext
 
 
