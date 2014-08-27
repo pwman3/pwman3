@@ -1,3 +1,7 @@
+2014-Aug-27 Oz Nahum Tiram  <nahumoz@gmail.com>
+   * Fix crypto bug appearing in export 
+   * Version 0.5.1d
+
 2014-Aug-13 Oz Nahum Tiram  <nahumoz@gmail.com>
     * Add export function 
 	* Version 0.5.1c 
