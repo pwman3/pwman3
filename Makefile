@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean test
+.PHONY: clean-pyc clean-build docs clean test coverage coverage-run
 
 help:
 	@echo "clean-build - remove build artifacts"
@@ -35,11 +35,13 @@ test: install
 test-all:
 	tox
 
-coverage:
+coverage-run:
 	coverage run --source pwman setup.py test
 	coverage report -m
-	coverage html
-	#xdg-open htmlcov/index.html
+	@coverage html
+
+coverage: coverage-run
+	@rm test.db
 
 docs:
 	#rm -f docs/manutils.rst

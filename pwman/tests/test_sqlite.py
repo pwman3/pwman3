@@ -31,11 +31,19 @@ class TestSQLite(unittest.TestCase):
         self.db._con.commit()
         # the method _open calls _create_tables
         self.db.save_crypto_info("foo", "bar")
+        self.db._create_tables()
+
+    def test_1a_create_tables(self):
+        self.db._create_tables()
 
     def test_2_crypto_info(self):
+        self.db._create_tables()
         self.db.save_crypto_info("foo", "bar")
         f = self.db.fetch_crypto_info()
         self.assertListEqual([u'foo', u'bar'], list(f))
+
+    def tearDown(self):
+        self.db.close()
 
 if __name__ == '__main__':
     try:
