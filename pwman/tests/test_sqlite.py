@@ -42,6 +42,12 @@ class TestSQLite(unittest.TestCase):
         f = self.db.fetch_crypto_info()
         self.assertListEqual([u'foo', u'bar'], list(f))
 
+    def test_3_add_node(self):
+        node = ("alice", "secret", "wonderland.com", "a really great place")
+        self.db.add_node(node)
+        rv = self.db._cur.execute("select * from node")
+        self.assertIn('alice', rv.fetchone())
+
     def tearDown(self):
         self.db.close()
 

@@ -394,7 +394,7 @@ class SQLite(SQLiteDatabaseNewForm):
 
         # create a table to hold DB version info
         self._cur.execute("CREATE TABLE DBVERSION"
-                          "(DBVERSION TEXT NOT NULL DEFAULT '%s')" %
+                          "(DB VERSION TEXT NOT NULL DEFAULT '%s')" %
                           self.dbformat)
         self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
                           self.dbformat)
@@ -414,4 +414,10 @@ class SQLite(SQLiteDatabaseNewForm):
         #self._open()
         self._cur.execute("DELETE  FROM CRYPTO")
         self._cur.execute("INSERT INTO CRYPTO VALUES(?, ?)", [seed, digest])
+        self._con.commit()
+
+    def add_node(self, node):
+        sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
+               "VALUES(?, ?, ?, ?)")
+        self._cur.execute(sql, node)
         self._con.commit()
