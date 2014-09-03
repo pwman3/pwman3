@@ -411,7 +411,6 @@ class SQLite(SQLiteDatabaseNewForm):
 
     def save_crypto_info(self, seed, digest):
         """save the random seed and the digested key"""
-        #self._open()
         self._cur.execute("DELETE  FROM CRYPTO")
         self._cur.execute("INSERT INTO CRYPTO VALUES(?, ?)", [seed, digest])
         self._con.commit()
@@ -420,4 +419,20 @@ class SQLite(SQLiteDatabaseNewForm):
         sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
                "VALUES(?, ?, ?, ?)")
         self._cur.execute(sql, node)
+        node = list(node)
+        node.append(self._cur.lastrowid)
+        self._setnodetags(node)
         self._con.commit()
+
+    def _setnodetags(self, node):
+        """
+        for each tag of the node:
+            if tag exists:
+                get_tag_id
+            else:
+                create tag
+                get_tag_id
+        for each tag id:
+            update the look up table
+        """
+        pass
