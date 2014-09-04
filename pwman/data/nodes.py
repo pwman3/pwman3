@@ -154,6 +154,13 @@ class Node(object):
         node._tags = [t.strip() for t in tags]
         return node
 
+    def __repr__(self):
+        """we use this method to write node to the database"""
+        res = u''
+        for item in self.__dir__:
+            res += self.__dir__[item]
+        return res
+
     @property
     def password(self):
         """Get the current password."""
