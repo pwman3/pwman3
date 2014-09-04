@@ -43,7 +43,8 @@ class TestSQLite(unittest.TestCase):
         self.assertListEqual([u'foo', u'bar'], list(f))
 
     def test_3_add_node(self):
-        node = ("alice", "secret", "wonderland.com", "a really great place")
+        node = ("alice", "secret", "wonderland.com", "a really great place",
+                ['foo', 'bar'])
         self.db.add_node(node)
         rv = self.db._cur.execute("select * from node")
         self.assertIn('alice', rv.fetchone())

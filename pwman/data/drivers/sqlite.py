@@ -418,7 +418,7 @@ class SQLite(SQLiteDatabaseNewForm):
     def add_node(self, node):
         sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
                "VALUES(?, ?, ?, ?)")
-        self._cur.execute(sql, node)
+        self._cur.execute(sql, node[:4])
         node = list(node)
         node.append(self._cur.lastrowid)
         self._setnodetags(node)
