@@ -161,6 +161,12 @@ class Node(object):
             res += self.__dir__[item]
         return res
 
+    def __iter__(self):
+        for item in ['_username', '_password',
+                     '_url', '_notes']:
+            yield getattr(self, item)
+        yield self._tags
+
     @property
     def password(self):
         """Get the current password."""

@@ -418,13 +418,14 @@ class SQLite(SQLiteDatabaseNewForm):
     def add_node(self, node):
         sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
                "VALUES(?, ?, ?, ?)")
-        self._cur.execute(sql, node[:4])
-        node = list(node)
-        node.append(self._cur.lastrowid)
-        self._setnodetags(node)
+        self._cur.execute(sql, (node._username, node._password, node._url,
+                                node._notes))
+        node_tags = list(node)
+        node, tags = node_tags[:3], node_tags[-1]
+        self._setnodetags(self._cur.lastrowid, tags)
         self._con.commit()
 
-    def _setnodetags(self, node):
+    def _setnodetags(self, nodeid, tags):
         """
         for each tag of the node:
             if tag exists:
