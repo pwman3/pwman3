@@ -20,6 +20,8 @@ import os
 import unittest
 from pwman.data.drivers.sqlite import SQLite
 from pwman.data.nodes import Node
+from pwman.util.crypto_engine import CryptoEngine
+
 
 class TestSQLite(unittest.TestCase):
     def setUp(self):
@@ -50,7 +52,10 @@ class TestSQLite(unittest.TestCase):
                        'tags': [u'foo', u'bar']})
         self.db.add_node(node)
         rv = self.db._cur.execute("select * from node")
-        self.assertIn('alice', rv.fetchone())
+        # clearly this fails, while alice is not found in clear text in the
+        # database!
+        ce = CryptoEngine.get()
+        self.assertIn(ce.encrypt(u'alice'), rv.fetchone()[1])
 
     def tearDown(self):
         self.db.close()

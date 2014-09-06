@@ -13,7 +13,7 @@ help:
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
-	rm test.db
+	rm -f test.db
 
 clean-build:
 	rm -fr build/
@@ -28,7 +28,7 @@ clean-pyc:
 lint:
 	flake8 pwman scripts
 
-test: install
+test: install clean 
 	git checkout pwman/tests/pwman.v0.0.8.db
 	python setup.py test
 
