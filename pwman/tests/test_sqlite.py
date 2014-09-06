@@ -55,7 +55,10 @@ class TestSQLite(unittest.TestCase):
         # clearly this fails, while alice is not found in clear text in the
         # database!
         ce = CryptoEngine.get()
-        self.assertIn(ce.encrypt(u'alice'), rv.fetchone()[1])
+        res = rv.fetchone()
+        self.assertIn(ce.encrypt(u'alice'), res[1])
+        self.db._get_or_create_tag(node._tags[0])
+        self.db._get_or_create_tag(node._tags[0])
 
     def tearDown(self):
         self.db.close()

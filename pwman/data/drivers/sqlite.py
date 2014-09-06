@@ -418,22 +418,26 @@ class SQLite(SQLiteDatabaseNewForm):
     def add_node(self, node):
         sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
                "VALUES(?, ?, ?, ?)")
-        self._cur.execute(sql, (node._username, node._password, node._url,
-                                node._notes))
         node_tags = list(node)
-        node, tags = node_tags[:3], node_tags[-1]
+        node, tags = node_tags[:4], node_tags[-1]
+        self._cur.execute(sql, (node))
         self._setnodetags(self._cur.lastrowid, tags)
         self._con.commit()
 
-    def _setnodetags(self, nodeid, tags):
-        """
-        for each tag of the node:
-            if tag exists:
-                get_tag_id
-            else:
-                create tag
-                get_tag_id
-        for each tag id:
-            update the look up table
-        """
+    def _get_or_create_tag(self, tagcipher):
+        sql_search = "SELECT ID FROM TAG WHERE DATA LIKE (?)"
+        self._cur.execute(sql_search, ([tagcipher]))
+        if self._cur.fetchone():
+            return self._cur.lastrowid
+        else:
+            sql_insert = "INSERT INTO TAG(DATA) VALUES(?)"
+            self._cur.execute(sql_insert, ([tagcipher]))
+            return self._cur.lastrowid
+
+    def _update_tag_lookup(self, nodeid, tid):
         pass
+
+    def _setnodetags(self, nodeid, tags):
+        for tag in tags:
+            tid = self._get_or_create_tag(tag)
+            self._update_tag_lookup(nodeid, tid)
