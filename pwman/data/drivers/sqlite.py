@@ -427,8 +427,9 @@ class SQLite(SQLiteDatabaseNewForm):
     def _get_or_create_tag(self, tagcipher):
         sql_search = "SELECT ID FROM TAG WHERE DATA LIKE (?)"
         self._cur.execute(sql_search, ([tagcipher]))
-        if self._cur.fetchone():
-            return self._cur.lastrowid
+        rv = self._cur.fetchone()
+        if rv:
+            return rv[0]
         else:
             sql_insert = "INSERT INTO TAG(DATA) VALUES(?)"
             self._cur.execute(sql_insert, ([tagcipher]))

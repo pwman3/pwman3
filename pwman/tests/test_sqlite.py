@@ -57,8 +57,17 @@ class TestSQLite(unittest.TestCase):
         ce = CryptoEngine.get()
         res = rv.fetchone()
         self.assertIn(ce.encrypt(u'alice'), res[1])
+
+    def test_4_test_tags(self):
+        node = Node(clear_text=True,
+                    **{'username': u"alice", 'password': u"secret",
+                       'url': u"wonderland.com",
+                       'notes': u"a really great place",
+                       'tags': [u'foo', u'bar']})
+        ce = CryptoEngine.get()
         self.db._get_or_create_tag(node._tags[0])
-        self.db._get_or_create_tag(node._tags[0])
+        self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
+        self.assertEqual(3, self.db._get_or_create_tag(ce.encrypt('baz')))
 
     def tearDown(self):
         self.db.close()
