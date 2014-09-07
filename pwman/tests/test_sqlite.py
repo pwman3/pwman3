@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
-# Copyright (C) 2012 Oz Nahum Tiram <nahumoz@gmail.com>
+# Copyright (C) 2012, 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
 #============================================================================
 import os
 import unittest
@@ -68,6 +68,11 @@ class TestSQLite(unittest.TestCase):
         self.db._get_or_create_tag(node._tags[0])
         self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
         self.assertEqual(3, self.db._get_or_create_tag(ce.encrypt('baz')))
+    
+    def test_5_test_lookup(self):
+        self.db._cur.execute('SELECT * FROM LOOKUP')
+        rows = self.db._cur.fetchall()
+        self.assertEqual(2, len(rows))
 
     def tearDown(self):
         self.db.close()

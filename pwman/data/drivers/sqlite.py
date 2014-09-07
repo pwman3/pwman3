@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2012, 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
@@ -436,7 +436,8 @@ class SQLite(SQLiteDatabaseNewForm):
             return self._cur.lastrowid
 
     def _update_tag_lookup(self, nodeid, tid):
-        pass
+        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(?,?)"
+        self._cur.execute(sql_lookup, (nodeid, tid))
 
     def _setnodetags(self, nodeid, tags):
         for tag in tags:
