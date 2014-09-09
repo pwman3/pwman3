@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute iut and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012, 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 import os
 import unittest
 from pwman.data.drivers.sqlite import SQLite
@@ -68,11 +68,30 @@ class TestSQLite(unittest.TestCase):
         self.db._get_or_create_tag(node._tags[0])
         self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
         self.assertEqual(3, self.db._get_or_create_tag(ce.encrypt('baz')))
-    
+
     def test_5_test_lookup(self):
         self.db._cur.execute('SELECT * FROM LOOKUP')
         rows = self.db._cur.fetchall()
         self.assertEqual(2, len(rows))
+
+    def test_6_listnodes(self):
+        node = Node(clear_text=True,
+                    **{'username': u"hatman", 'password': u"secret",
+                       'url': u"wonderland.com",
+                       'notes': u"a really great place",
+                       'tags': [u'baz', u'bar']})
+        self.db.add_node(node)
+        ids = self.db.listnodes()
+        self.assertEqual(2, len(ids))
+
+    def test_7_listnodes_w_filter(self):
+        ce = CryptoEngine.get()
+        tag = ce.encrypt(u'bar')
+        rv = self.db.listnodes(tag)
+        self.assertEqual(len(rv), 2)
+        tag = ce.encrypt(u'baz')
+        rv = self.db.listnodes(tag)
+        self.assertEqual(len(rv), 1)
 
     def tearDown(self):
         self.db.close()

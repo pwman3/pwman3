@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute iut and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012, 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 
 """SQLite Database implementation."""
 from pwman.data.database import Database, DatabaseException
@@ -366,6 +366,19 @@ class SQLite(SQLiteDatabaseNewForm):
         self._con = sqlite.connect(self._filename)
         self._cur = self._con.cursor()
 
+    def listnodes(self, filter=None):
+        if not filter:
+            sql_all = "SELECT ID FROM NODE"
+            self._cur.execute(sql_all)
+            ids = self._cur.fetchall()
+            return ids
+        else:
+            tagid = self._get_tag(filter)
+            sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
+            self._cur.execute(sql_filter, tagid)
+            ids = self._cur.fetchall()
+            return ids
+
     def _create_tables(self):
         self._cur.execute("PRAGMA TABLE_INFO(NODE)")
         if self._cur.fetchone() is not None:
@@ -424,10 +437,14 @@ class SQLite(SQLiteDatabaseNewForm):
         self._setnodetags(self._cur.lastrowid, tags)
         self._con.commit()
 
-    def _get_or_create_tag(self, tagcipher):
+    def _get_tag(self, tagcipher):
         sql_search = "SELECT ID FROM TAG WHERE DATA LIKE (?)"
         self._cur.execute(sql_search, ([tagcipher]))
         rv = self._cur.fetchone()
+        return rv
+
+    def _get_or_create_tag(self, tagcipher):
+        rv = self._get_tag(tagcipher)
         if rv:
             return rv[0]
         else:
