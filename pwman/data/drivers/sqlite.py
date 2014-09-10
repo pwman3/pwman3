@@ -460,3 +460,13 @@ class SQLite(SQLiteDatabaseNewForm):
         for tag in tags:
             tid = self._get_or_create_tag(tag)
             self._update_tag_lookup(nodeid, tid)
+
+    def getnodes(self, ids):
+        sql = "SELECT * FROM NODE WHERE ID IN (%s)" % ','.join('?'*len(ids))
+        self._cur.execute(sql, (ids))
+        nodes = self._cur.fetchall()
+        return nodes
+
+    def close(self):
+        self._cur.close()
+        self._con.close()

@@ -93,6 +93,10 @@ class TestSQLite(unittest.TestCase):
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 1)
 
+    def test_8_getnodes(self):
+        nodes = self.db.getnodes([1, 2])
+        self.assertEqual(len(nodes), 2)
+
     def tearDown(self):
         self.db.close()
 
