@@ -97,6 +97,14 @@ class TestSQLite(unittest.TestCase):
         nodes = self.db.getnodes([1, 2])
         self.assertEqual(len(nodes), 2)
 
+    def test_9_editnode(self):
+        # delibertly insert clear text into the database
+        node = {'user': 'transparent', 'password': 'notsecret'}
+        self.db.editnode(2, **node)
+        self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
+        rv = self.db._cur.fetchone()
+        self.assertEqual(rv, (u'transparent', u'notsecret'))
+
     def tearDown(self):
         self.db.close()
 

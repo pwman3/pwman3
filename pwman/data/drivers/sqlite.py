@@ -467,6 +467,13 @@ class SQLite(SQLiteDatabaseNewForm):
         nodes = self._cur.fetchall()
         return nodes
 
+    def editnode(self, id, **kwargs):
+        sql = ("UPDATE NODE SET %s WHERE ID = ? "
+               "" % ','.join('%s=?' % k for k in list(kwargs)))
+        self._cur.execute(sql, (list(kwargs.values()) + [id]))
+        self._con.commit()
+        # TODO, update tags lookup
+
     def close(self):
         self._cur.close()
         self._con.close()
