@@ -21,8 +21,9 @@
 import os
 import sys
 import unittest
-from .db_tests import (DBTests, SetupTester, CLITests, #ConfigTest,
-                       #TestDBFalseConfig,
+from .db_tests import (DBTests, SetupTester, CLITests,
+                       # ConfigTest,
+                       # TestDBFalseConfig,
                        FactoryTest)
 
 #from .crypto_tests import CryptoTest
