@@ -82,16 +82,15 @@ def prepare_data(text, block_size):
 class CryptoEngine(object):  # pagma: no cover
     _timeoutcount = 0
     _instance = None
-    _instance_new = None
     _callback = None
 
     @classmethod
     def get(cls, dbver=None, timeout=-1):
-        if CryptoEngine._instance_new:
-            return CryptoEngine._instance_new
+        if CryptoEngine._instance:
+            return CryptoEngine._instance
 
-        CryptoEngine._instance_new = CryptoEngine(timeout)
-        return CryptoEngine._instance_new
+        CryptoEngine._instance = CryptoEngine(timeout)
+        return CryptoEngine._instance
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
                  timeout=-1, reader=None):
