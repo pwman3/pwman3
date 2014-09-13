@@ -375,7 +375,7 @@ class SQLite(SQLiteDatabaseNewForm):
         else:
             tagid = self._get_tag(filter)
             sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
-            self._cur.execute(sql_filter, tagid)
+            self._cur.execute(sql_filter, (tagid))
             ids = self._cur.fetchall()
             return ids
 
@@ -453,6 +453,9 @@ class SQLite(SQLiteDatabaseNewForm):
             return self._cur.lastrowid
 
     def _update_tag_lookup(self, nodeid, tid):
+        # clean all old tags
+        #sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
+        #self._cur.execute(sql_clean, str(nodeid))
         sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(?,?)"
         self._cur.execute(sql_lookup, (nodeid, tid))
 
@@ -467,12 +470,18 @@ class SQLite(SQLiteDatabaseNewForm):
         nodes = self._cur.fetchall()
         return nodes
 
-    def editnode(self, id, **kwargs):
+    def editnode(self, nid, **kwargs):
+        tags = kwargs.pop('tags', None)
         sql = ("UPDATE NODE SET %s WHERE ID = ? "
                "" % ','.join('%s=?' % k for k in list(kwargs)))
-        self._cur.execute(sql, (list(kwargs.values()) + [id]))
+        self._cur.execute(sql, (list(kwargs.values()) + [nid]))
+        if tags:
+            #  update all old node entries in lookup
+            #  create new entries
+            # TODO, update tags lookup
+            self._setnodetags(nid, tags)
+
         self._con.commit()
-        # TODO, update tags lookup
 
     def close(self):
         self._cur.close()

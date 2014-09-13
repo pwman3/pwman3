@@ -21,9 +21,11 @@ import unittest
 from pwman.data.drivers.sqlite import SQLite
 from pwman.data.nodes import Node
 from pwman.util.crypto_engine import CryptoEngine
+from .test_crypto_engine import give_key, DummyCallback
 
 
 class TestSQLite(unittest.TestCase):
+
     def setUp(self):
         self.db = SQLite('test.db')
         self.db._open()
@@ -67,11 +69,13 @@ class TestSQLite(unittest.TestCase):
         ce = CryptoEngine.get()
         self.db._get_or_create_tag(node._tags[0])
         self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
-        self.assertEqual(3, self.db._get_or_create_tag(ce.encrypt('baz')))
+        rv = self.db._get_or_create_tag(ce.encrypt('baz'))
+        self.db._con.commit()
+        self.assertEqual(3, rv)
 
     def test_5_test_lookup(self):
         self.db._cur.execute('SELECT * FROM LOOKUP')
-        rows = self.db._cur.fetchall()
+        rows = self.db._cur.fetchall()[0]
         self.assertEqual(2, len(rows))
 
     def test_6_listnodes(self):
@@ -86,10 +90,24 @@ class TestSQLite(unittest.TestCase):
 
     def test_7_listnodes_w_filter(self):
         ce = CryptoEngine.get()
+        # the tag 'bar' is found in a node created in:
+        # test_3_add_node
+        # test_6_listnodes
+
         tag = ce.encrypt(u'bar')
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 2)
         tag = ce.encrypt(u'baz')
+
+        node_from_db = self.db.getnodes([2])
+        # the tag 'baz' is found in a node created in
+        # test_6_listnodes
+        node = Node(clear_text=True,
+                    **{'username': u"hatman", 'password': u"secret",
+                       'url': u"wonderland.com",
+                       'notes': u"a really great place",
+                       'tags': [u'baz', u'bar']})
+
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 1)
 
@@ -99,8 +117,9 @@ class TestSQLite(unittest.TestCase):
 
     def test_9_editnode(self):
         # delibertly insert clear text into the database
-        node = {'user': 'transparent', 'password': 'notsecret'}
-        self.db.editnode(2, **node)
+        node = {'user': 'transparent', 'password': 'notsecret',
+                'tags': ['foo', 'bank']}
+        self.db.editnode('2', **node)
         self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
         self.assertEqual(rv, (u'transparent', u'notsecret'))
@@ -109,7 +128,13 @@ class TestSQLite(unittest.TestCase):
         self.db.close()
 
 if __name__ == '__main__':
+
+    ce = CryptoEngine.get()
+    ce.callback = DummyCallback()
+    ce.changepassword(reader=give_key)
+
     try:
-        unittest.main(verbosity=2)
+        unittest.main(verbosity=2, failfast=True)
     except SystemExit:
+        raw_input()
         os.remove('test.db')
