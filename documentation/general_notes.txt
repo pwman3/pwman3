@@ -95,3 +95,34 @@ fi
 make test || exit 1
 exit 0
 
+### testing :
+
+Each class should have at least 95% coverage. 
+Each module should be tested as a stand alone with:
+
+  foo.py 
+  test_foo.py 
+
+The test module test_foo.py should contain at the bottom:
+
+    if __name__ == '__main__':
+        
+        # prepare everything for testing 
+        try:
+            unittest.main(verbosity=2)
+        except SystemExit:
+            # clean everything after test was run 
+
+You should be able to run the module testing with:
+
+    $ python -m pwman.tests.test_foo
+
+But you should also run the tests as part of a larger scheme with:
+
+
+    from test_foo import TestFoo 
+    ...
+    ...
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    suite.addTest(loader.loadTestsFromTestCase(DBTests))
