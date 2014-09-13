@@ -74,8 +74,8 @@ class TestSQLite(unittest.TestCase):
         self.assertEqual(3, rv)
 
     def test_5_test_lookup(self):
-        self.db._cur.execute('SELECT * FROM LOOKUP')
-        rows = self.db._cur.fetchall()[0]
+        self.db._cur.execute('SELECT nodeid, tagid FROM LOOKUP')
+        rows = self.db._cur.fetchall()
         self.assertEqual(2, len(rows))
 
     def test_6_listnodes(self):
@@ -98,16 +98,8 @@ class TestSQLite(unittest.TestCase):
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 2)
         tag = ce.encrypt(u'baz')
-
-        node_from_db = self.db.getnodes([2])
         # the tag 'baz' is found in a node created in
         # test_6_listnodes
-        node = Node(clear_text=True,
-                    **{'username': u"hatman", 'password': u"secret",
-                       'url': u"wonderland.com",
-                       'notes': u"a really great place",
-                       'tags': [u'baz', u'bar']})
-
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 1)
 
@@ -123,6 +115,25 @@ class TestSQLite(unittest.TestCase):
         self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
         self.assertEqual(rv, (u'transparent', u'notsecret'))
+        node = {'user': 'modify', 'password': 'notsecret',
+                'tags': ['foo', 'auto']}
+        # now the tags bank and baz are orphand ...
+        # what happens? it should be completely removed.
+        # To spare IO we only delete orphand tags when
+        # db.close is called.
+        self.db.editnode('2', **node)
+
+    def test_9_test_orphands(self):
+        ce = CryptoEngine.get()
+        baz_encrypted = ce.encrypt(u'baz').decode()
+
+        self.db._cur.execute('SELECT DATA FROM TAG')
+        rv = self.db._cur.fetchall()
+        for data in rv:
+            if isinstance(data[0], str):
+                self.assertNotIn(u'bank', data[0])
+            else:
+                self.assertNotIn(baz_encrypted, data[0].decode())
 
     def tearDown(self):
         self.db.close()
@@ -136,5 +147,4 @@ if __name__ == '__main__':
     try:
         unittest.main(verbosity=2, failfast=True)
     except SystemExit:
-        raw_input()
         os.remove('test.db')

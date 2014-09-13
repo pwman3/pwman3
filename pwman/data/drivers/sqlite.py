@@ -438,7 +438,7 @@ class SQLite(SQLiteDatabaseNewForm):
         self._con.commit()
 
     def _get_tag(self, tagcipher):
-        sql_search = "SELECT ID FROM TAG WHERE DATA LIKE (?)"
+        sql_search = "SELECT ID FROM TAG WHERE DATA = ?"
         self._cur.execute(sql_search, ([tagcipher]))
         rv = self._cur.fetchone()
         return rv
@@ -453,11 +453,9 @@ class SQLite(SQLiteDatabaseNewForm):
             return self._cur.lastrowid
 
     def _update_tag_lookup(self, nodeid, tid):
-        # clean all old tags
-        #sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
-        #self._cur.execute(sql_clean, str(nodeid))
         sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(?,?)"
         self._cur.execute(sql_lookup, (nodeid, tid))
+        self._con.commit()
 
     def _setnodetags(self, nodeid, tags):
         for tag in tags:
@@ -478,11 +476,22 @@ class SQLite(SQLiteDatabaseNewForm):
         if tags:
             #  update all old node entries in lookup
             #  create new entries
+            # clean all old tags
+            sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
+            self._cur.execute(sql_clean, str(nid))
             # TODO, update tags lookup
             self._setnodetags(nid, tags)
 
         self._con.commit()
 
+    def _clean_orphands(self):
+        clean = ("delete from tag where not exists "
+                 "(select 'x' from lookup l where l.tagid = tag.id)")
+
+        self._cur.execute(clean)
+        self._con.commit()
+
     def close(self):
+        self._clean_orphands()
         self._cur.close()
         self._con.close()
