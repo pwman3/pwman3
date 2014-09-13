@@ -1,5 +1,5 @@
-#============================================================================
-# This file is part of Pwman3.
+# ============================================================================
+# :This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
@@ -13,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
-#============================================================================
+# ============================================================================
+# Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 
 from pwman.util.crypto_engine import CryptoEngine
 
@@ -157,8 +156,9 @@ class Node(object):
     def __repr__(self):
         """we use this method to write node to the database"""
         res = u''
-        for item in self.__dir__:
-            res += self.__dir__[item]
+        tags = self.__dict__.pop('_tags', None)
+        for item in self.__dict__:
+            res += self.__dict__[item]
         return res
 
     def __iter__(self):
