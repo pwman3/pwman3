@@ -139,6 +139,11 @@ class TestSQLite(unittest.TestCase):
         tags = self.db.listtags()
         self.assertEqual(4, len(tags))
 
+    def test_a11_test_rmnodes(self):
+        self.db.removenodes([1, 2])
+        rv = self.db._cur.execute("select * from node").fetchall()
+        self.assertListEqual(rv, [])
+
     def tearDown(self):
         self.db.close()
 

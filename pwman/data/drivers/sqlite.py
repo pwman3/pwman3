@@ -483,15 +483,18 @@ class SQLite(SQLiteDatabaseNewForm):
                "" % ','.join('%s=?' % k for k in list(kwargs)))
         self._cur.execute(sql, (list(kwargs.values()) + [nid]))
         if tags:
-            #  update all old node entries in lookup
-            #  create new entries
+            # update all old node entries in lookup
+            # create new entries
             # clean all old tags
             sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
             self._cur.execute(sql_clean, str(nid))
-            # TODO, update tags lookup
             self._setnodetags(nid, tags)
 
         self._con.commit()
+
+    def removenodes(self, nids):
+        sql_rm = "delete from node where id in (%s)" % ','.join('?'*len(nids))
+        self._cur.execute(sql_rm, (nids))
 
     def _clean_orphands(self):
         clean = ("delete from tag where not exists "

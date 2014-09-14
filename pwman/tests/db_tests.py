@@ -211,10 +211,10 @@ class CLITests(unittest.TestCase):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
         # python3 compatability
-        try:
+        if sys.version_info.major < 3:
             self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
                                                 "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
-        except AttributeError:
+        else:
             self.assertRegex(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
                                         "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
 
