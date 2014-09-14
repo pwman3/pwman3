@@ -210,8 +210,13 @@ class CLITests(unittest.TestCase):
     def test_leet_password(self):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
-        self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
-                                            "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
+        # python3 compatability
+        try:
+            self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
+                                                "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
+        except AttributeError:
+            self.assertRegex(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
+                                        "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
 
     def test_get_url(self):
         url = self.tester.cli.get_url(reader=lambda: u'example.com')

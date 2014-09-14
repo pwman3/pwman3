@@ -379,6 +379,15 @@ class SQLite(SQLiteDatabaseNewForm):
             ids = self._cur.fetchall()
             return ids
 
+    def listtags(self):
+        self._clean_orphands()
+        get_tags = "select data from tag"
+        self._cur.execute(get_tags)
+        tags = self._cur.fetchall()
+        if tags:
+            return tags
+        return []
+
     def _create_tables(self):
         self._cur.execute("PRAGMA TABLE_INFO(NODE)")
         if self._cur.fetchone() is not None:

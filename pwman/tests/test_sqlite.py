@@ -135,6 +135,10 @@ class TestSQLite(unittest.TestCase):
             else:
                 self.assertNotIn(baz_encrypted, data[0].decode())
 
+    def test_a10_test_listtags(self):
+        tags = self.db.listtags()
+        self.assertEqual(4, len(tags))
+
     def tearDown(self):
         self.db.close()
 
