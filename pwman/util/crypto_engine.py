@@ -176,7 +176,7 @@ class CryptoEngine(object):  # pagma: no cover
     def changepassword(self, reader=raw_input):
         if self._callback is None:
             raise CryptoException("No callback class has been specified")
-        #if not self._is_authenticated():
+        # if not self._is_authenticated():
         #    p, s = self._auth()
         # if you change the password of the database you have to Change
         # all the cipher texts in the databse!!!
@@ -224,4 +224,4 @@ class CryptoEngine(object):  # pagma: no cover
         """
         return _keycrypted
         """
-        return self._salt + '$6$' + self._digest
+        return self._salt.decode() + u'$6$' + self._digest.decode()

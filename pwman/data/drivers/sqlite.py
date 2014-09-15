@@ -503,6 +503,23 @@ class SQLite(SQLiteDatabaseNewForm):
         self._cur.execute(clean)
         self._con.commit()
 
+    def savekey(self, key):
+        salt, digest = key.split('$6$')
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES(?,?)"
+        self._cur.execute("DELETE FROM CRYPTO")
+        self._cur.execute(sql, (salt, digest))
+        self._digest = digest.encode('utf-8')
+        self._salt = salt.encode('utf-8')
+
+    def loadkey(self):
+        # TODO: rename this method!
+        """
+        return _keycrypted
+        """
+        sql = "SELECT * FROM CRYPTO"
+        seed, digest = self._cur.execute(sql).fetchone()
+        return seed + u'$6$' + digest
+
     def close(self):
         self._clean_orphands()
         self._cur.close()

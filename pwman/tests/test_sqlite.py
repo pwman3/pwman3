@@ -144,6 +144,11 @@ class TestSQLite(unittest.TestCase):
         rv = self.db._cur.execute("select * from node").fetchall()
         self.assertListEqual(rv, [])
 
+    def test_a12_test_savekey(self):
+        ce = CryptoEngine.get()
+        self.db.savekey(ce.get_cryptedkey())
+        self.assertEqual(ce.get_cryptedkey(), self.db.loadkey())
+
     def tearDown(self):
         self.db.close()
 
