@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012-2014 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 from __future__ import print_function
 import sys
 from pwman import get_conf_options, get_db_version
@@ -37,6 +37,12 @@ def main(args):
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dbver = get_db_version(config, dbtype, args)
     CryptoEngine.get(dbver)
+
+    if args.import_file:
+       importer = Importer(args, config)
+       importer.run()
+       sys.exit(0)
+
     fname = config.get_value('Database', 'filename')
     db = pwman.data.factory.create(dbtype, dbver, fname)
     cli = PwmanCliNew(db, xselpath, CLICallback, config)

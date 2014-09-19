@@ -21,14 +21,12 @@ from pwman.data.nodes import NewNode
 from pwman.data.tags import TagNew
 from pwman.data import factory
 from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
-from pwman.util import config
 from pwman.util.config import get_pass_conf
 from pwman.util.generator import leetlist
 from pwman.util.crypto_engine import CryptoEngine
-from pwman import default_config, set_xsel
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CMDLoop, CliMenuItem
-from pwman import (parser_options, get_conf_options, get_conf, set_umask)
+# from pwman import (parser_options, get_conf_options, get_conf, set_umask)
 from pwman.data.database import __DB_FORMAT__
 import sys
 import unittest
@@ -173,34 +171,6 @@ class DBTests(unittest.TestCase):
         self.assertEqual("test", db._filename)
 
 
-#class TestDBFalseConfig(unittest.TestCase):
-#
-#    def setUp(self):
-#        # filename = default_config['Database'].pop('filename')
-#        self.fname1 = default_config['Database'].pop('filename')
-#        self.fname = config._conf['Database'].pop('filename')
-#
-#    @unittest.skip("Legacy test. Database and file should always be given")
-#    def test_db_missing_conf_parameter(self):
-#        self.assertRaises(DatabaseException, factory.create,
-#                          'SQLite', __DB_FORMAT__)
-#
-#    def test_get_ui_platform(self):
-#        uiclass, osx = get_ui_platform('windows')
-#        self.assertFalse(osx)
-#        self.assertEqual(uiclass.__name__, PwmanCliWinNew.__name__)
-#        uiclass, osx = get_ui_platform('darwin')
-#        self.assertTrue(osx)
-#        self.assertEqual(uiclass.__name__, PwmanCliMacNew.__name__)
-#        del(uiclass)
-#        del(osx)
-#
-#    def tearDown(self):
-#        config.set_value('Database', 'filename', self.fname)
-#        default_config['Database']['filename'] = self.fname1
-#        config._conf['Database']['filename'] = self.fname
-
-
 class CLITests(unittest.TestCase):
 
     """
@@ -240,8 +210,13 @@ class CLITests(unittest.TestCase):
     def test_leet_password(self):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
-        self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
-                                            "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
+        # python3 compatability
+        if sys.version_info.major < 3:
+            self.assertRegexpMatches(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
+                                                "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
+        else:
+            self.assertRegex(password, ("(H|h)?(A|a|4)?(T|t|\+)?(m|M|\|"
+                                        "\/\|)?(A|a|4)?(N|n|\|\\|)?"))
 
     def test_get_url(self):
         url = self.tester.cli.get_url(reader=lambda: u'example.com')
@@ -373,11 +348,11 @@ class CLITests(unittest.TestCase):
 class FactoryTest(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
-        self.assertEquals(factory.check_db_version('SQLite', testdb), 0.5)
+        self.assertEqual(factory.check_db_version('SQLite', testdb), 0.5)
 
     def test_factory_check_db_file(self):
         factory.create('SQLite', version='0.3', filename='baz.db')
-        self.assertEquals(factory.check_db_version('SQLite', 'baz.db'), 0.3)
+        self.assertEqual(factory.check_db_version('SQLite', 'baz.db'), 0.3)
         os.unlink('baz.db')
 
     def test_factory_create(self):
@@ -389,123 +364,6 @@ class FactoryTest(unittest.TestCase):
         self.assertIsInstance(db, SQLiteDatabaseNewForm)
         self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
 
-
-#class ConfigTest(unittest.TestCase):
-#
-#    def setUp(self):
-#        "test that the right db instance was created"
-#        dbver = 0.4
-#        self.dbtype = config.get_value("Database", "type")
-#        self.db = factory.create(self.dbtype, dbver, testdb)
-#        self.tester = SetupTester(dbver, testdb)
-#        self.tester.create()
-#        self.orig_config = config._conf.copy()
-#        self.orig_config['Encryption'] = {'algorithm': 'AES'}
-#
-#    def test_config_write(self):
-#        _filename = os.path.join(os.path.dirname(__file__),
-#                                 'testing_config')
-#        config._file = _filename
-#        config.save(_filename)
-#        self.assertTrue(_filename)
-#        os.remove(_filename)
-#
-#    def test_config_write_with_none(self):
-#        _filename = os.path.join(os.path.dirname(__file__),
-#                                 'testing_config')
-#        config._file = _filename
-#        config.save()
-#        self.assertTrue(os.path.exists(_filename))
-#        os.remove(_filename)
-
-#    def test_write_no_permission(self):
-#        # this test will pass if you run as root ...
-#        # assuming you are not doing something like that
-#        self.assertRaises(config.ConfigException, config.save,
-#                          '/root/test_config')
-
-#    def test_add_default(self):
-#        config.add_defaults({'Section1': {'name': 'value'}})
-#        self.assertIn('Section1', config._defaults)
-#        config._defaults.pop('Section1')
-
-#    def test_get_conf(self):
-#        cnf = config.get_conf()
-#        cnf_keys = cnf.keys()
-#        self.assertTrue('Encryption' in cnf_keys)
-#        self.assertTrue('Readline' in cnf_keys)
-#        self.assertTrue('Global' in cnf_keys)
-#        self.assertTrue('Database' in cnf_keys)
-
-#    def test_load_conf(self):
-#        self.assertRaises(config.ConfigException, config.load, 'NoSuchFile')
-#        # Everything should be ok
-#        config.save('TestConfig.ini')
-#        config.load('TestConfig.ini')
-        # let's corrupt the file
-#        cfg = open('TestConfig.ini', 'w')
-#        cfg.write('Corruption')
-#        cfg.close()
-#        self.assertRaises(config.ConfigException, config.load,
-#                          'TestConfig.ini')
-#        os.remove('TestConfig.ini')
-
-#    def test_all_config(self):
-#        sys.argv = ['pwman3']
-#        default_config['Database'] = {'type': '',
-#                                      'filename': ''}
-#        _save_conf = config._conf.copy()
-#        config._conf = {}
-#        with open('dummy.conf', 'w') as dummy:
-#            dummy.write(dummyfile)
-#        sys.argv = ['pwman3', '-d', '', '-c', 'dummy.conf']
-#        p2 = parser_options()
-#        args = p2.parse_args()
-#        self.assertRaises(Exception, get_conf_options, args, False)
-#        config._conf = _save_conf.copy()
-#        os.unlink('dummy.conf')
-
-#    def test_set_xsel(self):
-#        set_xsel(config, False)
-
-#        set_xsel(config, True)
-#        if sys.platform == 'linux2':
-#            self.assertEqual(None, config._conf['Global']['xsel'])
-
-#    def test_get_conf_file(self):
-#        Args = namedtuple('args', 'cfile')
-#        args = Args(cfile='nosuchfile')
-        # setting the default
-        # in case the user specifies cfile as command line option
-        # and that file does not exist!
-#        foo = config._conf.copy()
-#        get_conf_file(args)
-        # args.cfile does not exist, hence the config values
-        # should be the same as in the defaults
-#        config.set_config(foo)
-
-#   def test_get_conf_options(self):
-#       Args = namedtuple('args', 'cfile, dbase, algo')
-#        args = Args(cfile='nosuchfile', dbase='dummy.db', algo='AES')
-#        self.assertRaises(Exception, get_conf_options, (args, 'False'))
-#        config._defaults['Database']['type'] = 'SQLite'
-#        # config._conf['Database']['type'] = 'SQLite'
-#        xsel, dbtype = get_conf_options(args, 'True')
-#        self.assertEqual(dbtype, 'SQLite')
-
-#    def test_set_conf(self):
-#        set_conf_f = getattr(config, 'set_conf')
-#        private_conf = getattr(config, '_conf')
-#        set_conf_f({'Config': 'OK'})
-#        self.assertDictEqual({'Config': 'OK'}, config._conf)
-#        config._conf = private_conf
-
-#    def test_umask(self):
-#        config._defaults = {'Global': {}}
-#        self.assertRaises(config.ConfigException, set_umask, config)
-
-#    def tearDown(self):
-#        config._conf = self.orig_config.copy()
 
 if __name__ == '__main__':
     # make sure we use local pwman

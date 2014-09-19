@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean test
+.PHONY: clean-pyc clean-build docs clean test coverage coverage-run
 
 help:
 	@echo "clean-build - remove build artifacts"
@@ -13,6 +13,7 @@ help:
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
+	rm -f test.db
 
 clean-build:
 	rm -fr build/
@@ -27,18 +28,20 @@ clean-pyc:
 lint:
 	flake8 pwman scripts
 
-test: install
+test: install clean 
 	git checkout pwman/tests/pwman.v0.0.8.db
 	python setup.py test
 
 test-all:
 	tox
 
-coverage:
+coverage-run:
 	coverage run --source pwman setup.py test
 	coverage report -m
-	coverage html
-	#xdg-open htmlcov/index.html
+	@coverage html
+
+coverage: coverage-run
+	@rm test.db
 
 docs:
 	#rm -f docs/manutils.rst

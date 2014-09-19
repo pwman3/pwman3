@@ -1,5 +1,4 @@
 import unittest
-import pwman.util.config as config
 from pwman.util.callback import Callback
 import os
 from pwman.util.crypto_engine import (CryptoEngine, CryptoException)

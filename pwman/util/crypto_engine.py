@@ -82,16 +82,15 @@ def prepare_data(text, block_size):
 class CryptoEngine(object):  # pagma: no cover
     _timeoutcount = 0
     _instance = None
-    _instance_new = None
     _callback = None
 
     @classmethod
     def get(cls, dbver=None, timeout=-1):
-        if CryptoEngine._instance_new:
-            return CryptoEngine._instance_new
+        if CryptoEngine._instance:
+            return CryptoEngine._instance
 
-        CryptoEngine._instance_new = CryptoEngine(timeout)
-        return CryptoEngine._instance_new
+        CryptoEngine._instance = CryptoEngine(timeout)
+        return CryptoEngine._instance
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
                  timeout=-1, reader=None):
@@ -177,7 +176,7 @@ class CryptoEngine(object):  # pagma: no cover
     def changepassword(self, reader=raw_input):
         if self._callback is None:
             raise CryptoException("No callback class has been specified")
-        #if not self._is_authenticated():
+        # if not self._is_authenticated():
         #    p, s = self._auth()
         # if you change the password of the database you have to Change
         # all the cipher texts in the databse!!!
@@ -225,4 +224,4 @@ class CryptoEngine(object):  # pagma: no cover
         """
         return _keycrypted
         """
-        return self._salt + '$6$' + self._digest
+        return self._salt.decode() + u'$6$' + self._digest.decode()

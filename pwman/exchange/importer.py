@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,13 +13,43 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
-#============================================================================
-# Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
+# Copyright (C) 2014 Oz Nahum Tiram <nahumoz@gmail.com>
+# ============================================================================
+'''
+A module to hold the importer class
+'''
 
-'''
-Not implemented yet
-'''
+
+class BaseImporter(object):
+
+    """
+    The base class which defines the action needed to import data
+    to pwman database
+    """
+
+    def __init__(self):
+        pass
+
+
+class CSVImporter(BaseImporter):
+
+    """
+    A reference implementation which imports a CSV to the pwman database
+    """
+    def __init__(self):
+        pass
+
+
+class Importer(object):
+
+    """
+    The actual job runner which by default runs a csv importer instance.
+    This could be changes by calling other instance which for example import
+    from KeePass XML or other formats.
+    """
+    def __init__(self, invoke=CSVImporter):
+        self.runner = invoke
+
+    def run(self):
+        self.runner()
