@@ -37,8 +37,19 @@ class CSVImporter(BaseImporter):
     """
     A reference implementation which imports a CSV to the pwman database
     """
-    def __init__(self):
+    def __init__(self, args, config):
+        self.args = args
+        self.config = config
+
+    def _read_file(self):
+        return []
+
+    def _create_node(self, row):
         pass
+
+    def runner(self):
+        for row in self._read_file():
+            self._create_node()
 
 
 class Importer(object):
@@ -49,7 +60,7 @@ class Importer(object):
     from KeePass XML or other formats.
     """
     def __init__(self, invoke=CSVImporter):
-        self.runner = invoke
+        self.runner = invoke()
 
     def run(self):
         self.runner()
