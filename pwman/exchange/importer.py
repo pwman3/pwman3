@@ -19,6 +19,7 @@
 '''
 A module to hold the importer class
 '''
+import csv
 
 
 class BaseImporter(object):

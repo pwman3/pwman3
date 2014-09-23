@@ -30,6 +30,7 @@ from .db_tests import (DBTests, SetupTester, CLITests,
 from .test_crypto_engine import CryptoEngineTest
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
+from .test_importer import TestImporter
 
 if 'win' not in sys.platform:
     from .test_complete_ui import (Ferrum, NEW_DB_PATH)
@@ -57,6 +58,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(CryptoEngineTest))
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
+    suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     #if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite

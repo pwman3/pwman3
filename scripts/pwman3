@@ -26,6 +26,7 @@ from pwman import parser_options
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CLICallback
 import pwman.data.factory
+from pwman.exchange.importer import Importer
 from pwman.util.crypto_engine import CryptoEngine
 
 if sys.version_info.major > 2:
@@ -39,9 +40,9 @@ def main(args):
     CryptoEngine.get(dbver)
 
     if args.import_file:
-       importer = Importer(args, config)
-       importer.run()
-       sys.exit(0)
+        importer = Importer(args, config)
+        importer.run()
+        sys.exit(0)
 
     fname = config.get_value('Database', 'filename')
     db = pwman.data.factory.create(dbtype, dbver, fname)
