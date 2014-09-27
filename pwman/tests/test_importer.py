@@ -22,6 +22,7 @@ from pwman.util.crypto_engine import CryptoEngine
 from collections import namedtuple
 from .test_crypto_engine import give_key, DummyCallback
 from pwman.exchange.importer import CSVImporter
+from pwman.data.drivers.sqlite import SQLite
 
 import_example = """
 Username;URL;Password;Notes;Tags
@@ -37,18 +38,50 @@ class TestImporter(unittest.TestCase):
 
     def setUp(self):
         config = {}
+        db = SQLite('test-importer.db')
         Args = namedtuple('args', 'import_file')
-        self.importer = CSVImporter(Args(import_file='foo'), config)
+        self.importer = CSVImporter(Args(import_file='import_file.csv'),
+                                    config, db)
 
-    def test_fail(self):
-        self.assertTrue(True)
+    def test_read_file(self):
+        lines = self.importer._read_file()
+        self.assertNotIn(["Username", "URL", "Password", "Notes"," Tags"],
+                         lines)
+
+    def test_create_node(self):
+        # create a node , should be encrypted, but not yet inserted to db
+        n = "alice;wonderland.com;secert;scratch;foo,bar".split(";")
+        node = self.importer._create_node(n)
+        ce = CryptoEngine.get()
+        self.assertEqual(ce.decrypt(node._username).decode(), u'alice')
+        self.assertEqual(['foo', 'bar'], [t.decode() for t in node.tags])
+
+    def test_insert_node(self):
+        n = "alice;wonderland.com;secert;scratch;foo,bar".split(";")
+        node = self.importer._create_node(n)
+        self.importer._open_db()
+        # do the actual insert of the node to the databse
+        self.importer._insert_node(node)
+
+    def test_runner(self):
+        # test the whole procees:
+        """
+          open csv
+          open db
+          for line in csv:
+              create node
+              insert node
+
+          close db
+        """
+        pass
+
 
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-
     try:
         unittest.main(verbosity=2, failfast=True)
     except SystemExit:
