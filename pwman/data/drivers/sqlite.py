@@ -517,8 +517,11 @@ class SQLite(SQLiteDatabaseNewForm):
         return _keycrypted
         """
         sql = "SELECT * FROM CRYPTO"
-        seed, digest = self._cur.execute(sql).fetchone()
-        return seed + u'$6$' + digest
+        try:
+            seed, digest = self._cur.execute(sql).fetchone()
+            return seed + u'$6$' + digest
+        except TypeError:
+            return None
 
     def close(self):
         self._clean_orphands()

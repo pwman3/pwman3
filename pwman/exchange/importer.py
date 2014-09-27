@@ -43,7 +43,6 @@ class CSVImporter(BaseImporter):
         self.args = args
         self.config = config
         self._db = db
-import ipdb; ipdb.set_trace()
 
     def _read_file(self):
         """read the csv file, remove empty lines and the header"""

@@ -137,7 +137,8 @@ class Node(object):
             self._password = enc.encrypt(kwargs.get('password')).strip()
             self._url = enc.encrypt(kwargs.get('url')).strip()
             self._notes = enc.encrypt(kwargs.get('notes')).strip()
-            self._tags = [enc.encrypt(t).strip() for t in kwargs.get('tags')]
+            _tags = [enc.encrypt(t).strip() for t in kwargs.get('tags')]
+            self._tags = _tags
 
     @classmethod
     def from_encrypted_entries(cls, username, password, url, notes, tags):
@@ -154,7 +155,9 @@ class Node(object):
         return node
 
     def __repr__(self):
-        """we use this method to write node to the database"""
+        """we use this method to write node to the database,
+        this is only practical if node is a blob!
+        However, the new db uses a clear table structure."""
         res = u''
         tags = self.__dict__.pop('_tags', None)
         for item in self.__dict__:

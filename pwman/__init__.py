@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2012 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
@@ -37,7 +37,7 @@ except pkg_resources.DistributionNotFound:  # pragma: no cover
     version = u"0.5"
 
 website = "http://pwman3.github.io/pwman3/"
-author = "Oz Nahum"
+author = "Oz Nahum Tiram"
 authoremail = "nahumoz@gmail.com"
 description = "a command line password management application."
 keywords = "password management sqlite crypto"
