@@ -1,4 +1,8 @@
 2014-Aug-27 Oz Nahum Tiram  <nahumoz@gmail.com>
+   * Fix small bug in ui for mac os x
+   * Version 0.5.1e
+
+2014-Aug-27 Oz Nahum Tiram  <nahumoz@gmail.com>
    * Fix crypto bug appearing in export 
    * Version 0.5.1d
 
