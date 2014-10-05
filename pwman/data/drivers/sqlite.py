@@ -371,13 +371,13 @@ class SQLite(SQLiteDatabaseNewForm):
             sql_all = "SELECT ID FROM NODE"
             self._cur.execute(sql_all)
             ids = self._cur.fetchall()
-            return ids
+            return [id[0] for id in ids]
         else:
             tagid = self._get_tag(filter)
             sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
             self._cur.execute(sql_filter, (tagid))
             ids = self._cur.fetchall()
-            return ids
+            return [id[0] for id in ids]
 
     def listtags(self):
         self._clean_orphands()
@@ -472,6 +472,7 @@ class SQLite(SQLiteDatabaseNewForm):
             self._update_tag_lookup(nodeid, tid)
 
     def getnodes(self, ids):
+        """get nodes as raw ciphertext"""
         sql = "SELECT * FROM NODE WHERE ID IN (%s)" % ','.join('?'*len(ids))
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
