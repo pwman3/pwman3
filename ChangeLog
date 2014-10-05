@@ -1,4 +1,7 @@
-2014-Aug-27 Oz Nahum Tiram  <nahumoz@gmail.com>
+2014-Oct-5 Oz Nahum Tiram  <nahumoz@gmail.com>
+   * Bump version to overcome pypi problems 
+
+2014-Oct-5 Oz Nahum Tiram  <nahumoz@gmail.com>
    * Fix small bug in ui for mac os x
    * Version 0.5.1e
 
