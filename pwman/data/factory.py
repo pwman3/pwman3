@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
+# Copyright (C) 2012-2014 Oz Nahum Tiram <nahumoz@gmail.com>
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 
 """
 Factory to create Database instances
@@ -61,7 +61,11 @@ def create(dbtype, version=None, filename=None):
     """
     if dbtype == "SQLite":
         from pwman.data.drivers import sqlite
-        db = sqlite.SQLiteDatabaseNewForm(filename)
+        if str(version) == '0.6':
+            db = sqlite.SQLite(filename)
+        else:
+            db = sqlite.SQLiteDatabaseNewForm(filename)
+
     elif dbtype == "Postgresql":  # pragma: no cover
         try:
             from pwman.data.drivers import postgresql
