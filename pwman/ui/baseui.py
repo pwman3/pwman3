@@ -1,4 +1,4 @@
-# ============================================================================
+# ===========================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -59,9 +59,9 @@ class BaseCommands(HelpUI):
         password"""
         pass
 
-    def do_cls(self, args):
+    def do_cls(self, args):  # pragma: no cover
         """clear the screen"""
-        pass
+        os.system("clear")
 
     def do_edit(self, args):
         """edit a node"""
@@ -77,5 +77,25 @@ class BaseCommands(HelpUI):
 
     def do_tags(self, args):
         """print all existing tags """
+        pass
 
+    def do_listn(self, args):
+        """list all existing nodes in database"""
+        self.do_cls('')
+        self.do_filter(args)
+        nodeids = self._db.listnodes()
+        nodes = self._db.getnodes(nodeids)
+        _nodes_inst = []
+        # user, pass, url, notes
+        for node in nodes:
+            _nodes_inst.append(Node.from_encrypted_entries(
+                node[1],
+                'xxxxx',
+                node[2],
+                'yyyyy',
+                []))
+        for node in _nodes_inst:
+            print(node)
 
+    def do_filter(args):
+        pass

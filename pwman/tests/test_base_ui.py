@@ -25,7 +25,7 @@ from .test_crypto_engine import give_key, DummyCallback
 from pwman.ui.baseui import BaseCommands
 
 
-class TestSQLite(unittest.TestCase):
+class TestBaseUI(unittest.TestCase):
 
     pass
 

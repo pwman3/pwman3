@@ -27,8 +27,8 @@ import pwman
 from pwman.util.crypto_engine import CryptoEngine
 import sys
 import cmd
-from pwman.ui.base import Aliases, BaseCommands
-
+from pwman.ui.base import Aliases  # BaseCommands
+from pwman.ui.baseui import BaseCommands
 try:
     import readline
     _readline_available = True
