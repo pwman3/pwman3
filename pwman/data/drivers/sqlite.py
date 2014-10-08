@@ -29,7 +29,7 @@ import sqlite3 as sqlite
 import itertools
 
 
-class SQLiteDatabaseNewForm(Database):
+class SQLiteDatabaseNewForm(Database):  # pragma: no cover
     """SQLite Database implementation"""
 
     @classmethod
@@ -361,12 +361,15 @@ class SQLite(SQLiteDatabaseNewForm):
         """Initialise SQLitePwmanDatabase instance."""
         self._filename = filename
         self.dbformat = dbformat
+        self._filtertags = None  # TODO: get rid of this property
 
     def _open(self):
         self._con = sqlite.connect(self._filename)
         self._cur = self._con.cursor()
+        self._create_tables()
 
     def listnodes(self, filter=None):
+        """return a list of node ids"""
         if not filter:
             sql_all = "SELECT ID FROM NODE"
             self._cur.execute(sql_all)
@@ -511,6 +514,7 @@ class SQLite(SQLiteDatabaseNewForm):
         self._cur.execute(sql, (salt, digest))
         self._digest = digest.encode('utf-8')
         self._salt = salt.encode('utf-8')
+        self._con.commit()
 
     def loadkey(self):
         # TODO: rename this method!
