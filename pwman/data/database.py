@@ -21,7 +21,7 @@
 
 from pwman.util.crypto_engine import CryptoEngine
 
-__DB_FORMAT__ = 0.5
+__DB_FORMAT__ = 0.6
 
 
 class DatabaseException(Exception):
