@@ -137,7 +137,7 @@ class Node(object):
             self._password = enc.encrypt(kwargs.get('password')).strip()
             self._url = enc.encrypt(kwargs.get('url')).strip()
             self._notes = enc.encrypt(kwargs.get('notes')).strip()
-            _tags = [enc.encrypt(t).strip() for t in kwargs.get('tags')]
+            _tags = [enc.encrypt(t).strip() for t in kwargs.get('tags', '')]
             self._tags = _tags
 
     @classmethod
