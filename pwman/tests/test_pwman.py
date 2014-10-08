@@ -21,16 +21,19 @@
 import os
 import sys
 import unittest
-from .db_tests import (DBTests, SetupTester, CLITests,
+from .db_tests import (SetupTester)
+                       #, CLITests,
+                       #DBTests,
                        # ConfigTest,
                        # TestDBFalseConfig,
-                       FactoryTest)
+                       #FactoryTest)
 
 #from .crypto_tests import CryptoTest
 from .test_crypto_engine import CryptoEngineTest
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
 from .test_importer import TestImporter
+from .test_factory import TestFactory
 
 if 'win' not in sys.platform:
     from .test_complete_ui import (Ferrum, NEW_DB_PATH)
@@ -49,16 +52,17 @@ SetupTester().clean()
 def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    suite.addTest(loader.loadTestsFromTestCase(DBTests))
+    #suite.addTest(loader.loadTestsFromTestCase(DBTests))
     #suite.addTest(loader.loadTestsFromTestCase(CryptoTest))
-    suite.addTest(loader.loadTestsFromTestCase(CLITests))
+    #suite.addTest(loader.loadTestsFromTestCase(CLITests))
     #suite.addTest(loader.loadTestsFromTestCase(ConfigTest))
-    suite.addTest(loader.loadTestsFromTestCase(FactoryTest))
+    #suite.addTest(loader.loadTestsFromTestCase(FactoryTest))
     #suite.addTest(loader.loadTestsFromTestCase(TestDBFalseConfig))
     suite.addTest(loader.loadTestsFromTestCase(CryptoEngineTest))
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
+    suite.addTest(loader.loadTestsFromTestCase(TestFactory))
     #if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
