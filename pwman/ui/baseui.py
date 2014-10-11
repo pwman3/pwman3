@@ -37,7 +37,7 @@ import csv
 if sys.version_info.major > 2:
     raw_input = input
 
-from base import HelpUI
+from .base import HelpUI
 
 
 class BaseCommands(HelpUI):
