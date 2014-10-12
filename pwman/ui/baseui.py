@@ -79,6 +79,14 @@ class BaseCommands(HelpUI):
         """print all existing tags """
         pass
 
+    def _get_tags(self, default=None, reader=raw_input):
+        # TODO: add method to read tags from db, so they
+        # could bn used for tab completer
+        taglist = tools.getinput("Tags: ", '', reader=reader)
+        tagstrings = taglist.split()
+        tags = [tn for tn in tagstrings]
+        return tags
+
     def do_listn(self, args):
         """list all existing nodes in database"""
         self.do_cls('')
@@ -97,5 +105,19 @@ class BaseCommands(HelpUI):
         for node in _nodes_inst:
             print(node)
 
-    def do_filter(args):
+    def do_filter(self, args):
         pass
+
+    def do_newn(self, args):
+        node = {}
+        node['username'] = self.get_username()
+        args = {}
+        node['password'] = self.get_password(argsgiven=1, **args)
+        node['url'] = self.get_url()
+        node['notes'] = self.get_notes()
+        # TODO: fix get_tags
+        import ipdb; ipdb.set_trace()
+        node['tags'] = self._get_tags()
+
+        node = Node(clear_text=True, **node)
+        self._db.add_node(node)
