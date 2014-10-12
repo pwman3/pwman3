@@ -40,12 +40,13 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
-    def __init__(self, db, hasxsel, callback, config_parser):
+    def __init__(self, db, hasxsel, callback, config_parser, **kwargs):
         """
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
-        cmd.Cmd.__init__(self)
+        super(PwmanCliNew, self).__init__(**kwargs)
+
         self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
                                               pwman.website)
         self._historyfile = config_parser.get_value("Readline", "history")
