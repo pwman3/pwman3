@@ -113,16 +113,25 @@ class BaseCommands(HelpUI):
     def do_filter(self, args):
         pass
 
+    def _get_input(self, prompt):
+        print(prompt, end="")
+        sys.stdout.flush()
+        return sys.stdin.readline()
+
+    def _get_secret(self):
+        # TODO: enable old functionallity
+        if sys.stdin.isatty():
+            p = getpass.getpass()
+        else:
+            p = sys.stdin.readline().rstrip()
+        return p
+
     def do_newn(self, args):
         node = {}
-        node['username'] = self.get_username()
-        args = {}
-        node['password'] = self.get_password(argsgiven=1, **args)
-        node['url'] = self.get_url()
-        node['notes'] = self.get_notes()
-        # TODO: fix get_tags
-        import ipdb; ipdb.set_trace()
+        node['username'] = self._get_input("Username: ")
+        node['password'] = self._get_secret()
+        node['url'] = self._get_input("Url: ")
+        node['notes'] = self._get_input("Notes: ")
         node['tags'] = self._get_tags()
-
         node = Node(clear_text=True, **node)
         self._db.add_node(node)

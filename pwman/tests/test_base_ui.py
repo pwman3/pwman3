@@ -48,9 +48,11 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual(['foo', 'bar', 'baz'], tags)
         sys.stdin = sys.__stdin__
 
+    def test_do_newn(self):
+        sys.stdin = StringIO("foo\nbar\nbaz\n")
+        self.tester.cli.do_newn('')
 
-    #def test_do_newn(self):
-    #    self.tester.sys
+
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
