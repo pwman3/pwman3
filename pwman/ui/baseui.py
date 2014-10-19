@@ -80,9 +80,14 @@ class BaseCommands(HelpUI):
         pass
 
     def _get_tags(self, default=None, reader=raw_input):
+        """
+        Tags are simply return as a list
+        """
         # TODO: add method to read tags from db, so they
         # could bn used for tab completer
-        taglist = tools.getinput("Tags: ", '', reader=reader)
+        print("Tags: ", end="")
+        sys.stdout.flush()
+        taglist = sys.stdin.readline()
         tagstrings = taglist.split()
         tags = [tn for tn in tagstrings]
         return tags

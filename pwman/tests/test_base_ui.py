@@ -18,17 +18,39 @@
 # ============================================================================
 import os
 import unittest
-from pwman.data.drivers.sqlite import SQLite
-from pwman.data.nodes import Node
 from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
-from pwman.ui.baseui import BaseCommands
+from pwman.data.database import __DB_FORMAT__
+from .test_tools import (SetupTester)
+from pwman.data import factory
+from StringIO import StringIO
+import sys
+
+testdb = os.path.join(os.path.dirname(__file__), "test-baseui.pwman.db")
 
 
 class TestBaseUI(unittest.TestCase):
 
-    pass
+    def setUp(self):
+        "test that the right db instance was created"
+        dbver = __DB_FORMAT__
+        self.dbtype = 'SQLite'
+        self.db = factory.create(self.dbtype, dbver, testdb)
+        self.tester = SetupTester(dbver, testdb)
+        self.tester.create()
 
+    def test_false(self):
+        self.assertFalse(False)
+
+    def test_get_tags(self):
+        sys.stdin = StringIO("foo bar baz\n")
+        tags = self.tester.cli._get_tags(reader=lambda: "foo bar baz")
+        self.assertListEqual(['foo', 'bar', 'baz'], tags)
+        sys.stdin = sys.__stdin__
+
+
+    #def test_do_newn(self):
+    #    self.tester.sys
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
@@ -38,4 +60,5 @@ if __name__ == '__main__':
     try:
         unittest.main(verbosity=2, failfast=True)
     except SystemExit:
-        os.remove('test.db')
+        #os.remove(testdb)
+        pass

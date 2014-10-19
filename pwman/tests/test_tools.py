@@ -55,9 +55,6 @@ default_config['Database'] = {'type': 'SQLite',
 
 with open(os.path.join(os.path.dirname(__file__), 'test.conf'), 'w') as f:
     f.write("""
-[Encryption]
-algorithm = Blowfish
-
 [Global]
 xsel = /usr/bin/xsel
 colors = yes
