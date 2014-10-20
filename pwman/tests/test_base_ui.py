@@ -49,8 +49,14 @@ class TestBaseUI(unittest.TestCase):
         sys.stdin = sys.__stdin__
 
     def test_do_newn(self):
-        sys.stdin = StringIO("foo\nbar\nbaz\n")
-        self.tester.cli.do_newn('')
+        sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
+                              "\nfoo bar baz"))
+        _node = self.tester.cli.do_newn('')
+        self.assertListEqual(['foo', 'bar', 'baz'], _node.tags)
+        sys.stdin = sys.__stdin__
+        nodeid = self.tester.cli._db.listnodes()
+        self.assertListEqual([1], nodeid)
+        nodes = self.tester.cli._db.getnodes(nodeid)
 
 
 if __name__ == '__main__':

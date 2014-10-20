@@ -475,7 +475,11 @@ class SQLite(SQLiteDatabaseNewForm):
             self._update_tag_lookup(nodeid, tid)
 
     def getnodes(self, ids):
-        """get nodes as raw ciphertext"""
+        """
+        get nodes as raw ciphertext
+        """
+        # TODO: getnodes currently returns only nodes, what about their tags?
+        # This method should return the tags too ...
         sql = "SELECT * FROM NODE WHERE ID IN (%s)" % ','.join('?'*len(ids))
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()

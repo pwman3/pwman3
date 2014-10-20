@@ -107,8 +107,11 @@ class BaseCommands(HelpUI):
                 node[2],
                 'yyyyy',
                 []))
+        # TOOD: after geting the nodes,
+        #       one needs to get their prospective tags
         for node in _nodes_inst:
             print(node)
+
 
     def do_filter(self, args):
         pass
@@ -135,3 +138,4 @@ class BaseCommands(HelpUI):
         node['tags'] = self._get_tags()
         node = Node(clear_text=True, **node)
         self._db.add_node(node)
+        return node
