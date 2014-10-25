@@ -474,16 +474,29 @@ class SQLite(SQLiteDatabaseNewForm):
             tid = self._get_or_create_tag(tag)
             self._update_tag_lookup(nodeid, tid)
 
+    def _get_node_tags(self, node):
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = ?"
+        tagids = self._cur.execute(sql, (str(node[0]))).fetchall()
+        sql = ("SELECT DATA FROM TAG WHERE ID IN (%s)"
+               "" % ','.join('?'*len(tagids)))
+        tagids = [str(id[0]) for id in tagids]
+        self._cur.execute(sql, (tagids))
+        tags = self._cur.fetchall()
+        return tags
+
     def getnodes(self, ids):
         """
         get nodes as raw ciphertext
         """
-        # TODO: getnodes currently returns only nodes, what about their tags?
-        # This method should return the tags too ...
         sql = "SELECT * FROM NODE WHERE ID IN (%s)" % ','.join('?'*len(ids))
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
-        return nodes
+        nodes_w_tags = []
+        for node in nodes:
+            tags = self._get_node_tags(node)
+            nodes_w_tags.append(list(node) + [list(tags)])
+
+        return nodes_w_tags
 
     def editnode(self, nid, **kwargs):
         tags = kwargs.pop('tags', None)
