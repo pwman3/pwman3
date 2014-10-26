@@ -48,7 +48,7 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual(['foo', 'bar', 'baz'], tags)
         sys.stdin = sys.__stdin__
 
-    def test_do_newn(self):
+    def test_do_new(self):
         sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
                               "\nfoo bar baz"))
         _node = self.tester.cli.do_newn('')

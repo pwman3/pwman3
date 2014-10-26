@@ -420,59 +420,8 @@ class BaseCommands(BaseUI, HelpUI):
                                  reader=reader)
         tagstrings = taglist.split()
         tags = [TagNew(tn) for tn in tagstrings]
-
         return tags
 
-    def do_list(self, args):
-
-        if len(args.split()) > 0:
-            self.do_clear('')
-            self.do_filter(args)
-        try:
-            if sys.platform != 'win32':
-                rows, cols = tools.gettermsize()
-            else:
-                rows, cols = 18, 80  # fix this !
-            nodeids = self._db.listnodes()
-            nodes = self._db.getnodes(nodeids)
-
-            cols -= 8
-            i = 0
-            for n in nodes:
-                tags = n.tags
-                tags = filter(None, tags)
-                tagstring = ''
-                first = True
-                for t in tags:
-                    if not first:
-                        tagstring += ", "
-                    else:
-                        first = False
-                    tagstring += t
-
-                name = "%s@%s" % (n.username, n.url)
-
-                name_len = cols * 2 / 3
-                tagstring_len = cols / 3
-                if len(name) > name_len:
-                    name = name[:name_len - 3] + "..."
-                if len(tagstring) > tagstring_len:
-                    tagstring = tagstring[:tagstring_len - 3] + "..."
-                fmt = "%%5d. %%-%ds %%-%ds" % (name_len, tagstring_len)
-                formatted_entry = tools.typeset(fmt % (n._id,
-                                                name, tagstring),
-                                                Fore.YELLOW, False)
-                print (formatted_entry)
-                i += 1
-                if i > rows - 2:
-                    i = 0
-                    c = tools.getonechar("Press <Space> for more,"
-                                         " or 'Q' to cancel")
-                    if c.lower() == 'q':
-                        break
-
-        except Exception as e:
-            self.error(e)
 
     def do_filter(self, args):
         tagstrings = args.split()

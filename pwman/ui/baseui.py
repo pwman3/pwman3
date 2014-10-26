@@ -32,7 +32,6 @@ from pwman.data.nodes import NewNode, Node
 from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
-import csv
 
 if sys.version_info.major > 2:
     raw_input = input
@@ -92,10 +91,30 @@ class BaseCommands(HelpUI):
         tags = [tn for tn in tagstrings]
         return tags
 
-    def do_listn(self, args):
-        """list all existing nodes in database"""
+    def _prep_term(self, args):
         self.do_cls('')
-        self.do_filter(args)
+        # TODO: fix do_filter!
+        #self.do_filter(args)
+        if sys.platform != 'win32':
+            rows, cols = tools.gettermsize()
+        else:
+            rows, cols = 18, 80  # fix this !
+
+        cols -= 8
+        return rows, cols
+
+    def _print_node_line(self, node, rows, cols):
+        tagstring = ','.join([str(t) for t in node.tags])
+        fmt = ('{nid}. Username: {name:<{f}} URL: {url:<{f}} Tags: {tags:<{f}}'
+               ''.format(url=node.url + ',', name=node.username + ',', f=10,
+                         tags=tagstring, nid=node._id))
+        formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
+        print(formatted_entry)
+
+    def do_list(self, args):
+        """list all existing nodes in database"""
+        rows, cols = self._prep_term(args)
+
         nodeids = self._db.listnodes()
         nodes = self._db.getnodes(nodeids)
         _nodes_inst = []
@@ -103,15 +122,13 @@ class BaseCommands(HelpUI):
         for node in nodes:
             _nodes_inst.append(Node.from_encrypted_entries(
                 node[1],
-                'xxxxx',
                 node[2],
-                'yyyyy',
-                []))
-        # TOOD: after geting the nodes,
-        #       one needs to get their prospective tags
-        for node in _nodes_inst:
-            print(node)
-
+                node[3],
+                node[4],
+                node[5:]))
+        for idx, node in enumerate(_nodes_inst):
+            node._id = idx + 1
+            self._print_node_line(node, rows, cols)
 
     def do_filter(self, args):
         pass
