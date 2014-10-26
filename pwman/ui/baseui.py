@@ -84,7 +84,7 @@ class BaseCommands(HelpUI):
         Tags are simply return as a list
         """
         # TODO: add method to read tags from db, so they
-        # could bn used for tab completer
+        # could be used for tab completer
         print("Tags: ", end="")
         sys.stdout.flush()
         taglist = sys.stdin.readline()
@@ -129,7 +129,7 @@ class BaseCommands(HelpUI):
             p = sys.stdin.readline().rstrip()
         return p
 
-    def do_newn(self, args):
+    def do_new(self, args):
         node = {}
         node['username'] = self._get_input("Username: ")
         node['password'] = self._get_secret()

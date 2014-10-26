@@ -57,6 +57,12 @@ class TestBaseUI(unittest.TestCase):
         nodeid = self.tester.cli._db.listnodes()
         self.assertListEqual([1], nodeid)
         nodes = self.tester.cli._db.getnodes(nodeid)
+        ce = CryptoEngine.get()
+        user = ce.decrypt(nodes[0][1])
+        self.assertTrue(user, 'alice')
+        tags = nodes[0][5:]
+        for idx, t in enumerate(['foo', 'bar', 'baz']):
+            self.assertTrue(t, tags[idx])
 
 
 if __name__ == '__main__':

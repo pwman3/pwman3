@@ -14,6 +14,7 @@ help:
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
 	rm -f test.db
+	rm -f pwman/tests/test-baseui.pwman.db
 
 clean-build:
 	rm -fr build/

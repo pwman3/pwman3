@@ -489,48 +489,6 @@ class BaseCommands(BaseUI, HelpUI):
         except Exception as e:
             self.error(e)
 
-    def do_new(self, args):
-        """
-        can override default config settings the following way:
-        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
-        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
-        Password (Blank to generate):
-        """
-        errmsg = ("could not parse config override, please input some"
-                  " kind of dictionary, e.g.: n {'leetify':False, "
-                  " numerics':True, 'special_chars':True}")
-        try:
-            username = self.get_username()
-            if args:
-                try:
-                    args = ast.literal_eval(args)
-                except Exception:
-                    raise Exception(errmsg)
-                if not isinstance(args, dict):
-                    raise Exception(errmsg)
-                password = self.get_password(argsgiven=1, **args)
-            else:
-                numerics, leet, s_chars = get_pass_conf(self.config)
-                password = self.get_password(argsgiven=0,
-                                             numerics=numerics,
-                                             leetify=leet,
-                                             special_signs=s_chars)
-            url = self.get_url()
-            notes = self.get_notes()
-            node = NewNode()
-            node.username = username
-            node.password = password
-            node.url = url
-            node.notes = notes
-            # node = NewNode(username, password, url, notes)
-            node.tags = self.get_tags()
-            self._db.addnodes([node])
-            print ("Password ID: %d" % (node._id))
-            # when done with node erase it
-            zerome(password)
-        except Exception as e:
-            self.error(e)
-
     def do_print(self, arg):
         for i in self.get_ids(arg):
             try:

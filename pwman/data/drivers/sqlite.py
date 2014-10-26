@@ -482,7 +482,8 @@ class SQLite(SQLiteDatabaseNewForm):
         tagids = [str(id[0]) for id in tagids]
         self._cur.execute(sql, (tagids))
         tags = self._cur.fetchall()
-        return tags
+        for t in tags:
+            yield t[0]
 
     def getnodes(self, ids):
         """
@@ -493,8 +494,8 @@ class SQLite(SQLiteDatabaseNewForm):
         nodes = self._cur.fetchall()
         nodes_w_tags = []
         for node in nodes:
-            tags = self._get_node_tags(node)
-            nodes_w_tags.append(list(node) + [list(tags)])
+            tags = list(self._get_node_tags(node))
+            nodes_w_tags.append(list(node) + tags)
 
         return nodes_w_tags
 
