@@ -23,7 +23,11 @@ from .test_crypto_engine import give_key, DummyCallback
 from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 from pwman.data import factory
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 import sys
 
 testdb = os.path.join(os.path.dirname(__file__), "test-baseui.pwman.db")
@@ -52,8 +56,10 @@ class TestBaseUI(unittest.TestCase):
         sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
                               "\nfoo bar baz"))
         _node = self.tester.cli.do_new('')
-        self.assertListEqual(['foo', 'bar', 'baz'], _node.tags)
+
         sys.stdin = sys.__stdin__
+        self.assertListEqual(['foo', 'bar', 'baz'], [t.decode() for t
+                                                     in _node.tags])
         nodeid = self.tester.cli._db.listnodes()
         self.assertListEqual([1], nodeid)
         nodes = self.tester.cli._db.getnodes(nodeid)
