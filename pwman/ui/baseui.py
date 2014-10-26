@@ -80,7 +80,8 @@ class BaseCommands(HelpUI):
 
     def _get_tags(self, default=None, reader=raw_input):
         """
-        Tags are simply return as a list
+        Read tags from user input.
+        Tags are simply returned as a list
         """
         # TODO: add method to read tags from db, so they
         # could be used for tab completer
@@ -103,11 +104,16 @@ class BaseCommands(HelpUI):
         cols -= 8
         return rows, cols
 
+    def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
+                     tags="TAGS"):
+        return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
+                "".format(ID=nid, USER=user, URL=url, Tags=tags, us=12,
+                          ur=20, tg=tag_pad - 32))
+
     def _print_node_line(self, node, rows, cols):
         tagstring = ','.join([str(t) for t in node.tags])
-        fmt = ('{nid}. Username: {name:<{f}} URL: {url:<{f}} Tags: {tags:<{f}}'
-               ''.format(url=node.url + ',', name=node.username + ',', f=10,
-                         tags=tagstring, nid=node._id))
+        fmt = self._format_line(cols - 32, node._id, node.username, node.url,
+                                tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
 
@@ -126,6 +132,9 @@ class BaseCommands(HelpUI):
                 node[3],
                 node[4],
                 node[5:]))
+
+        head = self._format_line(cols-32)
+        print(tools.typeset(head, Fore.YELLOW, False))
         for idx, node in enumerate(_nodes_inst):
             node._id = idx + 1
             self._print_node_line(node, rows, cols)
@@ -139,7 +148,7 @@ class BaseCommands(HelpUI):
         return sys.stdin.readline()
 
     def _get_secret(self):
-        # TODO: enable old functionallity
+        # TODO: enable old functionallity, with password generator.
         if sys.stdin.isatty():
             p = getpass.getpass()
         else:

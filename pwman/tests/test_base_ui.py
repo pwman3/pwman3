@@ -51,7 +51,7 @@ class TestBaseUI(unittest.TestCase):
     def test_do_new(self):
         sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
                               "\nfoo bar baz"))
-        _node = self.tester.cli.do_newn('')
+        _node = self.tester.cli.do_new('')
         self.assertListEqual(['foo', 'bar', 'baz'], _node.tags)
         sys.stdin = sys.__stdin__
         nodeid = self.tester.cli._db.listnodes()
@@ -64,6 +64,8 @@ class TestBaseUI(unittest.TestCase):
         for idx, t in enumerate(['foo', 'bar', 'baz']):
             self.assertTrue(t, tags[idx])
 
+    def test_do_list(self):
+        self.tester.cli.do_list('')
 
 if __name__ == '__main__':
 

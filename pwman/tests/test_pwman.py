@@ -34,6 +34,7 @@ from .test_config import TestConfig
 from .test_sqlite import TestSQLite
 from .test_importer import TestImporter
 from .test_factory import TestFactory
+from .test_base_ui import TestBaseUI
 
 if 'win' not in sys.platform:
     from .test_complete_ui import (Ferrum, NEW_DB_PATH)
@@ -63,6 +64,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     suite.addTest(loader.loadTestsFromTestCase(TestFactory))
+    suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
     #if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite

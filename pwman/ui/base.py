@@ -422,7 +422,6 @@ class BaseCommands(BaseUI, HelpUI):
         tags = [TagNew(tn) for tn in tagstrings]
         return tags
 
-
     def do_filter(self, args):
         tagstrings = args.split()
         try:
