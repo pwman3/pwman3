@@ -377,6 +377,8 @@ class SQLite(SQLiteDatabaseNewForm):
             return [id[0] for id in ids]
         else:
             tagid = self._get_tag(filter)
+            if not tagid:
+                return []
             sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
             self._cur.execute(sql_filter, (tagid))
             ids = self._cur.fetchall()
