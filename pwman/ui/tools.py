@@ -182,11 +182,14 @@ def getpassword(question, argsgiven=None,
 
 
 def gettermsize():  # pragma: no cover
-    s = struct.pack("HHHH", 0, 0, 0, 0)
-    f = sys.stdout.fileno()
-    x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
-    rows, cols, width, height = struct.unpack("HHHH", x)
-    return rows, cols
+    if sys.stdout.isatty():
+        s = struct.pack("HHHH", 0, 0, 0, 0)
+        f = sys.stdout.fileno()
+        x = fcntl.ioctl(f, termios.TIOCGWINSZ, s)
+        rows, cols, width, height = struct.unpack("HHHH", x)
+        return rows, cols
+    else:
+        return 40, 80
 
 
 def getinput(question, default="", reader=raw_input,
