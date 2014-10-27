@@ -105,12 +105,14 @@ class BaseCommands(HelpUI):
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
                      tags="TAGS"):
         return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
-                "".format(ID=nid, USER=user, URL=url, Tags=tags, us=12,
+                "".format(ID=nid, USER=user,
+                          URL=url, Tags=tags, us=12,
                           ur=20, tg=tag_pad - 32))
 
     def _print_node_line(self, node, rows, cols):
-        tagstring = ','.join([str(t) for t in node.tags])
-        fmt = self._format_line(cols - 32, node._id, node.username, node.url,
+        tagstring = ','.join([t.decode() for t in node.tags])
+        fmt = self._format_line(cols - 32, node._id, node.username.decode(),
+                                node.url.decode(),
                                 tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
