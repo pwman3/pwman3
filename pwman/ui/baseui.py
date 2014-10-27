@@ -92,10 +92,8 @@ class BaseCommands(HelpUI):
         tags = [tn for tn in tagstrings]
         return tags
 
-    def _prep_term(self, args):
+    def _prep_term(self):
         self.do_cls('')
-        # TODO: fix do_filter!
-        #self.do_filter(args)
         if sys.platform != 'win32':
             rows, cols = tools.gettermsize()
         else:
@@ -117,11 +115,19 @@ class BaseCommands(HelpUI):
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
 
+    def _get_node_ids(self, args):
+        filter = None
+        if args:
+            filter = args.split()[0]
+            ce = CryptoEngine.get()
+            filter = ce.encrypt(filter)
+        nodeids = self._db.listnodes(filter=filter)
+        return nodeids
+
     def do_list(self, args):
         """list all existing nodes in database"""
-        rows, cols = self._prep_term(args)
-
-        nodeids = self._db.listnodes()
+        rows, cols = self._prep_term()
+        nodeids = self._get_node_ids(args)
         nodes = self._db.getnodes(nodeids)
         _nodes_inst = []
         # user, pass, url, notes
