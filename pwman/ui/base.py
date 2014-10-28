@@ -28,11 +28,9 @@ import os
 import time
 import select as uselect
 import ast
-from pwman.util.config import get_pass_conf
 from pwman.ui import tools
 from pwman.ui.tools import CliMenuItem
 from colorama import Fore
-from pwman.data.nodes import NewNode
 from pwman.ui.tools import CMDLoop
 import getpass
 from pwman.data.tags import TagNew
@@ -163,36 +161,7 @@ class HelpUI(object):  # pragma: no cover
         print("Displays all tags in used in the database.")
 
 
-class BaseUI(object):
-    """
-    this class holds all the UI functionality
-    in PwmanCliNew. The later inherits from this class
-    and allows it to print messages to the console.
-    """
-
-    def _do_filter(self, args):
-        pass
-
-    def _tags(self, enc):
-        """
-        read tags from TAGS table in DB,
-        """
-        tags = self._db.listtags()
-        if tags:
-            _tags = [''] * len(tags)
-            for t in tags:
-                try:
-                    _tags.append(enc.decrypt(t))
-                except (ValueError, Exception) as e:
-                    _tags.append(t)
-                    del(e)
-            _tags = filter(None, _tags)
-            _tags = list(_tags)
-            return _tags
-
-
-# pylint: disable=R0904
-class BaseCommands(BaseUI, HelpUI):
+class BaseCommands(HelpUI):
     """
     Inherit from the old class, override
     all the methods related to tags, and
@@ -379,14 +348,6 @@ class BaseCommands(BaseUI, HelpUI):
         #    self._db.savekey(key)
         #except Exception as e:
         #    self.error(e)
-
-    def do_tags(self, arg):
-        enc = CryptoEngine.get()
-        if not enc.alive():
-            enc._getcipher()
-        print ("Tags: \n",)
-        t = self._tags(enc)
-        print ('\n'.join(t))
 
     def get_tags(self, default=None, reader=raw_input):
         """read tags from user"""
