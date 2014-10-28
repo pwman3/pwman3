@@ -17,21 +17,13 @@
 # Copyright (C) 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 from __future__ import print_function
-from pwman.util.crypto_engine import CryptoEngine, zerome
-import re
+from pwman.util.crypto_engine import CryptoEngine
 import sys
 import os
-import time
-import select as uselect
-import ast
-from pwman.util.config import get_pass_conf
 from pwman.ui import tools
-from pwman.ui.tools import CliMenuItem
 from colorama import Fore
-from pwman.data.nodes import NewNode, Node
-from pwman.ui.tools import CMDLoop
+from pwman.data.nodes import Node
 import getpass
-from pwman.data.tags import TagNew
 
 if sys.version_info.major > 2:
     raw_input = input
@@ -47,7 +39,8 @@ class BaseCommands(HelpUI):
 
     def do_exit(self, args):
         """close the text console"""
-        pass
+        self._db.close()
+        return True
 
     def do_export(self, args):
         """export the database to a given format"""
@@ -75,8 +68,14 @@ class BaseCommands(HelpUI):
         pass
 
     def do_tags(self, args):
-        """print all existing tags """
-        pass
+        """
+        print all existing tags
+        """
+        ce = CryptoEngine.get()
+        print("Tags:")
+        tags = self._db.listtags()
+        for t in tags:
+            print(ce.decrypt(t).decode())
 
     def _get_tags(self, default=None, reader=raw_input):
         """
@@ -146,9 +145,6 @@ class BaseCommands(HelpUI):
         for idx, node in enumerate(_nodes_inst):
             node._id = idx + 1
             self._print_node_line(node, rows, cols)
-
-    def do_filter(self, args):
-        pass
 
     def _get_input(self, prompt):
         print(prompt, end="")

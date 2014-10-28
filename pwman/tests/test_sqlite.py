@@ -137,7 +137,7 @@ class TestSQLite(unittest.TestCase):
 
     def test_a10_test_listtags(self):
         tags = self.db.listtags()
-        self.assertEqual(4, len(tags))
+        self.assertEqual(4, len(list(tags)))
 
     def test_a11_test_rmnodes(self):
         self.db.removenodes([1, 2])

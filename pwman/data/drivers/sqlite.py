@@ -390,7 +390,7 @@ class SQLite(SQLiteDatabaseNewForm):
         self._cur.execute(get_tags)
         tags = self._cur.fetchall()
         if tags:
-            return tags
+            return [t[0] for t in tags]
         return []
 
     def _create_tables(self):
