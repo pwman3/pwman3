@@ -21,20 +21,16 @@
 Define the base CLI interface for pwman3
 """
 from __future__ import print_function
-from pwman.util.crypto_engine import CryptoEngine, zerome
+from pwman.util.crypto_engine import zerome
 import re
 import sys
-import os
 import time
 import select as uselect
-import ast
 from pwman.ui import tools
 from pwman.ui.tools import CliMenuItem
 from colorama import Fore
 from pwman.ui.tools import CMDLoop
 import getpass
-from pwman.data.tags import TagNew
-import csv
 
 if sys.version_info.major > 2:
     raw_input = input
@@ -170,11 +166,6 @@ class BaseCommands(HelpUI):
     You can define the aliases here too, but it makes
     the class code really long and unclear.
     """
-    def error(self, exception):
-        if (isinstance(exception, KeyboardInterrupt)):
-            print('')
-        else:
-            print("Error: {0} ".format(exception))
 
     def do_copy(self, args):
         if self.hasxsel:
@@ -196,51 +187,6 @@ class BaseCommands(HelpUI):
         else:
             print ("Can't copy to clipboard, no xsel found in the system!")
 
-    def do_exit(self, args):
-        """exit the ui"""
-        self._db.close()
-        return True
-
-    def do_export(self, args):
-        try:
-            args = ast.literal_eval(args)
-        except Exception:
-            args = {}
-
-        filename = args.get('filename', 'pwman-export.csv')
-        delim = args.get('delimiter', ';')
-        nodeids = self._db.listnodes()
-        nodes = self._db.getnodes(nodeids)
-        with open(filename, 'w') as csvfile:
-            writer = csv.writer(csvfile, delimiter=delim)
-            writer.writerow(['Username', 'URL', 'Password', 'Notes',
-                             'Tags'])
-            for n in nodes:
-                tags = n.tags
-                tags = filter(None, tags)
-                tags = ','.join(t.strip() for t in tags)
-                writer.writerow([n.username, n.url, n.password, n.notes,
-                                 tags])
-
-        print("Successfuly exported database to {}".format(
-            os.path.join(os.getcwd(), filename)))
-
-    def do_forget(self, args):
-        try:
-            enc = CryptoEngine.get()
-            enc.forget()
-        except Exception as e:
-            self.error(e)
-
-    def get_username(self, default="", reader=raw_input):
-        return tools.getinput("Username: ", default, reader)
-
-    def get_url(self, default="", reader=raw_input):
-        return tools.getinput("Url: ", default, reader)
-
-    def get_notes(self, default="", reader=raw_input):
-        return tools.getinput("Notes: ", default, reader)
-
     def do_open(self, args):
         ids = self.get_ids(args)
         if not args:
@@ -255,15 +201,6 @@ class BaseCommands(HelpUI):
             tools.open_url(url)
         except Exception as e:
             self.error(e)
-
-    def do_clear(self, args):
-        try:
-            self._db.clearfilter()
-        except Exception as e:
-            self.error(e)
-
-    def do_cls(self, args):
-        os.system('clear')
 
     def do_edit(self, arg, menu=None):
         ids = self.get_ids(arg)
@@ -348,55 +285,6 @@ class BaseCommands(HelpUI):
         #    self._db.savekey(key)
         #except Exception as e:
         #    self.error(e)
-
-    def get_tags(self, default=None, reader=raw_input):
-        """read tags from user"""
-        defaultstr = ''
-        if default:
-            for t in default:
-                defaultstr += "%s " % (t)
-        else:
-            # tags = self._db.currenttags()
-            tags = self._db._filtertags
-            for t in tags:
-                defaultstr += "%s " % (t)
-
-        # strings = []
-        tags = self._db.listtags(True)
-        # for t in tags:
-        #    strings.append(t.get_name())
-        #    strings.append(t)
-        strings = [t for t in tags]
-
-        def complete(text, state):
-            count = 0
-            for s in strings:
-                if s.startswith(text):
-                    if count == state:
-                        return s
-                    else:
-                        count += 1
-
-        taglist = tools.getinput("Tags: ", defaultstr, completer=complete,
-                                 reader=reader)
-        tagstrings = taglist.split()
-        tags = [TagNew(tn) for tn in tagstrings]
-        return tags
-
-    def do_filter(self, args):
-        tagstrings = args.split()
-        try:
-            tags = [TagNew(ts) for ts in tagstrings]
-            self._db.filter(tags)
-            tags = self._db.currenttags()
-            print ("Current tags: ",)
-            if len(tags) == 0:
-                print ("None",)
-            for t in tags:
-                print ("%s " % t.name.decode())
-            print
-        except Exception as e:
-            self.error(e)
 
     def do_print(self, arg):
         for i in self.get_ids(arg):
