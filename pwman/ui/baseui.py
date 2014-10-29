@@ -24,6 +24,8 @@ from pwman.ui import tools
 from colorama import Fore
 from pwman.data.nodes import Node
 import getpass
+import ast
+import csv
 
 if sys.version_info.major > 2:
     raw_input = input
@@ -42,15 +44,6 @@ class BaseCommands(HelpUI):
         self._db.close()
         return True
 
-    def do_export(self, args):
-        """export the database to a given format"""
-        pass
-
-    def do_forget(self, args):
-        """drop saved key forcing the user to re-enter the master
-        password"""
-        pass
-
     def do_cls(self, args):  # pragma: no cover
         """clear the screen"""
         os.system("clear")
@@ -59,9 +52,38 @@ class BaseCommands(HelpUI):
         """edit a node"""
         pass
 
-    def do_clear(self, args):
-        """remove db filter"""
-        pass
+    def do_export(self, args):
+        """export the database to a given format"""
+        try:
+            args = ast.literal_eval(args)
+        except Exception:
+            args = {}
+
+        filename = args.get('filename', 'pwman-export.csv')
+        delim = args.get('delimiter', ';')
+        nodeids = self._db.listnodes()
+        nodes = self._db.getnodes(nodeids)
+        with open(filename, 'w') as csvfile:
+            writer = csv.writer(csvfile, delimiter=delim)
+            writer.writerow(['Username', 'URL', 'Password', 'Notes',
+                             'Tags'])
+            for n in nodes:
+                tags = n.tags
+                tags = filter(None, tags)
+                tags = ','.join(t.strip() for t in tags)
+                writer.writerow([n.username, n.url, n.password, n.notes,
+                                 tags])
+
+        print("Successfuly exported database to {}".format(
+            os.path.join(os.getcwd(), filename)))
+
+    def do_forget(self, args):
+        """
+        drop saved key forcing the user to re-enter the master
+        password
+        """
+        enc = CryptoEngine.get()
+        enc.forget()
 
     def do_passwd(self, args):
         """change the master password of the database"""
