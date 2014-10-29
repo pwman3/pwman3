@@ -85,12 +85,6 @@ class Database(object):
             if not (tag in self._filtertags):
                 self._filtertags.append(tag)
 
-    def clearfilter(self):
-        self._filtertags = []
-
-    #def getnodes(self, ids):
-    #    pass  # pragma: no cover
-
     def addnodes(self, nodes):
         pass  # pragma: no cover
 
