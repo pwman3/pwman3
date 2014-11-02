@@ -79,12 +79,15 @@ class BaseCommands(HelpUI):
             writer = csv.writer(csvfile, delimiter=delim)
             writer.writerow(['Username', 'URL', 'Password', 'Notes',
                              'Tags'])
-            for n in nodes:
+            for node in nodes:
+                n = Node.from_encrypted_entries(node[1], node[2], node[3],
+                                                node[4],
+                                                node[5:])
                 tags = n.tags
-                tags = filter(None, tags)
-                tags = ','.join(t.strip() for t in tags)
-                writer.writerow([n.username, n.url, n.password, n.notes,
-                                 tags])
+                tags = ','.join(t.strip().decode() for t in tags)
+                r = list(map(bytes.decode, [n.username, n.url, n.password,
+                                            n.notes]))
+                writer.writerow(r + [tags])
 
         print("Successfuly exported database to {}".format(
             os.path.join(os.getcwd(), filename)))
