@@ -67,7 +67,7 @@ class HelpUI(object):  # pragma: no cover
     def help_list(self):
         self.usage("list <tag> ...")
         print ("List nodes that match current or specified filter.",
-               " l is an alias.")
+               " ls is an alias.")
 
     def help_EOF(self):
         self.help_exit()
@@ -187,20 +187,20 @@ class BaseCommands(HelpUI):
         else:
             print ("Can't copy to clipboard, no xsel found in the system!")
 
-    def do_open(self, args):
-        ids = self.get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print ("Can open only 1 link at a time ...")
-            return None
-        try:
-            node = self._db.getnodes(ids)
-            url = node[0].url
-            tools.open_url(url)
-        except Exception as e:
-            self.error(e)
+   # def do_open(self, args):
+   #     ids = self.get_ids(args)
+   #     if not args:
+   #         self.help_open()
+   #         return
+   #     if len(ids) > 1:
+   #         print ("Can open only 1 link at a time ...")
+   #         return None
+   #     try:
+   #         node = self._db.getnodes(ids)
+   #         url = node[0].url
+   #         tools.open_url(url)
+   #     except Exception as e:
+   #         self.error(e)
 
     def do_edit(self, arg, menu=None):
         ids = self.get_ids(arg)
@@ -321,6 +321,7 @@ class BaseCommands(HelpUI):
         a range of IDs, with begin-end.
         e.g. 1-3 , will get 1 to 3.
         """
+        # TODO: add documentation and testing
         ids = []
         rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
         rex = rex.match(args)

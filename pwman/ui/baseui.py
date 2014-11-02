@@ -35,11 +35,23 @@ from .base import HelpUI
 
 class BaseCommands(HelpUI):
 
-    def do_copy(self, args):
+    def do_copy(self, args):  # pargma: no cover
         """copy item to clipboard"""
         pass
 
-    def do_exit(self, args):
+    def do_open(self, args):  # pragma: no cover
+        ids = self.get_ids(args)
+        if not args:
+            self.help_open()
+            return
+
+        nodes = self._db.getnodes(ids)
+        for node in nodes:
+            ce = CryptoEngine.get()
+            url = ce.decrypt(node[3])
+            tools.open_url(url)
+
+    def do_exit(self, args):  # pragma: no cover
         """close the text console"""
         self._db.close()
         return True
@@ -161,11 +173,11 @@ class BaseCommands(HelpUI):
                 node[3],
                 node[4],
                 node[5:]))
+            _nodes_inst[-1]._id = node[0]
 
         head = self._format_line(cols-32)
         print(tools.typeset(head, Fore.YELLOW, False))
         for idx, node in enumerate(_nodes_inst):
-            node._id = idx + 1
             self._print_node_line(node, rows, cols)
 
     def _get_input(self, prompt):
@@ -175,7 +187,7 @@ class BaseCommands(HelpUI):
 
     def _get_secret(self):
         # TODO: enable old functionallity, with password generator.
-        if sys.stdin.isatty():
+        if sys.stdin.isatty():  # pragma: no cover
             p = getpass.getpass()
         else:
             p = sys.stdin.readline().rstrip()

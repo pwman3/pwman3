@@ -138,7 +138,7 @@ def open_url(link, macosx=False):  # pragma: no cover
     try:
         sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError as e:
-        print ("Executing open_url failed with:\n", e)
+        print("Executing open_url failed with:\n", e)
 
 
 def getpassword(question, argsgiven=None,
