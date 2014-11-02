@@ -19,32 +19,31 @@
 #============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 #============================================================================
+#from pwman.util.crypto_engine import CryptoEngine
 
-from pwman.util.crypto_engine import CryptoEngine
 
+#class TagNew(object):
+#
+#    def __init__(self, name):
+#        enc = CryptoEngine.get()
+#        self._name = enc.encrypt(name)
 
-class TagNew(object):
-
-    def __init__(self, name):
-        enc = CryptoEngine.get()
-        self._name = enc.encrypt(name)
-
-    def __eq__(self, other):  # pragma: no cover
-        if other._name == self._name:
-            return True
-        else:
-            return False
+#    def __eq__(self, other):  # pragma: no cover
+#        if other._name == self._name:
+#            return True
+#        else:
+#            return False
 
     #def __str__(self):
     #    enc = CryptoEngine.get()
     #    return enc.decrypt(self._name)
 
-    @property
-    def name(self):
-        enc = CryptoEngine.get()
-        return enc.decrypt(self._name.decode())
+#    @property
+#    def name(self):
+#        enc = CryptoEngine.get()
+#        return enc.decrypt(self._name.decode())
 
-    @name.setter
-    def name(self, value):
-        enc = CryptoEngine.get()  # pragma: no cover
-        self._name = enc.encrypt(value)  # pragma: no cover
+#    @name.setter
+#    def name(self, value):
+#        enc = CryptoEngine.get()  # pragma: no cover
+#        self._name = enc.encrypt(value)  # pragma: no cover

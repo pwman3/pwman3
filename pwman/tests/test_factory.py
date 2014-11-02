@@ -17,8 +17,8 @@
 # Copyright (C) 2013-2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 
-from pwman.data.nodes import NewNode
-from pwman.data.tags import TagNew
+#from pwman.data.nodes import NewNode
+#from pwman.data.tags import TagNew
 from pwman.data import factory
 from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
 from pwman.ui import get_ui_platform
@@ -43,16 +43,16 @@ cls_timeout = 5
 """
 
 
-def node_factory(username, password, url, notes, tags=None):
-    node = NewNode()
-    node.username = username
-    node.password = password
-    node.url = url
-    node.notes = notes
-    tags = [TagNew(tn) for tn in tags]
-    node.tags = tags
+#def node_factory(username, password, url, notes, tags=None):
+#    node = NewNode()
+#    node.username = username
+#    node.password = password
+#    node.url = url
+#    node.notes = notes
+#    tags = [TagNew(tn) for tn in tags]
+#    node.tags = tags
 
-    return node
+#    return node
 
 _saveconfig = False
 

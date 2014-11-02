@@ -27,7 +27,7 @@ import sys
 import struct
 import os
 import colorama
-from pwman.data.tags import TagNew as Tag
+#from pwman.data.tags import TagNew as Tag
 from pwman.util.config import get_pass_conf
 import pwman.util.generator as generator
 
@@ -297,7 +297,8 @@ class CMDLoop(object):  # pragma: no cover
                 elif selection == 4:
                     taglist = getinput("Tags:")
                     tagstrings = taglist.split()
-                    tags = [Tag(tn) for tn in tagstrings]
+                    tags = [tn for tn in tagstrings]
+                    #tags = ''
                     new_node.tags = tags
                     self.items[4].setter = new_node.tags
                     self.items[4].getter = new_node.tags
