@@ -45,7 +45,7 @@ class FactoryException(Exception):
 
 def check_db_version(ftype, filename):
     if ftype == "SQLite":
-        ver = sqlite.SQLiteDatabaseNewForm.check_db_version(filename)
+        ver = sqlite.SQLite.check_db_version(filename)
         try:
             return float(ver.strip("\'"))
         except ValueError:
@@ -64,7 +64,7 @@ def create(dbtype, version=None, filename=None):
         if str(version) == '0.6':
             db = sqlite.SQLite(filename)
         else:
-            db = sqlite.SQLiteDatabaseNewForm(filename)
+            db = sqlite.SQLite(filename)
 
     elif dbtype == "Postgresql":  # pragma: no cover
         try:

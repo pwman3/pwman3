@@ -20,7 +20,7 @@
 #from pwman.data.nodes import NewNode
 #from pwman.data.tags import TagNew
 from pwman.data import factory
-from pwman.data.drivers.sqlite import DatabaseException, SQLiteDatabaseNewForm
+from pwman.data.drivers.sqlite import DatabaseException, SQLite
 from pwman.ui import get_ui_platform
 from pwman.data.database import __DB_FORMAT__
 import sys
@@ -87,7 +87,7 @@ class TestFactory(unittest.TestCase):
         self.assertTrue(os.path.exists('foo.db'))
         db.close()
         os.unlink('foo.db')
-        self.assertIsInstance(db, SQLiteDatabaseNewForm)
+        self.assertIsInstance(db, SQLite)
         self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
 
 
