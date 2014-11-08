@@ -36,7 +36,7 @@ except ImportError as e:  # pragma: no cover
     _readline_available = False
 
 
-class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
+class PwmanCli(cmd.Cmd, Aliases, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
@@ -45,7 +45,7 @@ class PwmanCliNew(cmd.Cmd, Aliases, BaseCommands):
         initialize CLI interface, set up the DB
         connecion, see if we have xsel ...
         """
-        super(PwmanCliNew, self).__init__(**kwargs)
+        super(PwmanCli, self).__init__(**kwargs)
 
         self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
                                               pwman.website)

@@ -32,7 +32,7 @@ except ImportError:
 
 from colorama import Fore
 import pwman.util.config as config
-from pwman.ui.cli import PwmanCliNew
+from pwman.ui.cli import PwmanCli
 from pwman.data.nodes import NewNode
 from pwman.ui import tools
 from pwman.util.crypto_engine import zerome
@@ -40,11 +40,12 @@ from pwman.util.crypto_engine import zerome
 
 def winGetClipboard():
     ctypes.windll.user32.OpenClipboard(0)
-    pcontents = ctypes.windll.user32.GetClipboardData(1) # 1 is CF_TEXT
+    pcontents = ctypes.windll.user32.GetClipboardData(1)  # 1 is CF_TEXT
     data = ctypes.c_char_p(pcontents).value
     #ctypes.windll.kernel32.GlobalUnlock(pcontents)
     ctypes.windll.user32.CloseClipboard()
     return data
+
 
 def winSetClipboard(text):
     text = str(text)
@@ -53,22 +54,26 @@ def winSetClipboard(text):
     ctypes.windll.user32.EmptyClipboard()
     try:
         # works on Python 2 (bytes() only takes one argument)
-        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text))+1)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE,
+                                                 len(bytes(text))+1)
     except TypeError:
         # works on Python 3 (bytes() requires an encoding)
-        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text, 'ascii'))+1)
+        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE,
+                                                 len(bytes(text, 'ascii'))+1)
     pchData = ctypes.windll.kernel32.GlobalLock(hCd)
     try:
         # works on Python 2 (bytes() only takes one argument)
         ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text))
     except TypeError:
         # works on Python 3 (bytes() requires an encoding)
-        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text, 'ascii'))
+        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData),
+                                  bytes(text, 'ascii'))
     ctypes.windll.kernel32.GlobalUnlock(hCd)
     ctypes.windll.user32.SetClipboardData(1, hCd)
     ctypes.windll.user32.CloseClipboard()
 
-class PwmanCliWinNew(PwmanCliNew):
+
+class PwmanCliWin(PwmanCli):
     """
     windows ui class
     """
@@ -125,10 +130,13 @@ class PwmanCliWinNew(PwmanCliNew):
         print("Node {}.".format(node._id))
         print("{} {}".format(tools.typeset("Username:", Fore.RED).ljust(width),
                              node.username))
-        print ("{} {}".format(tools.typeset("Password:", Fore.RED).ljust(width),
+        print ("{} {}".format(tools.typeset("Password:",
+                                            Fore.RED).ljust(width),
                               node.password))
-        print("{} {}".format(tools.typeset("Url:", Fore.RED).ljust(width), node.url))
-        print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width), node.notes))
+        print("{} {}".format(tools.typeset("Url:", Fore.RED).ljust(width),
+                             node.url))
+        print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width),
+                             node.notes))
         print("{}".format(tools.typeset("Tags: ", Fore.RED)), end=" ")
         for t in node.tags:
             print(t)

@@ -22,14 +22,14 @@
 from __future__ import print_function
 "all mac os  related classes"
 
-from pwman.ui.cli import PwmanCliNew
+from pwman.ui.cli import PwmanCli
 from pwman.ui import tools
 import time
 
 # pylint: disable=R0904
 
 
-class PwmanCliMac(PwmanCliNew):
+class PwmanCliMac(PwmanCli):
     """
     inherit from PwmanCli, override the right functions...
     """
@@ -86,7 +86,3 @@ class PwmanCliMac(PwmanCliNew):
 
     def help_cp(self):
         self.help_copy()
-
-
-class PwmanCliMacNew(PwmanCliMac):
-    pass
