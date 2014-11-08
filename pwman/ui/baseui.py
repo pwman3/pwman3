@@ -46,7 +46,7 @@ class BaseCommands(HelpUI):
         else:
             print("Error: {0} ".format(exception))
 
-    def do_copy(self, args):  # pargma: no cover
+    def do_copy(self, args):  # pragma: no cover
         """copy item to clipboard"""
         if not self._xsel:
             return

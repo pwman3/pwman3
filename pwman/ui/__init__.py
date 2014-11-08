@@ -20,10 +20,10 @@
 
 def get_ui_platform(platform):  # pragma: no cover
     if 'darwin' in platform:
-        from .mac import PwmanCliMacNew as PwmanCli
+        from .mac import PwmanCliMac as PwmanCli
         OSX = True
     elif 'win' in platform:
-        from .win import PwmanCliWinNew as PwmanCli
+        from .win import PwmanCliWin as PwmanCli
         OSX = False
     else:
         from .cli import PwmanCli
