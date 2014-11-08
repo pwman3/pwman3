@@ -23,6 +23,7 @@ from .test_crypto_engine import give_key, DummyCallback
 from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 from pwman.data import factory
+from pwman.ui import get_ui_platform
 try:
     from StringIO import StringIO
 except ImportError:
@@ -43,8 +44,13 @@ class TestBaseUI(unittest.TestCase):
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()
 
-    def test_false(self):
-        self.assertFalse(False)
+    def test_get_ui_platform(self):
+        osx = get_ui_platform('darwin')
+        self.assertTrue(osx)
+        osx = get_ui_platform('win')
+        self.assertFalse(osx)
+        osx = get_ui_platform('foo')
+        self.assertFalse(osx)
 
     def test_get_tags(self):
         sys.stdin = StringIO("foo bar baz\n")
