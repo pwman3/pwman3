@@ -55,7 +55,7 @@ class TestBaseUI(unittest.TestCase):
     def test_1_do_new(self):
         sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
                               "\nfoo bar baz"))
-        _node = self.tester.cli.do_new('')
+        _node = self.tester.cli._do_new('')
 
         sys.stdin = sys.__stdin__
         self.assertListEqual(['foo', 'bar', 'baz'], [t.decode() for t

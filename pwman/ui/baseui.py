@@ -224,7 +224,7 @@ class BaseCommands(HelpUI):
             p = sys.stdin.readline().rstrip()
         return p
 
-    def do_new(self, args):
+    def _do_new(self, args):
         node = {}
         node['username'] = self._get_input("Username: ")
         node['password'] = self._get_secret()
@@ -233,8 +233,11 @@ class BaseCommands(HelpUI):
         node['tags'] = self._get_tags()
         node = Node(clear_text=True, **node)
         self._db.add_node(node)
+        return node
+
+    def do_new(self, args):  # pragma: no cover
         # The cmd module stops if and of do_* return something
         # else than None ...
         # This is bad for testing, so everything that is do_*
         # should call _do_* method which is testable
-        # return node
+        self._do_new(args)
