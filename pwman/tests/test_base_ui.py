@@ -45,11 +45,11 @@ class TestBaseUI(unittest.TestCase):
         self.tester.create()
 
     def test_get_ui_platform(self):
-        osx = get_ui_platform('darwin')
+        _, osx = get_ui_platform('darwin')
         self.assertTrue(osx)
-        osx = get_ui_platform('win')
+        _, osx = get_ui_platform('win')
         self.assertFalse(osx)
-        osx = get_ui_platform('foo')
+        _, osx = get_ui_platform('foo')
         self.assertFalse(osx)
 
     def test_get_tags(self):

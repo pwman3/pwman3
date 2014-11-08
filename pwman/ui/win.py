@@ -33,7 +33,7 @@ except ImportError:
 from colorama import Fore
 import pwman.util.config as config
 from pwman.ui.cli import PwmanCli
-from pwman.data.nodes import NewNode
+from pwman.data.nodes import Node
 from pwman.ui import tools
 from pwman.util.crypto_engine import zerome
 
@@ -111,7 +111,7 @@ class PwmanCliWin(PwmanCli):
                                              special_signs=special_chars)
             url = self.get_url()
             notes = self.get_notes()
-            node = NewNode()
+            node = Node()
             node.username = username
             node.password = password
             node.url = url
