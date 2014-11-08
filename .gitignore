@@ -10,3 +10,4 @@ env/*
 MANIFEST
 .coverage
 htmlcov/*
+.ropeproject*
