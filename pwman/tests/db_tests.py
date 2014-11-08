@@ -20,7 +20,7 @@
 from pwman.data import factory
 #from pwman.data.drivers.sqlite import DatabaseException
 from pwman.util.config import get_pass_conf
-from pwman.util.generator import leetlist
+#from pwman.util.generator import leetlist
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.ui import get_ui_platform
 from pwman.ui.tools import CMDLoop, CliMenuItem
@@ -195,15 +195,15 @@ class CLITests(unittest.TestCase):
         password = self.tester.cli.get_password(None, length=7)
         self.assertEqual(len(password), 7)
 
-    def test_random_leet_password(self):
-        password = self.tester.cli.get_password(None, leetify=True, length=7)
-        l_num = 0
-        for v in leetlist.values():
-            if v in password:
-                l_num += 1
+    #def test_random_leet_password(self):
+    #    password = self.tester.cli.get_password(None, leetify=True, length=7)
+    #    l_num = 0
+    #    for v in leetlist.values():
+    #        if v in password:
+    #            l_num += 1
         # sometime despite all efforts, randomness dictates that no
         # leetifying happens ...
-        self.assertTrue(l_num >= 0)
+    #    self.assertTrue(l_num >= 0)
 
     def test_leet_password(self):
         password = self.tester.cli.get_password(None, leetify=True,

@@ -18,21 +18,39 @@
 # ============================================================================
 
 from __future__ import print_function
-from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
 import base64
+import ctypes
+import string
 import os
 import sys
 import binascii
 import time
+import random
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
 from pwman.util.callback import Callback
-import ctypes
-
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
 DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip()
+
+
+def generate_password(pass_len=8, uppercase=True, lowercase=True, digits=True,
+                      special_chars=True):
+    allowed = ''
+    if lowercase:
+        allowed = allowed + string.ascii_lowercase
+    if uppercase:
+        allowed = allowed + string.ascii_uppercase
+    if digits:
+        allowed = allowed + string.digits
+    if special_chars:
+        allowed = allowed + string.punctuation
+
+    password = ''.join(random.SystemRandom().choice(allowed)
+                       for _ in range(pass_len))
+    return password
 
 
 def zerome(string):

@@ -20,18 +20,16 @@
 Define the CLI interface for pwman3 and the helper functions
 """
 from __future__ import print_function
-from pwman.util.callback import Callback
 import subprocess as sp
 import getpass
 import sys
 import struct
 import os
 import colorama
-#from pwman.data.tags import TagNew as Tag
 from pwman.util.config import get_pass_conf
-import pwman.util.generator as generator
+from pwman.util.callback import Callback
 
-if sys.version_info.major > 2:
+if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 if sys.platform != 'win32':
@@ -158,11 +156,11 @@ def getpassword(question, argsgiven=None,
             except ValueError:
                 print("please enter a proper integer")
 
-        password, dumpme = generator.generate_password(
-            length, length, True, symbols=leetify, numerics=numerics,
-            special_chars=special_signs)
-        print ("New password: %s" % (password))
-        return password
+        #password, dumpme = generator.generate_password(
+        #    length, length, True, symbols=leetify, numerics=numerics,
+        #    special_chars=special_signs)
+        #print ("New password: %s" % (password))
+        #return password
     # no args given
     while True:
         a1 = reader(question.ljust(width))
@@ -174,7 +172,7 @@ def getpassword(question, argsgiven=None,
         a2 = reader("[Repeat] %s" % (question.ljust(width)))
         if a1 == a2:
             if leetify:
-                return generator.leetify(a1)
+                pass  # return generator.leetify(a1)
             else:
                 return a1
         else:
