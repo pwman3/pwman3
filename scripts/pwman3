@@ -34,7 +34,7 @@ if sys.version_info.major > 2:
 
 
 def main(args):
-    PwmanCliNew, OSX = get_ui_platform(sys.platform)
+    PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dbver = get_db_version(config, dbtype, args)
     CryptoEngine.get(dbver)
@@ -47,7 +47,7 @@ def main(args):
         importer.run()
         sys.exit(0)
 
-    cli = PwmanCliNew(db, xselpath, CLICallback, config)
+    cli = PwmanCli(db, xselpath, CLICallback, config)
 
     try:
         cli.cmdloop()

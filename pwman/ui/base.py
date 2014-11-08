@@ -167,41 +167,6 @@ class BaseCommands(HelpUI):
     the class code really long and unclear.
     """
 
-    def do_copy(self, args):
-        if self.hasxsel:
-            ids = self.get_ids(args)
-            if len(ids) > 1:
-                print ("Can copy only 1 password at a time...")
-                return None
-            try:
-                node = self._db.getnodes(ids)
-                tools.text_to_clipboards(node[0].password)
-                print("copied password for {}@{} clipboard".format(
-                      node[0].username, node[0].url))
-
-                print("erasing in 10 sec...")
-                time.sleep(10)
-                tools.text_to_clipboards("")
-            except Exception as e:
-                self.error(e)
-        else:
-            print ("Can't copy to clipboard, no xsel found in the system!")
-
-   # def do_open(self, args):
-   #     ids = self.get_ids(args)
-   #     if not args:
-   #         self.help_open()
-   #         return
-   #     if len(ids) > 1:
-   #         print ("Can open only 1 link at a time ...")
-   #         return None
-   #     try:
-   #         node = self._db.getnodes(ids)
-   #         url = node[0].url
-   #         tools.open_url(url)
-   #     except Exception as e:
-   #         self.error(e)
-
     def do_edit(self, arg, menu=None):
         ids = self.get_ids(arg)
         for i in ids:

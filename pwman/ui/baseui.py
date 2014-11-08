@@ -17,27 +17,55 @@
 # Copyright (C) 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 from __future__ import print_function
-from pwman.util.crypto_engine import CryptoEngine
 import sys
 import os
-from pwman.ui import tools
-from colorama import Fore
-from pwman.data.nodes import Node
 import getpass
 import ast
 import csv
+import time
+from colorama import Fore
+from pwman.data.nodes import Node
+from pwman.ui import tools
+from pwman.util.crypto_engine import CryptoEngine
+from .base import HelpUI
 
 if sys.version_info.major > 2:
     raw_input = input
 
-from .base import HelpUI
-
 
 class BaseCommands(HelpUI):
 
+    @property
+    def _xsel(self):
+        if self.hasxsel:
+            return True
+
+    def error(self, exception):
+        if (isinstance(exception, KeyboardInterrupt)):
+            print('')
+        else:
+            print("Error: {0} ".format(exception))
+
     def do_copy(self, args):  # pargma: no cover
         """copy item to clipboard"""
-        pass
+        if not self._xsel:
+            return
+        if not args.isdigit():
+            print("Copy accepts only IDs ...")
+
+        ids = args.split()
+        if len(ids) > 1:
+            print("Can copy only 1 password at a time...")
+            return
+
+        nodes = self._db.getnodes(ids)
+        for node in nodes:
+            ce = CryptoEngine.get()
+            password = ce.decrypt(node[2])
+            tools.text_to_clipboards(password)
+            print("erasing in 10 sec...")
+            time.sleep(10)  # TODO: this should be configurable!
+            tools.text_to_clipboards("")
 
     def do_open(self, args):  # pragma: no cover
         ids = self.get_ids(args)
@@ -186,7 +214,7 @@ class BaseCommands(HelpUI):
     def _get_input(self, prompt):
         print(prompt, end="")
         sys.stdout.flush()
-        return sys.stdin.readline()
+        return sys.stdin.readline().strip()
 
     def _get_secret(self):
         # TODO: enable old functionallity, with password generator.
@@ -205,4 +233,8 @@ class BaseCommands(HelpUI):
         node['tags'] = self._get_tags()
         node = Node(clear_text=True, **node)
         self._db.add_node(node)
-        return node
+        # The cmd module stops if and of do_* return something
+        # else than None ...
+        # This is bad for testing, so everything that is do_*
+        # should call _do_* method which is testable
+        # return node
