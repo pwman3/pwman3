@@ -21,12 +21,12 @@
 import os
 import pkg_resources
 import argparse
-from pwman.util import config
 import sys
 import re
+import colorama
+from pwman.util import config
 from pwman.data import factory
 from pwman.data.database import __DB_FORMAT__
-import colorama
 
 appname = "pwman3"
 
