@@ -18,7 +18,7 @@
 # ============================================================================
 
 
-def get_ui_platform(platform):  # pragma: no cover
+def get_ui_platform(platform):
     if 'darwin' in platform:
         from .mac import PwmanCliMac as PwmanCli
         OSX = True
