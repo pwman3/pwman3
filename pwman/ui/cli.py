@@ -27,7 +27,6 @@ import pwman
 from pwman.util.crypto_engine import CryptoEngine
 import sys
 import cmd
-from pwman.ui.base import Aliases  # BaseCommands
 from pwman.ui.baseui import BaseCommands
 try:
     import readline
@@ -36,7 +35,7 @@ except ImportError as e:  # pragma: no cover
     _readline_available = False
 
 
-class PwmanCli(cmd.Cmd, Aliases, BaseCommands):
+class PwmanCli(cmd.Cmd, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
@@ -46,7 +45,6 @@ class PwmanCli(cmd.Cmd, Aliases, BaseCommands):
         connecion, see if we have xsel ...
         """
         super(PwmanCli, self).__init__(**kwargs)
-
         self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
                                               pwman.website)
         self._historyfile = config_parser.get_value("Readline", "history")

@@ -27,13 +27,13 @@ from colorama import Fore
 from pwman.data.nodes import Node
 from pwman.ui import tools
 from pwman.util.crypto_engine import CryptoEngine
-from .base import HelpUI
+from .base import HelpUIMixin, AliasesMixin
 
-if sys.version_info.major > 2:
+if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 
-class BaseCommands(HelpUI):
+class BaseCommands(HelpUIMixin, AliasesMixin):
 
     @property
     def _xsel(self):
@@ -52,6 +52,7 @@ class BaseCommands(HelpUI):
             return
         if not args.isdigit():
             print("Copy accepts only IDs ...")
+            return
 
         ids = args.split()
         if len(ids) > 1:
@@ -241,3 +242,16 @@ class BaseCommands(HelpUI):
         # This is bad for testing, so everything that is do_*
         # should call _do_* method which is testable
         self._do_new(args)
+
+    def do_print(self, args):
+        if not args.isdigit():
+            print("print accepts only IDs ...")
+            return
+
+        # get node
+        titles = ['Username', 'Password', 'URL', 'Notes', 'Tags']
+        entry = "Ya"
+        for title in titles:
+            print("{entry_title:>{width}} {entry:<{width}}".format(
+                  entry_title=tools.typeset(title, Fore.RED), width=10,
+                  entry=entry))

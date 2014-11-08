@@ -30,13 +30,12 @@ from pwman.ui import tools
 from pwman.ui.tools import CliMenuItem
 from colorama import Fore
 from pwman.ui.tools import CMDLoop
-import getpass
 
-if sys.version_info.major > 2:
+if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 
-class HelpUI(object):  # pragma: no cover
+class HelpUIMixin(object):  # pragma: no cover
     """
     this class holds all the UI help functionality.
     in PwmanCliNew. The later inherits from this class
@@ -157,7 +156,7 @@ class HelpUI(object):  # pragma: no cover
         print("Displays all tags in used in the database.")
 
 
-class BaseCommands(HelpUI):
+class BaseCommands(object):
     """
     Inherit from the old class, override
     all the methods related to tags, and
@@ -305,16 +304,17 @@ class BaseCommands(HelpUI):
             print("Could not understand your input...")
         return ids
 
-    def get_password(self, argsgiven, numerics=False, leetify=False,
-                     symbols=False, special_signs=False,
-                     reader=getpass.getpass, length=None):
-        return tools.getpassword("Password (Blank to generate): ",
-                                 reader=reader, length=length, leetify=leetify,
-                                 special_signs=special_signs, symbols=symbols,
-                                 numerics=numerics, config=self.config)
+   # def get_password(self, argsgiven, numerics=False, leetify=False,
+   #                  symbols=False, special_signs=False,
+   #                  reader=getpass.getpass, length=None):
+   #     return tools.getpassword("Password (Blank to generate): ",
+   #                              reader=reader, length=length,
+   #                              leetify=leetify,
+   #                              special_signs=special_signs, symbols=symbols,
+   #                              numerics=numerics, config=self.config)
 
 
-class Aliases(BaseCommands):  # pragma: no cover
+class AliasesMixin(object):  # pragma: no cover
     """
     Define all the alias you want here...
     """
