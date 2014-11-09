@@ -191,14 +191,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         nodeids = self._db.listnodes(filter=filter)
         return nodeids
 
-    def do_list(self, args):
-        """list all existing nodes in database"""
-        rows, cols = self._prep_term()
-        nodeids = self._get_node_ids(args)
-        nodes = self._db.getnodes(nodeids)
+    def _db_entries_to_nodes(self, raw_nodes):
         _nodes_inst = []
         # user, pass, url, notes
-        for node in nodes:
+        for node in raw_nodes:
             _nodes_inst.append(Node.from_encrypted_entries(
                 node[1],
                 node[2],
@@ -206,7 +202,14 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 node[4],
                 node[5:]))
             _nodes_inst[-1]._id = node[0]
+        return _nodes_inst
 
+    def do_list(self, args):
+        """list all existing nodes in database"""
+        rows, cols = self._prep_term()
+        nodeids = self._get_node_ids(args)
+        raw_nodes = self._db.getnodes(nodeids)
+        _nodes_inst = self._db_entries_to_nodes(raw_nodes)
         head = self._format_line(cols-32)
         print(tools.typeset(head, Fore.YELLOW, False))
         for idx, node in enumerate(_nodes_inst):
@@ -247,8 +250,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         if not args.isdigit():
             print("print accepts only IDs ...")
             return
+        nodes = self._db.getnodes([args])
+        node = self._db_entries_to_nodes(nodes)[0]
 
-        # get node
         titles = ['Username', 'Password', 'URL', 'Notes', 'Tags']
         entry = "Ya"
         for title in titles:
