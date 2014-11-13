@@ -18,8 +18,9 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
-
+from colorama import Fore
 from pwman.util.crypto_engine import CryptoEngine
+import pwman.ui.tools
 
 
 class Node(object):
@@ -33,6 +34,24 @@ class Node(object):
             self._notes = enc.encrypt(kwargs.get('notes')).strip()
             self._tags = [enc.encrypt(t).strip() for t in kwargs.get('tags',
                                                                      '')]
+
+    def __str__(self):
+        p = "{entry_title:>{width}} {entry:<{width}}\n".format(
+            entry_title=pwman.ui.tools.typeset('Username:', Fore.RED),
+            width=10, entry=self.username)
+        p += "{entry_title:>{width}} {entry:<{width}}\n".format(
+            entry_title=pwman.ui.tools.typeset('Password:', Fore.RED),
+            width=10, entry=self.password)
+        p += "{entry_title:>{width}} {entry:<{width}}\n".format(
+            entry_title=pwman.ui.tools.typeset('URL:', Fore.RED),
+            width=10, entry=self.url)
+        p += "{entry_title:>{width}} {entry:<{width}}\n".format(
+            entry_title=pwman.ui.tools.typeset('Notes:', Fore.RED),
+            width=10, entry=self.notes)
+        p += "{entry_title:>{width}} {entry:<{width}}\n".format(
+            entry_title=pwman.ui.tools.typeset('Tags:', Fore.RED),
+            width=10, entry=self.tags)
+        return p
 
     @classmethod
     def from_encrypted_entries(cls, username, password, url, notes, tags):

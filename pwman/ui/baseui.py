@@ -252,10 +252,4 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             return
         nodes = self._db.getnodes([args])
         node = self._db_entries_to_nodes(nodes)[0]
-
-        titles = ['Username', 'Password', 'URL', 'Notes', 'Tags']
-        entry = "Ya"
-        for title in titles:
-            print("{entry_title:>{width}} {entry:<{width}}".format(
-                  entry_title=tools.typeset(title, Fore.RED), width=10,
-                  entry=entry))
+        print(node)
