@@ -250,34 +250,34 @@ class BaseCommands(object):
         #except Exception as e:
         #    self.error(e)
 
-    def do_print(self, arg):
-        for i in self.get_ids(arg):
-            try:
-                node = self._db.getnodes([i])
-                self.print_node(node[0])
-                # when done with node erase it
-                zerome(node[0]._password)
-            except Exception as e:
-                self.error(e)
+    #def do_print(self, arg):
+    #    for i in self.get_ids(arg):
+    #        try:
+    #            node = self._db.getnodes([i])
+    #            self.print_node(node[0])
+    #            # when done with node erase it
+    #            zerome(node[0]._password)
+    #        except Exception as e:
+    #            self.error(e)
 
-    def do_delete(self, arg):
-        ids = self.get_ids(arg)
-        try:
-            nodes = self._db.getnodes(ids)
-            for n in nodes:
-                ans = ''
-                while True:
-                    ans = tools.getinput(("Are you sure you want to"
-                                         " delete '%s@%s' ([y/N])?"
-                                          ) % (n.username, n.url)
-                                         ).lower().strip('\n')
-                    if ans == '' or ans == 'y' or ans == 'n':
-                        break
-            if ans == 'y':
-                self._db.removenodes([n])
-                print ("%s@%s deleted" % (n.username, n.url))
-        except Exception as e:
-            self.error(e)
+    #def do_delete(self, arg):
+    #    ids = self.get_ids(arg)
+    #    try:
+    #        nodes = self._db.getnodes(ids)
+    #        for n in nodes:
+    #            ans = ''
+    #            while True:
+    #                ans = tools.getinput(("Are you sure you want to"
+    #                                     " delete '%s@%s' ([y/N])?"
+    #                                      ) % (n.username, n.url)
+    #                                     ).lower().strip('\n')
+    #                if ans == '' or ans == 'y' or ans == 'n':
+    #                    break
+    #        if ans == 'y':
+    #            self._db.removenodes([n])
+    #            print ("%s@%s deleted" % (n.username, n.url))
+    #    except Exception as e:
+    #        self.error(e)
 
     def get_ids(self, args):
         """

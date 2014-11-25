@@ -248,8 +248,24 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
 
     def do_print(self, args):
         if not args.isdigit():
-            print("print accepts only IDs ...")
+            print("print accepts only a single ID ...")
             return
         nodes = self._db.getnodes([args])
         node = self._db_entries_to_nodes(nodes)[0]
         print(node)
+
+    def _do_rm(self, args):
+        for i in args.split():
+            if not i.isdigit():
+                print("%s is not a node ID" % i)
+                return None
+
+        for i in args.split():
+            ans = tools.getinput(("Are you sure you want to delete node {}"
+                                  " [y/N]?".format(i)))
+            if ans.lower() == 'y':
+                self._db.removenodes([i])
+
+    def do_delete(self, args):  # pragma: no cover
+        CryptoEngine.get()
+        self._do_rm(args)
