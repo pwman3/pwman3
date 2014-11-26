@@ -92,6 +92,15 @@ class TestBaseUI(unittest.TestCase):
             l = f.readlines()
 
         self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+        self.tester.cli.do_export("f")
+        with open('pwman-export.csv') as f:
+            l = f.readlines()
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+
+    def test_4_do_forget(self):
+        self.tester.cli.do_forget('')
+        ce = CryptoEngine.get()
+        self.assertIsNone(ce._cipher)
 
 if __name__ == '__main__':
 

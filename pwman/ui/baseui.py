@@ -40,7 +40,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         if self.hasxsel:
             return True
 
-    def error(self, exception):
+    def error(self, exception):  # pragma: no cover
         if (isinstance(exception, KeyboardInterrupt)):
             print('')
         else:
@@ -129,7 +129,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         enc = CryptoEngine.get()
         enc.forget()
 
-    def do_passwd(self, args):
+    def do_passwd(self, args):  # pragma: no cover
         """change the master password of the database"""
         pass
 
@@ -161,7 +161,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         self.do_cls('')
         if sys.platform != 'win32':
             rows, cols = tools.gettermsize()
-        else:
+        else:  # pragma: no cover
             rows, cols = 18, 80  # fix this !
 
         cols -= 8
