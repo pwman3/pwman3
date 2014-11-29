@@ -38,16 +38,16 @@ class Node(object):
     def __str__(self):
         p = "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Username:', Fore.RED),
-            width=10, entry=str(self.username))
+            width=10, entry=str(self.username.decode()))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Password:', Fore.RED),
-            width=10, entry=str(self.password))
+            width=10, entry=str(self.password.decode()))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('URL:', Fore.RED),
-            width=10, entry=str(self.url))
+            width=10, entry=str(self.url.decode()))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Notes:', Fore.RED),
-            width=10, entry=str(self.notes))
+            width=10, entry=str(self.notes.decode()))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Tags:', Fore.RED),
             width=10, entry=str(self.tags))
@@ -101,7 +101,8 @@ class Node(object):
     def tags(self):
         enc = CryptoEngine.get()
         try:
-            return [enc.decrypt(tag) for tag in filter(None, self._tags)]
+            return [enc.decrypt(tag) for tag in
+                    filter(None, self._tags)]
         except Exception:
             return [tag for tag in filter(None, self._tags)]
 
