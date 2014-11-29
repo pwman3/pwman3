@@ -36,7 +36,7 @@ if sys.version_info.major > 2:  # pragma: no cover
 class BaseCommands(HelpUIMixin, AliasesMixin):
 
     @property
-    def _xsel(self):
+    def _xsel(self):  # pragma: no cover
         if self.hasxsel:
             return True
 

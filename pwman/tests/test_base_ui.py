@@ -78,12 +78,11 @@ class TestBaseUI(unittest.TestCase):
 
     def test_2_do_list(self):
         self.output = StringIO()
-        self.saved_stdout = sys.stdout
         sys.stdout = self.output
         self.tester.cli.do_list('')
         self.tester.cli.do_list('foo')
         self.tester.cli.do_list('bar')
-        sys.stdout = self.saved_stdout
+        sys.stdout = sys.__stdout__
         self.output.getvalue()
 
     def test_3_do_export(self):
@@ -101,6 +100,16 @@ class TestBaseUI(unittest.TestCase):
         self.tester.cli.do_forget('')
         ce = CryptoEngine.get()
         self.assertIsNone(ce._cipher)
+
+    def test_5_do_delete(self):
+        self.assertIsNone(self.tester.cli._do_rm('x'))
+        sys.stdin = StringIO("y\n")
+        self.tester.cli.do_rm('1')
+        sys.stdin = sys.__stdin__
+        sys.stdout = StringIO()
+        self.tester.cli.do_ls('')
+        self.assertNotIn('alice', sys.stdout.getvalue())
+        sys.stdout = sys.__stdout__
 
 if __name__ == '__main__':
 
