@@ -101,6 +101,12 @@ class TestBaseUI(unittest.TestCase):
         ce = CryptoEngine.get()
         self.assertIsNone(ce._cipher)
 
+    def test_6_do_print(self):
+        v = StringIO()
+        sys.stdout = v
+        self.tester.cli.do_print('1')
+        self.assertIn('\x1b[31mUsername:\x1b[0m alice', v.getvalue())
+
     def test_5_do_delete(self):
         self.assertIsNone(self.tester.cli._do_rm('x'))
         sys.stdin = StringIO("y\n")

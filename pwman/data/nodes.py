@@ -38,19 +38,19 @@ class Node(object):
     def __str__(self):
         p = "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Username:', Fore.RED),
-            width=10, entry=self.username)
+            width=10, entry=str(self.username))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Password:', Fore.RED),
-            width=10, entry=self.password)
+            width=10, entry=str(self.password))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('URL:', Fore.RED),
-            width=10, entry=self.url)
+            width=10, entry=str(self.url))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Notes:', Fore.RED),
-            width=10, entry=self.notes)
+            width=10, entry=str(self.notes))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Tags:', Fore.RED),
-            width=10, entry=self.tags)
+            width=10, entry=str(self.tags))
         return p
 
     @classmethod
