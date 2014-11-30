@@ -23,6 +23,8 @@ import getpass
 import ast
 import csv
 import time
+import re
+import select as uselect
 from colorama import Fore
 from pwman.data.nodes import Node
 from pwman.ui import tools
@@ -33,12 +35,54 @@ if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 
+def _heard_enter():  # pragma: no cover
+    i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
+    for s in i:
+        if s == sys.stdin:
+            sys.stdin.readline()
+            return True
+        return False
+
+
+def _wait_until_enter(predicate, timeout, period=0.25):  # pragma: no cover
+    mustend = time.time() + timeout
+    while time.time() < mustend:
+        cond = predicate()
+        if cond:
+            break
+        time.sleep(period)
+
+
 class BaseCommands(HelpUIMixin, AliasesMixin):
 
     @property
     def _xsel(self):  # pragma: no cover
         if self.hasxsel:
             return True
+
+    def _get_ids(self, args):
+        """
+        Command can get a single ID or
+        a range of IDs, with begin-end.
+        e.g. 1-3 , will get 1 to 3.
+        """
+        ids = []
+        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
+        rex = rex.match(args)
+        if hasattr(rex, 'groupdict'):
+            try:
+                begin = int(rex.groupdict()['begin'])
+                end = int(rex.groupdict()['end'])
+                if not end > begin:
+                    print("Start node should be smaller than end node")
+                    return ids
+                ids += range(begin, end+1)
+                return ids
+            except TypeError:
+                ids.append(int(begin))
+        else:
+            print("Could not understand your input...")
+        return ids
 
     def error(self, exception):  # pragma: no cover
         if (isinstance(exception, KeyboardInterrupt)):
@@ -69,7 +113,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             tools.text_to_clipboards("")
 
     def do_open(self, args):  # pragma: no cover
-        ids = self.get_ids(args)
+        ids = self._get_ids(args)
         if not args:
             self.help_open()
             return
@@ -252,7 +296,16 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             return
         nodes = self._db.getnodes([args])
         node = self._db_entries_to_nodes(nodes)[0]
+
         print(node)
+
+        flushtimeout = self.config.get_value('Global', 'cls_timeout')
+        flushtimeout = flushtimeout or 10
+
+        print("Type Enter to flush screen or wait %s sec. " % flushtimeout)
+
+        _wait_until_enter(_heard_enter, float(flushtimeout))
+        self.do_cls('')
 
     def _do_rm(self, args):
         for i in args.split():

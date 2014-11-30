@@ -22,13 +22,8 @@ Define the base CLI interface for pwman3
 """
 from __future__ import print_function
 from pwman.util.crypto_engine import zerome
-import re
 import sys
-import time
-import select as uselect
-from pwman.ui import tools
 from pwman.ui.tools import CliMenuItem
-from colorama import Fore
 from pwman.ui.tools import CMDLoop
 
 if sys.version_info.major > 2:  # pragma: no cover
@@ -199,48 +194,48 @@ class BaseCommands(object):
             except Exception as e:
                 self.error(e)
 
-    def print_node(self, node):
-        width = str(tools._defaultwidth)
-        print ("Node %d." % (node._id))
-        print (("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
-                                         node.username))
-        print (("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
-                                         node.password))
-        print (("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
-                                         node.url))
-        print (("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
-                                         node.notes))
-        print (tools.typeset("Tags: ", Fore.RED)),
-        for t in node.tags:
-            print (" %s " % t)
-        print()
+    #def print_node(self, node):
+    #    width = str(tools._defaultwidth)
+    #    print ("Node %d." % (node._id))
+    #    print (("%" + width + "s %s") % (tools.typeset("Username:", Fore.RED),
+    #                                     node.username))
+    #    print (("%" + width + "s %s") % (tools.typeset("Password:", Fore.RED),
+    #                                     node.password))
+    #    print (("%" + width + "s %s") % (tools.typeset("Url:", Fore.RED),
+    #                                     node.url))
+    #    print (("%" + width + "s %s") % (tools.typeset("Notes:", Fore.RED),
+    #                                     node.notes))
+    #    print (tools.typeset("Tags: ", Fore.RED)),
+    #    for t in node.tags:
+    #        print (" %s " % t)
+    #    print()
 
-        def heardEnter():
-            i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
-            for s in i:
-                if s == sys.stdin:
-                    sys.stdin.readline()
-                    return True
-                return False
+    #   def heardEnter():
+    #        i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
+    #        for s in i:
+    #            if s == sys.stdin:
+    #                sys.stdin.readline()
+    #                return True
+    #            return False
 
-        def waituntil_enter(somepredicate, timeout, period=0.25):
-            mustend = time.time() + timeout
-            while time.time() < mustend:
-                cond = somepredicate()
-                if cond:
-                    break
-                time.sleep(period)
-            self.do_cls('')
+    #    def waituntil_enter(somepredicate, timeout, period=0.25):
+    #        mustend = time.time() + timeout
+    #        while time.time() < mustend:
+    #            cond = somepredicate()
+    #            if cond:
+    #                break
+    #            time.sleep(period)
+    #        self.do_cls('')
 
-        try:
-            flushtimeout = int(self.config.get_value("Global", "cls_timeout"))
-        except ValueError:
-            flushtimeout = 10
-
-        if flushtimeout > 0:
-            print ("Type Enter to flush screen (autoflash in "
-                   "%d sec.)" % flushtimeout)
-            waituntil_enter(heardEnter, flushtimeout)
+    #    try:
+    #        flushtimeout = int(self.config.get_value("Global", "cls_timeout"))
+    #    except ValueError:
+    #        flushtimeout = 10
+    #
+    #    if flushtimeout > 0:
+    #        print ("Type Enter to flush screen (autoflash in "
+    #               "%d sec.)" % flushtimeout)
+    #         waituntil_enter(heardEnter, flushtimeout)
 
     def do_passwd(self, args):
         raise Exception("Not Implemented ...")
@@ -279,30 +274,30 @@ class BaseCommands(object):
     #    except Exception as e:
     #        self.error(e)
 
-    def get_ids(self, args):
-        """
-        Command can get a single ID or
-        a range of IDs, with begin-end.
-        e.g. 1-3 , will get 1 to 3.
-        """
-        # TODO: add documentation and testing
-        ids = []
-        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
-        rex = rex.match(args)
-        if hasattr(rex, 'groupdict'):
-            try:
-                begin = int(rex.groupdict()['begin'])
-                end = int(rex.groupdict()['end'])
-                if not end > begin:
-                    print("Start node should be smaller than end node")
-                    return ids
-                ids += range(begin, end+1)
-                return ids
-            except TypeError:
-                ids.append(int(begin))
-        else:
-            print("Could not understand your input...")
-        return ids
+    #def get_ids(self, args):
+    #    """
+    #    Command can get a single ID or
+    #    a range of IDs, with begin-end.
+    #    e.g. 1-3 , will get 1 to 3.
+    #    """
+    #    # TODO: add documentation and testing
+    #    ids = []
+    #    rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
+    #    rex = rex.match(args)
+    #    if hasattr(rex, 'groupdict'):
+    #        try:
+    #            begin = int(rex.groupdict()['begin'])
+    #            end = int(rex.groupdict()['end'])
+    #            if not end > begin:
+    #                print("Start node should be smaller than end node")
+    #                return ids
+    #            ids += range(begin, end+1)
+    #            return ids
+    #        except TypeError:
+    #            ids.append(int(begin))
+    #    else:
+    #        print("Could not understand your input...")
+    #    return ids
 
    # def get_password(self, argsgiven, numerics=False, leetify=False,
    #                  symbols=False, special_signs=False,

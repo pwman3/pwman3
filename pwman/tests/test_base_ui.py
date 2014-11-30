@@ -107,6 +107,16 @@ class TestBaseUI(unittest.TestCase):
         self.tester.cli.do_print('1')
         self.assertIn('\x1b[31mUsername:\x1b[0m alice', v.getvalue())
 
+    def test_get_ids(self):
+        # used by do_cp or do_open,
+        # this spits many time could not understand your input
+        self.assertEqual([1], self.tester.cli._get_ids('1'))
+        self.assertListEqual([1, 2, 3, 4, 5], self.tester.cli._get_ids('1-5'))
+        self.assertListEqual([], self.tester.cli._get_ids('5-1'))
+        self.assertListEqual([], self.tester.cli._get_ids('5x-1'))
+        self.assertListEqual([], self.tester.cli._get_ids('5x'))
+        self.assertListEqual([], self.tester.cli._get_ids('5\\'))
+
     def test_5_do_delete(self):
         self.assertIsNone(self.tester.cli._do_rm('x'))
         sys.stdin = StringIO("y\n")
