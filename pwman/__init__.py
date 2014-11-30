@@ -57,7 +57,7 @@ _db_warn = (u"pwman3 detected that you are using the old database format"
             )
 
 
-def which(cmd):
+def which(cmd):  # pragma: no cover
     _, cmdname = os.path.split(cmd)
 
     for path in os.environ["PATH"].split(os.pathsep):
@@ -80,7 +80,7 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   }
 
 
-def parser_options(formatter_class=argparse.HelpFormatter):
+def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     parser = argparse.ArgumentParser(prog=appname,
                                      description=description,
                                      formatter_class=formatter_class)
@@ -103,13 +103,13 @@ def get_conf(args):
     return configp
 
 
-def set_xsel(config, OSX):
+def set_xsel(configp, OSX):
     if not OSX:
         xselpath = which("xsel")
-        config.set_value("Global", "xsel", xselpath)
+        configp.set_value("Global", "xsel", xselpath)
     elif OSX:
         pbcopypath = which("pbcopy")
-        config.set_value("Global", "xsel", pbcopypath)
+        configp.set_value("Global", "xsel", pbcopypath)
 
 
 def set_win_colors(config):  # pragma: no cover
@@ -117,12 +117,10 @@ def set_win_colors(config):  # pragma: no cover
         colorama.init()
 
 
-def set_umask(config):
-    umask = config.get_value("Global", "umask")
+def set_umask(configp):
+    umask = configp.get_value("Global", "umask")
     if re.search(r'^\d{4}$', umask):
         os.umask(int(umask))
-    else:
-        raise config.ConfigException("Could not determine umask from config!")
 
 
 def set_db(args, configp):

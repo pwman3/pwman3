@@ -16,12 +16,63 @@
 # ============================================================================
 # Copyright (C) 2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
-
 import unittest
-import pwman
+from collections import namedtuple
+import os
+import os.path
+from pwman import set_xsel
+from pwman import (get_conf, get_conf_options)
 
-class CryptoEngineTest(unittest.TestCase):
+dummyfile = """
+[Encryption]
 
-    def setUp(self):
+[Readline]
 
-        pwma_dummy = pwman.parser_options()
+[Global]
+xsel = /usr/bin/xsel
+colors = yes
+cls_timeout = 5
+
+[Database]
+"""
+
+testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+
+with open('dummy.cfg', 'w') as d:
+    d.write(dummyfile)
+
+
+class TestInit(unittest.TestCase):
+
+    def test_set_xsel(self):
+        Args = namedtuple('args', 'cfile, dbase, algo')
+        args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
+        xsel, dbtype, configp = get_conf_options(args, 'True')
+        set_xsel(configp, False)
+        set_xsel(configp, True)
+
+    def test_get_conf_file(self):
+        Args = namedtuple('args', 'cfile')
+        args = Args(cfile='dummy.cfg')
+        get_conf(args)
+
+    def test_get_conf_options(self):
+        Args = namedtuple('args', 'cfile, dbase, algo')
+        args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
+        self.assertRaises(Exception, get_conf_options, (args, 'False'))
+        xsel, dbtype, configp = get_conf_options(args, 'True')
+        self.assertEqual(dbtype, 'SQLite')
+
+   # def test_umask(self):
+   #     Args = namedtuple('args', 'cfile, dbase, algo')
+   #     args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
+   #     xsel, dbtype, configp = get_conf_options(args, 'True')
+
+
+if __name__ == '__main__':
+
+    try:
+        unittest.main(verbosity=2, failfast=True)
+    except SystemExit:
+        if os.path.exists(testdb):
+            os.remove(testdb)
