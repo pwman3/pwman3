@@ -101,13 +101,27 @@ class TestBaseUI(unittest.TestCase):
         ce = CryptoEngine.get()
         self.assertIsNone(ce._cipher)
 
-    def test_6_do_print(self):
+    def test_5_do_print(self):
         v = StringIO()
         sys.stdout = v
         self.tester.cli.do_print('1')
         self.assertIn('\x1b[31mUsername:\x1b[0m alice', v.getvalue())
+        self.tester.cli.do_print('a')
+        self.assertIn("print accepts only a single ID ...", v.getvalue())
 
-    def test_get_ids(self):
+        sys.stdout = sys.__stdout__
+
+    def test_6_do_tags(self):
+        v = StringIO()
+        sys.stdout = v
+        self.tester.cli.do_tags('1')
+        v = v.getvalue()
+        for t in ['foo', 'bar', 'baz']:
+            t in v
+        sys.stdout = sys.__stdout__
+        print(v)
+
+    def test_7_get_ids(self):
         # used by do_cp or do_open,
         # this spits many time could not understand your input
         self.assertEqual([1], self.tester.cli._get_ids('1'))
@@ -117,7 +131,7 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual([], self.tester.cli._get_ids('5x'))
         self.assertListEqual([], self.tester.cli._get_ids('5\\'))
 
-    def test_5_do_delete(self):
+    def test_8_do_delete(self):
         self.assertIsNone(self.tester.cli._do_rm('x'))
         sys.stdin = StringIO("y\n")
         self.tester.cli.do_rm('1')
