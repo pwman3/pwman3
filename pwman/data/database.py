@@ -80,11 +80,6 @@ class Database(object):
     def currenttags(self):
         return self._filtertags
 
-    def filter(self, tags):
-        for tag in tags:
-            if not (tag in self._filtertags):
-                self._filtertags.append(tag)
-
     def addnodes(self, nodes):
         pass  # pragma: no cover
 
