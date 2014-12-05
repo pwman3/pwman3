@@ -237,8 +237,8 @@ class BaseCommands(object):
     #               "%d sec.)" % flushtimeout)
     #         waituntil_enter(heardEnter, flushtimeout)
 
-    def do_passwd(self, args):
-        raise Exception("Not Implemented ...")
+    #def do_passwd(self, args):
+    #    raise Exception("Not Implemented ...")
         #try:
         #    key = self._db.changepassword()
         #    self._db.savekey(key)

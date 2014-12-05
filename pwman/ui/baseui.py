@@ -30,6 +30,9 @@ from pwman.data.nodes import Node
 from pwman.ui import tools
 from pwman.util.crypto_engine import CryptoEngine
 from .base import HelpUIMixin, AliasesMixin
+from pwman.util.crypto_engine import zerome
+from pwman.ui.tools import CliMenuItem
+from pwman.ui.tools import CMDLoop
 
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
@@ -132,10 +135,6 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def do_cls(self, args):  # pragma: no cover
         """clear the screen"""
         os.system("clear")
-
-    def do_edit(self, args):
-        """edit a node"""
-        pass
 
     def do_export(self, args):
         """export the database to a given format"""
@@ -247,6 +246,44 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 node[5:]))
             _nodes_inst[-1]._id = node[0]
         return _nodes_inst
+
+    def do_edit(self, args, menu=None):
+        ids = self._get_ids(args)
+        for i in ids:
+            try:
+                i = int(i)
+                import ipdb; ipdb.set_trace()
+                node = self._db.getnodes([i])[0]
+                node = node[1:5] + [node[5:]]
+                node = Node.from_encrypted_entries(*node)
+
+                if not menu:
+                    menu = CMDLoop()
+                    print ("Editing node %d." % (i))
+
+                    menu.add(CliMenuItem("Username",
+                                         self._get_input,
+                                         node.username,
+                                         node.username))
+                    menu.add(CliMenuItem("Password", self._get_secret,
+                                         node.password,
+                                         node.password))
+                    menu.add(CliMenuItem("Url", self._get_input,
+                                         node.url,
+                                         node.url))
+                    menunotes = CliMenuItem("Notes", self._get_input,
+                                            node.notes,
+                                            node.notes)
+                    menu.add(menunotes)
+                    menu.add(CliMenuItem("Tags", self._get_input,
+                                         node.tags,
+                                         node.tags))
+                menu.run(node)
+                self._db.editnode(i, node)
+                # when done with node erase it
+                zerome(node._password)
+            except Exception as e:
+                self.error(e)
 
     def do_list(self, args):
         """list all existing nodes in database"""
