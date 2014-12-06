@@ -34,15 +34,6 @@ from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
 
 
-class FactoryException(Exception):
-
-    def __init__(self, message):
-        self.message
-
-    def __str__(self):
-        return self.message
-
-
 def check_db_version(ftype, filename):
     if ftype == "SQLite":
         ver = sqlite.SQLite.check_db_version(filename)
