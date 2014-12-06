@@ -32,26 +32,38 @@ class Node(object):
             self._password = enc.encrypt(kwargs.get('password')).strip()
             self._url = enc.encrypt(kwargs.get('url')).strip()
             self._notes = enc.encrypt(kwargs.get('notes')).strip()
-            self._tags = [enc.encrypt(t).strip() for t in kwargs.get('tags',
-                                                                     '')]
+            self._tags = [enc.encrypt(t).strip() for t in
+                          kwargs.get('tags', '')]
 
     def __str__(self):
         p = "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Username:', Fore.RED),
-            width=10, entry=str(self.username.decode()))
+            width=10, entry=str(self.username))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Password:', Fore.RED),
-            width=10, entry=str(self.password.decode()))
+            width=10, entry=str(self.password))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('URL:', Fore.RED),
-            width=10, entry=str(self.url.decode()))
+            width=10, entry=str(self.url))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Notes:', Fore.RED),
-            width=10, entry=str(self.notes.decode()))
+            width=10, entry=str(self.notes))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Tags:', Fore.RED),
             width=10, entry=str(self.tags))
         return p
+
+    def to_encdict(self):
+        """
+        Return a dictionary of encrypted records
+        """
+        d = {}
+        d['user'] = self._username
+        d['password'] = self._password
+        d['notes'] = self._notes
+        d['url'] = self._url
+        d['tags'] = self._tags
+        return d
 
     @classmethod
     def from_encrypted_entries(cls, username, password, url, notes, tags):
