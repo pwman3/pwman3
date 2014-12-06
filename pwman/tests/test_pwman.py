@@ -22,7 +22,7 @@ import os
 import sys
 import unittest
 from .db_tests import (SetupTester)
-from .test_crypto_engine import CryptoEngineTest
+from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
 from .test_importer import TestImporter
@@ -49,6 +49,7 @@ def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     suite.addTest(loader.loadTestsFromTestCase(CryptoEngineTest))
+    suite.addTest(loader.loadTestsFromTestCase(TestPassGenerator))
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
