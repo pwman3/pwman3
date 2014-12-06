@@ -156,8 +156,8 @@ class CryptoEngine(object):  # pagma: no cover
         if not self._is_authenticated():
             p, s = self._auth()
             cipher = get_cipher(p, s)
+            self._cipher = cipher
             del(p)
-            return EncodeAES(cipher, prepare_data(text, AES.block_size))
 
         return EncodeAES(self._cipher, prepare_data(text, AES.block_size))
 
@@ -165,8 +165,8 @@ class CryptoEngine(object):  # pagma: no cover
         if not self._is_authenticated():
             p, s = self._auth()
             cipher = get_cipher(p, s)
+            self._cipher = cipher
             del(p)
-            return DecodeAES(cipher, prepare_data(cipher_text, AES.block_size))
 
         return DecodeAES(self._cipher, prepare_data(cipher_text,
                                                     AES.block_size))
@@ -194,8 +194,7 @@ class CryptoEngine(object):  # pagma: no cover
     def changepassword(self, reader=raw_input):
         if self._callback is None:
             raise CryptoException("No callback class has been specified")
-        # if not self._is_authenticated():
-        #    p, s = self._auth()
+
         # if you change the password of the database you have to Change
         # all the cipher texts in the databse!!!
         self._keycrypted = self._create_password()

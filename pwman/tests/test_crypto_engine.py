@@ -1,8 +1,10 @@
 import unittest
-from pwman.util.callback import Callback
 import os
-from pwman.util.crypto_engine import (CryptoEngine, CryptoException)
 import time
+import string
+from pwman.util.callback import Callback
+from pwman.util.crypto_engine import (CryptoEngine, CryptoException,
+                                      generate_password)
 
 # set cls_timout to negative number (e.g. -1) to disable
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
@@ -34,6 +36,26 @@ class DummyCallback(Callback):
 
     def getnewsecret(self, question):
         return u'12345'
+
+
+class TestPassGenerator(unittest.TestCase):
+
+    def test_len(self):
+        self.assertEqual(13, len(generate_password(pass_len=13)))
+
+    def test_has_upper(self):
+        password = generate_password(uppercase=True, lowercase=False)
+        lower = set(string.ascii_lowercase)
+        it = lower.intersection(set(password))
+        print(it)
+        self.assertTrue(len(it) == 0)
+
+    def test_has_digits(self):
+        password = generate_password(uppercase=True, lowercase=False)
+        digits = set(string.digits)
+        it = digits.intersection(password)
+        print(it)
+        self.assertTrue(len(it) > 0)
 
 
 class CryptoEngineTest(unittest.TestCase):
@@ -89,4 +111,4 @@ class CryptoEngineTest(unittest.TestCase):
         self.assertEqual(decrypt.decode(), "topsecret")
 
 if __name__ == '__main__':
-    unittest.main(verbosity=1, failfast=True)
+    unittest.main(verbosity=2, failfast=True)
