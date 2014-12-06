@@ -31,7 +31,6 @@ from .test_tools import (SetupTester)
 from pwman.data import factory
 from pwman.data.nodes import Node
 from pwman.ui import get_ui_platform
-from pwman.ui.tools import CMDLoop
 
 testdb = os.path.join(os.path.dirname(__file__), "test-baseui.pwman.db")
 

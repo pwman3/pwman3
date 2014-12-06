@@ -21,10 +21,10 @@
 import sys
 import os
 
-if sys.version_info.major > 2:
+if sys.version_info.major > 2:  # pragma: no cover
     from configparser import (ConfigParser, ParsingError, NoOptionError,
                               NoSectionError)
-else:
+else:                           # pragma: no cover
     from ConfigParser import (ConfigParser, ParsingError, NoOptionError,
                               NoSectionError)
 
@@ -72,7 +72,7 @@ class Config(object):
                     parser.read_file(f)
                 except AttributeError:
                     parser.readfp(f)
-        except ParsingError as e:
+        except ParsingError as e:  # pragma: no cover
             raise ConfigException(e)
 
         self._add_defaults(defaults, parser)
@@ -91,7 +91,7 @@ class Config(object):
     def get_value(self, section, name):
         try:
             return self.parser.get(section, name)
-        except (NoOptionError, NoSectionError):
+        except (NoOptionError, NoSectionError):  # pragma: no cover
             return ''
 
     def set_value(self, section, name, value):
