@@ -118,7 +118,7 @@ class Node(object):
             return [enc.decrypt(tag).decode() for tag in
                     filter(None, self._tags)]
         except Exception:
-            return [tag.decode() for tag in filter(None, self._tags)]
+            return [tag for tag in filter(None, self._tags)]
 
     @tags.setter
     def tags(self, value):
