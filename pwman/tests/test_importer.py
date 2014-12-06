@@ -45,7 +45,7 @@ class TestImporter(unittest.TestCase):
 
     def test_read_file(self):
         lines = self.importer._read_file()
-        self.assertNotIn(["Username", "URL", "Password", "Notes"," Tags"],
+        self.assertNotIn(["Username", "URL", "Password", "Notes", " Tags"],
                          lines)
 
     def test_create_node(self):
@@ -54,7 +54,7 @@ class TestImporter(unittest.TestCase):
         node = self.importer._create_node(n)
         ce = CryptoEngine.get()
         self.assertEqual(ce.decrypt(node._username).decode(), u'alice')
-        self.assertEqual(['foo', 'bar'], [t.decode() for t in node.tags])
+        self.assertEqual(['foo', 'bar'], [t for t in node.tags])
 
     def test_insert_node(self):
         n = "alice;wonderland.com;secert;scratch;foo,bar".split(";")

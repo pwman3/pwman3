@@ -311,7 +311,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                                                 node[4],
                                                 node[5:])
                 tags = n.tags
-                tags = ','.join(t.strip().decode() for t in tags)
+                tags = ','.join(t.strip() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
                 writer.writerow(r + [tags])
 
@@ -372,9 +372,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                           ur=20, tg=tag_pad - 32))
 
     def _print_node_line(self, node, rows, cols):
-        tagstring = ','.join([t.decode() for t in node.tags])
-        fmt = self._format_line(cols - 32, node._id, node.username.decode(),
-                                node.url.decode(),
+        tagstring = ','.join([t for t in node.tags])
+        fmt = self._format_line(cols - 32, node._id, node.username,
+                                node.url,
                                 tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)

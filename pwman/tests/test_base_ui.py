@@ -64,7 +64,7 @@ class TestBaseUI(unittest.TestCase):
         _node = self.tester.cli._do_new('')
 
         sys.stdin = sys.__stdin__
-        self.assertListEqual(['foo', 'bar', 'baz'], [t.decode() for t
+        self.assertListEqual(['foo', 'bar', 'baz'], [t for t
                                                      in _node.tags])
         nodeid = self.tester.cli._db.listnodes()
         self.assertListEqual([1], nodeid)
