@@ -239,29 +239,10 @@ class CMDLoop(object):  # pragma: no cover
 
     def run(self, new_node=None, reader=raw_input):
         while True:
-            i = 0
-            for x in self.items:
-                i = i + 1
-                try:
-                    current = x.getter
-                except AttributeError:
-                    current = x
+            for i, x in enumerate(self.items):
+                current = x.getter
+                print ("%s - %s: %s" % (i + 1, x.name, current))
 
-                # when printing tags, we have list ...
-                currentstr = b''
-                if type(current) == list:
-                    for c in current:
-                        print(c, type(c))
-                        try:
-                            currentstr += b' ' + c
-                        except TypeError:
-                            currentstr += b' ' + c.name
-                # for the case we are not dealing with
-                # a list of tags
-                else:
-                    currentstr = current
-
-                print ("%s - %s: %s" % (i, x.name, currentstr))
             print("X - Finish editing")
             option = reader("Enter your choice:")[0]
             try:

@@ -77,13 +77,15 @@ class Node(object):
     def password(self):
         """Get the current password."""
         enc = CryptoEngine.get()
-        return enc.decrypt(self._password).strip()
+        p = enc.decrypt(self._password).strip()
+        return p.decode()
 
     @property
     def username(self):
         """Get the current username."""
         enc = CryptoEngine.get()
-        return enc.decrypt(self._username).strip()
+        u = enc.decrypt(self._username).strip()
+        return u.decode()
 
     @username.setter
     def username(self, value):
@@ -101,10 +103,10 @@ class Node(object):
     def tags(self):
         enc = CryptoEngine.get()
         try:
-            return [enc.decrypt(tag) for tag in
+            return [enc.decrypt(tag).decode() for tag in
                     filter(None, self._tags)]
         except Exception:
-            return [tag for tag in filter(None, self._tags)]
+            return [tag.decode() for tag in filter(None, self._tags)]
 
     @tags.setter
     def tags(self, value):
@@ -114,7 +116,8 @@ class Node(object):
     def url(self):
         """Get the current url."""
         enc = CryptoEngine.get()
-        return enc.decrypt(self._url).strip()
+        u = enc.decrypt(self._url).strip()
+        return u.decode()
 
     @url.setter
     def url(self, value):
@@ -126,7 +129,8 @@ class Node(object):
     def notes(self):
         """Get the current notes."""
         enc = CryptoEngine.get()
-        return enc.decrypt(self._notes).strip()
+        n = enc.decrypt(self._notes).strip()
+        return n.decode()
 
     @notes.setter
     def notes(self, value):

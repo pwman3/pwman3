@@ -157,8 +157,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                                                 node[5:])
                 tags = n.tags
                 tags = ','.join(t.strip().decode() for t in tags)
-                r = list(map(bytes.decode, [n.username, n.url, n.password,
-                                            n.notes]))
+                r = list([n.username, n.url, n.password, n.notes])
                 writer.writerow(r + [tags])
 
         print("Successfuly exported database to {}".format(
@@ -252,7 +251,6 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         for i in ids:
             try:
                 i = int(i)
-                import ipdb; ipdb.set_trace()
                 node = self._db.getnodes([i])[0]
                 node = node[1:5] + [node[5:]]
                 node = Node.from_encrypted_entries(*node)
@@ -275,8 +273,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                                             node.notes,
                                             node.notes)
                     menu.add(menunotes)
+                    tgetter = lambda: ', '.join(t for t in node.tags)
                     menu.add(CliMenuItem("Tags", self._get_input,
-                                         node.tags,
+                                         tgetter(),
                                          node.tags))
                 menu.run(node)
                 self._db.editnode(i, node)
