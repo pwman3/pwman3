@@ -433,11 +433,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                                          tgetter(),
                                          node.tags))
                 menu.run(node)
-                # _db.editnode does not recieve a node instance
                 self._db.editnode(i, **node.to_encdict())
                 # when done with node erase it
                 zerome(node._password)
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 self.error(e)
 
     def do_list(self, args):
