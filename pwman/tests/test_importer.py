@@ -78,11 +78,13 @@ class TestImporter(unittest.TestCase):
 
         # args need import_file , db,
         Args = namedtuple('Args', 'import_file, db')
+        if os.path.exists('importdummy.db'):
+            os.unlink('importdummy.db')
         args = Args(import_file=open('import_file.csv'), db='importdummy.db')
         dbtype, dbver, fname = 'SQLite', 0.6, 'importdummy.db'
         db = pwman.data.factory.create(dbtype, dbver, fname)
         importer = Importer((args, '', db))
-        importer.run()
+        importer.importer.run(callback=DummyCallback)
 
 if __name__ == '__main__':
 

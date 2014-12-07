@@ -55,7 +55,21 @@ class TestPassGenerator(unittest.TestCase):
         digits = set(string.digits)
         it = digits.intersection(password)
         print(it)
-        self.assertTrue(len(it) > 0)
+        try:
+            self.assertTrue(len(it) >= 0)
+        except unittest.AssetionError:
+            print(it)
+
+    def test_has_no_digits(self):
+        password = generate_password(uppercase=True, digits=False,
+                                     lowercase=False)
+        digits = set(string.digits)
+        it = digits.intersection(password)
+        print(it)
+        try:
+            self.assertTrue(len(it) == 0)
+        except unittest.AssetionError:
+            print(it)
 
 
 class CryptoEngineTest(unittest.TestCase):

@@ -49,7 +49,6 @@ class CSVImporter(BaseImporter):
     def _read_file(self):
         """read the csv file, remove empty lines and the header"""
         fh = self.args.import_file
-        import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
         csv_f = csv.reader(fh, delimiter=';')
         lines = [line for line in csv_f]
         lines = list(filter(None, lines))
@@ -80,10 +79,10 @@ class CSVImporter(BaseImporter):
         self._db._con.commit()
         self._db.open()
 
-    def run(self):
+    def run(self, callback=CLICallback):
 
         enc = CryptoEngine.get()
-        enc.callback = CLICallback()
+        enc.callback = callback()
         self._open_db()
 
         for row in self._read_file():
