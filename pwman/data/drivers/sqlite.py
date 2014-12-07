@@ -164,7 +164,7 @@ class SQLite(Database):
 
     def _get_node_tags(self, node):
         sql = "SELECT tagid FROM LOOKUP WHERE NODEID = ?"
-        tagids = self._cur.execute(sql, (str(node[0]))).fetchall()
+        tagids = self._cur.execute(sql, (str(node[0]),)).fetchall()
         sql = ("SELECT DATA FROM TAG WHERE ID IN (%s)"
                "" % ','.join('?'*len(tagids)))
         tagids = [str(id[0]) for id in tagids]
