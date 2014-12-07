@@ -18,11 +18,12 @@
 # ============================================================================
 import os
 import unittest
-from pwman.util.crypto_engine import CryptoEngine
 from collections import namedtuple
-from .test_crypto_engine import give_key, DummyCallback
-from pwman.exchange.importer import CSVImporter
+import pwman.data.factory
+from pwman.util.crypto_engine import CryptoEngine
+from pwman.exchange.importer import CSVImporter, Importer
 from pwman.data.drivers.sqlite import SQLite
+from .test_crypto_engine import give_key, DummyCallback
 
 import_example = """
 Username;URL;Password;Notes;Tags
@@ -74,8 +75,14 @@ class TestImporter(unittest.TestCase):
 
           close db
         """
-        pass
 
+        # args need import_file , db,
+        Args = namedtuple('Args', 'import_file, db')
+        args = Args(import_file='import_file.csv', db='importdummy.db')
+        dbtype, dbver, fname = 'SQLite', 0.6, 'importdummy.db'
+        db = pwman.data.factory.create(dbtype, dbver, fname)
+        importer = Importer((args, '', db))
+        importer.run()
 
 if __name__ == '__main__':
 

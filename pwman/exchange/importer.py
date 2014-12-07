@@ -84,6 +84,8 @@ class CSVImporter(BaseImporter):
             node = self._create_node(row)
             self._insert_node(node)
 
+        self._db.close()
+
 
 class Importer(object):
 
