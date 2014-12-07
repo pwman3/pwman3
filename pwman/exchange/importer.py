@@ -48,10 +48,11 @@ class CSVImporter(BaseImporter):
 
     def _read_file(self):
         """read the csv file, remove empty lines and the header"""
-        with open(self.args.import_file) as fh:
-            csv_f = csv.reader(fh, delimiter=';')
-            lines = [line for line in csv_f]
-            lines = list(filter(None, lines))
+        fh = self.args.import_file
+        import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
+        csv_f = csv.reader(fh, delimiter=';')
+        lines = [line for line in csv_f]
+        lines = list(filter(None, lines))
         return lines[1:]
 
     def _create_node(self, row):

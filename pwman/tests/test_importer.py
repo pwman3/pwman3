@@ -41,7 +41,7 @@ class TestImporter(unittest.TestCase):
         config = {}
         db = SQLite('test-importer.db')
         Args = namedtuple('args', 'import_file')
-        self.importer = CSVImporter(Args(import_file='import_file.csv'),
+        self.importer = CSVImporter(Args(import_file=open('import_file.csv')),
                                     config, db)
 
     def test_read_file(self):
@@ -78,7 +78,7 @@ class TestImporter(unittest.TestCase):
 
         # args need import_file , db,
         Args = namedtuple('Args', 'import_file, db')
-        args = Args(import_file='import_file.csv', db='importdummy.db')
+        args = Args(import_file=open('import_file.csv'), db='importdummy.db')
         dbtype, dbver, fname = 'SQLite', 0.6, 'importdummy.db'
         db = pwman.data.factory.create(dbtype, dbver, fname)
         importer = Importer((args, '', db))
