@@ -55,7 +55,8 @@ class CSVImporter(BaseImporter):
     def _create_node(self, row):
         """create a node object with encrypted properties"""
         n = {'clear_text': True,
-             'username': row[0], 'password': row[2], 'url': row[1], 'notes': row[3],
+             'username': row[0], 'password': row[2], 'url': row[1],
+             'notes': row[3],
              'tags': row[4].split(',')}
         node = Node(**n)
         return node
@@ -76,12 +77,13 @@ class CSVImporter(BaseImporter):
         self._db._con.commit()
         self._db.open()
 
-    def runner(self):
+    def run(self):
         self._open_db()
 
         for row in self._read_file():
             node = self._create_node(row)
             self._insert_node(node)
+
 
 class Importer(object):
 
@@ -90,8 +92,8 @@ class Importer(object):
     This could be changes by calling other instance which for example import
     from KeePass XML or other formats.
     """
-    def __init__(self, invoke=CSVImporter):
-        self.runner = invoke()
+    def __init__(self,  args, invoke=CSVImporter):
+        self.importer = invoke(*args)
 
     def run(self):
-        self.runner()
+        self.importer.run()

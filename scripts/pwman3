@@ -43,7 +43,7 @@ def main(args):
     db = pwman.data.factory.create(dbtype, dbver, fname)
 
     if args.import_file:
-        importer = Importer(args, config, db)
+        importer = Importer((args, config, db))
         importer.run()
         sys.exit(0)
 
