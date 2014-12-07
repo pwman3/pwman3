@@ -25,7 +25,7 @@ from pwman.util.crypto_engine import CryptoEngine
 from pwman.ui.tools import CLICallback
 
 
-class BaseImporter(object):
+class BaseImporter(object):  # pragma: no cover
 
     """
     The base class which defines the action needed to import data
@@ -102,5 +102,5 @@ class Importer(object):
     def __init__(self,  args, invoke=CSVImporter):
         self.importer = invoke(*args)
 
-    def run(self):
+    def run(self):  # pragma: no cover
         self.importer.run()
