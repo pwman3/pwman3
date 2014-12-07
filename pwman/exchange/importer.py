@@ -21,6 +21,8 @@ A module to hold the importer class
 '''
 import csv
 from pwman.data.nodes import Node
+from pwman.util.crypto_engine import CryptoEngine
+from pwman.ui.tools import CLICallback
 
 
 class BaseImporter(object):
@@ -78,6 +80,9 @@ class CSVImporter(BaseImporter):
         self._db.open()
 
     def run(self):
+
+        enc = CryptoEngine.get()
+        enc.callback = CLICallback()
         self._open_db()
 
         for row in self._read_file():
