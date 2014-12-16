@@ -197,7 +197,7 @@ class SQLite(Database):
             # create new entries
             # clean all old tags
             sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
-            self._cur.execute(sql_clean, str(nid))
+            self._cur.execute(sql_clean, (str(nid),))
             self._setnodetags(nid, tags)
 
         self._con.commit()

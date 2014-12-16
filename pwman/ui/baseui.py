@@ -487,9 +487,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             return
         nodes = self._db.getnodes([args])
         node = self._db_entries_to_nodes(nodes)[0]
-
         print(node)
-
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
         flushtimeout = flushtimeout or 10
 
