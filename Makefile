@@ -47,7 +47,7 @@ coverage: coverage-run
 docs:
 	#rm -f docs/manutils.rst
 	#rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ pwman
+	sphinx-apidoc -o docs/source/ pwman
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
