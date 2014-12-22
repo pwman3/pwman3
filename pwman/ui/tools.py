@@ -24,9 +24,8 @@ import subprocess as sp
 import getpass
 import sys
 import struct
-import os
 import colorama
-from pwman.util.config import get_pass_conf
+#from pwman.util.config import get_pass_conf
 from pwman.util.callback import Callback
 
 if sys.version_info.major > 2:  # pragma: no cover
@@ -138,6 +137,15 @@ def open_url(link, macosx=False):  # pragma: no cover
         print("Executing open_url failed with:\n", e)
 
 
+def get_password(question, config):
+    # TODO: enable old functionallity, with password generator.
+    if sys.stdin.isatty():  # pragma: no cover
+        p = getpass.getpass()
+    else:
+        p = sys.stdin.readline().rstrip()
+    return p
+
+
 def getpassword(question, argsgiven=None,
                 width=_defaultwidth, echo=False,
                 reader=getpass.getpass, numerics=False, leetify=False,
@@ -227,8 +235,9 @@ class CMDLoop(object):  # pragma: no cover
     The menu that drives editing of a node
     """
 
-    def __init__(self):
+    def __init__(self, config):
         self.items = []
+        self.config = config
 
     def add(self, item):
         if (isinstance(item, CliMenuItem)):
@@ -257,10 +266,7 @@ class CMDLoop(object):  # pragma: no cover
                     self.items[0].getter = new_node.username
                     self.items[0].setter = new_node.username
                 elif selection == 1:  # for password
-                    numerics, leet, s_chars = get_pass_conf()
-                    new_node.password = getpassword(
-                        'New Password:', numerics=numerics, leetify=leet,
-                        special_signs=s_chars)
+                    new_node.password = get_password("Password:", self.config)
                     self.items[1].getter = new_node.password
                     self.items[1].setter = new_node.password
                 elif selection == 2:

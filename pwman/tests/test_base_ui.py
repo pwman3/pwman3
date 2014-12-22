@@ -143,7 +143,7 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual([], self.tester.cli._get_ids('5x'))
         self.assertListEqual([], self.tester.cli._get_ids('5\\'))
 
-    def test_8_do_edit(self):
+    def test_8_do_edit_1(self):
         node = self.tester.cli._db.getnodes([1])[0]
         node = node[1:5] + [node[5:]]
         node = Node.from_encrypted_entries(*node)
@@ -154,6 +154,18 @@ class TestBaseUI(unittest.TestCase):
         sys.stdout = v
         self.tester.cli.do_print('1')
         self.assertIn('\x1b[31mUsername:\x1b[0m foo', v.getvalue())
+
+    def test_8_do_edit_2(self):
+        node = self.tester.cli._db.getnodes([1])[0]
+        node = node[1:5] + [node[5:]]
+        node = Node.from_encrypted_entries(*node)
+        sys.stdin = StringIO(("2\ns3kr3t\nx\n"))
+        self.tester.cli.do_edit('1')
+        v = StringIO()
+        sys.stdin = sys.__stdin__
+        sys.stdout = v
+        self.tester.cli.do_print('1')
+        self.assertIn('\x1b[31mPassword:\x1b[0m s3kr3t', v.getvalue())
 
     def test_9_do_delete(self):
         self.assertIsNone(self.tester.cli._do_rm('x'))

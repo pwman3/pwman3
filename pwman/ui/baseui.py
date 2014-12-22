@@ -158,6 +158,9 @@ class AliasesMixin(object):  # pragma: no cover
     def do_o(self, args):
         self.do_open(args)
 
+    def do_e(self, args):
+        self.do_edit(args)
+
     def do_h(self, arg):
         self.do_help(arg)
 
@@ -361,40 +364,36 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def do_edit(self, args, menu=None):
         ids = self._get_ids(args)
         for i in ids:
-            try:
-                i = int(i)
-                node = self._db.getnodes([i])[0]
-                node = node[1:5] + [node[5:]]
-                node = Node.from_encrypted_entries(*node)
+            i = int(i)
+            node = self._db.getnodes([i])[0]
+            node = node[1:5] + [node[5:]]
+            node = Node.from_encrypted_entries(*node)
+            if not menu:
+                menu = CMDLoop(self.config)
+                print ("Editing node %d." % (i))
 
-                if not menu:
-                    menu = CMDLoop()
-                    print ("Editing node %d." % (i))
-
-                    menu.add(CliMenuItem("Username",
-                                         self._get_input,
-                                         node.username,
-                                         node.username))
-                    menu.add(CliMenuItem("Password", self._get_secret,
-                                         node.password,
-                                         node.password))
-                    menu.add(CliMenuItem("Url", self._get_input,
-                                         node.url,
-                                         node.url))
-                    menunotes = CliMenuItem("Notes", self._get_input,
-                                            node.notes,
-                                            node.notes)
-                    menu.add(menunotes)
-                    tgetter = lambda: ', '.join(t for t in node.tags)
-                    menu.add(CliMenuItem("Tags", self._get_input,
-                                         tgetter(),
-                                         node.tags))
-                menu.run(node)
-                self._db.editnode(i, **node.to_encdict())
-                # when done with node erase it
-                zerome(node._password)
-            except Exception as e:  # pragma: no cover
-                self.error(e)
+                menu.add(CliMenuItem("Username",
+                                     self._get_input,
+                                     node.username,
+                                     node.username))
+                menu.add(CliMenuItem("Password", self._get_secret,
+                                     node.password,
+                                     node.password))
+                menu.add(CliMenuItem("Url", self._get_input,
+                                     node.url,
+                                     node.url))
+                menunotes = CliMenuItem("Notes", self._get_input,
+                                        node.notes,
+                                        node.notes)
+                menu.add(menunotes)
+                tgetter = lambda: ', '.join(t for t in node.tags)
+                menu.add(CliMenuItem("Tags", self._get_input,
+                                     tgetter(),
+                                     node.tags))
+            menu.run(node)
+            self._db.editnode(i, **node.to_encdict())
+            # when done with node erase it
+            zerome(node._password)
 
     def do_list(self, args):
         """
