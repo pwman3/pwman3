@@ -61,67 +61,39 @@ class HelpUIMixin(object):  # pragma: no cover
     in PwmanCliNew. The later inherits from this class
     and allows it to print help messages to the console.
     """
-    def usage(self, string):
+    def _usage(self, string):
         print ("Usage: %s" % (string))
 
     def help_open(self):
-        self.usage("open <ID>")
+        self._usage("open|o <ID>")
         print ("Launch default browser with 'xdg-open url',\n",
                "the url must contain http:// or https://.")
 
-    def help_o(self):
-        self.help_open()
-
     def help_copy(self):
-        self.usage("copy <ID>")
+        self._usage("copy|cp <ID>")
         print ("Copy password to X clipboard (xsel required)")
 
-    def help_cp(self):
-        self.help_copy()
-
     def help_cls(self):
-        self.usage("cls")
+        self._usage("cls")
         print ("Clear the Screen from information.")
 
     def help_list(self):
-        self.usage("list <tag> ...")
+        self._usage("list|ls <tag> ...")
         print ("List nodes that match current or specified filter.",
                " ls is an alias.")
 
-    def help_EOF(self):
-        self.help_exit()
-
     def help_delete(self):
-        self.usage("delete <ID|tag> ...")
-        print ("Deletes nodes. rm is an alias.")
+        self._usage("delete|rm <ID|tag> ...")
+        print ("Deletes nodes.")
         self._mult_id_help()
 
-    def help_h(self):
-        self.help_help()
-
     def help_help(self):
-        self.usage("help [topic]")
+        self._usage("help|h [topic]")
         print ("Prints a help message for a command.")
-
-    def help_e(self):
-        self.help_edit()
-
-    def help_n(self):
-        self.help_new()
-
-    def help_p(self):
-        self.help_print()
-
-    def help_l(self):
-        self.help_list()
 
     def help_edit(self):
         self.usage("edit <ID|tag> ... ")
         print ("Edits a nodes.")
-
-    def help_import(self):
-        self.usage("import [filename] ...")
-        print ("Not implemented...")
 
     def help_export(self):
         self.usage("export [{'filename': 'foo.csv', 'delimiter':'|'}] ")
@@ -132,9 +104,6 @@ class HelpUIMixin(object):  # pragma: no cover
         print ("Creates a new node.,",
                "You can override default config settings the following way:\n",
                "pwman> n {'leetify':False, 'numerics':True}")
-
-    def help_rm(self):
-        self.help_delete()
 
     def help_print(self):
         self.usage("print <ID|tag> ...")
@@ -150,29 +119,20 @@ class HelpUIMixin(object):  # pragma: no cover
               " nodes with tag 'bar'.")
 
     def help_exit(self):
-        self.usage("exit")
+        self._usage("exit|EOF")
         print("Exits the application.")
 
     def help_passwd(self):
-        self.usage("passwd")
+        self._usage("passwd")
         print("Changes the password on the database. ")
 
     def help_forget(self):
-        self.usage("forget")
+        self._usage("forget")
         print("Forgets the database password. Your password will need to ",
               "be reentered before accessing the database again.")
 
-    def help_clear(self):
-        self.usage("clear")
-        print("Clears the filter criteria. ")
-
-    def help_filter(self):
-        self.usage("filter <tag> ...")
-        print("Filters nodes on tag. Arguments can be zero or more tags. ",
-              "Displays current tags if called without arguments.")
-
     def help_tags(self):
-        self.usage("tags")
+        self._usage("tags")
         print("Displays all tags in used in the database.")
 
 
@@ -183,14 +143,8 @@ class AliasesMixin(object):  # pragma: no cover
     def do_cp(self, args):
         self.do_copy(args)
 
-    def do_e(self, arg):
-        self.do_edit(arg)
-
     def do_EOF(self, args):
-        return self.do_exit(args)
-
-    def do_l(self, args):
-        self.do_list(args)
+        self.do_exit(args)
 
     def do_ls(self, args):
         self.do_list(args)
@@ -217,6 +171,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def _xsel(self):  # pragma: no cover
         if self.hasxsel:
             return True
+
+    def do_EOF(self, args):
+        return self.do_exit(args)
 
     def _get_ids(self, args):
         """
@@ -440,7 +397,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 self.error(e)
 
     def do_list(self, args):
-        """list all existing nodes in database"""
+        """
+        list all existing nodes in database
+        """
         rows, cols = self._prep_term()
         nodeids = self._get_node_ids(args)
         raw_nodes = self._db.getnodes(nodeids)

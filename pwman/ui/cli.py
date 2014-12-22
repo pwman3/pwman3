@@ -39,6 +39,9 @@ class PwmanCli(cmd.Cmd, BaseCommands):
     """
     Inherit from the BaseCommands and Aliases
     """
+
+    undoc_header = "Aliases:"
+
     def __init__(self, db, hasxsel, callback, config_parser, **kwargs):
         """
         initialize CLI interface, set up the DB
