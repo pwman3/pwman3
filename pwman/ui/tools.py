@@ -34,7 +34,6 @@ if sys.version_info.major > 2:  # pragma: no cover
 if sys.platform != 'win32':
     import termios
     import fcntl
-    import tty
     import readline
     _readline_available = True
 else:  # pragma: no cover
@@ -78,18 +77,6 @@ def typeset(text, color, bold=False, underline=False,
     if underline and not 'win32' in sys.platform:
         text = ANSI.Underscore + text
     return color + text + colorama.Style.RESET_ALL
-
-
-def select(question, possible):  # pragma: no cover
-    """
-    select input from user
-    """
-    for i in range(0, len(possible)):
-        print ("%d - %-" + str(_defaultwidth) + "s") % (i + 1, possible[i])
-    while 1:
-        uinput = getonechar(question)
-        if uinput.isdigit() and int(uinput) in range(1, len(possible) + 1):
-            return possible[int(uinput) - 1]
 
 
 def text_to_clipboards(text):  # pragma: no cover
@@ -290,32 +277,6 @@ class CMDLoop(object):  # pragma: no cover
                 if (option.upper() == 'X'):
                     break
                 print("Invalid selection")
-
-
-def getonechar(question, width=_defaultwidth):  # pragma: no cover
-    question = "%s " % (question)
-    print (question.ljust(width),)
-    try:
-        sys.stdout.flush()
-        fd = sys.stdin.fileno()
-        # tty module exists only if we are on Posix
-        try:
-            tty_mode = tty.tcgetattr(fd)
-            tty.setcbreak(fd)
-        except NameError:
-            pass
-        try:
-            ch = os.read(fd, 1)
-        finally:
-            try:
-                tty.tcsetattr(fd, tty.TCSAFLUSH, tty_mode)
-            except NameError:
-                pass
-    except AttributeError:
-        ch = sys.stdin.readline()[0]
-
-    print(ch)
-    return ch
 
 
 class CliMenuItem(object):  # pragma: no cover
