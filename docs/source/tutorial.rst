@@ -9,9 +9,22 @@ available. You can see them by typing::
    
     $ pwman3 -h 
 
-For more information see ``man pwman3``. 
+For more information see also ``man pwman3``. 
 
-Once launched, pwman3 has a very simple user interface. This interface is
+When started for the first time, ``pwman3`` will create a configuration file 
+and your database (By default an SQLite database called ``pwman.db``) in your 
+home directory under ``.pwman``.
+Before creating the database you will be asked to enter the master password which 
+will be used to create an encryption key which will be used to encrypt the entries 
+in your database::
+
+    $ pwman3 
+    Please type in the master password:
+
+Take note of this password! If you forget it, you won't be able to read your password
+database. 
+
+Now ``pwman3`` will wait for your input.  The user interface is 
 a simple loop waiting for user commands. You can see all the commands by typing::
 
     pwman> help
