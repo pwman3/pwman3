@@ -18,7 +18,7 @@ def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
     ver = des.stdout.readlines()
     if ver:
-        return ver[0].strip().decode('utf-8')
+        return ver[0].strip()
     else:
         return pwman.version
 
@@ -46,10 +46,9 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 if 'win' in sys.platform:
-    test_requirements =  None
+    test_requirements = None
 else:
     test_requirements = ['pexpect']
-
 
 
 setup(name=pwman.appname,
@@ -72,6 +71,7 @@ setup(name=pwman.appname,
       zip_safe=False,
       install_requires=['pycrypto>=2.6',
                         'colorama>=0.2.4'],
+      keywords="password-manager crypto cli",
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: End Users/Desktop',
@@ -88,5 +88,4 @@ setup(name=pwman.appname,
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
       }
-
       )
