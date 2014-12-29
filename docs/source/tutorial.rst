@@ -85,4 +85,52 @@ command ``tags``::
     private,
     shopping
 
+To see the content of a saved entry, you need to use the ``print`` command::
+
+    pwman> print 2
+    Username: oz123      
+    Password: Org4n7#  
+    URL: intranet.workplace.biz    
+    Notes:           
+    Tags: ['work']
+    Type Enter to flush screen or wait 5 sec. 
+
+Notice, that the ``print`` command expects an entry number as an argument. 
+After printing the content of the entry, pwman3 will wait for ``Enter`` to be 
+pressed or 5 seconds until it flushes the screen. This way, unautorized eyes 
+can not browse your screen and see your password. You can always scroll up to 
+see the printed entry or print it again. 
+
+If you don't want to type passwords and urls constantly ``Pwman3`` comes with 
+two shortcut commands. The first shortcut is ``open``, when calling it with 
+an entry number it will open the URL in your default browser::
+    
+    pwman> open 2
+
+This will open the URL *intranet.workplace.biz*. After opening the browser you can use the ``copy`` command to copy your password
+to your clipboard. The password will be *erased* from the clipboard after 10 
+seconds::
+
+    pwman> copy 2
+    erasing in 10 sec...
+
+After working with passwords for quite a while you can ``delete`` (or ``rm``)
+entries or edit them::
+
+    pwman> rm 2
+    Are you sure you want to delete node 2 [y/N]?N
+
+    pwman> e 2
+    Editing node 2.
+    1 - Username: oz123
+    2 - Password: Org4n7#
+    3 - Url: intranet.workplace.biz
+    4 - Notes: 
+    5 - Tags: workplace
+    X - Finish editing
+    Enter your choice:
+
+You now know all the basics of using ``pwman3``. If you need more help, try 
+the command ``help`` to see more commands which are not documented here. 
+Alternatively, you can open a ticket in https://github.com/pwman3/pwman3/issues.
 
