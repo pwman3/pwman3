@@ -321,20 +321,20 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         else:  # pragma: no cover
             rows, cols = 18, 80  # fix this !
 
-        cols -= 8
         return rows, cols
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
                      tags="TAGS"):
         return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
                 "".format(ID=nid, USER=user,
-                          URL=url, Tags=tags, us=12,
-                          ur=20, tg=tag_pad - 32))
+                          URL=url, Tags=tags, us=25,
+                          ur=25, tg=32))
 
     def _print_node_line(self, node, rows, cols):
         tagstring = ','.join([t for t in node.tags])
-        fmt = self._format_line(cols - 32, node._id, node.username,
-                                node.url,
+        fmt = self._format_line(cols, node._id, node.username,
+                                node.url[:20]+'...' if (len(node.url) > 22)
+                                else node.url,
                                 tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
