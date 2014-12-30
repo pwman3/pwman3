@@ -328,7 +328,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
                 "".format(ID=nid, USER=user,
                           URL=url, Tags=tags, us=25,
-                          ur=25, tg=32))
+                          ur=25, tg=20))
 
     def _print_node_line(self, node, rows, cols):
         tagstring = ','.join([t for t in node.tags])
