@@ -221,9 +221,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             print("Can copy only 1 password at a time...")
             return
 
+        ce = CryptoEngine.get()
         nodes = self._db.getnodes(ids)
+
         for node in nodes:
-            ce = CryptoEngine.get()
             password = ce.decrypt(node[2])
             tools.text_to_clipboards(password)
             print("erasing in 10 sec...")

@@ -170,16 +170,16 @@ class PwmanCliWin(PwmanCli):
         if len(ids) > 1:
             print ("Can copy only 1 password at a time...")
             return None
-        try:
-            node = self._db.getnodes(ids)
-            ce = CryptoEngine.get()
+
+        ce = CryptoEngine.get()
+        nodes = self._db.getnodes(ids)
+
+        for node in nodes:
             password = ce.decrypt(node[2])
             winSetClipboard(password)
             print("erasing in 10 sec...")
             time.sleep(10)
             winSetClipboard("")
-        except Exception as e:
-            self.error(e)
 
     def do_open(self, args):
         ids = self._get_ids(args)
