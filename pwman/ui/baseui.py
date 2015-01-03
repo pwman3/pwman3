@@ -238,9 +238,12 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             return
 
         nodes = self._db.getnodes(ids)
+        ce = CryptoEngine.get()
+
         for node in nodes:
-            ce = CryptoEngine.get()
             url = ce.decrypt(node[3])
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
             tools.open_url(url)
 
     def do_exit(self, args):  # pragma: no cover

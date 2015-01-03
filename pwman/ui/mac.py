@@ -61,12 +61,15 @@ class PwmanCliMac(PwmanCli):
         if len(ids) > 1:
             print("Can open only 1 link at a time ...")
             return None
-        try:
-            node = self._db.getnodes(ids)
-            url = node[0].get_url()
+
+        ce = CryptoEngine.get()
+        nodes = self._db.getnodes(ids)
+
+        for node in nodes:
+            url = ce.decrypt(node[3])
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
             tools.open_url(url, macosx=True)
-        except Exception as e:
-            self.error(e)
 
     def do_o(self, args):
         self.do_open(args)
