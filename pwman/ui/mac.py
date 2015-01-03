@@ -20,11 +20,12 @@
 # ============================================================================
 # pylint: disable=I0011
 from __future__ import print_function
-"all mac os  related classes"
 
+import time
+# all mac os  related classes
 from pwman.ui.cli import PwmanCli
 from pwman.ui import tools
-import time
+from pwman.util.crypto_engine import CryptoEngine
 
 # pylint: disable=R0904
 
@@ -37,13 +38,14 @@ class PwmanCliMac(PwmanCli):
         ids = self._get_ids(args)
         if len(ids) > 1:
             print("Can only 1 password at a time...")
+            return None
         try:
             node = self._db.getnodes(ids)
-            node[0].get_password()
-            tools.text_to_mcclipboard(node[0].get_password())
-            print("copied password for {}@{} clipboard".format(
-                  node[0].get_username(), node[0].get_url()))
-            time.sleep(10)
+            ce = CryptoEngine.get()
+            password = ce.decrypt(node[2])
+            tools.text_to_clipboards(password)
+            print("erasing in 10 sec...")
+            time.sleep(10)  # TODO: this should be configurable!
             tools.text_to_clipboards("")
         except Exception as e:
             self.error(e)

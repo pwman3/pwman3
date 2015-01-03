@@ -36,6 +36,7 @@ from pwman.ui.cli import PwmanCli
 from pwman.data.nodes import Node
 from pwman.ui import tools
 from pwman.util.crypto_engine import zerome
+from pwman.util.crypto_engine import CryptoEngine
 
 
 def winGetClipboard():
@@ -171,9 +172,9 @@ class PwmanCliWin(PwmanCli):
             return None
         try:
             node = self._db.getnodes(ids)
-            winSetClipboard(node[0].password)
-            print("copied password for {}@{} clipboard".format(
-                  node[0].username, node[0].url))
+            ce = CryptoEngine.get()
+            password = ce.decrypt(node[2])
+            winSetClipboard(password)
             print("erasing in 10 sec...")
             time.sleep(10)
             winSetClipboard("")
