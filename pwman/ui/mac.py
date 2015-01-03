@@ -34,7 +34,7 @@ class PwmanCliMac(PwmanCli):
     inherit from PwmanCli, override the right functions...
     """
     def do_copy(self, args):
-        ids = self.get_ids(args)
+        ids = self._get_ids(args)
         if len(ids) > 1:
             print("Can only 1 password at a time...")
         try:
@@ -52,7 +52,7 @@ class PwmanCliMac(PwmanCli):
         self.do_copy(args)
 
     def do_open(self, args):
-        ids = self.get_ids(args)
+        ids = self._get_ids(args)
         if not args:
             self.help_open()
             return

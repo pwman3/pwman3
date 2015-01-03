@@ -1,4 +1,4 @@
-""""
+"""
 # ============================================================================
 # This file is part of Pwman3.
 #
@@ -165,7 +165,7 @@ class PwmanCliWin(PwmanCli):
             waituntil_enter(heardEnterWin, flushtimeout)
 
     def do_copy(self, args):
-        ids = self.get_ids(args)
+        ids = self._get_ids(args)
         if len(ids) > 1:
             print ("Can copy only 1 password at a time...")
             return None
@@ -181,7 +181,7 @@ class PwmanCliWin(PwmanCli):
             self.error(e)
 
     def do_open(self, args):
-        ids = self.get_ids(args)
+        ids = self._get_ids(args)
         if not args:
             self.help_open()
             return
