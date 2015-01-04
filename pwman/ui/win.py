@@ -177,8 +177,10 @@ class PwmanCliWin(PwmanCli):
         for node in nodes:
             password = ce.decrypt(node[2])
             winSetClipboard(password)
-            print("erasing in 10 sec...")
-            time.sleep(10)
+            flushtimeout = self.config.get_value('Global', 'cp_timeout')
+            flushtimeout = flushtimeout or 10
+            print("erasing in {} sec...".format(flushtimeout))
+            time.sleep(int(flushtimeout))
             winSetClipboard("")
 
     def do_open(self, args):

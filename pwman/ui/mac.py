@@ -45,10 +45,12 @@ class PwmanCliMac(PwmanCli):
 
         for node in nodes:
             password = ce.decrypt(node[2])
-            tools.text_to_clipboards(password)
-            print("erasing in 10 sec...")
-            time.sleep(10)  # TODO: this should be configurable!
-            tools.text_to_clipboards("")
+            tools.text_to_mcclipboard(password)
+            flushtimeout = self.config.get_value('Global', 'cp_timeout')
+            flushtimeout = flushtimeout or 10
+            print("erasing in {} sec...".format(flushtimeout))
+            time.sleep(int(flushtimeout))
+            tools.text_to_mcclipboard("")
 
     def do_cp(self, args):
         self.do_copy(args)
