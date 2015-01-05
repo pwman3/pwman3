@@ -48,8 +48,8 @@ class dummy_stdin(object):
 
 class TestBaseUI(unittest.TestCase):
 
-    @staticmethod
-    def clean_all():
+    @classmethod
+    def tearDownClass(cls):
         for item in (testdb, 'foo.csv', 'pwman-export.csv'):
             try:
                 os.unlink(item)
@@ -190,8 +190,4 @@ if __name__ == '__main__':
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-
-    try:
-        unittest.main(verbosity=2, failfast=True)
-    except SystemExit:
-        TestBaseUI.clean_all()
+    unittest.main(verbosity=2, failfast=True)

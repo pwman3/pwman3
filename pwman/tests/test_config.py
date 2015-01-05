@@ -55,6 +55,15 @@ class TestConfig(unittest.TestCase):
             except OSError:
                 continue
 
+    @classmethod
+    def tearDownClass(cls):
+        for item in ('testfile.conf', 'wrong_conf.conf', 'dummy.cfg',
+                     'import_file.csv'):
+            try:
+                os.unlink(item)
+            except OSError:
+                continue
+
     def setUp(self):
         self.conf = Config(filename='testfile.conf', defaults=default_config)
 
@@ -90,7 +99,4 @@ algorithm = Blowfish
                           self.conf.set_value, *('Error', 'colors', 'no'))
 
 if __name__ == '__main__':
-    try:
-        unittest.main(verbosity=2)
-    except SystemExit:
-        TestConfig.clean_all()
+    unittest.main(verbosity=2)

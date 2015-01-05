@@ -37,9 +37,11 @@ with open('import_file.csv', 'w') as f:
 
 class TestImporter(unittest.TestCase):
 
-    @staticmethod
-    def clean_all():
-        for item in ('import_file.csv', 'test-importer.db', 'importdummy.db'):
+    @classmethod
+    def tearDownClass(cls):
+        for item in ('dummy.cfg', 'import_file.csv',
+                     'test-importer.db', 'importdummy.db',
+                     'testfile.conf'):
             try:
                 os.unlink(item)
             except OSError:
@@ -99,7 +101,4 @@ if __name__ == '__main__':
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-    try:
-        unittest.main(verbosity=2, failfast=True)
-    except SystemExit:
-        TestImporter.clean_all()
+    unittest.main(verbosity=2, failfast=True)
