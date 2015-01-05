@@ -1,3 +1,4 @@
+import unittest
 from . import test_pwman
 
 
