@@ -42,7 +42,7 @@ class TestImporter(unittest.TestCase):
         for item in ('import_file.csv', 'test-importer.db', 'importdummy.db'):
             try:
                 os.unlink(item)
-            except IOError:
+            except OSError:
                 continue
 
     def setUp(self):

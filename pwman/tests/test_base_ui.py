@@ -53,7 +53,7 @@ class TestBaseUI(unittest.TestCase):
         for item in (testdb, 'foo.csv', 'pwman-export.csv'):
             try:
                 os.unlink(item)
-            except IOError:
+            except OSError:
                 continue
 
     def setUp(self):

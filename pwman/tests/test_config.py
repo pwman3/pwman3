@@ -52,7 +52,7 @@ class TestConfig(unittest.TestCase):
                      'import_file.csv'):
             try:
                 os.unlink(item)
-            except IOError:
+            except OSError:
                 continue
 
     def setUp(self):
