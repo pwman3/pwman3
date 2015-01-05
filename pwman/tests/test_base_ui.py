@@ -46,7 +46,19 @@ class dummy_stdin(object):
         return self.ans[self.idx]
 
 
+def clean_all_test_baseui():
+    os.unlink(testdb)
+    os.unlink('foo.csv')
+    os.unlink('pwman-export.csv')
+
+
 class TestBaseUI(unittest.TestCase):
+
+    @staticmethod
+    def clean_all():
+        os.unlink(testdb)
+        os.unlink('foo.csv')
+        os.unlink('pwman-export.csv')
 
     def setUp(self):
         "test that the right db instance was created"
@@ -186,5 +198,4 @@ if __name__ == '__main__':
     try:
         unittest.main(verbosity=2, failfast=True)
     except SystemExit:
-        #os.remove(testdb)
-        pass
+        TestBaseUI.clean_all()
