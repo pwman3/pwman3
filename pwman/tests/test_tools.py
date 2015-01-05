@@ -53,8 +53,7 @@ default_config['Database'] = {'type': 'SQLite',
                                            "test.pwman.db")
                               }
 
-with open(os.path.join(os.path.dirname(__file__), 'test.conf'), 'w') as f:
-    f.write("""
+dc = """
 [Global]
 xsel = /usr/bin/xsel
 colors = yes
@@ -63,12 +62,16 @@ cls_timeout = 5
 
 [Database]
 type = SQLite
-""")
+"""
 
 
 class SetupTester(object):
 
     def __init__(self, dbver=None, filename=None):
+
+        f = open(os.path.join(os.path.dirname(__file__), 'test.conf'), 'w')
+        f.write(dc)
+        f.close()
         self.configp = config.Config(os.path.join(os.path.dirname(__file__),
                                                   "test.conf"),
                                      default_config)
