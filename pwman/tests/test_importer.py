@@ -37,6 +37,14 @@ with open('import_file.csv', 'w') as f:
 
 class TestImporter(unittest.TestCase):
 
+    @staticmethod
+    def clean_all():
+        for item in ('import_file.csv', 'test-importer.db', 'importdummy.db'):
+            try:
+                os.unlink(item)
+            except IOError:
+                continue
+
     def setUp(self):
         config = {}
         db = SQLite('test-importer.db')
@@ -94,4 +102,4 @@ if __name__ == '__main__':
     try:
         unittest.main(verbosity=2, failfast=True)
     except SystemExit:
-        os.remove('import_file.csv')
+        TestImporter.clean_all()
