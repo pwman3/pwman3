@@ -11,12 +11,24 @@ help:
 	@echo "release - package and upload a release"
 	@echo "dist - package"
 
+clean_all:
+	clean 
+	clean_docs
+	clean_coverage_report
+
 clean: clean-build clean-pyc
-	rm -fr htmlcov/
+	#rm -fr htmlcov/
 	rm -f test.db
 	python -c "from pwman.tests.test_base_ui import TestBaseUI; TestBaseUI.clean_all()"
 	python -c "from pwman.tests.test_importer import TestImporter; TestImporter.clean_all()"
 	python -c "from pwman.tests.test_config import TestConfig; TestConfig.clean_all()"
+	rm -f pwman/tests/test.conf 
+
+clean_docs:
+	$(MAKE) -C docs clean
+
+clean_coverage_report:
+	rm -rf htmlcov/
 
 clean-build:
 	rm -fr build/
@@ -64,5 +76,5 @@ dist: clean
 	ls -l dist
 
 install:
-	pip uninstall -y pwman3
+	-pip uninstall -y pwman3
 	python setup.py -q install 
