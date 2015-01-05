@@ -62,5 +62,9 @@ def suite():
     return suite
 
 if __name__ == '__main__':
-    #unittest.main(verbosity=1, failfast=True)
-    unittest.TextTestRunner(verbosity=2, failfast=True).run(suite())
+    try:
+        unittest.TextTestRunner(verbosity=2, failfast=True).run(suite())
+    except SystemExit:
+        TestConfig.clean_all()
+        TestBaseUI.clean_all()
+        TestImporter.clean_all()

@@ -14,7 +14,9 @@ help:
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
 	rm -f test.db
-	rm -f pwman/tests/test-baseui.pwman.db
+	python -c "from pwman.tests.test_base_ui import TestBaseUI; TestBaseUI.clean_all()"
+	python -c "from pwman.tests.test_importer import TestImporter; TestImporter.clean_all()"
+	python -c "from pwman.tests.test_config import TestConfig; TestConfig.clean_all()"
 
 clean-build:
 	rm -fr build/
@@ -29,7 +31,7 @@ clean-pyc:
 lint:
 	flake8 pwman scripts
 
-test: install clean 
+test: install 
 	git checkout pwman/tests/pwman.v0.0.8.db
 	python setup.py test
 
