@@ -15,7 +15,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2012-2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
@@ -23,20 +23,32 @@
 from __future__ import print_function
 import time
 import ctypes
-import ast
 import os
 try:
     import msvcrt
 except ImportError:
     pass
 
-from colorama import Fore
-import pwman.util.config as config
 from pwman.ui.cli import PwmanCli
-from pwman.data.nodes import Node
-from pwman.ui import tools
-from pwman.util.crypto_engine import zerome
 from pwman.util.crypto_engine import CryptoEngine
+
+
+def heardEnterWin():
+    c = msvcrt.kbhit()
+    if c == 1:
+        ret = msvcrt.getch()
+        if ret is not None:
+            return True
+    return False
+
+
+def _wait_until_enter(predicate, timeout, period=0.25):  # pragma: no cover
+    mustend = time.time() + timeout
+    while time.time() < mustend:
+        cond = predicate()
+        if cond:
+            break
+        time.sleep(period)
 
 
 def winGetClipboard():
@@ -78,92 +90,20 @@ class PwmanCliWin(PwmanCli):
     """
     windows ui class
     """
-    def do_new(self, args):
-        """
-        can override default config settings the following way:
-        Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
-        pwman> n {'leetify':False, 'numerics':True, 'special_chars':True}
-        Password (Blank to generate):
-        """
-        errmsg = """could not parse config override, please input some"""\
-                 + """ kind of dictionary, e.g.: n {'leetify':False, """\
-                 + """'numerics':True, 'special_chars':True}"""
-        try:
-            username = self.get_username()
-            if args:
-                try:
-                    args = ast.literal_eval(args)
-                except Exception:
-                    raise Exception(errmsg)
-                if not isinstance(args, dict):
-                    raise Exception(errmsg)
-                password = self.get_password(1, **args)
-            else:
-                numerics = config.get_value(
-                    "Generator", "numerics").lower() == 'true'
-                # TODO: allow custom leetifying through the config
-                leetify = config.get_value(
-                    "Generator", "leetify").lower() == 'true'
-                special_chars = config.get_value(
-                    "Generator", "special_chars").lower() == 'true'
-                password = self.get_password(0,
-                                             numerics=numerics,
-                                             symbols=leetify,
-                                             special_signs=special_chars)
-            url = self.get_url()
-            notes = self.get_notes()
-            node = Node()
-            node.username = username
-            node.password = password
-            node.url = url
-            node.notes = notes
-            tags = self.get_tags()
-            node.tags = tags
-            self._db.addnodes([node])
-            print("Password ID: %d" % (node._id))
-            # when done with node erase it
-            zerome(password)
-        except Exception as e:
-            self.error(e)
+    def do_print(self, args):
+        if not args.isdigit():
+            print("print accepts only a single ID ...")
+            return
+        nodes = self._db.getnodes([args])
+        node = self._db_entries_to_nodes(nodes)[0]
+        print(node)
+        flushtimeout = self.config.get_value('Global', 'cls_timeout')
+        flushtimeout = flushtimeout or 10
 
-    def print_node(self, node):
-        width = tools._defaultwidth
-        print("Node {}.".format(node._id))
-        print("{} {}".format(tools.typeset("Username:", Fore.RED).ljust(width),
-                             node.username))
-        print ("{} {}".format(tools.typeset("Password:",
-                                            Fore.RED).ljust(width),
-                              node.password))
-        print("{} {}".format(tools.typeset("Url:", Fore.RED).ljust(width),
-                             node.url))
-        print("{} {}".format(tools.typeset("Notes:", Fore.RED).ljust(width),
-                             node.notes))
-        print("{}".format(tools.typeset("Tags: ", Fore.RED)), end=" ")
-        for t in node.tags:
-            print(t)
+        print("Type Enter to flush screen or wait %s sec. " % flushtimeout)
 
-        def heardEnterWin():
-            c = msvcrt.kbhit()
-            if c == 1:
-                ret = msvcrt.getch()
-                if ret is not None:
-                    return True
-            return False
-
-        def waituntil_enter(somepredicate, timeout, period=0.25):
-            mustend = time.time() + timeout
-            while time.time() < mustend:
-                cond = somepredicate()
-                if cond:
-                    break
-                time.sleep(period)
-            self.do_cls('')
-
-        flushtimeout = int(config.get_value("Global", "cls_timeout"))
-        if flushtimeout > 0:
-            print("Press any key to flush screen (autoflash "
-                  "in %d sec.)" % flushtimeout)
-            waituntil_enter(heardEnterWin, flushtimeout)
+        _wait_until_enter(heardEnterWin, float(flushtimeout))
+        self.do_cls('')
 
     def do_copy(self, args):
         ids = self._get_ids(args)

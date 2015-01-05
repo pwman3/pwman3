@@ -52,9 +52,6 @@ class PwmanCliMac(PwmanCli):
             time.sleep(int(flushtimeout))
             tools.text_to_mcclipboard("")
 
-    def do_cp(self, args):
-        self.do_copy(args)
-
     def do_open(self, args):
         ids = self._get_ids(args)
         if not args:
@@ -72,24 +69,3 @@ class PwmanCliMac(PwmanCli):
             if not url.startswith(("http://", "https://")):
                 url = "https://" + url
             tools.open_url(url, macosx=True)
-
-    def do_o(self, args):
-        self.do_open(args)
-
-    ##
-    # Help functions
-    ##
-    def help_open(self):
-        self.usage("open <ID>")
-        print("Launch default browser with 'open url',\n"
-              "the url must contain http:// or https://.")
-
-    def help_o(self):
-        self.help_open()
-
-    def help_copy(self):
-        self.usage("copy <ID>")
-        print("Copy password to Cocoa clipboard using pbcopy")
-
-    def help_cp(self):
-        self.help_copy()
