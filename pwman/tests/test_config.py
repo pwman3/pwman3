@@ -46,6 +46,15 @@ type = SQLite
 
 class TestConfig(unittest.TestCase):
 
+    @staticmethod
+    def clean_all():
+        for item in ('testfile.conf', 'wrong_conf.conf', 'dummy.cfg',
+                     'import_file.csv'):
+            try:
+                os.unlink(item)
+            except IOError:
+                continue
+
     def setUp(self):
         self.conf = Config(filename='testfile.conf', defaults=default_config)
 
@@ -81,6 +90,7 @@ algorithm = Blowfish
                           self.conf.set_value, *('Error', 'colors', 'no'))
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
-    os.remove('wrong_conf.conf')
-    os.remove('testfile.conf')
+    try:
+        unittest.main(verbosity=2)
+    except SystemExit:
+        TestConfig.clean_all()
