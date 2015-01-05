@@ -1,6 +1,7 @@
 *.pyc
 pwman3.egg-info/*
 *swo
+docs/build/*
 build/*
 dist/*
 *.swp
