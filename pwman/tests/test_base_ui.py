@@ -46,19 +46,15 @@ class dummy_stdin(object):
         return self.ans[self.idx]
 
 
-def clean_all_test_baseui():
-    os.unlink(testdb)
-    os.unlink('foo.csv')
-    os.unlink('pwman-export.csv')
-
-
 class TestBaseUI(unittest.TestCase):
 
     @staticmethod
     def clean_all():
-        os.unlink(testdb)
-        os.unlink('foo.csv')
-        os.unlink('pwman-export.csv')
+        for item in (testdb, 'foo.csv', 'pwman-export.csv'):
+            try:
+                os.unlink(item)
+            except IOError:
+                continue
 
     def setUp(self):
         "test that the right db instance was created"
