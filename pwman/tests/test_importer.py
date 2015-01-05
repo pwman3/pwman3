@@ -31,17 +31,18 @@ alice;wonderland.com;secert;scratch;foo,bar
 hatman;behindthemirror.com;pa33w0rd;scratch;foo,bar
 """
 
-with open('import_file.csv', 'w') as f:
-    f.write(import_example)
-
 
 class TestImporter(unittest.TestCase):
 
     @classmethod
+    def setUpClass(cls):
+        with open('import_file.csv', 'w') as f:
+            f.write(import_example)
+
+    @classmethod
     def tearDownClass(cls):
-        for item in ('dummy.cfg', 'import_file.csv',
-                     'test-importer.db', 'importdummy.db',
-                     'testfile.conf'):
+        for item in ('import_file.csv', 'test-importer.db',
+                     'testfile.conf', 'importdummy.db'):
             try:
                 os.unlink(item)
             except OSError:

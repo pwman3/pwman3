@@ -38,11 +38,21 @@ cls_timeout = 5
 
 testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
 
-with open('dummy.cfg', 'w') as d:
-    d.write(dummyfile)
-
 
 class TestInit(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        with open('dummy.cfg', 'w') as d:
+            d.write(dummyfile)
+
+    @classmethod
+    def tearDownClass(cls):
+        for item in ('dummy.cfg'):
+            try:
+                os.unlink(item)
+            except OSError:
+                continue
 
     def test_set_xsel(self):
         Args = namedtuple('args', 'cfile, dbase, algo')
