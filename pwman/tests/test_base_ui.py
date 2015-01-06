@@ -56,6 +56,8 @@ class TestBaseUI(unittest.TestCase):
             except OSError:
                 continue
 
+        SetupTester().clean()
+
     def setUp(self):
         "test that the right db instance was created"
         dbver = __DB_FORMAT__

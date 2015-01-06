@@ -66,6 +66,10 @@ testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
 
 class TestFactory(unittest.TestCase):
 
+    @classmethod
+    def tearDownClass(cls):
+        SetupTester().clean()
+
     def setUp(self):
         "test that the right db instance was created"
         self.dbtype = 'SQLite'

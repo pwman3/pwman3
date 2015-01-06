@@ -17,8 +17,6 @@ clean_all:
 	clean_coverage_report
 
 clean: clean-build clean-pyc
-	rm -f test.db
-	rm -f pwman/tests/test.conf 
 
 clean_docs:
 	$(MAKE) -C docs clean

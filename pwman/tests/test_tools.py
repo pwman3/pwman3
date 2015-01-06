@@ -96,6 +96,11 @@ class SetupTester(object):
             os.remove(os.path.join(os.path.dirname(__file__),
                                    'testing_config'))
 
+        if os.path.exists(os.path.join(os.path.dirname(__file__),
+                                       'test.conf')):
+            os.remove(os.path.join(os.path.dirname(__file__),
+                                   'test.conf'))
+
     def create(self):
         dbtype = 'SQLite'
         db = factory.create(dbtype, self.dbver, self.filename)
