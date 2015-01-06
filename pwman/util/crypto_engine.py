@@ -122,6 +122,7 @@ class CryptoEngine(object):  # pagma: no cover
         self._cipher = None
         self._reader = reader
         self._callback = None
+        self._getsecret = None  # This is set in callback.setter
 
     def authenticate(self, password):
         """
