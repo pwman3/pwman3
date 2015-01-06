@@ -26,6 +26,14 @@ from .test_crypto_engine import give_key, DummyCallback
 
 class TestSQLite(unittest.TestCase):
 
+    @classmethod
+    def tearDownClass(cls):
+        for item in ('test.db',):
+            try:
+                os.remove(item)
+            except OSError:
+                continue
+
     def setUp(self):
         self.db = SQLite('test.db')
         self.db._open()
@@ -157,8 +165,4 @@ if __name__ == '__main__':
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-
-    try:
-        unittest.main(verbosity=2, failfast=True)
-    except SystemExit:
-        os.remove('test.db')
+    unittest.main(verbosity=2, failfast=True)

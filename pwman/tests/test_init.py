@@ -48,7 +48,7 @@ class TestInit(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for item in ('dummy.cfg'):
+        for item in ('dummy.cfg', testdb):
             try:
                 os.unlink(item)
             except OSError:
