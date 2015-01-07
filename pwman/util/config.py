@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
-#============================================================================
+# ============================================================================
 import sys
 import os
 
@@ -65,8 +65,8 @@ class Config(object):
         self.parser = self._load(defaults)
 
     def _load(self, defaults):
+        parser = ConfigParser(defaults)
         try:
-            parser = ConfigParser(defaults)
             with open(self.filename) as f:
                 try:
                     parser.read_file(f)
@@ -74,6 +74,9 @@ class Config(object):
                     parser.readfp(f)
         except ParsingError as e:  # pragma: no cover
             raise ConfigException(e)
+        except IOError:
+            self._add_defaults(defaults, parser)
+            self.save(os.path.join(config_dir, 'config'), parser)
 
         self._add_defaults(defaults, parser)
 
@@ -97,9 +100,12 @@ class Config(object):
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)
 
-    def save(self, filename):
-        with open(filename, "w+") as fp:
-            self.parser.write(fp)
+    def save(self, filename, parser=None):
+        with open(filename, "w") as fp:
+            if parser:
+                parser.write(fp)
+            else:
+                self.parser.write(fp)
 
 
 def get_pass_conf(config):
