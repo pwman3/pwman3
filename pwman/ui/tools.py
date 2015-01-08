@@ -128,7 +128,7 @@ def open_url(link, macosx=False):  # pragma: no cover
         print("Executing open_url failed with:\n", e)
 
 
-def get_terminal_size():
+def get_terminal_size():  # pragma: no cover
     """ getTerminalSize()
      - get width and height of console
      - works on linux,os x,windows,cygwin(windows)
@@ -251,7 +251,7 @@ def getinput(question, default="", reader=raw_input,
         return reader()
 
 
-def get_or_create_pass():
+def get_or_create_pass():  # pragma: no cover
 
     p = getpass.getpass(prompt='Password (leave empty to create one):')
     if not p:
@@ -278,7 +278,7 @@ def _get_secret():
     return p
 
 
-def set_selection(new_node, items, selection, reader):
+def set_selection(new_node, items, selection, reader):  # pragma: no cover
     if selection == 0:
         new_node.username = getinput("Username:")
         items[0].getter = new_node.username
@@ -300,7 +300,7 @@ def set_selection(new_node, items, selection, reader):
         items[4].getter = new_node.tags
 
 
-class CMDLoop(object):  # pragma: no cover
+class CMDLoop(object):
 
     """
     The menu that drives editing of a node
@@ -311,10 +311,8 @@ class CMDLoop(object):  # pragma: no cover
         self.config = config
 
     def add(self, item):
-        if (isinstance(item, CliMenuItem)):
+        if isinstance(item, CliMenuItem):
             self.items.append(item)
-        else:
-            print (item.__class__)
 
     def run(self, new_node=None, reader=raw_input):
         while True:
@@ -322,23 +320,22 @@ class CMDLoop(object):  # pragma: no cover
                 print ("%s - %s: %s" % (i + 1, x.name, x.getter))
 
             print("X - Finish editing")
-            option = reader("E)ter your choice:")[0]
+            option = reader("Enter your choice:")[0]
             try:
                 print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 set_selection(new_node, self.items, selection, reader)
-            except (ValueError, IndexError):
+            except (ValueError, IndexError):  # pragma: no cover
                 if (option.upper() == 'X'):
                     break
                 print("Invalid selection")
 
 
-class CliMenuItem(object):  # pragma: no cover
+class CliMenuItem(object):
 
-    def __init__(self, name, editor, getter):
+    def __init__(self, name, getter):
         self.name = name
-        self.editor = editor
         self.getter = getter
 
 

@@ -143,7 +143,7 @@ class AliasesMixin(object):  # pragma: no cover
     def do_cp(self, args):
         self.do_copy(args)
 
-    def do_EOF(self, args):
+    def do_EOF(self, args):  # pragma: no cover
         self.do_exit(args)
 
     def do_ls(self, args):
@@ -378,23 +378,13 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 menu = CMDLoop(self.config)
                 print ("Editing node %d." % (i))
 
-                menu.add(CliMenuItem("Username",
-                                     self._get_input,
-                                     node.username,
-                                     ))
-                menu.add(CliMenuItem("Password", self._get_secret,
-                                     node.password,
-                                     ))
-                menu.add(CliMenuItem("Url", self._get_input,
-                                     node.url,
-                                     ))
-                menunotes = CliMenuItem("Notes", self._get_input,
-                                        node.notes,
-                                        )
+                menu.add(CliMenuItem("Username", node.username))
+                menu.add(CliMenuItem("Password",  node.password))
+                menu.add(CliMenuItem("Url", node.url))
+                menunotes = CliMenuItem("Notes", node.notes)
                 menu.add(menunotes)
                 tgetter = lambda: ', '.join(t for t in node.tags)
-                menu.add(CliMenuItem("Tags", self._get_input,
-                                     tgetter()))
+                menu.add(CliMenuItem("Tags", tgetter()))
             menu.run(node)
             self._db.editnode(i, **node.to_encdict())
             # when done with node erase it
@@ -449,7 +439,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             print("print accepts only a single ID ...")
             return
         nodes = self._db.getnodes([args])
-        if not nodes:
+        if not nodes:  # pragma: no cover
             print("Node not found ...")
             return
 
