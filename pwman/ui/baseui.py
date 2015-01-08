@@ -19,7 +19,6 @@
 from __future__ import print_function
 import sys
 import os
-import getpass
 import ast
 import csv
 import time
@@ -31,7 +30,8 @@ from pwman.ui import tools
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.util.crypto_engine import zerome
 from pwman.ui.tools import CliMenuItem
-from pwman.ui.tools import CMDLoop
+from pwman.ui.tools import CMDLoop, get_or_create_pass
+
 
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
@@ -422,7 +422,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def _get_secret(self):
         # TODO: enable old functionallity, with password generator.
         if sys.stdin.isatty():  # pragma: no cover
-            p = getpass.getpass()
+            p = get_or_create_pass()
         else:
             p = sys.stdin.readline().rstrip()
         return p

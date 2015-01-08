@@ -28,8 +28,8 @@ import shlex
 import platform
 import colorama
 import os
-#from pwman.util.config import get_pass_conf
 from pwman.util.callback import Callback
+from pwman.util.crypto_engine import generate_password
 
 
 if sys.version_info.major > 2:  # pragma: no cover
@@ -126,55 +126,6 @@ def open_url(link, macosx=False):  # pragma: no cover
         sp.Popen([uopen, link], stdin=sp.PIPE)
     except OSError as e:
         print("Executing open_url failed with:\n", e)
-
-
-def get_password(question, config):
-    # TODO: enable old functionallity, with password generator.
-    if sys.stdin.isatty():  # pragma: no cover
-        p = getpass.getpass()
-    else:
-        p = sys.stdin.readline().rstrip()
-    return p
-
-
-def getpassword(question, argsgiven=None,
-                width=_defaultwidth, echo=False,
-                reader=getpass.getpass, numerics=False, leetify=False,
-                symbols=False, special_signs=False,
-                length=None, config=None):  # pragma: no cover
-    if argsgiven == 1 or length:
-        while not length:
-            try:
-                default_length = config.get_value(
-                    'Generator', 'default_pw_length') or '8'
-                length = getinput(
-                    "Password length (default %s): " % default_length,
-                    default=default_length)
-                length = int(length)
-            except ValueError:
-                print("please enter a proper integer")
-
-        #password, dumpme = generator.generate_password(
-        #    length, length, True, symbols=leetify, numerics=numerics,
-        #    special_chars=special_signs)
-        #print ("New password: %s" % (password))
-        #return password
-    # no args given
-    while True:
-        a1 = reader(question.ljust(width))
-        if not a1:
-            return getpassword(
-                '', argsgiven=1, width=width, echo=echo, reader=reader,
-                numerics=numerics, leetify=leetify, symbols=symbols,
-                special_signs=special_signs, length=length, config=config)
-        a2 = reader("[Repeat] %s" % (question.ljust(width)))
-        if a1 == a2:
-            if leetify:
-                pass  # return generator.leetify(a1)
-            else:
-                return a1
-        else:
-            print ("Passwords don't match. Try again.")
 
 
 def get_terminal_size():
@@ -300,6 +251,32 @@ def getinput(question, default="", reader=raw_input,
         return reader()
 
 
+def get_or_create_pass():
+
+    p = getpass.getpass(prompt='Password (leave empty to create one):')
+    if not p:
+        while True:
+            try:
+                print("Password length (default: 8):", end="")
+                sys.stdout.flush()
+                l = sys.stdin.readline().strip()
+                l = int(l) if l else 8
+                break
+            except ValueError:
+                print("You did not enter an integer...")
+        p = generate_password(l)
+    return p
+
+
+def _get_secret():
+    # TODO: enable old functionallity, with password generator.
+    if sys.stdin.isatty():  # pragma: no cover
+        p = get_or_create_pass()
+    else:
+        p = sys.stdin.readline().rstrip()
+        return p
+
+
 class CMDLoop(object):  # pragma: no cover
 
     """
@@ -337,7 +314,7 @@ class CMDLoop(object):  # pragma: no cover
                     self.items[0].getter = new_node.username
                     self.items[0].setter = new_node.username
                 elif selection == 1:  # for password
-                    new_node.password = get_password("Password:", self.config)
+                    new_node.password = _get_secret()
                     self.items[1].getter = new_node.password
                     self.items[1].setter = new_node.password
                 elif selection == 2:

@@ -1,3 +1,21 @@
+# ============================================================================
+# This file is part of Pwman3.
+#
+# Pwman3 is free software; you can redistribute iut and/or modify
+# it under the terms of the GNU General Public License, version 2
+# as published by the Free Software Foundation;
+#
+# Pwman3 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pwman3; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# ============================================================================
+# Copyright (C) 2012, 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
+# ============================================================================
 import unittest
 import os
 import time
@@ -16,8 +34,6 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Readline': {'history': os.path.join("tests",
                                                        "history")}
                   }
-
-#config.set_defaults(default_config)
 
 give_key = lambda msg: "12345"
 give_wrong_key = lambda msg: "verywrongtkey"
