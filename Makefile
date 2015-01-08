@@ -50,7 +50,6 @@ coverage-run:
 	@coverage html
 
 coverage: coverage-run
-	@rm test.db
 
 docs:
 	#rm -f docs/manutils.rst
