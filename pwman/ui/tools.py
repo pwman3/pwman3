@@ -274,7 +274,30 @@ def _get_secret():
         p = get_or_create_pass()
     else:
         p = sys.stdin.readline().rstrip()
-        return p
+
+    return p
+
+
+def set_selection(new_node, items, selection, reader):
+    if selection == 0:
+        new_node.username = getinput("Username:")
+        items[0].getter = new_node.username
+    elif selection == 1:  # for password
+        new_node.password = _get_secret()
+        items[1].getter = new_node.password
+    elif selection == 2:
+        new_node.url = getinput("Url:")
+        items[2].getter = new_node.url
+    elif selection == 3:  # for notes
+        # new_node.notes = getinput("Notes:")
+        new_node.notes = reader("Notes:")
+        items[3].getter = new_node.notes
+    elif selection == 4:
+        taglist = getinput("Tags:")
+        tagstrings = taglist.split()
+        tags = [tn for tn in tagstrings]
+        new_node.tags = tags
+        items[4].getter = new_node.tags
 
 
 class CMDLoop(object):  # pragma: no cover
@@ -296,44 +319,15 @@ class CMDLoop(object):  # pragma: no cover
     def run(self, new_node=None, reader=raw_input):
         while True:
             for i, x in enumerate(self.items):
-                current = x.getter
-                print ("%s - %s: %s" % (i + 1, x.name, current))
+                print ("%s - %s: %s" % (i + 1, x.name, x.getter))
 
             print("X - Finish editing")
-            option = reader("Enter your choice:")[0]
+            option = reader("E)ter your choice:")[0]
             try:
                 print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
-                # new value is created by calling the editor with the
-                # previous value as a parameter
-                # TODO: enable overriding password policy as if new node
-                # is created.
-                if selection == 0:
-                    new_node.username = getinput("Username:")
-                    self.items[0].getter = new_node.username
-                    self.items[0].setter = new_node.username
-                elif selection == 1:  # for password
-                    new_node.password = _get_secret()
-                    self.items[1].getter = new_node.password
-                    self.items[1].setter = new_node.password
-                elif selection == 2:
-                    new_node.url = getinput("Url:")
-                    self.items[2].getter = new_node.url
-                    self.items[2].setter = new_node.url
-                elif selection == 3:  # for notes
-                    # new_node.notes = getinput("Notes:")
-                    new_node.notes = reader("Notes:")
-                    self.items[3].getter = new_node.notes
-                    self.items[3].setter = new_node.notes
-                elif selection == 4:
-                    taglist = getinput("Tags:")
-                    tagstrings = taglist.split()
-                    tags = [tn for tn in tagstrings]
-                    #tags = ''
-                    new_node.tags = tags
-                    self.items[4].setter = new_node.tags
-                    self.items[4].getter = new_node.tags
+                set_selection(new_node, self.items, selection, reader)
             except (ValueError, IndexError):
                 if (option.upper() == 'X'):
                     break
@@ -342,11 +336,10 @@ class CMDLoop(object):  # pragma: no cover
 
 class CliMenuItem(object):  # pragma: no cover
 
-    def __init__(self, name, editor, getter, setter):
+    def __init__(self, name, editor, getter):
         self.name = name
         self.editor = editor
         self.getter = getter
-        self.setter = setter
 
 
 class CLICallback(Callback):  # pragma: no cover

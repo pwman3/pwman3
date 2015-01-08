@@ -381,21 +381,20 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 menu.add(CliMenuItem("Username",
                                      self._get_input,
                                      node.username,
-                                     node.username))
+                                     ))
                 menu.add(CliMenuItem("Password", self._get_secret,
                                      node.password,
-                                     node.password))
+                                     ))
                 menu.add(CliMenuItem("Url", self._get_input,
                                      node.url,
-                                     node.url))
+                                     ))
                 menunotes = CliMenuItem("Notes", self._get_input,
                                         node.notes,
-                                        node.notes)
+                                        )
                 menu.add(menunotes)
                 tgetter = lambda: ', '.join(t for t in node.tags)
                 menu.add(CliMenuItem("Tags", self._get_input,
-                                     tgetter(),
-                                     node.tags))
+                                     tgetter()))
             menu.run(node)
             self._db.editnode(i, **node.to_encdict())
             # when done with node erase it
@@ -450,6 +449,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             print("print accepts only a single ID ...")
             return
         nodes = self._db.getnodes([args])
+        if not nodes:
+            print("Node not found ...")
+            return
+
         node = self._db_entries_to_nodes(nodes)[0]
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
