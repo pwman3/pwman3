@@ -21,7 +21,6 @@
 import os
 import sys
 import unittest
-from .db_tests import (SetupTester)
 from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
@@ -42,7 +41,7 @@ sys.path.insert(0, os.getcwd())
 # check if old DB exists, if so remove it.
 # excuted only once when invoked upon import or
 # upon run
-SetupTester().clean()
+# SetupTester().clean()
 
 
 def suite():

@@ -117,6 +117,7 @@ class BuildManPage(Command):
 
 
 class ManPageFormatter(argparse.HelpFormatter):
+
     """
     Formatter class to create man pages.
     This class relies only on the parser, and not distutils.
@@ -275,6 +276,7 @@ class ManPageFormatter(argparse.HelpFormatter):
 
 
 class ManPageCreator(object):
+
     """
     This class takes a little different approach. Instead of relying on
     information from ArgumentParser, it relies on information retrieved
@@ -351,16 +353,19 @@ setup(name=pwman.appname,
       install_requires=['pycrypto>=2.6',
                         'colorama>=0.2.4'],
       keywords="password-manager crypto cli",
-      classifiers=[
-          'Environment :: Console',
-          'Intended Audience :: End Users/Desktop',
-          'Intended Audience :: Developers',
-          'Intended Audience :: System Administrators',
-          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 2.7'
-      ],
+      classifiers=['Environment :: Console',
+                   'Intended Audience :: End Users/Desktop',
+                   'Intended Audience :: Developers',
+                   'Intended Audience :: System Administrators',
+                   'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                   'Operating System :: OS Independent',
+                   'Programming Language :: Python',
+                   'Programming Language :: Python :: 2.7'
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.2',
+                   'Programming Language :: Python :: 3.3',
+                   'Programming Language :: Python :: 3.4',
+                   ],
       test_suite='pwman.tests.suite',
       tests_require=test_requirements,
       cmdclass={
