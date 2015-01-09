@@ -269,7 +269,6 @@ def get_or_create_pass():  # pragma: no cover
 
 
 def _get_secret():
-    # TODO: enable old functionallity, with password generator.
     if sys.stdin.isatty():  # pragma: no cover
         p = get_or_create_pass()
     else:

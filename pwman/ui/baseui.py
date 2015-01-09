@@ -371,7 +371,11 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         ids = self._get_ids(args)
         for i in ids:
             i = int(i)
-            node = self._db.getnodes([i])[0]
+            node = self._db.getnodes([i])
+            if not node:
+                print("Node not found ...")
+                return
+            node = node[0]
             node = node[1:5] + [node[5:]]
             node = Node.from_encrypted_entries(*node)
             if not menu:
@@ -409,7 +413,6 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         return sys.stdin.readline().strip()
 
     def _get_secret(self):
-        # TODO: enable old functionallity, with password generator.
         if sys.stdin.isatty():  # pragma: no cover
             p = get_or_create_pass()
         else:
