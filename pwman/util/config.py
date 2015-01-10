@@ -100,7 +100,7 @@ class Config(object):
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)
 
-    def save(self, filename, parser=None):
+    def save(self, filename, parser=None):  # pragma: no cover
         with open(filename, "w") as fp:
             if parser:
                 parser.write(fp)
@@ -108,7 +108,7 @@ class Config(object):
                 self.parser.write(fp)
 
 
-def get_pass_conf(config):
+def get_pass_conf(config):  # pragma: no cover
     numerics = config.get_value("Generator", "numerics").lower() == 'true'
     # TODO: allow custom leetifying through the config
     leetify = config.get_value("Generator", "leetify").lower() == 'true'

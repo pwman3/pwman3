@@ -17,51 +17,19 @@
 # Copyright (C) 2013-2014 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 
-#from pwman.data.nodes import NewNode
-#from pwman.data.tags import TagNew
-from pwman.data import factory
-from pwman.data.drivers.sqlite import DatabaseException, SQLite
-from pwman.ui import get_ui_platform
-from pwman.data.database import __DB_FORMAT__
 import sys
 import unittest
 import os
 import os.path
-
-dummyfile = """
-[Encryption]
-
-[Readline]
-
-[Global]
-xsel = /usr/bin/xsel
-colors = yes
-umask = 0100
-cls_timeout = 5
-
-[Database]
-"""
-
-
-#def node_factory(username, password, url, notes, tags=None):
-#    node = NewNode()
-#    node.username = username
-#    node.password = password
-#    node.url = url
-#    node.notes = notes
-#    tags = [TagNew(tn) for tn in tags]
-#    node.tags = tags
-
-#    return node
-
-_saveconfig = False
-
-PwmanCliNew, OSX = get_ui_platform(sys.platform)
-
-
+from pwman.data import factory
+from pwman.data.drivers.sqlite import DatabaseException, SQLite
+from pwman.ui import get_ui_platform
+from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 
+PwmanCliNew, OSX = get_ui_platform(sys.platform)
 testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+_saveconfig = False
 
 
 class TestFactory(unittest.TestCase):

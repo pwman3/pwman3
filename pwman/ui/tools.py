@@ -28,8 +28,8 @@ import shlex
 import platform
 import colorama
 import os
-#from pwman.util.config import get_pass_conf
 from pwman.util.callback import Callback
+from pwman.util.crypto_engine import generate_password
 
 
 if sys.version_info.major > 2:  # pragma: no cover
@@ -128,56 +128,7 @@ def open_url(link, macosx=False):  # pragma: no cover
         print("Executing open_url failed with:\n", e)
 
 
-def get_password(question, config):
-    # TODO: enable old functionallity, with password generator.
-    if sys.stdin.isatty():  # pragma: no cover
-        p = getpass.getpass()
-    else:
-        p = sys.stdin.readline().rstrip()
-    return p
-
-
-def getpassword(question, argsgiven=None,
-                width=_defaultwidth, echo=False,
-                reader=getpass.getpass, numerics=False, leetify=False,
-                symbols=False, special_signs=False,
-                length=None, config=None):  # pragma: no cover
-    if argsgiven == 1 or length:
-        while not length:
-            try:
-                default_length = config.get_value(
-                    'Generator', 'default_pw_length') or '8'
-                length = getinput(
-                    "Password length (default %s): " % default_length,
-                    default=default_length)
-                length = int(length)
-            except ValueError:
-                print("please enter a proper integer")
-
-        #password, dumpme = generator.generate_password(
-        #    length, length, True, symbols=leetify, numerics=numerics,
-        #    special_chars=special_signs)
-        #print ("New password: %s" % (password))
-        #return password
-    # no args given
-    while True:
-        a1 = reader(question.ljust(width))
-        if not a1:
-            return getpassword(
-                '', argsgiven=1, width=width, echo=echo, reader=reader,
-                numerics=numerics, leetify=leetify, symbols=symbols,
-                special_signs=special_signs, length=length, config=config)
-        a2 = reader("[Repeat] %s" % (question.ljust(width)))
-        if a1 == a2:
-            if leetify:
-                pass  # return generator.leetify(a1)
-            else:
-                return a1
-        else:
-            print ("Passwords don't match. Try again.")
-
-
-def get_terminal_size():
+def get_terminal_size():  # pragma: no cover
     """ getTerminalSize()
      - get width and height of console
      - works on linux,os x,windows,cygwin(windows)
@@ -300,7 +251,55 @@ def getinput(question, default="", reader=raw_input,
         return reader()
 
 
-class CMDLoop(object):  # pragma: no cover
+def get_or_create_pass():  # pragma: no cover
+
+    p = getpass.getpass(prompt='Password (leave empty to create one):')
+    if not p:
+        while True:
+            try:
+                print("Password length (default: 8):", end="")
+                sys.stdout.flush()
+                l = sys.stdin.readline().strip()
+                l = int(l) if l else 8
+                break
+            except ValueError:
+                print("You did not enter an integer...")
+        p = generate_password(l)
+    return p
+
+
+def _get_secret():
+    if sys.stdin.isatty():  # pragma: no cover
+        p = get_or_create_pass()
+    else:
+        p = sys.stdin.readline().rstrip()
+
+    return p
+
+
+def set_selection(new_node, items, selection, reader):  # pragma: no cover
+    if selection == 0:
+        new_node.username = getinput("Username:")
+        items[0].getter = new_node.username
+    elif selection == 1:  # for password
+        new_node.password = _get_secret()
+        items[1].getter = new_node.password
+    elif selection == 2:
+        new_node.url = getinput("Url:")
+        items[2].getter = new_node.url
+    elif selection == 3:  # for notes
+        # new_node.notes = getinput("Notes:")
+        new_node.notes = reader("Notes:")
+        items[3].getter = new_node.notes
+    elif selection == 4:
+        taglist = getinput("Tags:")
+        tagstrings = taglist.split()
+        tags = [tn for tn in tagstrings]
+        new_node.tags = tags
+        items[4].getter = new_node.tags
+
+
+class CMDLoop(object):
 
     """
     The menu that drives editing of a node
@@ -311,16 +310,13 @@ class CMDLoop(object):  # pragma: no cover
         self.config = config
 
     def add(self, item):
-        if (isinstance(item, CliMenuItem)):
+        if isinstance(item, CliMenuItem):
             self.items.append(item)
-        else:
-            print (item.__class__)
 
     def run(self, new_node=None, reader=raw_input):
         while True:
             for i, x in enumerate(self.items):
-                current = x.getter
-                print ("%s - %s: %s" % (i + 1, x.name, current))
+                print ("%s - %s: %s" % (i + 1, x.name, x.getter))
 
             print("X - Finish editing")
             option = reader("Enter your choice:")[0]
@@ -328,48 +324,18 @@ class CMDLoop(object):  # pragma: no cover
                 print ("Selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
-                # new value is created by calling the editor with the
-                # previous value as a parameter
-                # TODO: enable overriding password policy as if new node
-                # is created.
-                if selection == 0:
-                    new_node.username = getinput("Username:")
-                    self.items[0].getter = new_node.username
-                    self.items[0].setter = new_node.username
-                elif selection == 1:  # for password
-                    new_node.password = get_password("Password:", self.config)
-                    self.items[1].getter = new_node.password
-                    self.items[1].setter = new_node.password
-                elif selection == 2:
-                    new_node.url = getinput("Url:")
-                    self.items[2].getter = new_node.url
-                    self.items[2].setter = new_node.url
-                elif selection == 3:  # for notes
-                    # new_node.notes = getinput("Notes:")
-                    new_node.notes = reader("Notes:")
-                    self.items[3].getter = new_node.notes
-                    self.items[3].setter = new_node.notes
-                elif selection == 4:
-                    taglist = getinput("Tags:")
-                    tagstrings = taglist.split()
-                    tags = [tn for tn in tagstrings]
-                    #tags = ''
-                    new_node.tags = tags
-                    self.items[4].setter = new_node.tags
-                    self.items[4].getter = new_node.tags
-            except (ValueError, IndexError):
+                set_selection(new_node, self.items, selection, reader)
+            except (ValueError, IndexError):  # pragma: no cover
                 if (option.upper() == 'X'):
                     break
                 print("Invalid selection")
 
 
-class CliMenuItem(object):  # pragma: no cover
+class CliMenuItem(object):
 
-    def __init__(self, name, editor, getter, setter):
+    def __init__(self, name, getter):
         self.name = name
-        self.editor = editor
         self.getter = getter
-        self.setter = setter
 
 
 class CLICallback(Callback):  # pragma: no cover

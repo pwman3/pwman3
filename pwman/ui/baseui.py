@@ -19,7 +19,6 @@
 from __future__ import print_function
 import sys
 import os
-import getpass
 import ast
 import csv
 import time
@@ -31,7 +30,8 @@ from pwman.ui import tools
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.util.crypto_engine import zerome
 from pwman.ui.tools import CliMenuItem
-from pwman.ui.tools import CMDLoop
+from pwman.ui.tools import CMDLoop, get_or_create_pass
+
 
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
@@ -143,7 +143,7 @@ class AliasesMixin(object):  # pragma: no cover
     def do_cp(self, args):
         self.do_copy(args)
 
-    def do_EOF(self, args):
+    def do_EOF(self, args):  # pragma: no cover
         self.do_exit(args)
 
     def do_ls(self, args):
@@ -371,31 +371,24 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         ids = self._get_ids(args)
         for i in ids:
             i = int(i)
-            node = self._db.getnodes([i])[0]
+            node = self._db.getnodes([i])
+            if not node:
+                print("Node not found ...")
+                return
+            node = node[0]
             node = node[1:5] + [node[5:]]
             node = Node.from_encrypted_entries(*node)
             if not menu:
                 menu = CMDLoop(self.config)
                 print ("Editing node %d." % (i))
 
-                menu.add(CliMenuItem("Username",
-                                     self._get_input,
-                                     node.username,
-                                     node.username))
-                menu.add(CliMenuItem("Password", self._get_secret,
-                                     node.password,
-                                     node.password))
-                menu.add(CliMenuItem("Url", self._get_input,
-                                     node.url,
-                                     node.url))
-                menunotes = CliMenuItem("Notes", self._get_input,
-                                        node.notes,
-                                        node.notes)
+                menu.add(CliMenuItem("Username", node.username))
+                menu.add(CliMenuItem("Password",  node.password))
+                menu.add(CliMenuItem("Url", node.url))
+                menunotes = CliMenuItem("Notes", node.notes)
                 menu.add(menunotes)
                 tgetter = lambda: ', '.join(t for t in node.tags)
-                menu.add(CliMenuItem("Tags", self._get_input,
-                                     tgetter(),
-                                     node.tags))
+                menu.add(CliMenuItem("Tags", tgetter()))
             menu.run(node)
             self._db.editnode(i, **node.to_encdict())
             # when done with node erase it
@@ -420,9 +413,8 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         return sys.stdin.readline().strip()
 
     def _get_secret(self):
-        # TODO: enable old functionallity, with password generator.
         if sys.stdin.isatty():  # pragma: no cover
-            p = getpass.getpass()
+            p = get_or_create_pass()
         else:
             p = sys.stdin.readline().rstrip()
         return p
@@ -450,6 +442,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             print("print accepts only a single ID ...")
             return
         nodes = self._db.getnodes([args])
+        if not nodes:  # pragma: no cover
+            print("Node not found ...")
+            return
+
         node = self._db_entries_to_nodes(nodes)[0]
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
