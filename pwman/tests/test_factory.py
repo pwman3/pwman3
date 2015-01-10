@@ -49,7 +49,8 @@ class TestFactory(unittest.TestCase):
         self.assertEqual(factory.check_db_version('SQLite', testdb), 0.6)
 
     def test_factory_check_db_file(self):
-        factory.create('SQLite', version='0.3', filename='baz.db')
+        db = factory.create('SQLite', version='0.3', filename='baz.db')
+        db._open()
         self.assertEqual(factory.check_db_version('SQLite', 'baz.db'), 0.3)
         os.unlink('baz.db')
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 
 import os
 import sys
 import unittest
+# from .test_tools import (SetupTester)
 from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
@@ -56,7 +57,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
     suite.addTest(loader.loadTestsFromTestCase(TestInit))
     suite.addTest(loader.loadTestsFromTestCase(TestNode))
-    #if 'win' not in sys.platform:
+    # if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
 
