@@ -53,7 +53,8 @@ def main(args):
         cli.cmdloop()
     except KeyboardInterrupt as e:
         print(e)
-
+    finally:
+        config.save(args.cfile)
 
 if __name__ == '__main__':
     args = parser_options().parse_args()

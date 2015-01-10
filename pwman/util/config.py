@@ -37,7 +37,6 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Database': {'type': 'SQLite',
                                'filename': os.path.join(config_dir,
                                                         "pwman.db")},
-                  'Encryption': {'algorithm': 'AES'},
                   'Readline': {'history': os.path.join(config_dir,
                                                        "history")}
                   }
@@ -60,12 +59,11 @@ class ConfigNoConfigException(ConfigException):
 class Config(object):
 
     def __init__(self, filename=None, defaults=None, **kwargs):
-
         self.filename = filename
         self.parser = self._load(defaults)
 
     def _load(self, defaults):
-        parser = ConfigParser(defaults)
+        parser = ConfigParser()
         try:
             with open(self.filename) as f:
                 try:
@@ -79,7 +77,6 @@ class Config(object):
             self.save(os.path.join(config_dir, 'config'), parser)
 
         self._add_defaults(defaults, parser)
-
         return parser
 
     def _add_defaults(self, defaults, parser):
@@ -101,6 +98,7 @@ class Config(object):
         self.parser.set(section, name, value)
 
     def save(self, filename, parser=None):  # pragma: no cover
+
         with open(filename, "w") as fp:
             if parser:
                 parser.write(fp)
@@ -109,9 +107,15 @@ class Config(object):
 
 
 def get_pass_conf(config):  # pragma: no cover
-    numerics = config.get_value("Generator", "numerics").lower() == 'true'
-    # TODO: allow custom leetifying through the config
-    leetify = config.get_value("Generator", "leetify").lower() == 'true'
     special_chars = config.get_value("Generator",
                                      "special_chars").lower() == 'true'
-    return numerics, leetify, special_chars
+    ascii_lowercase = config.get_value("Generator",
+                                       "ascii_lowercase").lower() == 'true'
+    ascii_uppercase = config.get_value("Generator",
+                                       "ascii_uppercase").lower() == 'true'
+    ascii_digits = config.get_value("Generator",
+                                    "ascii_digits").lower() == 'true'
+    ascii_punctuation = config.get_value("Generator",
+                                         "ascii_punctuation").lower() == 'true'
+    return special_chars, ascii_lowercase, ascii_uppercase, ascii_digits, \
+        ascii_punctuation
