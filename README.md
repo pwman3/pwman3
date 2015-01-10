@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pwman3/pwman3.png?branch=master)](https://travis-ci.org/pwman3/pwman3)
 [![Coverage Status](https://coveralls.io/repos/pwman3/pwman3/badge.png)](https://coveralls.io/r/pwman3/pwman3?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/pwman3/badge/?version=latest)](https://readthedocs.org/projects/pwman3/?badge=latest)
 
 A nice command line password manager, which can use different database to store your passwords (currently, SQLite, MySQL, 
     and PostGresql are supported).  
@@ -9,12 +10,17 @@ Pwman3 can also copy passwords to the clipboard without exposing them!
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
 
 ## Nice Features in pwman3:
-
+ 
+ * Strong AES Encryption
  * copying of passwords to clipboard
  * launching specific uri's with default browser
  * password generators
  * not really a user oriented feature. However, it guarantees the elimination of silly 
    bugs: pwman3 is test driven! 
+
+## Documentation
+
+    http://pwman3.readthedocs.org/en/latest/
 
 ## A very important note about security
 
@@ -37,7 +43,7 @@ Pwman3 requires the following debian packages:
  python-crypto 
  xsel - to copy password to clipboard on Linux
     
-Pwman only supports Python 2.7. 
+Pwman supports Python 2.7-3.x. 
 
 To install from source:
 
@@ -101,10 +107,6 @@ Do your self a favor and skip Windows. Try Linux\BSD\*Nix OS.
       ...
       cls_timeout = -1
       ```
-
-
-## ikegam's function 
-
  * making a password from the numeric character and the alphabet character ([A-Za-z0-9]).
 
    You can add a parameter for making the password to the config(~/.pwman/config).
@@ -116,12 +118,6 @@ Do your self a favor and skip Windows. Try Linux\BSD\*Nix OS.
      numerics = true
      ```
 
- * Passwords can be l33tified similarly using the following.
-     
-     ```
-     [Generator]
-     leetify = true
-     ```
  * Passwords can contain one of the following special signs:
     
     ```
@@ -139,11 +135,11 @@ The config file  must have the following option:
  * Individual password policy can be chosen with:
  
      ```
-     Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
+     Pwman3 0.6.0 (c) visit: http://github.com/pwman3/pwman3
      pwman> n {'leetify':False, 'numerics':True, 'special_signs':True}
      Username: username
-     Password length (default 7): 7
-     New password: Q1dab@7
+     Password length (default 8): 12
+     New password: Q1dab@7abcd5
      ``` 
  
  * Default password length can be changed by: 
@@ -161,19 +157,8 @@ The config file  must have the following option:
      ```
      [Global]
      xsel = yes
-      xselpath = /usr/bin/xsel
+     xselpath = /usr/bin/xsel
      ```
  
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
-
-## Password leetifying
-
-If you choose to leetify your passwords when generating passwords, 
-e.g. `leetify = true` in `~/.pwman/config`, password lengths may exceed the length chosen. 
-This is because certain letters will be replaced with 2 or more characters. 
-That is, if an initial random password was generated as : `Murkahm1` it will eventually be
-set to: `|\/|ur|<ham1`. To see to full leet list checkout line 79 in `pwman/util/generator.py`
-or issue in your terminal: 
-
-     python -c'from pwman.util import generator; print generator.leetlist'
