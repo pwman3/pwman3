@@ -36,8 +36,6 @@ class SQLite(Database):
         cur = con.cursor()
         cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
         row = cur.fetchone()
-        if not row:
-            return "0.3"  # pragma: no cover
         try:
             return row[-2]
         except IndexError:  # pragma: no cover
@@ -47,7 +45,6 @@ class SQLite(Database):
         """Initialise SQLitePwmanDatabase instance."""
         self._filename = filename
         self.dbformat = dbformat
-        self._filtertags = None  # TODO: get rid of this property
 
     def _open(self):
         self._con = sqlite.connect(self._filename)

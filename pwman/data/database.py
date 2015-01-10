@@ -67,12 +67,12 @@ class Database(object):
         Change the databases password.
         """
         # TODO: call the converter here ...
-        #nodeids = self.listnodes()
-        #nodes = self.getnodes(nodeids)
-        #enc = CryptoEngine.get()
-        #oldkey = enc.get_cryptedkey()
-        #newkey = enc.changepassword()
-        #return newkey
+        # nodeids = self.listnodes()
+        # nodes = self.getnodes(nodeids)
+        # enc = CryptoEngine.get()
+        # oldkey = enc.get_cryptedkey()
+        # newkey = enc.changepassword()
+        # return newkey
 
     def listtags(self, all=False):
         pass  # pragma: no cover
@@ -89,8 +89,8 @@ class Database(object):
     def removenodes(self, nodes):
         pass  # pragma: no cover
 
-    #def listnodes(self):
-    #    pass  # pragma: no cover
+    def listnodes(self):
+        pass  # pragma: no cover
 
     def savekey(self, key):
         pass  # pragma: no cover
