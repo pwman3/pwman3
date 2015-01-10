@@ -55,7 +55,7 @@ def create(dbtype, version=None, filename=None):
         if str(version) == '0.6':
             db = sqlite.SQLite(filename)
         else:
-            db = sqlite.SQLite(filename)
+            db = sqlite.SQLite(filename, dbformat=version)
 
     elif dbtype == "Postgresql":  # pragma: no cover
         try:
