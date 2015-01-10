@@ -43,12 +43,14 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
 <a name="nice-features-in-pwman3" class="anchor" href="#nice-features-in-pwman3"><span class="octicon octicon-link"></span></a>Nice Features in pwman3:</h2>
 
 <ul>
+<li>Strong AES Encryption</li>
 <li>copying of passwords to clipboard</li>
 <li>launching specific uri's with default browser</li>
 <li>password generators</li>
 <li>not really a user oriented feature. However, it guarantees the elimination of silly 
 bugs: pwman3 is test driven! </li>
-</ul><h2>
+</ul>
+<h2>
 <a name="a-very-important-note-about-security" class="anchor" href="#a-very-important-note-about-security"><span class="octicon octicon-link"></span></a>A very important note about security</h2>
 
 <p>If you are a concerned about security, please note:
@@ -76,7 +78,9 @@ know something about security (which is probably more than I know at the moment.
  python-crypto 
  xsel - to copy password to clipboard on Linux</p>
 
-<p>Pwman only supports Python 2.7. </p>
+<p>Pwman3 supports Python 2.7-3.x </p>
+<p>Be advised that if you created your database with Python 2.7 odd stuff will happen if you try to read it with 
+Python 3.x</p>
 
 <p>To install from source:</p>
 
@@ -151,11 +155,9 @@ Do your self a favor and skip Windows. Try Linux\BSD*Nix OS. </p>
   cls_timeout = -1
 </code></pre>
 </li>
-</ol><h2>
-<a name="ikegams-function" class="anchor" href="#ikegams-function"><span class="octicon octicon-link"></span></a>ikegam's function</h2>
+</ol>
 
-<ul>
-<li>
+
 <p>making a password from the numeric character and the alphabet character ([A-Za-z0-9]).</p>
 
 <p>You can add a parameter for making the password to the config(~/.pwman/config).</p>
@@ -165,15 +167,6 @@ Do your self a favor and skip Windows. Try Linux\BSD*Nix OS. </p>
 <pre><code> [Generator]
  numerics = true
 </code></pre>
-</li>
-<li>
-<p>Passwords can be l33tified similarly using the following.</p>
-
-<pre><code> [Generator]
- leetify = true
-</code></pre>
-</li>
-<li>
 <p>Passwords can contain one of the following special signs:</p>
 
 <pre><code>specialsigns = ["@", "#", "?", "!", '\\', "|", "$",
@@ -186,24 +179,22 @@ Do your self a favor and skip Windows. Try Linux\BSD*Nix OS. </p>
 <pre><code>[Generator]
 special_signs = true
 </code></pre>
-</li>
-<li>
+
+
 <p>Individual password policy can be chosen with:</p>
 
 <pre><code> Pwman3 0.2.1 (c) visit: http://github.com/pwman3/pwman3
- pwman&gt; n {'leetify':False, 'numerics':True, 'special_signs':True}
+ pwman&gt; n {'numerics':True, 'special_signs':True}
  Username: username
- Password length (default 7): 7
- New password: Q1dab@7
+ Password length (default: 8): 12
+ New password: Q1dab@7abhk4
 </code></pre>
-</li>
-<li>
+
+
 <p>Copying password to X11 or Mac clip board:</p>
 
-<ul>
-<li>On Mac OSX systems copying utilizes <code>pbcopy</code><br>
-</li>
-<li>
+On Mac OSX systems copying utilizes <code>pbcopy</code><br>
+
 <p>On X11 Systems  Specify the path to <code>xsel</code> if you already have <code>~/.pwman/config</code> </p>
 
 <pre><code>[Global]
@@ -213,24 +204,7 @@ xselpath = /usr/bin/xsel
 
 <p>When launching <code>pwman</code> for the first time, it will try and look for 
 <code>xsel</code> and write the configuration properly. </p>
-</li>
-</ul>
-</li>
-</ul><h2>
-<a name="password-leetifying" class="anchor" href="#password-leetifying"><span class="octicon octicon-link"></span></a>Password leetifying</h2>
-
-<p>If you choose to leetify your passwords when generating passwords, 
-e.g. <code>leetify = true</code> in <code>~/.pwman/config</code>, password lengths may exceed the length chosen. 
-This is because certain letters will be replaced with 2 or more characters. 
-That is, if an initial random password was generated as : <code>Murkahm1</code> it will eventually be
-set to: <code>|\/|ur|&lt;ham1</code>. To see to full leet list checkout line 79 in <code>pwman/util/generator.py</code>
-or issue in your terminal: </p>
-
-<pre><code> python -c'from pwman.util import generator; print generator.leetlist'
-</code></pre>
-      </section>
+</section>
     </div>
-
-    
   </body>
 </html>
