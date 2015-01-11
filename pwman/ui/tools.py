@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 """
 Define the CLI interface for pwman3 and the helper functions
 """
@@ -28,6 +28,7 @@ import shlex
 import platform
 import colorama
 import os
+import ast
 from pwman.util.callback import Callback
 from pwman.util.crypto_engine import generate_password
 
@@ -78,7 +79,7 @@ def typeset(text, color, bold=False, underline=False,
         return text
     if bold:
         text = colorama.Style.BRIGHT + text
-    if underline and not 'win32' in sys.platform:
+    if underline and 'win32' not in sys.platform:
         text = ANSI.Underscore + text
     return color + text + colorama.Style.RESET_ALL
 
@@ -254,17 +255,29 @@ def getinput(question, default="", reader=raw_input,
 def get_or_create_pass():  # pragma: no cover
 
     p = getpass.getpass(prompt='Password (leave empty to create one):')
-    if not p:
-        while True:
+    while not p:
+        print("Password length (default: 8):", end="")
+        sys.stdout.flush()
+        ans = sys.stdin.readline().strip()
+        if ans:
             try:
-                print("Password length (default: 8):", end="")
-                sys.stdout.flush()
-                l = sys.stdin.readline().strip()
-                l = int(l) if l else 8
-                break
+                ans = ast.literal_eval(ans)
+                print(ans, type(ans), isinstance(ans, int))
+                if isinstance(ans, int):
+                    kwargs = {'pass_len': ans}
+                elif isinstance(ans, dict):
+                    kwargs = ans
+                else:
+                    print("Did not understand your input...")
+                    continue
             except ValueError:
-                print("You did not enter an integer...")
-        p = generate_password(l)
+                print("Something evil happend.")
+                print("Did not understand your input...")
+                continue
+
+            p = generate_password(**kwargs)
+        else:
+            p = generate_password()
     return p
 
 
