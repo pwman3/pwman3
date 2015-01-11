@@ -259,25 +259,26 @@ def get_or_create_pass():  # pragma: no cover
         print("Password length (default: 8):", end="")
         sys.stdout.flush()
         ans = sys.stdin.readline().strip()
-        if ans:
-            try:
-                ans = ast.literal_eval(ans)
-                print(ans, type(ans), isinstance(ans, int))
-                if isinstance(ans, int):
-                    kwargs = {'pass_len': ans}
-                elif isinstance(ans, dict):
-                    kwargs = ans
-                else:
-                    print("Did not understand your input...")
-                    continue
-            except ValueError:
-                print("Something evil happend.")
+        try:
+            ans = ast.literal_eval(ans)
+            if isinstance(ans, int):
+                kwargs = {'pass_len': ans}
+                break
+            elif isinstance(ans, dict):
+                kwargs = ans
+                break
+            else:
                 print("Did not understand your input...")
                 continue
+        except ValueError:
+            print("Something evil happend.")
+            print("Did not understand your input...")
+            continue
+        except SyntaxError:
+            kwargs = {}
+            break
 
-            p = generate_password(**kwargs)
-        else:
-            p = generate_password()
+    p = generate_password(**kwargs)
     return p
 
 
