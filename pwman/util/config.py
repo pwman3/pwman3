@@ -107,8 +107,6 @@ class Config(object):
 
 
 def get_pass_conf(config):  # pragma: no cover
-    special_chars = config.get_value("Generator",
-                                     "special_chars").lower() == 'true'
     ascii_lowercase = config.get_value("Generator",
                                        "ascii_lowercase").lower() == 'true'
     ascii_uppercase = config.get_value("Generator",
@@ -117,5 +115,4 @@ def get_pass_conf(config):  # pragma: no cover
                                     "ascii_digits").lower() == 'true'
     ascii_punctuation = config.get_value("Generator",
                                          "ascii_punctuation").lower() == 'true'
-    return special_chars, ascii_lowercase, ascii_uppercase, ascii_digits, \
-        ascii_punctuation
+    return ascii_lowercase, ascii_uppercase, ascii_digits, ascii_punctuation
