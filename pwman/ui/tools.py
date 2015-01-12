@@ -255,6 +255,10 @@ def getinput(question, default="", reader=raw_input,
 def get_or_create_pass():  # pragma: no cover
 
     p = getpass.getpass(prompt='Password (leave empty to create one):')
+
+    if p:
+        return p
+
     while not p:
         print("Password length (default: 8):", end="")
         sys.stdout.flush()
