@@ -1,6 +1,6 @@
 from pwman.data import factory
 from pwman.util import config
-from pwman import which, default_config
+from pwman import which
 from pwman.ui import get_ui_platform
 import os
 import os.path
@@ -47,11 +47,11 @@ class DummyCallback4(Callback):
         return u'newsecret'
 
 
-default_config['Database'] = {'type': 'SQLite',
-                              'filename':
-                              os.path.join(os.path.dirname(__file__),
-                                           "test.pwman.db")
-                              }
+config.default_config['Database'] = {'type': 'SQLite',
+                                     'filename':
+                                     os.path.join(os.path.dirname(__file__),
+                                                  "test.pwman.db")
+                                     }
 
 dc = """
 [Global]
@@ -74,7 +74,7 @@ class SetupTester(object):
         f.close()
         self.configp = config.Config(os.path.join(os.path.dirname(__file__),
                                                   "test.conf"),
-                                     default_config)
+                                     config.default_config)
         self.configp.set_value('Database', 'filename',
                                os.path.join(os.path.dirname(__file__),
                                             "test.pwman.db"))

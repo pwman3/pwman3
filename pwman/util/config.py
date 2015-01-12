@@ -31,7 +31,7 @@ else:                           # pragma: no cover
 config_dir = os.path.expanduser("~/.pwman")
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                             'cls_timeout': '5', 'cp_timeout': '5',
+                             'cls_timeout': '10', 'cp_timeout': '5',
                              'save': 'True'
                              },
                   'Database': {'type': 'SQLite',

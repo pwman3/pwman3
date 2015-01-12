@@ -24,7 +24,7 @@ import argparse
 import sys
 import re
 import colorama
-from pwman.util import config
+from .util import config
 from pwman.data import factory
 from pwman.data.database import __DB_FORMAT__
 
@@ -68,17 +68,6 @@ def which(cmd):  # pragma: no cover
 
 config_dir = os.path.expanduser("~/.pwman")
 
-default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                             'cls_timeout': '5',
-                             'save': 'True'
-                             },
-                  'Database': {'type': 'SQLite',
-                               'filename': os.path.join(config_dir,
-                                                        "pwman.db")},
-                  'Readline': {'history': os.path.join(config_dir,
-                                                       "history")}
-                  }
-
 
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     parser = argparse.ArgumentParser(prog=appname,
@@ -99,7 +88,7 @@ def get_conf(args):
     if not os.path.isdir(config_dir):  # pragma: no cover
         os.mkdir(config_dir)
 
-    configp = config.Config(args.cfile, default_config)
+    configp = config.Config(args.cfile, config.default_config)
     return configp
 
 

@@ -13,12 +13,13 @@ Contents:
     
    install
    tutorial
+   configuration  
+
+About pwman3:
+^^^^^^^^^^^^^ 
+
+Pwman3 is a simple command line password manager for Python 2.7-3.X. 
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 

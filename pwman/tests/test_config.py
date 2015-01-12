@@ -20,8 +20,8 @@
 import os
 import sys
 import unittest
-from pwman.util.config import (Config, ConfigException, default_config,
-                               get_pass_conf)
+from pwman.util import config
+
 
 if sys.version_info.major > 2:
     from configparser import NoSectionError
@@ -62,7 +62,8 @@ class TestConfig(unittest.TestCase):
                 continue
 
     def setUp(self):
-        self.conf = Config(filename='testfile.conf', defaults=default_config)
+        self.conf = config.Config(filename='testfile.conf',
+                                  defaults=config.default_config)
 
     def test_has_defaults(self):
         self.assertTrue(self.conf.parser.has_section('Readline'))
@@ -76,8 +77,8 @@ class TestConfig(unittest.TestCase):
                          self.conf.get_value('Readline', 'history'))
 
     def test_has_user_db(self):
-        self.assertEqual(os.path.expanduser('~/.pwman/pwman.db'),
-                         self.conf.get_value('Database', 'filename'))
+        self.assertNotEqual(os.path.expanduser('~/.pwman/pwman.db'),
+                            self.conf.get_value('Database', 'filename'))
 
     def test_wrong_config(self):
         with open('wrong_conf.conf', 'w') as f:
@@ -85,7 +86,8 @@ class TestConfig(unittest.TestCase):
 [Encryption
 algorithm = Blowfish
 """)
-        self.assertRaises(ConfigException, Config, 'wrong_conf.conf')
+        self.assertRaises(config.ConfigException, config.Config,
+                          'wrong_conf.conf')
 
     def test_set_value(self):
         self.conf.set_value('Global', 'colors', 'no')
@@ -96,7 +98,7 @@ algorithm = Blowfish
                           self.conf.set_value, *('Error', 'colors', 'no'))
 
     def test_get_pass_conf(self):
-        ans = get_pass_conf(self.conf)
+        ans = config.get_pass_conf(self.conf)
         self.assertFalse(any(ans))
 
 if __name__ == '__main__':
