@@ -33,3 +33,33 @@ The following is an example default config file::
     filename = <PWMAN_CONFIG>/pwman.db
     
 
+Following is a table describing the parameters and their meaning:
+
+
+    ===========   ===========
+    **Section**   *Readline* 
+    -----------   -----------
+                  *Global*
+    history       path to the file containing history of commands typed
+    -----------   -----------
+    **Section**   *Global* 
+    -----------   -----------
+    save          True or False - whether the Configuring file should be saved
+    -----------   -----------
+    colors        yes or no - If set to *no*, no colors used in output. This is useful for breil terminals. 
+    -----------   -----------
+    cp_timeout    Number of seconds before the clipboard is erased.
+    -----------   -----------
+    cls_timeout   Number of seconds before the screen is clean after a print.
+    -----------   -----------
+    umask         The umask in which database files are written.
+    -----------   -----------
+    xsel          path to the xsel binary (Linux\BSD only) 
+    -----------   -----------
+    **Section**   *Database* 
+    -----------   -----------
+    type          SQLite (future version will re-include support for MySQL and PostGRESQL)
+    -----------   -----------
+    filename      path to the SQLite Database file 
+    ===========   ===========
+
