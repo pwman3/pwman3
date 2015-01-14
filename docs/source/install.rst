@@ -31,4 +31,14 @@ When the import is done, start pwman3 with::
 If the import was success, erase the CSV file, which contains your passwords 
 in clear text.
 
+A Note about Python versions
+----------------------------
+
+Pwman3 was tested on Python versions 2.7-3.x. However, du to subtle differences
+in PyCrypto, unicode and other stuff it is not recommended to use the same database
+with different Python versions. 
+Hence, if you are using Python version 2.7.x to run Pwman3 and later on you would 
+like to change your default Python interpreter to Python 3 serious, it is recommended
+that you export your database and re-import it to a new database created using Python 
+3.X . 
 

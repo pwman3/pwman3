@@ -1,5 +1,5 @@
-Configuring Pwman3:
-=================== 
+Configuring Pwman3
+================== 
 
 By default Pwman3 will read the configuration file from the following path::
 
@@ -58,7 +58,7 @@ Following is a table describing the parameters and their meaning:
     -----------   -----------
     **Section**   *Database* 
     -----------   -----------
-    type          SQLite (future version will re-include support for MySQL and PostGRESQL)
+    type          SQLite (future versions will re-include support for MySQL and PostGRESQL)
     -----------   -----------
     filename      path to the SQLite Database file 
     ===========   ===========
