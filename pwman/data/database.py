@@ -30,9 +30,9 @@ class DatabaseException(Exception):
 
 class Database(object):
 
-    def __init__(self, dbver=None):
-        self._filtertags = []
-        self.dbver = dbver
+    #def __init__(self, dbver=None):
+    #    self._filtertags = []
+    #    self.dbver = dbver
 
     def open(self, dbver=None):
         """
@@ -77,8 +77,8 @@ class Database(object):
     def listtags(self, all=False):
         pass  # pragma: no cover
 
-    def currenttags(self):
-        return self._filtertags
+    #def currenttags(self):
+    #    return self._filtertags
 
     def addnodes(self, nodes):
         pass  # pragma: no cover
