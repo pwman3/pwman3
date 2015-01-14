@@ -21,8 +21,10 @@ from collections import namedtuple
 import os
 import os.path
 from pwman import set_xsel
-from pwman import (get_conf, get_conf_options)
-
+from pwman.data import factory
+from pwman.data.database import __DB_FORMAT__
+from pwman import (get_conf, get_conf_options, get_db_version)
+from .test_tools import SetupTester
 dummyfile = """
 [Encryption]
 
@@ -37,6 +39,13 @@ cls_timeout = 5
 """
 
 testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+
+
+class TestFactory(unittest.TestCase):
+
+    @classmethod
+    def tearDownClass(cls):
+        SetupTester().clean()
 
 
 class TestInit(unittest.TestCase):
@@ -54,6 +63,20 @@ class TestInit(unittest.TestCase):
             except OSError:
                 continue
 
+    def setUp(self):
+        "test that the right db instance was created"
+        self.dbtype = 'SQLite'
+        self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
+        self.tester = SetupTester(__DB_FORMAT__, testdb)
+        self.tester.create()
+
+    def test_get_db_version(self):
+        v = get_db_version(self.tester.configp, 'SQLite', None)
+        self.assertEqual(v, __DB_FORMAT__)
+        os.unlink(testdb)
+        v = get_db_version(self.tester.configp, 'SQLite', None)
+        self.assertEqual(v, 0.6)
+
     def test_set_xsel(self):
         Args = namedtuple('args', 'cfile, dbase, algo')
         args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
@@ -69,14 +92,8 @@ class TestInit(unittest.TestCase):
     def test_get_conf_options(self):
         Args = namedtuple('args', 'cfile, dbase, algo')
         args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
-        self.assertRaises(Exception, get_conf_options, (args, 'False'))
         xsel, dbtype, configp = get_conf_options(args, 'True')
         self.assertEqual(dbtype, 'SQLite')
-
-   # def test_umask(self):
-   #     Args = namedtuple('args', 'cfile, dbase, algo')
-   #     args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
-   #     xsel, dbtype, configp = get_conf_options(args, 'True')
 
 
 if __name__ == '__main__':
