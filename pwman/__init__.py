@@ -121,16 +121,13 @@ def set_db(args, configp):
 def get_conf_options(args, OSX):
     configp = get_conf(args)
     xselpath = configp.get_value("Global", "xsel")
-    if not xselpath:
+    if not xselpath:  # pragma: no cover
         set_xsel(configp, OSX)
 
     set_win_colors(configp)
     set_db(args, configp)
     set_umask(configp)
     dbtype = configp.get_value("Database", "type")
-    if not dbtype:
-        raise Exception("Could not read the Database type from the config!")
-
     return xselpath, dbtype, configp
 
 
