@@ -23,10 +23,10 @@ import os
 
 if sys.version_info.major > 2:  # pragma: no cover
     from configparser import (ConfigParser, ParsingError, NoOptionError,
-                              NoSectionError)
+                              NoSectionError, MissingSectionHeaderError)
 else:                           # pragma: no cover
     from ConfigParser import (ConfigParser, ParsingError, NoOptionError,
-                              NoSectionError)
+                              NoSectionError, MissingSectionHeaderError)
 
 config_dir = os.path.expanduser("~/.pwman")
 
@@ -59,25 +59,32 @@ class ConfigNoConfigException(ConfigException):
 class Config(object):
 
     def __init__(self, filename=None, defaults=None, **kwargs):
+
         self.filename = filename
         self.parser = self._load(defaults)
 
     def _load(self, defaults):
+        defaults = defaults or default_config
         parser = ConfigParser()
         try:
             with open(self.filename) as f:
                 try:
-                    parser.read_file(f)
-                except AttributeError:
-                    parser.readfp(f)
-        except ParsingError as e:  # pragma: no cover
-            raise ConfigException(e)
+                    try:
+                        parser.read_file(f)
+                    except AttributeError:
+                        parser.readfp(f)
+                except (ParsingError, MissingSectionHeaderError) as e:
+                    raise ConfigException(e)
         except IOError:
-            self._add_defaults(defaults, parser)
-            self.save(os.path.join(config_dir, 'config'), parser)
+            self._self_write_new_conf(self.filename, defaults, parser)
 
         self._add_defaults(defaults, parser)
         return parser
+
+    def _self_write_new_conf(self, filename, defaults, parser):
+        self.parser = parser
+        self._add_defaults(defaults, parser)
+        self.save()
 
     def _add_defaults(self, defaults, parser):
         for section, options in defaults.items():
@@ -97,13 +104,10 @@ class Config(object):
     def set_value(self, section, name, value):
         self.parser.set(section, name, value)
 
-    def save(self, filename, parser=None):  # pragma: no cover
+    def save(self):
 
-        with open(filename, "w") as fp:
-            if parser:
-                parser.write(fp)
-            else:
-                self.parser.write(fp)
+        with open(self.filename, "w") as fp:
+            self.parser.write(fp)
 
 
 def get_pass_conf(config):  # pragma: no cover
