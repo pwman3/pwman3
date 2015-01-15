@@ -1,4 +1,4 @@
-#============================================================================
+# ============================================================================
 # This file is part of Pwman3.
 #
 # Pwman3 is free software; you can redistribute it and/or modify
@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#============================================================================
+# ============================================================================
 # Copyright (C) 2014 Oz Nahum Tiram <nahumoz@gmail.com>
-#============================================================================
+# ============================================================================
 
 import os
 import sys
@@ -42,15 +42,6 @@ type = SQLite
 
 
 class TestConfig(unittest.TestCase):
-
-    @staticmethod
-    def clean_all():
-        for item in ('testfile.conf', 'wrong_conf.conf', 'dummy.cfg',
-                     'import_file.csv'):
-            try:
-                os.unlink(item)
-            except OSError:
-                continue
 
     @classmethod
     def tearDownClass(cls):
@@ -100,6 +91,13 @@ algorithm = Blowfish
     def test_get_pass_conf(self):
         ans = config.get_pass_conf(self.conf)
         self.assertFalse(any(ans))
+
+    def test_open_file(self):
+        cfg = config.Config("DoesNotExist")
+        cfg.save()
+        self.assertTrue(os.path.exists("DoesNotExist"))
+        os.unlink("DoesNotExist")
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

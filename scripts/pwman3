@@ -54,7 +54,7 @@ def main(args):
     except KeyboardInterrupt as e:
         print(e)
     finally:
-        config.save(args.cfile)
+        config.save()
 
 if __name__ == '__main__':
     args = parser_options().parse_args()

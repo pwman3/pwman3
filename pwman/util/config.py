@@ -110,7 +110,7 @@ class Config(object):
             self.parser.write(fp)
 
 
-def get_pass_conf(config):  # pragma: no cover
+def get_pass_conf(config):
     ascii_lowercase = config.get_value("Generator",
                                        "ascii_lowercase").lower() == 'true'
     ascii_uppercase = config.get_value("Generator",
