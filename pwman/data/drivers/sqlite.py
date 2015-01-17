@@ -30,7 +30,7 @@ class SQLite(Database):
     @classmethod
     def check_db_version(cls, fname):
         """
-        check the data base version.
+        check the database version.
         """
         con = sqlite.connect(fname)
         cur = con.cursor()
