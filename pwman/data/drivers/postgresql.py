@@ -20,17 +20,54 @@
 # ============================================================================
 
 """Postgresql Database implementation."""
-from pwman.data.database import Database, DatabaseException
-from pwman.data.nodes import Node
-from pwman.data.tags import Tag
-
-import pgdb
-import pwman.util.config as config
+import psycopg2 as pg
 import cPickle
+import pwman.util.config as config
+from pwman.data.database import Database, DatabaseException
 
 
 class PostgresqlDatabase(Database):
-    """Postgresql Database implementation"""
+    """
+    Postgresql Database implementation
+
+    This assumes that your database admin has created a pwman database
+    for you and shared the user name and password with you.
+
+    This driver send no clear text on wire. ONLY excrypted stuff is sent
+    between the client and the server.
+
+    Encryption and decryption are happening on your localhost, not on
+    the Postgresql server.
+
+
+    create table version
+
+    CREATE TABLE DB_VERSION(DBVERSION TEXT NOT NULL DEFAULT '');
+
+    Check if db_version exists
+
+    SELECT 1
+    FROM information_schema.tables where table_name = 'db_version';
+
+    get information:
+
+    SELECT dbversion FROM DB_VERSION;
+    """
+
+    @classmethod
+    def check_db_version(cls, user, dbname='pwman'):
+        """
+        Check the database version
+        """
+        con = pg.connect("dbname=pwman user=%s" % user)
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT DBVERSION from DBVERSION")
+            version = cur.fetchone()
+            return version
+        except pg.ProgrammingError:
+            con.rollback()
+            raise DatabaseException("Something seems fishy with the DB")
 
     def __init__(self):
         """Initialise PostgresqlDatabase instance."""
