@@ -23,7 +23,7 @@
 import psycopg2 as pg
 import cPickle
 import pwman.util.config as config
-from pwman.data.database import Database, DatabaseException
+from pwman.data.database import Database, DatabaseException, __DB_FORMAT__
 
 
 class PostgresqlDatabase(Database):
@@ -62,18 +62,19 @@ class PostgresqlDatabase(Database):
         con = pg.connect("dbname=pwman user=%s" % user)
         cur = con.cursor()
         try:
-            cur.execute("SELECT DBVERSION from DBVERSION")
+            cur.execute("SELECT VERSION from DBVERSION")
             version = cur.fetchone()
             return version
         except pg.ProgrammingError:
             con.rollback()
             raise DatabaseException("Something seems fishy with the DB")
 
-    def __init__(self):
-        """Initialise PostgresqlDatabase instance."""
-        Database.__init__(self)
+    def __init__(self, pgsqluri, dbformat=__DB_FORMAT__):
+        """
+        Initialise PostgresqlDatabase instance.
+        """
+        self._pgsqluri = pgsqluri
 
-        self._tagidcache = {}
 
         config.add_defaults({"Database": {"server": "localhost",
                                           "port": "5432",

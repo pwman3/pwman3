@@ -42,6 +42,8 @@ def check_db_version(ftype, filename):
         except ValueError:
             return 0.3
     # TODO: implement version checks for other supported DBs.
+    if ftype == "Postgresql":
+        ver = sqlite.PostgresqlDatabase.check_db_version(filename)
 
 
 def create(dbtype, version=None, filename=None):
