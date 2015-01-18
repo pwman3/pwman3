@@ -20,6 +20,11 @@
 # ============================================================================
 
 """Postgresql Database implementation."""
+import sys
+if sys.version_info.major > 2:  # pragma: no cover
+    from urllib import urlparse
+else:
+    from urlparse import urlparse
 import psycopg2 as pg
 import cPickle
 import pwman.util.config as config
@@ -75,34 +80,14 @@ class PostgresqlDatabase(Database):
         """
         self._pgsqluri = pgsqluri
 
-
-        config.add_defaults({"Database": {"server": "localhost",
-                                          "port": "5432",
-                                          "database": "pwman",
-                                          "table_prefix": "pwman_"}})
-        try:
-            self._server = config.get_value('Database', 'server')
-            self._port = config.get_value('Database', 'port')
-            self._user = config.get_value('Database', 'user')
-            self._password = config.get_value('Database', 'password')
-            self._database = config.get_value('Database', 'database')
-            self._prefix = config.get_value('Database', 'table_prefix')
-        except KeyError as e:
-            raise DatabaseException(
-                "Postgresql: missing parameter [%s]" % (e))
-
     def _open(self):
-        try:
-            self._con = None
-#            server = "%s:%s" % (self._server, self._port)
-#            self._con = pgdb.connect(host = server,
-#                                     database = self._database,
-#                                     user = self._user,
-#                                     password = self._password)
-#            self._cur = self._con.cursor()
-            self._checktables()
-        except pgdb.DatabaseError as e:
-            raise DatabaseException("Postgresql: %s" % (e))
+
+        u = urlparse(self._pgsqluri)
+        self._con = pg.connect(database=u.path[1:], user=u.username,
+                               password=u.password, host=u.hostname)
+        self._cur = self._con.cursor()
+        self._cur.execute("CREATE TABLE DBVERSION(VERSION TEXT NOT NULL "
+                          "DEFAULT '0.6')")
 
     def _get_cur(self):
         try:

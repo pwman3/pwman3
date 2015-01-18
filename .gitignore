@@ -12,3 +12,4 @@ MANIFEST
 .coverage
 htmlcov/*
 .ropeproject*
+secret.txt
