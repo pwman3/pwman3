@@ -104,7 +104,7 @@ class SQLite(Database):
 
         # create a table to hold DB version info
         self._cur.execute("CREATE TABLE DBVERSION"
-                          "(DB VERSION TEXT NOT NULL DEFAULT '%s')" %
+                          "(VERSION TEXT NOT NULL DEFAULT '%s')" %
                           self.dbformat)
         self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
                           self.dbformat)
@@ -202,6 +202,7 @@ class SQLite(Database):
     def removenodes(self, nids):
         sql_rm = "delete from node where id in (%s)" % ','.join('?'*len(nids))
         self._cur.execute(sql_rm, (nids))
+        self._con.commit()
 
     def _clean_orphands(self):
         clean = ("delete from tag where not exists "

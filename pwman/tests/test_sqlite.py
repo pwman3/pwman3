@@ -28,15 +28,17 @@ class TestSQLite(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.db.close()
         for item in ('test.db',):
             try:
                 os.remove(item)
             except OSError:
                 continue
 
-    def setUp(self):
-        self.db = SQLite('test.db')
-        self.db._open()
+    @classmethod
+    def setUp(cls):
+        cls.db = SQLite('test.db')
+        cls.db._open()
 
     def test_1_create_tables(self):
         self.db._create_tables()
@@ -132,6 +134,7 @@ class TestSQLite(unittest.TestCase):
         self.db.editnode('2', **node)
 
     def test_9_test_orphands(self):
+        self.db._clean_orphands()
         ce = CryptoEngine.get()
         baz_encrypted = ce.encrypt(u'baz').decode()
 
@@ -157,8 +160,6 @@ class TestSQLite(unittest.TestCase):
         self.db.savekey(ce.get_cryptedkey())
         self.assertEqual(ce.get_cryptedkey(), self.db.loadkey())
 
-    def tearDown(self):
-        self.db.close()
 
 if __name__ == '__main__':
 
