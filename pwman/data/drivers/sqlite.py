@@ -110,7 +110,7 @@ class SQLite(Database):
                           self.dbformat)
         try:
             self._con.commit()
-        except DatabaseException as e:  # pragma: no cover
+        except Exception as e:  # pragma: no cover
             self._con.rollback()
             raise e
 
