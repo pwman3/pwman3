@@ -365,34 +365,53 @@ class PostgresqlDatabase(Database):
         else:
             return row[0]
 
-    def _checktables(self):
-        """ Check if the Pwman tables exist """
-        cursor = self._get_cur()
-        cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE "
-                       "TABLE_NAME = '%snodes'" % (self._prefix))
+    def _create_tables(self):
 
-        if not cursor.fetchone():
-            # table doesn't exist, create it
-            cursor.execute(("CREATE TABLE %sNODES "
-                            "(ID SERIAL PRIMARY KEY, DATA TEXT NOT NULL)"
-                            % (self._prefix)))
-            cursor.execute(("CREATE TABLE %sTAGS"
-                            "(ID SERIAL PRIMARY KEY,"
-                            "DATA TEXT NOT NULL UNIQUE)") % (self._prefix))
-            cursor.execute(("CREATE TABLE %sLOOKUP"
-                            "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
-                            " PRIMARY KEY(NODE, TAG))") % self._prefix)
+        try:
+            self._cur.execute("SELECT 1 from NODE")
+            version = self._cur.fetchone()
+            if version:
+                return
+        except pg.ProgrammingError:
+            self._con.rollback()
 
-            cursor.execute(("CREATE TABLE %sKEY"
-                           + "(THEKEY TEXT NOT NULL DEFAULT '')")
-                           % (self._prefix))
-            cursor.execute("INSERT INTO %sKEY VALUES('')" % (self._prefix))
+        self._cur.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
+                          "USERNAME TEXT NOT NULL, "
+                          "PASSWORD TEXT NOT NULL, "
+                          "URL TEXT NOT NULL, "
+                          "NOTES TEXT NOT NULL"
+                          ")")
 
-            try:
-                self._con.commit()
-            except pgdb.DatabaseError as e:
-                self._con.rollback()
-                raise e
+        self._cur.execute("CREATE TABLE DBVERSION("
+                          "VERSION TEXT NOT NULL DEFAULT {}"
+                          ")".format(__DB_FORMAT__))
+    #def _checktables(self):
+    #    """ Check if the Pwman tables exist """
+    #    cursor = self._get_cur()
+    #    cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE "
+    #                   "TABLE_NAME = '%snodes'" % (self._prefix))
+    #    if not cursor.fetchone():
+    #        # table doesn't exist, create it
+    #        cursor.execute(("CREATE TABLE %sNODES "
+    #                        "(ID SERIAL PRIMARY KEY, DATA TEXT NOT NULL)"
+    #                        % (self._prefix)))
+    #        cursor.execute(("CREATE TABLE %sTAGS"
+    #                        "(ID SERIAL PRIMARY KEY,"
+    #                        "DATA TEXT NOT NULL UNIQUE)") % (self._prefix))
+    #        cursor.execute(("CREATE TABLE %sLOOKUP"
+    #                        "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
+    #                        " PRIMARY KEY(NODE, TAG))") % self._prefix)
+#
+    #        cursor.execute(("CREATE TABLE %sKEY"
+    #                       + "(THEKEY TEXT NOT NULL DEFAULT '')")
+    #                       % (self._prefix))
+    #        cursor.execute("INSERT INTO %sKEY VALUES('')" % (self._prefix))
+#
+#            try:
+#                self._con.commit()
+#            except pgdb.DatabaseError as e:
+#                self._con.rollback()
+#                raise e
 
     def savekey(self, key):
         sql = "UPDATE %sKEY SET THEKEY = %%(key)s" % (self._prefix)

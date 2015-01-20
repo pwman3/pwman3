@@ -40,10 +40,14 @@ class TestPostGresql(unittest.TestCase):
     def tearDownClass(self):
 
         self.db._cur.execute("TRUNCATE DBVERSION")
+        self.db._cur.execute("TRUNCATE NODE")
 
-    def test_con(self):
+    def test_1_con(self):
 
         self.assertIsInstance(self.db._cur, pg._psycopg.cursor)
+
+    def test_2_create_tables(self):
+        self.db._create_tables()
 
 if __name__ == '__main__':
 
