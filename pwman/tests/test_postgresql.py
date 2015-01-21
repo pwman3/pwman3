@@ -38,9 +38,12 @@ class TestPostGresql(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-
-        self.db._cur.execute("TRUNCATE DBVERSION")
-        self.db._cur.execute("TRUNCATE NODE")
+        self.db._cur.execute("DROP TABLE LOOKUP")
+        self.db._cur.execute("DROP TABLE TAG")
+        self.db._cur.execute("DROP TABLE NODE")
+        self.db._cur.execute("DROP TABLE DBVERSION")
+        self.db._cur.execute("DROP TABLE CRYPTO")
+        self.db._con.commit()
 
     def test_1_con(self):
 
@@ -48,7 +51,8 @@ class TestPostGresql(unittest.TestCase):
 
     def test_2_create_tables(self):
         self.db._create_tables()
-
+        # invoking this method a second time should not raise an exception
+        self.db._create_tables()
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
