@@ -53,6 +53,13 @@ class TestPostGresql(unittest.TestCase):
         self.db._create_tables()
         # invoking this method a second time should not raise an exception
         self.db._create_tables()
+
+    def test_3_load_key(self):
+        self.db.savekey('SECRET$6$KEY')
+        secretkey = self.db.loadkey()
+        self.assertEqual(secretkey, 'SECRET$6$KEY')
+
+
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()

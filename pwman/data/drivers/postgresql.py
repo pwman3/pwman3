@@ -88,22 +88,10 @@ class PostgresqlDatabase(Database):
         self._con = pg.connect(database=u.path[1:], user=u.username,
                                password=u.password, host=u.hostname)
         self._cur = self._con.cursor()
-
-    def _get_cur(self):
-        try:
-            if self._con is not None:
-                return self._con.cursor()
-        except pgdb.DatabaseError:
-            pass
-        server = "%s:%s" % (self._server, self._port)
-        self._con = pgdb.connect(host=server,
-                                 database=self._database,
-                                 user=self._user,
-                                 password=self._password)
-        self._cur = self._con.cursor()
-        return self._cur
+        self._create_tables()
 
     def close(self):
+        # TODO: implement _clean_orphands
         self._cur.close()
         self._con.close()
 
@@ -408,52 +396,21 @@ class PostgresqlDatabase(Database):
             self._con.commit()
         except pg.ProgrammingError:
             self._con.rollback()
-            #raise E
-    # def _checktables(self):%
-    #    """ Check if the Pwman tables exist """
-    #    cursor = self._get_cur()
-    #    cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE "
-    #                   "TABLE_NAME = '%snodes'" % (self._prefix))
-    #    if not cursor.fetchone():
-    # table doesn't exist, create it
-    #        cursor.execute(("CREATE TABLE %sNODES "
-    #                        "(ID SERIAL PRIMARY KEY, DATA TEXT NOT NULL)"
-    #                        % (self._prefix)))
-    #        cursor.execute(("CREATE TABLE %sTAGS"
-    #                        "(ID SERIAL PRIMARY KEY,"
-    #                        "DATA TEXT NOT NULL UNIQUE)") % (self._prefix))
-    #        cursor.execute(("CREATE TABLE %sLOOKUP"
-    #                        "(NODE INTEGER NOT NULL, TAG INTEGER NOT NULL,"
-    #                        " PRIMARY KEY(NODE, TAG))") % self._prefix)
-#
-    #        cursor.execute(("CREATE TABLE %sKEY"
-    #                       + "(THEKEY TEXT NOT NULL DEFAULT '')")
-    #                       % (self._prefix))
-    #        cursor.execute("INSERT INTO %sKEY VALUES('')" % (self._prefix))
-#
-#            try:
-#                self._con.commit()
-#            except pgdb.DatabaseError as e:
-#                self._con.rollback()
-#                raise e
 
     def savekey(self, key):
-        sql = "UPDATE %sKEY SET THEKEY = %%(key)s" % (self._prefix)
-        values = {"key": key}
-        cursor = self._get_cur()
-        cursor.execute(sql, values)
-        try:
-            self._con.commit()
-        except pgdb.DatabaseError as e:
-            self._con.rollback()
-            raise DatabaseException(
-                "Postgresql: Error saving key [%s]" % (e))
+        salt, digest = key.split('$6$')
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES(%s,%s)"
+        self._cur.execute("DELETE FROM CRYPTO")
+        self._cur.execute(sql, (salt, digest))
+        self._digest = digest.encode('utf-8')
+        self._salt = salt.encode('utf-8')
+        self._con.commit()
 
     def loadkey(self):
-        cursor = self._get_cur()
-        cursor.execute("SELECT THEKEY FROM %sKEY" % (self._prefix))
-        keyrow = cursor.fetchone()
-        if (keyrow[0] == ''):
+        sql = "SELECT * FROM CRYPTO"
+        try:
+            self._cur.execute(sql)
+            seed, digest = self._cur.fetchone()
+            return seed + u'$6$' + digest
+        except TypeError:
             return None
-        else:
-            return keyrow[0]
