@@ -194,24 +194,14 @@ class PostgresqlDatabase(Database):
         self._checktags()
         self._commit()
 
-    def addnodes(self, nodes):
-        cursor = self._get_cur()
-        for n in nodes:
-            sql = "INSERT INTO %sNODES(DATA) VALUES(%%(data)s)" % (
-                self._prefix)
-            if not isinstance(n, Node):
-                raise DatabaseException("Tried to insert foreign object into "
-                                        "database [%s]", n)
-            values = {"data": cPickle.dumps(n)}
-            try:
-                cursor.execute(sql, values)
-            except pgdb.DatabaseError as e:
-                raise DatabaseException("Postgresql: %s" % (e))
-            id = self._lastrowid("NODES")
-            n.set_id(id)
-
-            self._setnodetags(n)
-        self._commit()
+    def add_node(self, node):
+        sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, NOTES)"
+               "VALUES(%s, %s, %s, %s)")
+        node_tags = list(node)
+        node, tags = node_tags[:4], node_tags[-1]
+        self._cur.execute(sql, (node))
+        #self._setnodetags(self._cur.lastrowid, tags)
+        self._con.commit()
 
     def removenodes(self, nodes):
         cursor = self._get_cur()
@@ -396,6 +386,12 @@ class PostgresqlDatabase(Database):
             self._con.commit()
         except pg.ProgrammingError:
             self._con.rollback()
+
+    def save_crypto_info(self, seed, digest):
+        """save the random seed and the digested key"""
+        self._cur.execute("DELETE  FROM CRYPTO")
+        self._cur.execute("INSERT INTO CRYPTO VALUES(%s, %s)", (seed, digest))
+        self._con.commit()
 
     def savekey(self, key):
         salt, digest = key.split('$6$')

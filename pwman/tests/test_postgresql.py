@@ -46,7 +46,6 @@ class TestPostGresql(unittest.TestCase):
         self.db._con.commit()
 
     def test_1_con(self):
-
         self.assertIsInstance(self.db._cur, pg._psycopg.cursor)
 
     def test_2_create_tables(self):
@@ -58,6 +57,14 @@ class TestPostGresql(unittest.TestCase):
         self.db.savekey('SECRET$6$KEY')
         secretkey = self.db.loadkey()
         self.assertEqual(secretkey, 'SECRET$6$KEY')
+
+    def test_4_save_crypto(self):
+        self.db.save_crypto_info("TOP", "SECRET")
+        secretkey = self.db.loadkey()
+        self.assertEqual(secretkey, 'TOP$6$SECRET')
+
+    def test_5_add_node(self):
+        self.db.add_node(("TBONE", "S3K43T", "example.org", "some note"))
 
 
 if __name__ == '__main__':
