@@ -62,6 +62,8 @@ class TestPostGresql(unittest.TestCase):
         self.db.save_crypto_info("TOP", "SECRET")
         secretkey = self.db.loadkey()
         self.assertEqual(secretkey, 'TOP$6$SECRET')
+        row = self.db.fetch_crypto_info()
+        self.assertEqual(row, ('TOP', 'SECRET'))
 
     def test_5_add_node(self):
         self.db.add_node(("TBONE", "S3K43T", "example.org", "some note"))
