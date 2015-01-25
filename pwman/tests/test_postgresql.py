@@ -66,8 +66,10 @@ class TestPostGresql(unittest.TestCase):
         self.assertEqual(row, ('TOP', 'SECRET'))
 
     def test_5_add_node(self):
-        self.db.add_node(("TBONE", "S3K43T", "example.org", "some note"))
-
+        innode = ["TBONE", "S3K43T", "example.org", "some note"]
+        self.db.add_node(innode)
+        outnode = self.db.getnodes([1])[0]
+        self.assertEqual(innode, outnode[1:])
 
 if __name__ == '__main__':
 

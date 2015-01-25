@@ -94,6 +94,19 @@ class PostgresqlDatabase(Database):
         #self._setnodetags(self._cur.lastrowid, tags)
         self._con.commit()
 
+    def getnodes(self, ids):
+        sql = "SELECT * FROM NODE WHERE ID IN ({})".format(','.join('%s' for
+                                                                    i in ids))
+        self._cur.execute(sql, (ids))
+        nodes = self._cur.fetchall()
+        nodes_w_tags = []
+        for node in nodes:
+            #tags = list(self._get_node_tags(node))
+            tags = []
+            nodes_w_tags.append(list(node) + tags)
+
+        return nodes_w_tags
+
     def removenodes(self, nodes):
         pass
 
