@@ -17,11 +17,8 @@
 # Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 
-import os
 import unittest
-import sys
 from pwman.data.drivers.postgresql import PostgresqlDatabase
-from pwman.data.nodes import Node
 from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
 import psycopg2 as pg
@@ -70,6 +67,16 @@ class TestPostGresql(unittest.TestCase):
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
         self.assertEqual(innode, outnode[1:])
+
+    def test_6_list_nodes(self):
+        self.db.listnodes()
+
+    def test_7_get_or_create_tag(self):
+        s = self.db._get_or_create_tag("SECRET")
+        s1 = self.db._get_or_create_tag("SECRET")
+
+        self.assertEqual(s, s1)
+
 
 if __name__ == '__main__':
 

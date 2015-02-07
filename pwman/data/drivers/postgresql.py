@@ -74,13 +74,43 @@ class PostgresqlDatabase(Database):
         self._cur = self._con.cursor()
         self._create_tables()
 
+    def _get_tag(self, tagcipher):
+        sql_search = "SELECT ID FROM TAG WHERE DATA = %s"
+        self._cur.execute(sql_search, ([tagcipher]))
+        rv = self._cur.fetchone()
+        return rv
+
+    def _get_or_create_tag(self, tagcipher):
+        rv = self._get_tag(tagcipher)
+        if rv:
+            return rv[0]
+        else:
+            sql_insert = "INSERT INTO TAG(DATA) VALUES(%s) RETURNING ID"
+            self._cur.execute(sql_insert, ([tagcipher]))
+            rid = self._cur.fetchone()[0]
+            return rid
+
     def close(self):
         # TODO: implement _clean_orphands
         self._cur.close()
         self._con.close()
 
-    def listtags(self, filter=None):
-        pass
+    def listnodes(self, filter=None):
+        if not filter:
+            sql_all = "SELECT ID FROM NODE"
+            self._cur.execute(sql_all)
+            ids = self._cur.fetchall()
+            return [id[0] for id in ids]
+        else:
+            tagid = self._get_tag(filter)
+            if not tagid:
+                return []
+
+            sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = %s "
+            self._cur.execute(sql_filter, (tagid))
+            self._con.commit()
+            ids = self._cur.fetchall()
+            return [id[0] for id in ids]
 
     def editnode(self, nid, **kwargs):
         pass
@@ -110,7 +140,7 @@ class PostgresqlDatabase(Database):
     def removenodes(self, nodes):
         pass
 
-    def listnodes(self):
+    def listtags(self):
         pass
 
     def _create_tables(self):
