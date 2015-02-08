@@ -36,8 +36,9 @@ class TestImporter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open('import_file.csv', 'w') as f:
-            f.write(import_example)
+        f = open('import_file.csv', 'w')
+        f.write(import_example)
+        f.close()
 
     @classmethod
     def tearDownClass(cls):
@@ -91,7 +92,9 @@ class TestImporter(unittest.TestCase):
         Args = namedtuple('Args', 'import_file, db')
         if os.path.exists('importdummy.db'):
             os.unlink('importdummy.db')
-        args = Args(import_file=open('import_file.csv'), db='importdummy.db')
+        f = open('import_file.csv')
+        args = Args(import_file=f, db='importdummy.db')
+        f.close()
         dbtype, dbver, fname = 'SQLite', 0.6, 'importdummy.db'
         db = pwman.data.factory.create(dbtype, dbver, fname)
         importer = Importer((args, '', db))

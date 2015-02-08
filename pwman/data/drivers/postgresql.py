@@ -22,7 +22,7 @@
 """Postgresql Database implementation."""
 import sys
 if sys.version_info.major > 2:  # pragma: no cover
-    from urllib import parse as urlparse
+    from urllib.parse import urlparse
 else:
     from urlparse import urlparse
 import psycopg2 as pg
