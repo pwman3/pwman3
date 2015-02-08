@@ -90,6 +90,19 @@ class PostgresqlDatabase(Database):
             rid = self._cur.fetchone()[0]
             return rid
 
+    def _setnodetags(self, nodeid, tags):
+        for tag in tags:
+            tid = self._get_or_create_tag(tag)
+            self._update_tag_lookup(nodeid, tid)
+
+    def _get_node_tags(self, node):
+        pass
+
+    def _update_tag_lookup(self, nodeid, tid):
+        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(%s, %s)"
+        self._cur.execute(sql_lookup, (nodeid, tid))
+        self._con.commit()
+
     def _clean_orphans(self):
         clean = ("delete from tag where not exists "
                  "(select 'x' from lookup l where l.tagid = tag.id)")
@@ -123,11 +136,12 @@ class PostgresqlDatabase(Database):
 
     def add_node(self, node):
         sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, NOTES)"
-               "VALUES(%s, %s, %s, %s)")
+               "VALUES(%s, %s, %s, %s) RETURNING ID")
         node_tags = list(node)
         node, tags = node_tags[:4], node_tags[-1]
         self._cur.execute(sql, (node))
-        #self._setnodetags(self._cur.lastrowid, tags)
+        nid = self._cur.fetchone()[0]
+        self._setnodetags(nid, tags)
         self._con.commit()
 
     def getnodes(self, ids):
@@ -143,8 +157,13 @@ class PostgresqlDatabase(Database):
 
         return nodes_w_tags
 
-    def removenodes(self, nodes):
-        pass
+    def removenodes(self, nid):
+        # shall we do this also in the sqlite driver?
+        sql_clean = "DELETE FROM LOOKUP WHERE NODEID=%s"
+        self._cur.execute(sql_clean, nid)
+        sql_rm = "delete from node where id = %s"
+        self._cur.execute(sql_rm, nid)
+        self._con.commit()
 
     def listtags(self):
         self._clean_orphans()

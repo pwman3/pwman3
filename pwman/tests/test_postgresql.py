@@ -83,6 +83,12 @@ class TestPostGresql(unittest.TestCase):
         rv = self.db._get_tag("SECRET")
         self.assertIsNone(rv)
 
+    def test_8_remove_node(self):
+        self.db.removenodes([1])
+        n = self.db.listnodes()
+        self.assertEqual(len(n), 0)
+
+
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
