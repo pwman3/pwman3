@@ -68,7 +68,7 @@ class SQLite(Database):
             return [id[0] for id in ids]
 
     def listtags(self):
-        self._clean_orphands()
+        self._clean_orphans()
         get_tags = "select data from tag"
         self._cur.execute(get_tags)
         tags = self._cur.fetchall()
@@ -204,7 +204,7 @@ class SQLite(Database):
         self._cur.execute(sql_rm, (nids))
         self._con.commit()
 
-    def _clean_orphands(self):
+    def _clean_orphans(self):
         clean = ("delete from tag where not exists "
                  "(select 'x' from lookup l where l.tagid = tag.id)")
 
@@ -233,6 +233,6 @@ class SQLite(Database):
             return None
 
     def close(self):
-        self._clean_orphands()
+        self._clean_orphans()
         self._cur.close()
         self._con.close()

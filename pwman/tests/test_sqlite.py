@@ -127,14 +127,14 @@ class TestSQLite(unittest.TestCase):
         self.assertEqual(rv, (u'transparent', u'notsecret'))
         node = {'user': 'modify', 'password': 'notsecret',
                 'tags': ['foo', 'auto']}
-        # now the tags bank and baz are orphand ...
+        # now the tags bank and baz are orphan ...
         # what happens? it should be completely removed.
         # To spare IO we only delete orphand tags when
         # db.close is called.
         self.db.editnode('2', **node)
 
-    def test_9_test_orphands(self):
-        self.db._clean_orphands()
+    def test_9_test_orphans(self):
+        self.db._clean_orphans()
         ce = CryptoEngine.get()
         baz_encrypted = ce.encrypt(u'baz').decode()
 
