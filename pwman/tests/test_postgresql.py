@@ -77,6 +77,11 @@ class TestPostGresql(unittest.TestCase):
 
         self.assertEqual(s, s1)
 
+    def test_7a_clean_orphands(self):
+
+        self.db._clean_orphands()
+        rv = self.db._get_tag("SECRET")
+        self.assertIsNone(rv)
 
 if __name__ == '__main__':
 

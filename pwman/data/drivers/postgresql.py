@@ -90,8 +90,14 @@ class PostgresqlDatabase(Database):
             rid = self._cur.fetchone()[0]
             return rid
 
+    def _clean_orphands(self):
+        clean = ("delete from tag where not exists "
+                 "(select 'x' from lookup l where l.tagid = tag.id)")
+        self._cur.execute(clean)
+        self._con.commit()
+
     def close(self):
-        # TODO: implement _clean_orphands
+        self._clean_orphands()
         self._cur.close()
         self._con.close()
 
@@ -141,7 +147,13 @@ class PostgresqlDatabase(Database):
         pass
 
     def listtags(self):
-        pass
+        self._clean_orphands()
+        get_tags = "select data from tag"
+        self._cur.execute(get_tags)
+        tags = self._cur.fetchall()
+        if tags:
+            return [t[0] for t in tags]
+        return []
 
     def _create_tables(self):
 
