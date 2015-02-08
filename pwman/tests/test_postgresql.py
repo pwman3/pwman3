@@ -23,13 +23,21 @@ from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
 import psycopg2 as pg
 
+##
+# testing on linux host
+# su - postgres
+# psql
+# postgres=# create user $YOUR_USERNAME;
+# postgres=# grant ALL on pwman to $YOUR_USERNAME;
+#
+##
+
 
 class TestPostGresql(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        secret = open('secret.txt').readline().strip()
-        u = "postgresql://oz123:%s@localhost/pwman" % secret
+        u = "postgresql:///pwman"
         self.db = PostgresqlDatabase(u)
         self.db._open()
 

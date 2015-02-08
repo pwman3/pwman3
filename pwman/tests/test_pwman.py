@@ -25,11 +25,13 @@ import unittest
 from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
+from .test_postgresql import TestPostGresql
 from .test_importer import TestImporter
 from .test_factory import TestFactory
 from .test_base_ui import TestBaseUI
 from .test_init import TestInit
 from .test_nodes import TestNode
+
 
 if 'win' not in sys.platform:
     from .test_complete_ui import (Ferrum, NEW_DB_PATH)
@@ -52,6 +54,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestPassGenerator))
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
+    suite.addTest(loader.loadTestsFromTestCase(TestPostGresql))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     suite.addTest(loader.loadTestsFromTestCase(TestFactory))
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))

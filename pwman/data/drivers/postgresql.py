@@ -45,7 +45,7 @@ class PostgresqlDatabase(Database):
     """
 
     @classmethod
-    def check_db_version(cls, user, dbname='pwman'):
+    def check_db_version(cls, user, dbname='pwman'):  # pragma: no cover
         """
         Check the database version
         """
@@ -95,7 +95,7 @@ class PostgresqlDatabase(Database):
             tid = self._get_or_create_tag(tag)
             self._update_tag_lookup(nodeid, tid)
 
-    def _get_node_tags(self, node):
+    def _get_node_tags(self, node):  # pragma: no cover
         pass
 
     def _update_tag_lookup(self, nodeid, tid):
@@ -109,7 +109,7 @@ class PostgresqlDatabase(Database):
         self._cur.execute(clean)
         self._con.commit()
 
-    def close(self):
+    def close(self):  # pragma: no cover
         self._clean_orphans()
         self._cur.close()
         self._con.close()
@@ -120,7 +120,7 @@ class PostgresqlDatabase(Database):
             self._cur.execute(sql_all)
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
-        else:
+        else:                               # pragma: no cover
             tagid = self._get_tag(filter)
             if not tagid:
                 return []
@@ -131,7 +131,7 @@ class PostgresqlDatabase(Database):
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
 
-    def editnode(self, nid, **kwargs):
+    def editnode(self, nid, **kwargs):  # pragma: no cover
         pass
 
     def add_node(self, node):
@@ -241,5 +241,5 @@ class PostgresqlDatabase(Database):
             self._cur.execute(sql)
             seed, digest = self._cur.fetchone()
             return seed + u'$6$' + digest
-        except TypeError:
+        except TypeError:  # pragma: no cover
             return None
