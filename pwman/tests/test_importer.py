@@ -92,13 +92,13 @@ class TestImporter(unittest.TestCase):
         Args = namedtuple('Args', 'import_file, db')
         if os.path.exists('importdummy.db'):
             os.unlink('importdummy.db')
-        f = open('import_file.csv')
-        args = Args(import_file=f, db='importdummy.db')
-        f.close()
+        args = Args(import_file=open('import_file.csv'), db='importdummy.db')
         dbtype, dbver, fname = 'SQLite', 0.6, 'importdummy.db'
         db = pwman.data.factory.create(dbtype, dbver, fname)
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
+        args.import_file.close()
+
 
 if __name__ == '__main__':
 
