@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2015 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
@@ -74,46 +74,6 @@ class PostgresqlDatabase(Database):
         self._cur = self._con.cursor()
         self._create_tables()
 
-    def _get_tag(self, tagcipher):
-        sql_search = "SELECT ID FROM TAG WHERE DATA = %s"
-        self._cur.execute(sql_search, ([tagcipher]))
-        rv = self._cur.fetchone()
-        return rv
-
-    def _get_or_create_tag(self, tagcipher):
-        rv = self._get_tag(tagcipher)
-        if rv:
-            return rv[0]
-        else:
-            sql_insert = "INSERT INTO TAG(DATA) VALUES(%s) RETURNING ID"
-            self._cur.execute(sql_insert, ([tagcipher]))
-            rid = self._cur.fetchone()[0]
-            return rid
-
-    def _setnodetags(self, nodeid, tags):
-        for tag in tags:
-            tid = self._get_or_create_tag(tag)
-            self._update_tag_lookup(nodeid, tid)
-
-    def _get_node_tags(self, node):  # pragma: no cover
-        pass
-
-    def _update_tag_lookup(self, nodeid, tid):
-        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(%s, %s)"
-        self._cur.execute(sql_lookup, (nodeid, tid))
-        self._con.commit()
-
-    def _clean_orphans(self):
-        clean = ("delete from tag where not exists "
-                 "(select 'x' from lookup l where l.tagid = tag.id)")
-        self._cur.execute(clean)
-        self._con.commit()
-
-    def close(self):  # pragma: no cover
-        self._clean_orphans()
-        self._cur.close()
-        self._con.close()
-
     def listnodes(self, filter=None):
         if not filter:
             sql_all = "SELECT ID FROM NODE"
@@ -130,40 +90,6 @@ class PostgresqlDatabase(Database):
             self._con.commit()
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
-
-    def editnode(self, nid, **kwargs):  # pragma: no cover
-        pass
-
-    def add_node(self, node):
-        sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, NOTES)"
-               "VALUES(%s, %s, %s, %s) RETURNING ID")
-        node_tags = list(node)
-        node, tags = node_tags[:4], node_tags[-1]
-        self._cur.execute(sql, (node))
-        nid = self._cur.fetchone()[0]
-        self._setnodetags(nid, tags)
-        self._con.commit()
-
-    def getnodes(self, ids):
-        sql = "SELECT * FROM NODE WHERE ID IN ({})".format(','.join('%s' for
-                                                                    i in ids))
-        self._cur.execute(sql, (ids))
-        nodes = self._cur.fetchall()
-        nodes_w_tags = []
-        for node in nodes:
-            #tags = list(self._get_node_tags(node))
-            tags = []
-            nodes_w_tags.append(list(node) + tags)
-
-        return nodes_w_tags
-
-    def removenodes(self, nid):
-        # shall we do this also in the sqlite driver?
-        sql_clean = "DELETE FROM LOOKUP WHERE NODEID=%s"
-        self._cur.execute(sql_clean, nid)
-        sql_rm = "delete from node where id = %s"
-        self._cur.execute(sql_rm, nid)
-        self._con.commit()
 
     def listtags(self):
         self._clean_orphans()
@@ -215,16 +141,105 @@ class PostgresqlDatabase(Database):
         except pg.ProgrammingError:
             self._con.rollback()
 
+    def fetch_crypto_info(self):
+        self._cur.execute("SELECT * FROM CRYPTO")
+        row = self._cur.fetchone()
+        return row
+
     def save_crypto_info(self, seed, digest):
         """save the random seed and the digested key"""
         self._cur.execute("DELETE  FROM CRYPTO")
         self._cur.execute("INSERT INTO CRYPTO VALUES(%s, %s)", (seed, digest))
         self._con.commit()
 
-    def fetch_crypto_info(self):
-        self._cur.execute("SELECT * FROM CRYPTO")
-        row = self._cur.fetchone()
-        return row
+    def add_node(self, node):
+        sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, NOTES)"
+               "VALUES(%s, %s, %s, %s) RETURNING ID")
+        node_tags = list(node)
+        node, tags = node_tags[:4], node_tags[-1]
+        self._cur.execute(sql, (node))
+        nid = self._cur.fetchone()[0]
+        self._setnodetags(nid, tags)
+        self._con.commit()
+
+    def _get_tag(self, tagcipher):
+        sql_search = "SELECT ID FROM TAG WHERE DATA = %s"
+        self._cur.execute(sql_search, ([tagcipher]))
+        rv = self._cur.fetchone()
+        return rv
+
+    def _get_or_create_tag(self, tagcipher):
+        rv = self._get_tag(tagcipher)
+        if rv:
+            return rv[0]
+        else:
+            sql_insert = "INSERT INTO TAG(DATA) VALUES(%s) RETURNING ID"
+            self._cur.execute(sql_insert, ([tagcipher]))
+            rid = self._cur.fetchone()[0]
+            return rid
+
+    def _update_tag_lookup(self, nodeid, tid):
+        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(%s, %s)"
+        self._cur.execute(sql_lookup, (nodeid, tid))
+        self._con.commit()
+
+    def _setnodetags(self, nodeid, tags):
+        for tag in tags:
+            tid = self._get_or_create_tag(tag)
+            self._update_tag_lookup(nodeid, tid)
+
+    def _get_node_tags(self, node):  # pragma: no cover
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = %s"
+        tagids = self._cur.execute(sql, (str(node[0]),)).fetchall()
+        sql = ("SELECT DATA FROM TAG WHERE ID IN (%s)"
+               "" % ','.join('%%s'*len(tagids)))
+        tagids = [str(id[0]) for id in tagids]
+        self._cur.execute(sql, (tagids))
+        tags = self._cur.fetchall()
+        for t in tags:
+            yield t[0]
+
+    def getnodes(self, ids):
+        sql = "SELECT * FROM NODE WHERE ID IN ({})".format(','.join('%s' for
+                                                                    i in ids))
+        self._cur.execute(sql, (ids))
+        nodes = self._cur.fetchall()
+        nodes_w_tags = []
+        for node in nodes:
+            #tags = list(self._get_node_tags(node))
+            tags = []
+            nodes_w_tags.append(list(node) + tags)
+
+        return nodes_w_tags
+
+    def editnode(self, nid, **kwargs):  # pragma: no cover
+        tags = kwargs.pop('tags', None)
+        sql = ("UPDATE NODE SET %s WHERE ID = %%s "
+               "" % ','.join('%s=%%s' % k for k in list(kwargs)))
+        self._cur.execute(sql, (list(kwargs.values()) + [nid]))
+        if tags:
+            # update all old node entries in lookup
+            # create new entries
+            # clean all old tags
+            sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
+            self._cur.execute(sql_clean, (str(nid),))
+            self._setnodetags(nid, tags)
+
+        self._con.commit()
+
+    def removenodes(self, nid):
+        # shall we do this also in the sqlite driver?
+        sql_clean = "DELETE FROM LOOKUP WHERE NODEID=%s"
+        self._cur.execute(sql_clean, nid)
+        sql_rm = "delete from node where id = %s"
+        self._cur.execute(sql_rm, nid)
+        self._con.commit()
+
+    def _clean_orphans(self):
+        clean = ("delete from tag where not exists "
+                 "(select 'x' from lookup l where l.tagid = tag.id)")
+        self._cur.execute(clean)
+        self._con.commit()
 
     def savekey(self, key):
         salt, digest = key.split('$6$')
@@ -243,3 +258,8 @@ class PostgresqlDatabase(Database):
             return seed + u'$6$' + digest
         except TypeError:  # pragma: no cover
             return None
+
+    def close(self):  # pragma: no cover
+        self._clean_orphans()
+        self._cur.close()
+        self._con.close()
