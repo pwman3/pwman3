@@ -53,7 +53,8 @@ class TestImporter(unittest.TestCase):
         config = {}
         db = SQLite('test-importer.db')
         Args = namedtuple('args', 'import_file')
-        self.importer = CSVImporter(Args(import_file=open('import_file.csv')),
+        args = Args(import_file=open('import_file.csv'))
+        self.importer = CSVImporter(args,
                                     config, db)
 
     def test_read_file(self):
@@ -98,6 +99,9 @@ class TestImporter(unittest.TestCase):
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
         args.import_file.close()
+
+    def tearDown(self):
+        self.importer.args.import_file.close()
 
 
 if __name__ == '__main__':
