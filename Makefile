@@ -40,6 +40,7 @@ lint:
 test: install clean
 	git checkout pwman/tests/pwman.v0.0.8.db
 	python setup.py test
+	@rm -f pwman/tests/test.conf
 
 test-all:
 	tox
@@ -69,5 +70,5 @@ dist: clean
 	ls -l dist
 
 install:
-	-pip uninstall -y pwman3
+	pip uninstall -y pwman3
 	python setup.py -q install 
