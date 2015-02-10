@@ -37,8 +37,14 @@ def main(args):
     PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dbver = get_db_version(config, dbtype, args)
-    CryptoEngine.get(dbver)
+    CryptoEngine.get()
 
+    # TODO: filename should be update to dburi
+    # then factory create should use urlparse to find the
+    # correct db type
+    # types : sqlite, mysql, postgresql
+    # this requires changes in Config, documentation, command line script
+    # and finally in data.factory
     fname = config.get_value('Database', 'filename')
     db = pwman.data.factory.create(dbtype, dbver, fname)
 
