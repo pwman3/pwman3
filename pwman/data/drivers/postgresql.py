@@ -54,6 +54,8 @@ class PostgresqlDatabase(Database):
         try:
             cur.execute("SELECT VERSION from DBVERSION")
             version = cur.fetchone()
+            con.close()
+            cur.close()
             return version
         except pg.ProgrammingError:
             con.rollback()
