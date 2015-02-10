@@ -43,9 +43,8 @@ description = "a command line password management application."
 keywords = "password management sqlite crypto"
 long_description = (u"Pwman3 aims to provide a simple but powerful command "
                     "line interface for password management.\nIt allows one "
-                    "to store your password in a SQLite database locked by "
-                    "a\nmaster password which can be encrypted with different "
-                    "algorithms (e.g AES, Blowfish, DES3, IDEA, etc.).")
+                    "to store your password in database locked by "
+                    "a\nmaster password which is AES encrypted.")
 
 _db_warn = (u"pwman3 detected that you are using the old database format"
             " which is insecure."
