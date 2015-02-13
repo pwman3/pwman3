@@ -1,10 +1,15 @@
+import os
+import os.path
+import sys
+if sys.version_info.major > 2:  # pragma: no cover
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
+
 from pwman.data import factory
 from pwman.util import config
 from pwman import which
 from pwman.ui import get_ui_platform
-import os
-import os.path
-import sys
 from pwman.util.callback import Callback
 
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
@@ -50,7 +55,11 @@ class DummyCallback4(Callback):
 config.default_config['Database'] = {'type': 'SQLite',
                                      'filename':
                                      os.path.join(os.path.dirname(__file__),
-                                                  "test.pwman.db")
+                                                  "test.pwman.db"),
+                                     'dburi': os.path.join(
+                                         'sqlite:///',
+                                         os.path.dirname(__file__),
+                                         "test.pwman.db")
                                      }
 
 dc = """
@@ -67,7 +76,7 @@ type = SQLite
 
 class SetupTester(object):
 
-    def __init__(self, dbver=None, filename=None):
+    def __init__(self, dbver=None, filename=None, dburi=None):
 
         f = open(os.path.join(os.path.dirname(__file__), 'test.conf'), 'w')
         f.write(dc)
@@ -78,6 +87,10 @@ class SetupTester(object):
         self.configp.set_value('Database', 'filename',
                                os.path.join(os.path.dirname(__file__),
                                             "test.pwman.db"))
+        self.configp.set_value('Database', 'dburi',
+                               os.path.join('sqlite:///',
+                                            os.path.dirname(__file__),
+                                            "test.pwman.db"))
         if not OSX:
             self.xselpath = which("xsel")
             self.configp.set_value("Global", "xsel", self.xselpath)
@@ -86,10 +99,16 @@ class SetupTester(object):
 
         self.dbver = dbver
         self.filename = filename
+        self.dburi = dburi
 
     def clean(self):
-        if os.path.exists(self.configp.get_value('Database', 'filename')):
-            os.remove(self.configp.get_value('Database', 'filename'))
+        dbfile = self.configp.get_value('Database', 'filename')
+        dburi = urlparse(self.configp.get_value('Database', 'dburi')).path
+        if os.path.exists(dbfile):
+            os.remove(dbfile)
+
+        if os.path.exists(dburi):
+            os.remove(dburi)
 
         if os.path.exists(os.path.join(os.path.dirname(__file__),
                                        'testing_config')):
@@ -104,5 +123,6 @@ class SetupTester(object):
     def create(self):
         dbtype = 'SQLite'
         db = factory.create(dbtype, self.dbver, self.filename)
+        #db = factory.createdb(self.dburi, self.dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback,
                                config_parser=self.configp)

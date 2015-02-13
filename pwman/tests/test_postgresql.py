@@ -28,7 +28,7 @@ import psycopg2 as pg
 # su - postgres
 # psql
 # postgres=# create user $YOUR_USERNAME;
-# postgres=# grant ALL on pwman to $YOUR_USERNAME;
+# postgres=# grant ALL ON DATABASE pwman to $YOUR_USERNAME;
 #
 ##
 

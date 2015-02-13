@@ -30,6 +30,12 @@ db = DBFactory.create(params)
 db.open()
 .....
 """
+import sys
+if sys.version_info.major > 2:  # pragma: no cover
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
+
 from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
 
@@ -64,7 +70,36 @@ def create(dbtype, version=None, filename=None):
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
         except ImportError:
-            raise DatabaseException("python-pygresql not installed")
+            raise DatabaseException("python-psycopg2 not installed")
+    elif dbtype == "MySQL":  # pragma: no cover
+        try:
+            from pwman.data.drivers import mysql
+            db = mysql.MySQLDatabase()
+        except ImportError:
+            raise DatabaseException("python-mysqldb not installed")
+    else:
+        raise DatabaseException("Unknown database type specified")
+    return db
+
+
+def createdb(dburi, version):
+    dburi = urlparse(dburi)
+    dbtype = dburi.scheme
+    filename = dburi.path
+
+    if dbtype == "SQLite":
+        from pwman.data.drivers import sqlite
+        if str(version) == '0.6':
+            db = sqlite.SQLite(filename)
+        else:
+            db = sqlite.SQLite(filename, dbformat=version)
+
+    elif dbtype == "Postgresql":  # pragma: no cover
+        try:
+            from pwman.data.drivers import postgresql
+            db = postgresql.PostgresqlDatabase()
+        except ImportError:
+            raise DatabaseException("python-psycopg2 not installed")
     elif dbtype == "MySQL":  # pragma: no cover
         try:
             from pwman.data.drivers import mysql
