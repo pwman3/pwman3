@@ -87,20 +87,20 @@ def createdb(dburi, version):
     dbtype = dburi.scheme
     filename = dburi.path
 
-    if dbtype == "SQLite":
+    if dbtype == "sqlite":
         from pwman.data.drivers import sqlite
         if str(version) == '0.6':
             db = sqlite.SQLite(filename)
         else:
             db = sqlite.SQLite(filename, dbformat=version)
 
-    elif dbtype == "Postgresql":  # pragma: no cover
+    elif dbtype == "postgresql":
         try:
             from pwman.data.drivers import postgresql
-            db = postgresql.PostgresqlDatabase()
+            db = postgresql.PostgresqlDatabase(dburi)
         except ImportError:
             raise DatabaseException("python-psycopg2 not installed")
-    elif dbtype == "MySQL":  # pragma: no cover
+    elif dbtype == "mysql":  # pragma: no cover
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()

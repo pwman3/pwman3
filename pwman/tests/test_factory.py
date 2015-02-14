@@ -23,6 +23,7 @@ import os
 import os.path
 from pwman.data import factory
 from pwman.data.drivers.sqlite import DatabaseException, SQLite
+from pwman.data.drivers.postgresql import PostgresqlDatabase
 from pwman.ui import get_ui_platform
 from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
@@ -63,6 +64,12 @@ class TestFactory(unittest.TestCase):
         self.assertIsInstance(db, SQLite)
         self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
 
+    def test_factory_createdb(self):
+        db = factory.createdb("sqlite:///test.db", 0.6)
+        self.assertIsInstance(db, SQLite)
+        del db
+        db = factory.createdb("postgresql:///pwman", 0.6)
+        self.assertIsInstance(db, PostgresqlDatabase)
 
 if __name__ == '__main__':
     # make sure we use local pwman
