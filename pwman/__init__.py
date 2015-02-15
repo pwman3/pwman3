@@ -133,9 +133,8 @@ def get_conf_options(args, OSX):
 def get_db_version(config, dbtype, args):
     # This method is seriously biased towards SQLite.
     # TODO: make this more Postgresql\Network Database friendly
-    if os.path.exists(config.get_value("Database", "filename")):
-        dbver = factory.check_db_version(dbtype, config.get_value("Database",
-                                                                  "filename"))
+    if os.path.exists(config.get_value("Database", "dburi")):
+        dbver = factory.check_db_version(config.get_value("Database", "dburi"))
     else:
         dbver = __DB_FORMAT__
     return dbver

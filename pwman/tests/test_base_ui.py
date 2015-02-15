@@ -61,7 +61,7 @@ class TestBaseUI(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         dbver = __DB_FORMAT__
-        self.dbtype = 'SQLite'
+        self.dbtype = 'sqlite'
         self.db = factory.create(self.dbtype, dbver, testdb)
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()

@@ -36,20 +36,25 @@ if sys.version_info.major > 2:  # pragma: no cover
 else:
     from urlparse import urlparse
 
+import os
+
 from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
 
 
-def check_db_version(ftype, filename):
-    if ftype == "SQLite":
+def check_db_version(dburi):
+    dburi = urlparse(dburi)
+    dbtype = dburi.scheme
+    filename = os.path.abspath(dburi.path)
+    if dbtype == "sqlite":
         ver = sqlite.SQLite.check_db_version(filename)
         try:
             return float(ver.strip("\'"))
         except ValueError:
             return 0.3
     # TODO: implement version checks for other supported DBs.
-    if ftype == "Postgresql":
-        ver = sqlite.PostgresqlDatabase.check_db_version(filename)
+    if dbtype == "Postgresql":
+        ver = sqlite.PostgresqlDatabase.check_db_version(dburi)
 
 
 def create(dbtype, version=None, filename=None):
@@ -58,20 +63,20 @@ def create(dbtype, version=None, filename=None):
     Create a Database instance.
     'type' can only be 'SQLite' at the moment
     """
-    if dbtype == "SQLite":
+    if dbtype == "sqlite":
         from pwman.data.drivers import sqlite
         if str(version) == '0.6':
             db = sqlite.SQLite(filename)
         else:
             db = sqlite.SQLite(filename, dbformat=version)
 
-    elif dbtype == "Postgresql":  # pragma: no cover
+    elif dbtype == "postgresql":  # pragma: no cover
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase()
         except ImportError:
             raise DatabaseException("python-psycopg2 not installed")
-    elif dbtype == "MySQL":  # pragma: no cover
+    elif dbtype == "mysql":  # pragma: no cover
         try:
             from pwman.data.drivers import mysql
             db = mysql.MySQLDatabase()
@@ -98,7 +103,7 @@ def createdb(dburi, version):
         try:
             from pwman.data.drivers import postgresql
             db = postgresql.PostgresqlDatabase(dburi)
-        except ImportError:
+        except ImportError:  # pragma: no cover
             raise DatabaseException("python-psycopg2 not installed")
     elif dbtype == "mysql":  # pragma: no cover
         try:

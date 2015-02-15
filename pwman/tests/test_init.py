@@ -38,7 +38,8 @@ cls_timeout = 5
 [Database]
 """
 
-testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      "test.pwman.db"))
 
 
 class TestFactory(unittest.TestCase):
@@ -65,16 +66,16 @@ class TestInit(unittest.TestCase):
 
     def setUp(self):
         "test that the right db instance was created"
-        self.dbtype = 'SQLite'
+        self.dbtype = 'sqlite'
         self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
-        self.tester = SetupTester(__DB_FORMAT__, testdb)
+        self.tester = SetupTester(__DB_FORMAT__, dburi=testdb)
         self.tester.create()
 
     def test_get_db_version(self):
-        v = get_db_version(self.tester.configp, 'SQLite', None)
+        v = get_db_version(self.tester.configp, 'sqlite', None)
         self.assertEqual(v, __DB_FORMAT__)
         os.unlink(testdb)
-        v = get_db_version(self.tester.configp, 'SQLite', None)
+        v = get_db_version(self.tester.configp, 'sqlite', None)
         self.assertEqual(v, 0.6)
 
     def test_set_xsel(self):
@@ -93,7 +94,7 @@ class TestInit(unittest.TestCase):
         Args = namedtuple('args', 'cfile, dbase, algo')
         args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
         xsel, dbtype, configp = get_conf_options(args, 'True')
-        self.assertEqual(dbtype, 'SQLite')
+        self.assertEqual(dbtype, 'sqlite')
 
 
 if __name__ == '__main__':

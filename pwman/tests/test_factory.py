@@ -41,26 +41,28 @@ class TestFactory(unittest.TestCase):
 
     def setUp(self):
         "test that the right db instance was created"
-        self.dbtype = 'SQLite'
+        self.dbtype = 'sqlite'
         self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
         self.tester = SetupTester(__DB_FORMAT__, testdb)
         self.tester.create()
 
     def test_factory_check_db_ver(self):
-        self.assertEqual(factory.check_db_version('SQLite', testdb), 0.6)
+        self.assertEqual(factory.check_db_version('sqlite://'+testdb), 0.6)
 
     def test_factory_check_db_file(self):
-        db = factory.create('SQLite', version='0.3', filename='baz.db')
+        fn = os.path.join(os.path.dirname(__file__), 'baz.db')
+        db = factory.create('sqlite', filename=fn)
         db._open()
-        self.assertEqual(factory.check_db_version('SQLite', 'baz.db'), 0.3)
-        os.unlink('baz.db')
+        self.assertEqual(factory.check_db_version('sqlite://'+fn), 0.3)
+        os.unlink(fn)
 
     def test_factory_create(self):
-        db = factory.create('SQLite', filename='foo.db')
+        fn = os.path.join(os.path.dirname(__file__), 'foo.db')
+        db = factory.create('sqlite', filename=fn)
         db._open()
-        self.assertTrue(os.path.exists('foo.db'))
+        self.assertTrue(os.path.exists(fn))
         db.close()
-        os.unlink('foo.db')
+        os.unlink(fn)
         self.assertIsInstance(db, SQLite)
         self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
 
@@ -69,6 +71,12 @@ class TestFactory(unittest.TestCase):
         self.assertIsInstance(db, SQLite)
         del db
         db = factory.createdb("postgresql:///pwman", 0.6)
+        self.assertIsInstance(db, PostgresqlDatabase)
+        del db
+        db = factory.createdb("sqlite:///test.db", 0.7)
+        self.assertIsInstance(db, SQLite)
+        del db
+        db = factory.createdb("postgresql:///pwman", 0.7)
         self.assertIsInstance(db, PostgresqlDatabase)
 
 if __name__ == '__main__':

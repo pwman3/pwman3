@@ -52,7 +52,7 @@ class DummyCallback4(Callback):
         return u'newsecret'
 
 
-config.default_config['Database'] = {'type': 'SQLite',
+config.default_config['Database'] = {'type': 'sqlite',
                                      'filename':
                                      os.path.join(os.path.dirname(__file__),
                                                   "test.pwman.db"),
@@ -84,13 +84,13 @@ class SetupTester(object):
         self.configp = config.Config(os.path.join(os.path.dirname(__file__),
                                                   "test.conf"),
                                      config.default_config)
-        self.configp.set_value('Database', 'filename',
-                               os.path.join(os.path.dirname(__file__),
-                                            "test.pwman.db"))
+
         self.configp.set_value('Database', 'dburi',
-                               os.path.join('sqlite:///',
-                                            os.path.dirname(__file__),
-                                            "test.pwman.db"))
+                               'sqlite://' + os.path.join(os.path.abspath(
+                                                          os.path.dirname(__file__)),
+                                                          "test.pwman.db")
+                               )
+
         if not OSX:
             self.xselpath = which("xsel")
             self.configp.set_value("Global", "xsel", self.xselpath)
@@ -98,8 +98,7 @@ class SetupTester(object):
             self.xselpath = "xsel"
 
         self.dbver = dbver
-        self.filename = filename
-        self.dburi = dburi
+        self.dburi = self.configp.get_value('Database', 'dburi')
 
     def clean(self):
         dbfile = self.configp.get_value('Database', 'filename')
@@ -121,8 +120,6 @@ class SetupTester(object):
                                    'test.conf'))
 
     def create(self):
-        dbtype = 'SQLite'
-        db = factory.create(dbtype, self.dbver, self.filename)
-        #db = factory.createdb(self.dburi, self.dbver)
+        db = factory.createdb(self.dburi, self.dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback,
                                config_parser=self.configp)
