@@ -94,8 +94,8 @@ class TestImporter(unittest.TestCase):
         if os.path.exists('importdummy.db'):
             os.unlink('importdummy.db')
         args = Args(import_file=open('import_file.csv'), db='importdummy.db')
-        dbtype, dbver, fname = 'sqlite', 0.6, 'importdummy.db'
-        db = pwman.data.factory.create(dbtype, dbver, fname)
+        db = pwman.data.factory.createdb('sqlite:///' + os.getcwd() +
+                                         '/importdummy.db', 0.6)
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
         args.import_file.close()

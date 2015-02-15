@@ -29,7 +29,8 @@ from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
-testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      "test.pwman.db"))
 _saveconfig = False
 
 
@@ -42,7 +43,7 @@ class TestFactory(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         self.dbtype = 'sqlite'
-        self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
+        self.db = factory.createdb('sqlite:///'+testdb, __DB_FORMAT__)
         self.tester = SetupTester(__DB_FORMAT__, testdb)
         self.tester.create()
 
@@ -51,20 +52,20 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_check_db_file(self):
         fn = os.path.join(os.path.dirname(__file__), 'baz.db')
-        db = factory.create('sqlite', filename=fn)
+        db = factory.createdb('sqlite:///'+os.path.abspath(fn), 0.3)
         db._open()
-        self.assertEqual(factory.check_db_version('sqlite://'+fn), 0.3)
+        self.assertEqual(factory.check_db_version('sqlite:///'+fn), 0.3)
         os.unlink(fn)
 
     def test_factory_create(self):
         fn = os.path.join(os.path.dirname(__file__), 'foo.db')
-        db = factory.create('sqlite', filename=fn)
+        db = factory.createdb('sqlite://'+os.path.abspath(fn), 0.6)
         db._open()
         self.assertTrue(os.path.exists(fn))
         db.close()
         os.unlink(fn)
         self.assertIsInstance(db, SQLite)
-        self.assertRaises(DatabaseException, factory.create, 'UNKNOWN')
+        self.assertRaises(DatabaseException, factory.createdb, *('UNKNOWN',0.6))
 
     def test_factory_createdb(self):
         db = factory.createdb("sqlite:///test.db", 0.6)

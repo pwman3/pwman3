@@ -67,7 +67,8 @@ class TestInit(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         self.dbtype = 'sqlite'
-        self.db = factory.create(self.dbtype, __DB_FORMAT__, testdb)
+        self.db = factory.createdb('sqlite://'+os.path.abspath(testdb),
+                                   __DB_FORMAT__)
         self.tester = SetupTester(__DB_FORMAT__, dburi=testdb)
         self.tester.create()
 

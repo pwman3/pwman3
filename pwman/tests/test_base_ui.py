@@ -32,7 +32,8 @@ from pwman.data import factory
 from pwman.data.nodes import Node
 from pwman.ui import get_ui_platform
 
-testdb = os.path.join(os.path.dirname(__file__), "test-baseui.pwman.db")
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      "test-baseui.pwman.db"))
 
 
 class dummy_stdin(object):
@@ -61,8 +62,7 @@ class TestBaseUI(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         dbver = __DB_FORMAT__
-        self.dbtype = 'sqlite'
-        self.db = factory.create(self.dbtype, dbver, testdb)
+        self.db = factory.createdb('sqlite://' + testdb, dbver)
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()
 
