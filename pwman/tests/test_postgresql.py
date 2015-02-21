@@ -71,13 +71,21 @@ class TestPostGresql(unittest.TestCase):
         self.assertEqual(row, ('TOP', 'SECRET'))
 
     def test_5_add_node(self):
-        innode = ["TBONE", "S3K43T", "example.org", "some note"]
+        innode = ["TBONE", "S3K43T", "example.org", "some note",
+                  ["footag", "bartag"]]
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
-        self.assertEqual(innode, outnode[1:])
+        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
     def test_6_list_nodes(self):
-        self.db.listnodes()
+        ret = self.db.listnodes()
+        self.assertEqual(ret, [1])
+        ret = self.db.listnodes("footag")
+        self.assertEqual(ret, [1])
+
+    def test_6a_list_tags(self):
+        ret = self.db.listtags()
+        self.assertListEqual(ret, ['footag', 'bartag'])
 
     def test_7_get_or_create_tag(self):
         s = self.db._get_or_create_tag("SECRET")
