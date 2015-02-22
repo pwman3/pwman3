@@ -46,7 +46,7 @@ def main(args):
     # this requires changes in Config, documentation, command line script
     # and finally in data.factory
     fname = config.get_value('Database', 'filename')
-    db = pwman.data.factory.create(dbtype, dbver, fname)
+    db = pwman.data.factory.createdb(dbtype, dbver, fname)
 
     if args.import_file:
         importer = Importer((args, config, db))
