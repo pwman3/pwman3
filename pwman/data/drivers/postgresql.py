@@ -45,11 +45,11 @@ class PostgresqlDatabase(Database):
     """
 
     @classmethod
-    def check_db_version(cls, user, dbname='pwman'):  # pragma: no cover
+    def check_db_version(cls, dburi):
         """
         Check the database version
         """
-        con = pg.connect("dbname=pwman user=%s" % user)
+        con = pg.connect(dburi.geturl())
         cur = con.cursor()
         try:
             cur.execute("SELECT VERSION from DBVERSION")

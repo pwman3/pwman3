@@ -37,7 +37,10 @@ class TestPostGresql(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        # no password required, for testing in travis
         u = "postgresql:///pwman"
+        # password required, for all other hosts
+        #u = "postgresql://<user>:<pass>@localhost/pwman"
         self.db = PostgresqlDatabase(u)
         self.db._open()
 

@@ -40,6 +40,7 @@ import os
 
 from pwman.data.database import DatabaseException
 from pwman.data.drivers import sqlite
+from pwman.data.drivers import postgresql
 
 
 def check_db_version(dburi):
@@ -54,7 +55,7 @@ def check_db_version(dburi):
             return 0.3
     # TODO: implement version checks for other supported DBs.
     if dbtype == "postgresql":
-        ver = sqlite.PostgresqlDatabase.check_db_version(dburi)
+        ver = postgresql.PostgresqlDatabase.check_db_version(dburi)
 
 
 def createdb(dburi, version):
