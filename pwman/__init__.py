@@ -26,7 +26,6 @@ import re
 import colorama
 from .util import config
 from pwman.data import factory
-from pwman.data.database import __DB_FORMAT__
 
 appname = "pwman3"
 
@@ -126,15 +125,10 @@ def get_conf_options(args, OSX):
     set_win_colors(configp)
     set_db(args, configp)
     set_umask(configp)
-    dbtype = configp.get_value("Database", "type")
-    return xselpath, dbtype, configp
+    dburi = configp.get_value("Database", "dburi")
+    return xselpath, dburi, configp
 
 
-def get_db_version(config, dbtype, args):
-    # This method is seriously biased towards SQLite.
-    # TODO: make this more Postgresql\Network Database friendly
-    if os.path.exists(config.get_value("Database", "dburi")):
-        dbver = factory.check_db_version(config.get_value("Database", "dburi"))
-    else:
-        dbver = __DB_FORMAT__
+def get_db_version(config, args):
+    dbver = factory.check_db_version(config.get_value("Database", "dburi"))
     return dbver

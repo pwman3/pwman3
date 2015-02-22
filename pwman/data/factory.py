@@ -53,38 +53,8 @@ def check_db_version(dburi):
         except ValueError:
             return 0.3
     # TODO: implement version checks for other supported DBs.
-    if dbtype == "Postgresql":
+    if dbtype == "postgresql":
         ver = sqlite.PostgresqlDatabase.check_db_version(dburi)
-
-
-#def create(dbtype, version=None, filename=None):
-#    """
-#    create(params) -> Database
-#    Create a Database instance.
-#    'type' can only be 'SQLite' at the moment
-#    """
-#    if dbtype == "sqlite":
-#        from pwman.data.drivers import sqlite
-#        if str(version) == '0.6':
-#            db = sqlite.SQLite(filename)
-#        else:
-#            db = sqlite.SQLite(filename, dbformat=version)
-#
-#    elif dbtype == "postgresql":  # pragma: no cover
-#        try:
-#            from pwman.data.drivers import postgresql
-#            db = postgresql.PostgresqlDatabase()
-#        except ImportError:
-#            raise DatabaseException("python-psycopg2 not installed")
-#    elif dbtype == "mysql":  # pragma: no cover
-#        try:
-#            from pwman.data.drivers import mysql
-#            db = mysql.MySQLDatabase()
-#        except ImportError:
-#            raise DatabaseException("python-mysqldb not installed")
-#    else:
-#        raise DatabaseException("Unknown database type specified")
-#    return db
 
 
 def createdb(dburi, version):
