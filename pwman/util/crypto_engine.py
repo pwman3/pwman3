@@ -103,7 +103,7 @@ class CryptoEngine(object):  # pagma: no cover
     _callback = None
 
     @classmethod
-    def get(cls, dbver=None, timeout=-1):
+    def get(cls, timeout=-1):
         if CryptoEngine._instance:
             return CryptoEngine._instance
 
