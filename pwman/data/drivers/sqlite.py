@@ -174,7 +174,12 @@ class SQLite(Database):
         """
         get nodes as raw ciphertext
         """
-        sql = "SELECT * FROM NODE WHERE ID IN (%s)" % ','.join('?'*len(ids))
+        if ids:
+            sql = ("SELECT * FROM NODE WHERE ID IN ({})"
+                   "".format(','.join('?'*len(ids))))
+        else:
+            sql = "SELECT * FROM NODE"
+
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
         nodes_w_tags = []
