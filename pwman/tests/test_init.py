@@ -67,17 +67,17 @@ class TestInit(unittest.TestCase):
     def setUp(self):
         "test that the right db instance was created"
         self.dbtype = 'sqlite'
-        self.db = factory.createdb('sqlite://'+os.path.abspath(testdb),
+        self.db = factory.createdb('sqlite://' + os.path.abspath(testdb),
                                    __DB_FORMAT__)
         self.tester = SetupTester(__DB_FORMAT__, dburi=testdb)
         self.tester.create()
 
     def test_get_db_version(self):
-        v = get_db_version(self.tester.configp, 'sqlite', None)
+        v = get_db_version(self.tester.configp, 'sqlite')
         self.assertEqual(v, __DB_FORMAT__)
-        os.unlink(testdb)
-        v = get_db_version(self.tester.configp, 'sqlite', None)
+        v = get_db_version(self.tester.configp, 'sqlite')
         self.assertEqual(v, 0.6)
+        os.unlink(testdb)
 
     def test_set_xsel(self):
         Args = namedtuple('args', 'cfile, dbase, algo')
@@ -94,8 +94,8 @@ class TestInit(unittest.TestCase):
     def test_get_conf_options(self):
         Args = namedtuple('args', 'cfile, dbase, algo')
         args = Args(cfile='dummy.cfg', dbase='dummy.db', algo='AES')
-        xsel, dbtype, configp = get_conf_options(args, 'True')
-        self.assertEqual(dbtype, 'sqlite')
+        xsel, dburi, configp = get_conf_options(args, 'True')
+        self.assertEqual(dburi, 'dummy.db')
 
 
 if __name__ == '__main__':

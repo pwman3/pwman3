@@ -112,7 +112,7 @@ def set_umask(configp):
 
 def set_db(args, configp):
     if args.dbase:
-        configp.set_value("Database", "filename", args.dbase)
+        configp.set_value("Database", "dburi", args.dbase)
         configp.set_value("Global", "save", "False")
 
 
