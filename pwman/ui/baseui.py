@@ -92,21 +92,21 @@ class HelpUIMixin(object):  # pragma: no cover
         print ("Prints a help message for a command.")
 
     def help_edit(self):
-        self.usage("edit <ID|tag> ... ")
+        self._usage("edit <ID|tag> ... ")
         print ("Edits a nodes.")
 
     def help_export(self):
-        self.usage("export [{'filename': 'foo.csv', 'delimiter':'|'}] ")
+        self._usage("export [{'filename': 'foo.csv', 'delimiter':'|'}] ")
         print("All nodes under the current filter are exported.")
 
     def help_new(self):
-        self.usage("new")
+        self._usage("new")
         print ("Creates a new node.,",
                "You can override default config settings the following way:\n",
                "pwman> n {'leetify':False, 'numerics':True}")
 
     def help_print(self):
-        self.usage("print <ID|tag> ...")
+        self._usage("print <ID|tag> ...")
         print ("Displays a node. ")
         self._mult_id_help()
 
