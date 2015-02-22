@@ -22,9 +22,9 @@
 """Postgresql Database implementation."""
 import sys
 if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse
-else:
-    from urlparse import urlparse
+    from urllib.parse import urlparse, ParseResult
+else:  # pragma: no cover
+    from urlparse import urlparse, ParseResult
 import psycopg2 as pg
 from pwman.data.database import Database, __DB_FORMAT__
 
@@ -49,7 +49,10 @@ class PostgresqlDatabase(Database):
         """
         Check the database version
         """
-        con = pg.connect(dburi.geturl())
+        if isinstance(dburi, ParseResult):
+            con = pg.connect(dburi.geturl())
+        else:
+            con = pg.connect(dburi)
         cur = con.cursor()
         try:
             cur.execute("SELECT VERSION from DBVERSION")

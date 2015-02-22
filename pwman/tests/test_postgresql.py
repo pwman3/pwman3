@@ -16,12 +16,11 @@
 # ============================================================================
 # Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
-
 import unittest
+import psycopg2 as pg
 from pwman.data.drivers.postgresql import PostgresqlDatabase
 from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
-import psycopg2 as pg
 
 ##
 # testing on linux host
@@ -107,6 +106,15 @@ class TestPostGresql(unittest.TestCase):
         n = self.db.listnodes()
         self.assertEqual(len(n), 0)
 
+    def test_9_check_db_version(self):
+
+        dburi = "postgresql:///pwman"
+        v = self.db.check_db_version(dburi)
+        self.assertEqual(v, ('0.6',))
+        self.db._cur.execute("DELETE FROM DBVERSION")
+        self.db._con.commit()
+        v = self.db.check_db_version(dburi)
+        self.assertEqual(v, None)
 
 if __name__ == '__main__':
 
