@@ -76,6 +76,7 @@ class TestPostGresql(unittest.TestCase):
         innode = ["TBONE", "S3K43T", "example.org", "some note",
                   ["footag", "bartag"]]
         self.db.add_node(innode)
+
         outnode = self.db.getnodes([1])[0]
         self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
@@ -88,6 +89,11 @@ class TestPostGresql(unittest.TestCase):
     def test_6a_list_tags(self):
         ret = self.db.listtags()
         self.assertListEqual(ret, ['footag', 'bartag'])
+
+    def test_6b_get_nodes(self):
+        ret = self.db.getnodes([1])
+        retb = self.db.getnodes([])
+        self.assertListEqual(ret, retb)
 
     def test_7_get_or_create_tag(self):
         s = self.db._get_or_create_tag("SECRET")
@@ -111,10 +117,15 @@ class TestPostGresql(unittest.TestCase):
         dburi = "postgresql:///pwman"
         v = self.db.check_db_version(dburi)
         self.assertEqual(v, ('0.6',))
-        self.db._cur.execute("DELETE FROM DBVERSION")
+        self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._con.commit()
         v = self.db.check_db_version(dburi)
         self.assertEqual(v, None)
+        self.db._cur.execute("CREATE TABLE DBVERSION("
+                             "VERSION TEXT NOT NULL DEFAULT {}"
+                             ")".format('0.6'))
+        self.db._con.commit()
+
 
 if __name__ == '__main__':
 

@@ -197,7 +197,7 @@ class PostgresqlDatabase(Database):
             tid = self._get_or_create_tag(tag)
             self._update_tag_lookup(nodeid, tid)
 
-    def _get_node_tags(self, node):  # pragma: no cover
+    def _get_node_tags(self, node):
         sql = "SELECT tagid FROM LOOKUP WHERE NODEID = %s"
         self._cur.execute(sql, (str(node[0]),))
         tagids = self._cur.fetchall()
