@@ -29,11 +29,10 @@ The following is an example default config file::
     xsel = /usr/bin/xsel
 
     [Database]
-    type = SQLite
-    filename = <PWMAN_CONFIG>/pwman.db
+    filename = sqlite:///<PWMAN_CONFIG>/pwman.db`
     
 
-Following is a table describing the parameters and their meaning:
+Following is a table describing the parameters and their meanings:
 
 
     ===========   ===========
@@ -58,8 +57,14 @@ Following is a table describing the parameters and their meaning:
     -----------   -----------
     **Section**   *Database* 
     -----------   -----------
-    type          SQLite (future versions will re-include support for MySQL and PostGRESQL)
-    -----------   -----------
-    filename      path to the SQLite Database file 
+    dburi         Database URI conforming to `RFC3986`_. SQLite, and Postgreql are currently supported. 
+       
+                  SQLite example: `sqlite:///path/to/your/db`
+
+                  Postgreql example: `postgresql://<user>:<pass>@<host>/<database>`
+
     ===========   ===========
+
+
+.. _RFC3986: http://www.ietf.org/rfc/rfc3986.txt
 
