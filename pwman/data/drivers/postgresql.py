@@ -20,11 +20,6 @@
 # ============================================================================
 
 """Postgresql Database implementation."""
-import sys
-if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse, ParseResult
-else:  # pragma: no cover
-    from urlparse import urlparse, ParseResult
 import psycopg2 as pg
 from pwman.data.database import Database, __DB_FORMAT__
 
@@ -49,10 +44,10 @@ class PostgresqlDatabase(Database):
         """
         Check the database version
         """
-        if isinstance(dburi, ParseResult):
-            con = pg.connect(dburi.geturl())
-        else:
-            con = pg.connect(dburi)
+        #if isinstance(dburi, ParseResult):
+        #    con = pg.connect(dburi.geturl())
+        #else:
+        con = pg.connect(dburi)
         cur = con.cursor()
         try:
             cur.execute("SELECT VERSION from DBVERSION")
@@ -62,7 +57,6 @@ class PostgresqlDatabase(Database):
             return version
         except pg.ProgrammingError:
             con.rollback()
-            #raise DatabaseException("Something seems fishy with the DB")
 
     def __init__(self, pgsqluri, dbformat=__DB_FORMAT__):
         """
@@ -73,13 +67,7 @@ class PostgresqlDatabase(Database):
 
     def _open(self):
 
-        try:
-            # TODO: remove this. we only want to accept url object
-            u = urlparse(self._pgsqluri)
-            self._con = pg.connect(database=u.path[1:], user=u.username,
-                                   password=u.password, host=u.hostname)
-        except AttributeError:
-            self._con = pg.connect(self._pgsqluri.geturl())
+        self._con = pg.connect(self._pgsqluri.geturl())
         self._cur = self._con.cursor()
         self._create_tables()
 

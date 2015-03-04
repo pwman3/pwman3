@@ -53,9 +53,9 @@ def check_db_version(dburi):
             return float(ver.strip("\'"))
         except ValueError:
             return 0.3
-    # TODO: implement version checks for other supported DBs.
     if dbtype == "postgresql":
-        ver = postgresql.PostgresqlDatabase.check_db_version(dburi)
+        #  ver = postgresql.PostgresqlDatabase.check_db_version(dburi)
+        ver = postgresql.PostgresqlDatabase.check_db_version(dburi.geturl())
 
 
 def createdb(dburi, version):

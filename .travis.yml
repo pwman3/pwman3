@@ -4,7 +4,9 @@ python:
   - 3.4 
 
 before_script:
+  - psql -c "CREATE USER tester WITH PASSWORD '123456';" -U postgres
   - psql -c 'create database pwman;' -U postgres
+  - psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
 
 before_install:
   - sudo apt-get update -qq

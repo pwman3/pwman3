@@ -17,11 +17,15 @@
 # Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 import unittest
+import sys
+from .test_crypto_engine import give_key, DummyCallback
+if sys.version_info.major > 2:  # pragma: no cover
+    from urllib.parse import urlparse
+else:  # pragma: no cover
+    from urlparse import urlparse
 import psycopg2 as pg
 from pwman.data.drivers.postgresql import PostgresqlDatabase
 from pwman.util.crypto_engine import CryptoEngine
-from .test_crypto_engine import give_key, DummyCallback
-
 ##
 # testing on linux host
 # su - postgres
@@ -36,10 +40,10 @@ class TestPostGresql(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        # no password required, for testing in travis
-        u = "postgresql:///pwman"
-        # password required, for all other hosts
-        #u = "postgresql://<user>:<pass>@localhost/pwman"
+        u = "postgresql://tester:123456@localhost/pwman"
+        u = urlparse(u)
+        # password required, for all hosts
+        # u = "postgresql://<user>:<pass>@localhost/pwman"
         self.db = PostgresqlDatabase(u)
         self.db._open()
 
@@ -114,7 +118,7 @@ class TestPostGresql(unittest.TestCase):
 
     def test_9_check_db_version(self):
 
-        dburi = "postgresql:///pwman"
+        dburi = "postgresql://tester:123456@localhost/pwman"
         v = self.db.check_db_version(dburi)
         self.assertEqual(v, ('0.6',))
         self.db._cur.execute("DROP TABLE DBVERSION")
