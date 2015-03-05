@@ -49,13 +49,11 @@ def check_db_version(dburi):
     filename = os.path.abspath(dburi.path)
     if dbtype == "sqlite":
         ver = sqlite.SQLite.check_db_version(filename)
-        try:
-            return float(ver.strip("\'"))
-        except ValueError:
-            return 0.3
     if dbtype == "postgresql":
         #  ver = postgresql.PostgresqlDatabase.check_db_version(dburi)
         ver = postgresql.PostgresqlDatabase.check_db_version(dburi.geturl())
+
+    return float(ver.strip("\'"))
 
 
 def createdb(dburi, version):
