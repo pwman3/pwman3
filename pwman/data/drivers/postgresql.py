@@ -54,7 +54,7 @@ class PostgresqlDatabase(Database):
             version = cur.fetchone()
             con.close()
             cur.close()
-            return version
+            return version[-1]
         except pg.ProgrammingError:
             con.rollback()
 
