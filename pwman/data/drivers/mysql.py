@@ -23,9 +23,8 @@
 
 """MySQL Database implementation."""
 from __future__ import print_function
-from pwman.data.database import Database
+from pwman.data.database import Database, __DB_FORMAT__
 import MySQLdb as mysql
-import pwman.util.config as config
 
 
 class MySQLDatabase(Database):
@@ -38,10 +37,10 @@ class MySQLDatabase(Database):
         if ':' in host:
             host, port = host.split(':')
             port = int(port)
+        con = mysql.connect(host=host, port=port, user=user, passwd=passwd,
+                            db=dburi.path.lstrip('/'))
+        cur = con.cursor()
         try:
-            con = mysql.connect(host=host, port=port, user=user, passwd=passwd,
-                                db=dburi.path.lstrip('/'))
-            cur = con.cursor()
             cur.execute("SELECT VERSION FROM DBVERSION")
             version = cur.fetchone()
             cur.close()
@@ -49,3 +48,8 @@ class MySQLDatabase(Database):
             return version[-1]
         except mysql.ProgrammingError:
             con.rollback()
+
+    def __init__(self, mysqluri, dbformat=__DB_FORMAT__):
+        self._mysqluri = mysqluri
+        self.dbversion = dbformat
+
