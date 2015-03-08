@@ -23,20 +23,19 @@ if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:  # pragma: no cover
     from urlparse import urlparse
-import psycopg2 as pg
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
 
 
-class TestPostGresql(unittest.TestCase):
+class TestMySQLDatabase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        u = "postgresql://tester:123456@localhost/pwman"
+        u = "mysql://pwman:123456@localhost/pwmantest"
         u = urlparse(u)
         # password required, for all hosts
         # u = "postgresql://<user>:<pass>@localhost/pwman"
-        self.db = PostgresqlDatabase(u)
+        self.db = MySQLDatabase(u)
         self.db._open()
 
     @classmethod
@@ -47,3 +46,10 @@ class TestPostGresql(unittest.TestCase):
         self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._cur.execute("DROP TABLE CRYPTO")
         self.db._con.commit()
+
+if __name__ == '__main__':
+
+    ce = CryptoEngine.get()
+    ce.callback = DummyCallback()
+    ce.changepassword(reader=give_key)
+    unittest.main(verbosity=2, failfast=True)

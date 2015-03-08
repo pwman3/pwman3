@@ -53,3 +53,58 @@ class MySQLDatabase(Database):
         self._mysqluri = mysqluri
         self.dbversion = dbformat
 
+    def _open(self):
+
+        port = 3306
+        credentials, host = self.dburi.netloc.split('@')
+        user, passwd = credentials.split(':')
+        if ':' in host:
+            host, port = host.split(':')
+            port = int(port)
+
+        self._con = mysql.connect(host=host, port=port, user=user,
+                                  passwd=passwd,
+                                  db=self.dburi.path.lstrip('/'))
+        self._cur = self._con.cursor()
+        self._create_tables()
+
+    def _create_tables(self):
+
+        try:
+            self._cur.execute("SELECT 1 from DBVERSION")
+            version = self._cur.fetchone()
+            if version:
+                return
+        except mysql.ProgrammingError:
+            self._con.rollback()
+
+        try:
+            self._cur.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
+                              "USERNAME TEXT NOT NULL, "
+                              "PASSWORD TEXT NOT NULL, "
+                              "URL TEXT NOT NULL, "
+                              "NOTES TEXT NOT NULL"
+                              ")")
+
+            self._cur.execute("CREATE TABLE TAG"
+                              "(ID SERIAL PRIMARY KEY,"
+                              "DATA TEXT NOT NULL UNIQUE)")
+
+            self._cur.execute("CREATE TABLE LOOKUP ("
+                              "nodeid SERIAL REFERENCES NODE(ID),"
+                              "tagid SERIAL REFERENCES TAG(ID)"
+                              ")")
+
+            self._cur.execute("CREATE TABLE CRYPTO "
+                              "(SEED TEXT, DIGEST TEXT)")
+
+            self._cur.execute("CREATE TABLE DBVERSION("
+                              "VERSION TEXT NOT NULL DEFAULT {}"
+                              ")".format(__DB_FORMAT__))
+
+            self._cur.execute("INSERT INTO DBVERSION VALUES(%s)",
+                              (self.dbversion,))
+
+            self._con.commit()
+        except mysql.ProgrammingError:  # pragma: no cover
+            self._con.rollback()
