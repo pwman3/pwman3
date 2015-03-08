@@ -44,16 +44,13 @@ class PostgresqlDatabase(Database):
         """
         Check the database version
         """
-        #if isinstance(dburi, ParseResult):
-        #    con = pg.connect(dburi.geturl())
-        #else:
         con = pg.connect(dburi)
         cur = con.cursor()
         try:
             cur.execute("SELECT VERSION from DBVERSION")
             version = cur.fetchone()
-            con.close()
             cur.close()
+            con.close()
             return version[-1]
         except pg.ProgrammingError:
             con.rollback()
