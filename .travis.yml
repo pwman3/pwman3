@@ -7,12 +7,14 @@ before_script:
   - psql -c "CREATE USER tester WITH PASSWORD '123456';" -U postgres
   - psql -c 'create database pwman;' -U postgres
   - psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
-
+  - mysql -e 'create database pwmantest' -U root 
+  - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'"
+  - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';"
 
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install python-psycopg2 python3-psycopg2
-
+  - sudo apt-get install python-mysql python3-mysql
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: 
   - "pip install -r requirements.txt"
