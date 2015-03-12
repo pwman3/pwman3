@@ -8,8 +8,8 @@ before_script:
   - psql -c 'create database pwman;' -U postgres
   - psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
   - mysql -e 'create database pwmantest' -uroot 
-  - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'"
-  - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';"
+  - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'" -uroot
+  - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';" -uroot
 
 before_install:
   - sudo apt-get update -qq
