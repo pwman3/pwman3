@@ -50,7 +50,7 @@ class MySQLDatabase(Database):
             con.rollback()
 
     def __init__(self, mysqluri, dbformat=__DB_FORMAT__):
-        self._mysqluri = mysqluri
+        self.dburi = mysqluri
         self.dbversion = dbformat
 
     def _open(self):
@@ -87,20 +87,20 @@ class MySQLDatabase(Database):
                               ")")
 
             self._cur.execute("CREATE TABLE TAG"
-                              "(ID SERIAL PRIMARY KEY,"
-                              "DATA TEXT NOT NULL UNIQUE)")
+                              "(ID  SERIAL PRIMARY KEY,"
+                              "DATA VARCHAR(255) NOT NULL UNIQUE)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
-                              "nodeid SERIAL REFERENCES NODE(ID),"
-                              "tagid SERIAL REFERENCES TAG(ID)"
+                              "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
+                              "tagid INTEGER NOT NULL REFERENCES TAG(ID)"
                               ")")
 
             self._cur.execute("CREATE TABLE CRYPTO "
                               "(SEED TEXT, DIGEST TEXT)")
 
             self._cur.execute("CREATE TABLE DBVERSION("
-                              "VERSION TEXT NOT NULL DEFAULT {}"
-                              ")".format(__DB_FORMAT__))
+                              "VERSION TEXT NOT NULL "
+                              ")")
 
             self._cur.execute("INSERT INTO DBVERSION VALUES(%s)",
                               (self.dbversion,))

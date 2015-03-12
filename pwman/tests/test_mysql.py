@@ -47,6 +47,9 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db._cur.execute("DROP TABLE CRYPTO")
         self.db._con.commit()
 
+    def test_1_con(self):
+        pass
+
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()
