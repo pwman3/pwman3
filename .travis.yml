@@ -7,7 +7,7 @@ before_script:
   - psql -c "CREATE USER tester WITH PASSWORD '123456';" -U postgres
   - psql -c 'create database pwman;' -U postgres
   - psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
-  - mysql -e 'create database pwmantest' -U root 
+  - mysql -e 'create database pwmantest' -uroot 
   - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'"
   - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';"
 
