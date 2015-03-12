@@ -24,7 +24,13 @@
 """MySQL Database implementation."""
 from __future__ import print_function
 from pwman.data.database import Database, __DB_FORMAT__
-import MySQLdb as mysql
+import sys
+
+if sys.version_info.major > 2:  # pragma: no cover
+    import pymysql as mysql
+    mysql.install_as_MySQLdb()
+else:
+    import MySQLdb as mysql
 
 
 class MySQLDatabase(Database):

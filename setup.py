@@ -299,7 +299,7 @@ def describe():
     des = Popen('git describe', shell=True, stdout=PIPE)
     ver = des.stdout.readlines()
     if ver:
-        return ver[0].strip()
+        return ver[0].decode().strip()
     else:
         return pwman.version
 
