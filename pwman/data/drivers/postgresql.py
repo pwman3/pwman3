@@ -117,8 +117,8 @@ class PostgresqlDatabase(Database):
                               "DATA TEXT NOT NULL UNIQUE)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
-                              "nodeid SERIAL REFERENCES NODE(ID),"
-                              "tagid SERIAL REFERENCES TAG(ID)"
+                              "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
+                              "tagid INTEGER NOT NULL REFERENCES TAG(ID)"
                               ")")
 
             self._cur.execute("CREATE TABLE CRYPTO "
