@@ -1,5 +1,4 @@
 [run]
 omit = pwman/tests/*.py, pwman/ui/mac.py, pwman/ui/win.py, \
        pwman/data/convertdb.py, \
-       pwman/data/drivers/mysql.py, 
 source = pwman

@@ -26,6 +26,7 @@ from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
 from .test_postgresql import TestPostGresql
+from .test_mysql import TestMySQLDatabase
 from .test_importer import TestImporter
 from .test_factory import TestFactory
 from .test_base_ui import TestBaseUI
@@ -55,6 +56,7 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
     suite.addTest(loader.loadTestsFromTestCase(TestPostGresql))
+    suite.addTest(loader.loadTestsFromTestCase(TestMySQLDatabase))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     suite.addTest(loader.loadTestsFromTestCase(TestFactory))
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
