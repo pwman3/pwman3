@@ -24,10 +24,10 @@ if sys.version_info.major > 2:  # pragma: no cover
 else:  # pragma: no cover
     from urlparse import urlparse
 
-if sys.version_info.major > 2:
-    from pymysql import connections
-else:
-    from MySQLdb import connections
+#if sys.version_info.major > 2:
+from pymysql import connections
+#else:
+#    from MySQLdb import connections
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
 
