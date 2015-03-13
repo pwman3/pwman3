@@ -33,12 +33,13 @@ clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -rf {} +
 
 lint:
 	flake8 pwman scripts
 
 test: install clean
-	git checkout pwman/tests/pwman.v0.0.8.db
+	git checkout tests/pwman.v0.0.8.db
 	python setup.py test
 	@rm -f pwman/tests/test.conf
 

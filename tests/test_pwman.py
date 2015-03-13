@@ -65,11 +65,3 @@ def suite():
     # if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
-
-if __name__ == '__main__':
-    try:
-        unittest.TextTestRunner(verbosity=2, failfast=True).run(suite())
-    except SystemExit:
-        TestConfig.clean_all()
-        TestBaseUI.clean_all()
-        TestImporter.clean_all()
