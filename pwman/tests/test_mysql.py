@@ -23,11 +23,11 @@ if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:  # pragma: no cover
     from urlparse import urlparse
+
 if sys.version_info.major > 2:
-    import pymysql as mysql
-    mysql.install_as_MySQLdb()
+    from pymysql import connections
 else:
-    import MySQLdb as mysql
+    from MySQLdb import connections
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
 
@@ -53,7 +53,7 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db._con.commit()
 
     def test_1_con(self):
-        self.assertIsInstance(self.db._con, mysql.connections.Connection)
+        self.assertIsInstance(self.db._con, connections.Connection)
 
     def test_2_create_tables(self):
         self.db._create_tables()
