@@ -187,6 +187,12 @@ class TestBaseUI(unittest.TestCase):
         self.assertNotIn('alice', sys.stdout.getvalue())
         sys.stdout = sys.__stdout__
 
+    def test_10_do_info(self):
+        self.output = StringIO()
+        sys.stdout = self.output
+        self.tester.cli.do_info('')
+        self.assertIn("test.pwman.db", sys.stdout.getvalue())
+
 if __name__ == '__main__':
 
     ce = CryptoEngine.get()

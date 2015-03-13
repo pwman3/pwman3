@@ -135,6 +135,9 @@ class HelpUIMixin(object):  # pragma: no cover
         self._usage("tags")
         print("Displays all tags in used in the database.")
 
+    def help_info(self):
+        print("Show information about the current database.")
+
 
 class AliasesMixin(object):  # pragma: no cover
     """
@@ -471,3 +474,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def do_delete(self, args):  # pragma: no cover
         CryptoEngine.get()
         self._do_rm(args)
+
+    def do_info(self, args):
+        print("Currently connected to: {}".format(
+              self.config.get_value("Database", "dburi")))
