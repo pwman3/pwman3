@@ -23,11 +23,6 @@ import unittest
 import os
 import shutil
 
-OLD_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8.db')
-NEW_DB_PATH = os.path.join(os.path.dirname(__file__), 'pwman.v0.0.8-newdb.db')
-
-_db_warn = ("pwman3 detected that you are using the old database format")
-
 
 class Ferrum(unittest.TestCase):
     def clean_files(self):
@@ -42,27 +37,12 @@ class Ferrum(unittest.TestCase):
         os.remove('test-chg_passwd.log')
         os.remove(backup)
 
-    def test_a_db_warning(self):
-        "when trying to run with old db, we should see warning"
-        lfile = 'convert-test.log'
-        logfile = open(lfile, 'wb')
-        cmd = os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
-                           ) + ' -d '+OLD_DB_PATH
-        child = pexpect.spawn(cmd, logfile=logfile)
-
-        rv = child.expect(_db_warn, timeout=5)
-        if rv != 0:
-            lfile.seek(0)
-            print(lfile.readlines())
-
-        self.assertEqual(0, rv)
-
     def test_b_run_convert(self):
         "invoke pwman with -k option to convert the old data"
         lfile = 'convert-test.log'
         logfile = open(lfile, 'wb')
-        cmd = (os.path.join(os.path.dirname(__file__), '../../scripts/pwman3'
-                            ) + ' -k -e Blowfish -d ' + OLD_DB_PATH)
+        cmd = (os.path.join(os.path.dirname(__file__), '../scripts/pwman3'
+                            ) + ' -k -e Blowfish -d ')
         child = pexpect.spawn(cmd, logfile=logfile)
         child.expect('[\s|\S]+Please enter your password:', timeout=10)
         self.assertEqual(6, child.sendline('12345'))
@@ -77,7 +57,7 @@ class Ferrum(unittest.TestCase):
         logfile = open(lfile, 'wb')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
                                            '../../scripts/pwman3') +
-                              ' -e Blowfish -d '+OLD_DB_PATH, logfile=logfile)
+                              ' -d ', logfile=logfile)
         child.sendline('passwd')
         child.expect("Please enter your current password:")
         child.sendline('12345')
@@ -94,4 +74,3 @@ def suite():
 
 if __name__ == '__main__':
     unittest.TextTestRunner(verbosity=2).run(suite())
-    os.remove(NEW_DB_PATH)

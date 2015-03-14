@@ -33,7 +33,7 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.5"
+    version = "0.6"
 
 website = "http://pwman3.github.io/pwman3/"
 author = "Oz Nahum Tiram"
@@ -44,15 +44,6 @@ long_description = (u"Pwman3 aims to provide a simple but powerful command "
                     "line interface for password management.\nIt allows one "
                     "to store your password in database locked by "
                     "a\nmaster password which is AES encrypted.")
-
-_db_warn = (u"pwman3 detected that you are using the old database format"
-            " which is insecure."
-            " pwman3 will try to automatically convert the database now."
-            "\n"
-            "If you choose not to convert the database, pwman3, will quit."
-            "\nYou can check the help (pwman3 -h) or look at the manpage how "
-            "to convert the database manually."
-            )
 
 
 def which(cmd):  # pragma: no cover
