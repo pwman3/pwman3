@@ -1,5 +1,5 @@
-Packaging for UNIX\Linux 
-======================== 
+Packaging for UNIX\\Linux 
+========================= 
 
 Requirements and suggested packages
 -----------------------------------

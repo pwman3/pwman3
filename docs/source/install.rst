@@ -1,4 +1,4 @@
-installing and upgrading:
+Installing and upgrading:
 ========================= 
 
 You can install pwman3 simply by unpacking the archive and running:
