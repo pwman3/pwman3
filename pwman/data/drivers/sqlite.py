@@ -20,7 +20,7 @@
 # ============================================================================
 
 """SQLite Database implementation."""
-from pwman.data.database import Database, DatabaseException
+from pwman.data.database import Database
 from pwman.data.database import __DB_FORMAT__
 import sqlite3 as sqlite
 
@@ -38,8 +38,8 @@ class SQLite(Database):
         row = cur.fetchone()
         try:
             return row[-2]
-        except IndexError:  # pragma: no cover
-            raise DatabaseException("Something seems fishy with the DB")
+        except TypeError:
+            return str(__DB_FORMAT__)
 
     def __init__(self, filename, dbformat=__DB_FORMAT__):
         """Initialise SQLitePwmanDatabase instance."""
