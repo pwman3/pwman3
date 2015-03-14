@@ -23,7 +23,6 @@ from __future__ import print_function
 import sys
 from pwman import get_conf_options, get_db_version
 from pwman import parser_options
-from pwman.ui import get_ui_platform
 from pwman.ui.tools import CLICallback
 import pwman.data.factory
 from pwman.exchange.importer import Importer
@@ -31,6 +30,20 @@ from pwman.util.crypto_engine import CryptoEngine
 
 if sys.version_info.major > 2:
     raw_input = input
+
+
+def get_ui_platform(platform):  # pragma: no cover
+    if 'darwin' in platform:
+        from pwman.ui.mac import PwmanCliMac as PwmanCli
+        OSX = True
+    elif 'win' in platform:
+        from pwman.ui.win import PwmanCliWin as PwmanCli
+        OSX = False
+    else:
+        from pwman.ui.cli import PwmanCli
+        OSX = False
+
+    return PwmanCli, OSX
 
 
 def main(args):

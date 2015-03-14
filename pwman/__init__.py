@@ -24,7 +24,7 @@ import argparse
 import sys
 import re
 import colorama
-from .util import config
+from pwman.util import config
 from pwman.data import factory
 
 appname = "pwman3"

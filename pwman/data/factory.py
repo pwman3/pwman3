@@ -38,12 +38,14 @@ else:
 
 import os
 
-from pwman.data.database import DatabaseException
+from pwman.data.database import DatabaseException, __DB_FORMAT__
 from pwman.data.drivers import sqlite
 from pwman.data.drivers import postgresql
 
 
 def check_db_version(dburi):
+
+    ver = str(__DB_FORMAT__)
     dburi = urlparse(dburi)
     dbtype = dburi.scheme
     filename = os.path.abspath(dburi.path)

@@ -9,6 +9,7 @@ from distutils.errors import DistutilsOptionError
 from distutils.command.build import build
 import argparse
 from setuptools import setup
+from setuptools import find_packages
 import sys
 from setuptools.command.install import install
 import os
@@ -340,9 +341,9 @@ setup(name=pwman.appname,
       author_email=pwman.authoremail,
       url=pwman.website,
       license="GNU GPL",
-      packages=['pwman'],
-      package_data={"data": ["documentation"]},
-      include_package_data=True,
+      packages=find_packages(exclude=['tests']),
+      #package_data={"data": ["docs"]},
+      #include_package_data=True,
       scripts=['scripts/pwman3'],
       zip_safe=False,
       install_requires=['pycrypto>=2.6',
