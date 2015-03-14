@@ -22,13 +22,12 @@ import unittest
 import os
 import os.path
 from pwman.data import factory
-from pwman.data.drivers.sqlite import DatabaseException, SQLite
+from pwman.data.database import DatabaseException
+from pwman.data.drivers.sqlite import SQLite
 from pwman.data.drivers.postgresql import PostgresqlDatabase
-from pwman.ui import get_ui_platform
 from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 
-PwmanCliNew, OSX = get_ui_platform(sys.platform)
 testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       "test.pwman.db"))
 _saveconfig = False
@@ -65,7 +64,8 @@ class TestFactory(unittest.TestCase):
         db.close()
         os.unlink(fn)
         self.assertIsInstance(db, SQLite)
-        self.assertRaises(DatabaseException, factory.createdb, *('UNKNOWN',0.6))
+        self.assertRaises(DatabaseException, factory.createdb, *('UNKNOWN',
+                                                                 0.6))
 
     def test_factory_createdb(self):
         db = factory.createdb("sqlite:///test.db", 0.6)

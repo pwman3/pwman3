@@ -30,7 +30,6 @@ from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 from pwman.data import factory
 from pwman.data.nodes import Node
-from pwman.ui import get_ui_platform
 
 testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       "test-baseui.pwman.db"))
@@ -65,14 +64,6 @@ class TestBaseUI(unittest.TestCase):
         self.db = factory.createdb('sqlite://' + testdb, dbver)
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()
-
-    def test_get_ui_platform(self):
-        _, osx = get_ui_platform('darwin')
-        self.assertTrue(osx)
-        _, osx = get_ui_platform('win')
-        self.assertFalse(osx)
-        _, osx = get_ui_platform('foo')
-        self.assertFalse(osx)
 
     def test_get_tags(self):
         sys.stdin = StringIO("foo bar baz\n")

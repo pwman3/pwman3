@@ -22,7 +22,6 @@ from pwman.data import factory
 from pwman.util.config import get_pass_conf
 #from pwman.util.generator import leetlist
 from pwman.util.crypto_engine import CryptoEngine
-from pwman.ui import get_ui_platform
 from pwman.ui.tools import CMDLoop, CliMenuItem
 # from pwman import (parser_options, get_conf_options, get_conf, set_umask)
 from pwman.data.database import __DB_FORMAT__
@@ -49,124 +48,12 @@ cls_timeout = 5
 [Database]
 """
 
-
-#def node_factory(username, password, url, notes, tags=None):
-#    node = NewNode()
-#    node.username = username
-#    node.password = password
-#    node.url = url
-#    node.notes = notes
-#    tags = [TagNew(tn) for tn in tags]
-#    node.tags = tags
-#
-#    return node
-
 _saveconfig = False
-
-PwmanCliNew, OSX = get_ui_platform(sys.platform)
-
 
 from .test_tools import (SetupTester)  # DummyCallback2,
                          #  DummyCallback3, DummyCallback4)
 
 testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
-
-
-#class DBTests(unittest.TestCase):
-#
-#    """test everything related to db"""
-#
-#    def setUp(self):
-#        "test that the right db instance was created"
-#        dbver = __DB_FORMAT__
-#        self.dbtype = 'SQLite'
-#        self.db = factory.create(self.dbtype, dbver, testdb)
-#        self.tester = SetupTester(dbver, testdb)
-#        self.tester.create()
-#
-#    def test_1_db_created(self):
-#        "test that the right db instance was created"
-#        self.assertIn(self.dbtype, self.db.__class__.__name__)
-#
-#    def test_2_db_opened(self):
-#        "db was successfuly opened"
-#        # it will have a file name associated
-#        self.assertTrue(hasattr(self.db, '_filename'))
-#
-#    def test_3_create_node(self):
-#        "test that a node can be successfuly created"
-#        # this method does not test do_new
-#        # which is a UI method, rather we test
-#        # _db.addnodes
-#        username = u'tester'
-#        password = u'Password'
-#        url = u'example.org'
-#        notes = u'some notes'
-#        node = NewNode()
-#        node.username = username
-#        node.password = password
-#        node.url = url
-#        node.notes = notes
-#        # node = NewNode(username, password, url, notes)
-#        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
-#        node.tags = tags
-#        self.db.open()
-#        self.db.addnodes([node])
-#        idx_created = node._id
-#        new_node = self.db.getnodes([idx_created])[0]
-#
-#        for key, attr in {'password': password, 'username': username,
-#                          'url': url, 'notes': notes}.items():
-#            self.assertEqual(attr, getattr(new_node, key).decode())
-#        self.db.close()
-#
-#    def test_4_tags(self):
-#        enc = CryptoEngine.get()
-#        got_tags = self.tester.cli._tags(enc)
-#        self.assertEqual(2, len(got_tags))
-#
-#    def test_5_change_pass(self):
-#        enc = CryptoEngine.get()
-#        enc.callback = DummyCallback2()
-#        self.tester.cli._db.changepassword()
-#
-#    @unittest.skip("This is broken as long as changepassword isn't working.")
-#    def test_6_db_change_pass(self):
-#        "fuck yeah, we change the password and the new dummy works"
-#        enc = CryptoEngine.get()
-#        enc.callback = DummyCallback3()
-#        self.tester.cli._db.changepassword()
-#        self.tester.cli.do_forget('')
-#        enc.callback = DummyCallback4()
-#        # TODO: this is broken!
-#        self.tester.cli.do_ls('')
-#
-#    def test_7_db_list_tags(self):
-#        # tags are return as ecrypted strings
-#        tags = self.tester.cli._db.listtags()
-#        self.assertEqual(2, len(tags))
-#        self.tester.cli.do_filter('testing1')
-#        tags = self.tester.cli._db.listtags()
-#        self.assertEqual(2, len(tags))
-#        self.tester.cli.do_ls('')
-#
-#    def test_8_db_remove_node(self):
-#        node = self.tester.cli._db.getnodes([1])
-#        self.tester.cli._db.removenodes(node)
-#        # create the removed node again
-#        node = NewNode()
-#        node.username = 'tester'
-#        node.password = 'Password'
-#        node.url = 'example.org'
-#        node.notes = 'some notes'
-#        tags = [TagNew(tn) for tn in ['testing1', 'testing2']]
-#        node.tags = tags
-#        self.db.open()
-#        self.db.addnodes([node])
-#
-#    def test_9_sqlite_init(self):
-#        db = SQLiteDatabaseNewForm("test")
-#        self.assertEqual("test", db._filename)
 
 
 class CLITests(unittest.TestCase):
@@ -195,16 +82,6 @@ class CLITests(unittest.TestCase):
         password = self.tester.cli.get_password(None, length=7)
         self.assertEqual(len(password), 7)
 
-    #def test_random_leet_password(self):
-    #    password = self.tester.cli.get_password(None, leetify=True, length=7)
-    #    l_num = 0
-    #    for v in leetlist.values():
-    #        if v in password:
-    #            l_num += 1
-        # sometime despite all efforts, randomness dictates that no
-        # leetifying happens ...
-    #    self.assertTrue(l_num >= 0)
-
     def test_leet_password(self):
         password = self.tester.cli.get_password(None, leetify=True,
                                                 reader=lambda x: u'HAtman')
@@ -225,51 +102,6 @@ class CLITests(unittest.TestCase):
         notes = self.tester.cli.get_notes(reader=lambda:
                                           u'test 123\n test 456')
         self.assertEqual(notes, u'test 123\n test 456')
-
-    #def test_get_tags(self):
-    #    tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
-    #    for t in tags:
-    #        self.assertIsInstance(t, TagNew)
-
-    #    for t, n in zip(tags, u'looking glass'.split()):
-    #        self.assertEqual(t.name.strip().decode(), n)
-
-    # creating all the components of the node does
-    # the node is still not added !
-
-    #def test_add_new_entry(self):
-    #    # node = NewNode('alice', 'dough!', 'example.com',
-        #               'lorem impsum')
-    #    node = NewNode()
-    #    node.username = b'alice'
-    #    node.password = b'dough!'
-    #    node.url = b'example.com'
-    #    node.notes = b'somenotes'
-    #    node.tags = b'lorem ipsum'
-
-    #    tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
-    #    node.tags = tags
-    #    self.tester.cli._db.addnodes([node])
-    #    self.tester.cli._db._cur.execute(
-    #        "SELECT ID FROM NODES ORDER BY ID ASC", [])
-    #    rows = self.tester.cli._db._cur.fetchall()
-
-        # by now the db should have 2 new nodes
-        # the first one was added by test_create_node in DBTests
-        # the second was added just now.
-        # This will pass only when running all the tests then ...
-    #    self.assertEqual(len(rows), 2)
-
-    #    node = NewNode()
-    #    node.username = b'alice'
-    #    node.password = b'dough!'
-    #    node.url = b'example.com'
-    #    node.notes = b'somenotes'
-    #    node.tags = b'lorem ipsum'
-
-    #    tags = self.tester.cli.get_tags(reader=lambda: u'looking glass')
-    #    node.tags = tags
-    #    self.tester.cli._db.addnodes([node])
 
     def test_get_ids(self):
         # used by do_cp or do_open,

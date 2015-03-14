@@ -9,8 +9,21 @@ else:
 from pwman.data import factory
 from pwman.util import config
 from pwman import which
-from pwman.ui import get_ui_platform
 from pwman.util.callback import Callback
+
+
+def get_ui_platform(platform):  # pragma: no cover
+    if 'darwin' in platform:
+        from pwman.ui.mac import PwmanCliMac as PwmanCli
+        OSX = True
+    elif 'win' in platform:
+        from pwman.ui.win import PwmanCliWin as PwmanCli
+        OSX = False
+    else:
+        from pwman.ui.cli import PwmanCli
+        OSX = False
+
+    return PwmanCli, OSX
 
 PwmanCliNew, OSX = get_ui_platform(sys.platform)
 
@@ -86,9 +99,9 @@ class SetupTester(object):
                                      config.default_config)
 
         self.configp.set_value('Database', 'dburi',
-                               'sqlite://' + os.path.join(os.path.abspath(
-                                                          os.path.dirname(__file__)),
-                                                          "test.pwman.db")
+                               'sqlite://' + os.path.join(
+                                   os.path.abspath(os.path.dirname(__file__)),
+                                   "test.pwman.db")
                                )
 
         if not OSX:

@@ -62,6 +62,6 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
     suite.addTest(loader.loadTestsFromTestCase(TestInit))
     suite.addTest(loader.loadTestsFromTestCase(TestNode))
-    # if 'win' not in sys.platform:
+    #if 'win' not in sys.platform:
     #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
