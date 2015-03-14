@@ -51,18 +51,20 @@ Following is a table describing the parameters and their meanings:
     -----------   -----------
     cls_timeout   Number of seconds before the screen is clean after a print.
     -----------   -----------
-    umask         The umask in which database files are written.
+    umask         The umask in which database and configuration files are written.
     -----------   -----------
     xsel          path to the xsel binary (Linux\BSD only) 
     -----------   -----------
     **Section**   *Database* 
     -----------   -----------
-    dburi         Database URI conforming to `RFC3986`_. SQLite, and Postgreql are currently supported. 
+    dburi         Database URI conforming to `RFC3986`_. SQLite, Postgreql and
+                  MySQL are currently supported. 
        
                   SQLite example: `sqlite:///path/to/your/db`
 
-                  Postgreql example: `postgresql://<user>:<pass>@<host>/<database>`
+                  Postgreql example: `postgresql://<user>:<pass>@<host[:port]>/<database>`
 
+                  MySQL example:      `mysql://<user>:<pass>@<host[:port]>/<database>`
     ===========   ===========
 
 
