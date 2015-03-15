@@ -39,7 +39,6 @@ lint:
 	flake8 pwman scripts
 
 test: install clean
-	git checkout tests/pwman.v0.0.8.db
 	python setup.py test
 	@rm -f pwman/tests/test.conf
 
