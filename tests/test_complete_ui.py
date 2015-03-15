@@ -37,6 +37,7 @@ class Ferrum(unittest.TestCase):
         os.remove('test-chg_passwd.log')
         os.remove(backup)
 
+    @unittest.skip("obsolete")
     def test_b_run_convert(self):
         "invoke pwman with -k option to convert the old data"
         lfile = 'convert-test.log'
@@ -56,7 +57,7 @@ class Ferrum(unittest.TestCase):
         lfile = 'test-chg_passwd.log'
         logfile = open(lfile, 'wb')
         child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../../scripts/pwman3') +
+                                           '../scripts/pwman3') +
                               ' -d ', logfile=logfile)
         child.sendline('passwd')
         child.expect("Please enter your current password:")
