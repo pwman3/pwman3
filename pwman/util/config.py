@@ -105,9 +105,9 @@ class Config(object):
         self.parser.set(section, name, value)
 
     def save(self):
-
-        with open(self.filename, "w") as fp:
-            self.parser.write(fp)
+        if not "False" in self.get_value("Global", "Save"):
+            with open(self.filename, "w") as fp:
+                self.parser.write(fp)
 
 
 def get_pass_conf(config):
