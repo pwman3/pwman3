@@ -14,20 +14,25 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
-# ============================================================================
-# Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
+# Copyright (C) 2012, 2013, 2014, 2015 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
 # pylint: disable=I0011
-"""
-Define the CLI interface for pwman3 and the helper functions
-"""
+
 from __future__ import print_function
-import pwman
-from pwman.util.crypto_engine import CryptoEngine
 import sys
 import cmd
+import pwman
 from pwman.ui.baseui import BaseCommands
+from pwman import get_conf_options, get_db_version
+from pwman import parser_options
+from pwman.ui.tools import CLICallback
+import pwman.data.factory
+from pwman.exchange.importer import Importer
+from pwman.util.crypto_engine import CryptoEngine
+
+if sys.version_info.major > 2:
+    raw_input = input
+
 try:
     import readline
     _readline_available = True
@@ -70,3 +75,44 @@ class PwmanCli(cmd.Cmd, BaseCommands):
             pass
 
         self.prompt = "pwman> "
+
+		
+def get_ui_platform(platform):  # pragma: no cover
+    if 'darwin' in platform:
+        from pwman.ui.mac import PwmanCliMac as PwmanCli
+        OSX = True
+    elif 'win' in platform:
+        from pwman.ui.win import PwmanCliWin as PwmanCli
+        OSX = False
+    else:
+        from pwman.ui.cli import PwmanCli
+        OSX = False
+
+    return PwmanCli, OSX
+
+
+def main():
+    args = parser_options().parse_args()
+    PwmanCli, OSX = get_ui_platform(sys.platform)
+    xselpath, dbtype, config = get_conf_options(args, OSX)
+    dburi = config.get_value('Database', 'dburi')
+    print(dburi)
+    dbver = get_db_version(config, args)
+    CryptoEngine.get()
+
+    
+    db = pwman.data.factory.createdb(dburi, dbver)
+
+    if args.import_file:
+        importer = Importer((args, config, db))
+        importer.run()
+        sys.exit(0)
+
+    cli = PwmanCli(db, xselpath, CLICallback, config)
+
+    try:
+        cli.cmdloop()
+    except KeyboardInterrupt as e:
+        print(e)
+    finally:
+        config.save()

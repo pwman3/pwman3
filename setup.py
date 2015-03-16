@@ -337,9 +337,6 @@ setup(name=pwman.appname,
       url=pwman.website,
       license="GNU GPL",
       packages=find_packages(exclude=['tests']),
-      #package_data={"data": ["docs"]},
-      #include_package_data=True,
-      scripts=['scripts/pwman3'],
       zip_safe=False,
       install_requires=['pycrypto>=2.6',
                         'colorama>=0.2.4'],
@@ -361,5 +358,8 @@ setup(name=pwman.appname,
       cmdclass={
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
-      }
+      },
+	  entry_points={
+	  'console_scripts': [ 'pwman-cli = pwman.ui.cli:main' ]
+		}
       )

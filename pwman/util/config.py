@@ -41,6 +41,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                                        'history')}
                   }
 
+if 'win' in sys.platform:
+    default_config['Database']['dburi'] = default_config['Database']['dburi'].replace("\\", "/")
 
 class ConfigException(Exception):
     """Basic exception for config."""
