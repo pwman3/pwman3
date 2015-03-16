@@ -327,11 +327,6 @@ class PyCryptoInstallCommand(install):
             print(('Please use pip or your Distro\'s package manager '
                    'to install pycrypto ...'))
 
-if 'win' in sys.platform:
-    test_requirements = None
-else:
-    test_requirements = ['pexpect']
-
 
 setup(name=pwman.appname,
       version=describe(),
@@ -363,7 +358,6 @@ setup(name=pwman.appname,
                    'Programming Language :: Python :: 3.4',
                    ],
       test_suite='tests.test_pwman.suite',
-      tests_require=test_requirements,
       cmdclass={
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
