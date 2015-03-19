@@ -1,3 +1,11 @@
+2015-Mar-19 Oz Nahum Tiram <nahumoz@gmail.com>
+	
+	* version 0.6
+	* Rewrite Crypto Engine
+	* Multiple fixes in all DB drivers
+	* Fixes for all platforms
+	* For the complete log see git log. 
+
 2014-May-5 Oz Nahum <nahumoz@gmail.com>
     * Version 0.5.1 
 	* Convert old database before starting Pwman3
