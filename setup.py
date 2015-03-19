@@ -348,7 +348,7 @@ setup(name=pwman.appname,
                    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
-                   'Programming Language :: Python :: 2.7'
+                   'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
@@ -359,7 +359,7 @@ setup(name=pwman.appname,
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
       },
-	  entry_points={
-	  'console_scripts': [ 'pwman-cli = pwman.ui.cli:main' ]
-		}
+      entry_points={
+      'console_scripts': [ 'pwman-cli = pwman.ui.cli:main' ]
+        }
       )
