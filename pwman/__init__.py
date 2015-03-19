@@ -38,12 +38,14 @@ except pkg_resources.DistributionNotFound:  # pragma: no cover
 website = "http://pwman3.github.io/pwman3/"
 author = "Oz Nahum Tiram"
 authoremail = "nahumoz@gmail.com"
-description = "a command line password management application."
+description = "a command line password manager with support for multiple databases."
 keywords = "password management sqlite crypto"
-long_description = (u"Pwman3 aims to provide a simple but powerful command "
-                    "line interface for password management.\nIt allows one "
-                    "to store your password in database locked by "
-                    "a\nmaster password which is AES encrypted.")
+long_description = u"""
+Pwman3 aims to provide a simple but powerful commandline interface for
+password management.
+It allows one to store passwords in database locked by master password which
+is AES encrypted.
+Pwman3 supports MySQL, Postgresql and SQLite"""
 
 
 def which(cmd):  # pragma: no cover

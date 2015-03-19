@@ -1,9 +1,14 @@
 Installing and upgrading:
 ========================= 
 
-You can install pwman3 simply by unpacking the archive and running:
+You can get the latest stable version of pwman3 from pypi::
 
-   $ pip install .
+   $ pip install pwman3 
+
+Or you can install pwman3 cloning the repository and running::
+    
+   $ git clone https://github.com/pwman3/pwman3.git
+   $ cd pwman3 && pip install .
 
 Inside the extraced directory. At the moment pypi still does not have 
 the latest version of pwman3.
