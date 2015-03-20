@@ -47,8 +47,47 @@ class Database(object):
         else:
             self.get_user_password()
 
-    def close(self):
-        pass  # pragma: no cover
+    def _check_tables(self):
+        try:
+            self._cur.execute("SELECT 1 from DBVERSION")
+            version = self._cur.fetchone()
+            return version
+        except self.ProgrammingError:
+            self._con.rollback()
+
+    def _create_tables(self):
+
+        if self._check_tables():
+            return
+        try:
+            self._cur.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
+                              "USERNAME TEXT NOT NULL, "
+                              "PASSWORD TEXT NOT NULL, "
+                              "URL TEXT NOT NULL, "
+                              "NOTES TEXT NOT NULL"
+                              ")")
+
+            self._cur.execute("CREATE TABLE TAG"
+                              "(ID  SERIAL PRIMARY KEY,"
+                              "DATA VARCHAR(255) NOT NULL UNIQUE)")
+
+            self._cur.execute("CREATE TABLE LOOKUP ("
+                              "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
+                              "tagid INTEGER NOT NULL REFERENCES TAG(ID)"
+                              ")")
+
+            self._cur.execute("CREATE TABLE CRYPTO "
+                              "(SEED TEXT, DIGEST TEXT)")
+
+            self._cur.execute("CREATE TABLE DBVERSION("
+                              "VERSION TEXT NOT NULL)")
+
+            self._cur.execute("INSERT INTO DBVERSION VALUES(%s)",
+                              (self.dbversion,))
+
+            self._con.commit()
+        except self.ProgrammingError:  # pragma: no cover
+            self._con.rollback()
 
     def get_user_password(self):
         """
@@ -58,38 +97,158 @@ class Database(object):
         newkey = enc.changepassword()
         return self.savekey(newkey)
 
-    def changepassword(self):
-        """
-        Change the databases password.
-        """
-        # TODO: call the converter here ...
-        # nodeids = self.listnodes()
-        # nodes = self.getnodes(nodeids)
-        # enc = CryptoEngine.get()
-        # oldkey = enc.get_cryptedkey()
-        # newkey = enc.changepassword()
-        # return newkey
+    def _clean_orphans(self):
+        clean = ("delete from TAG where not exists "
+                 "(select 'x' from LOOKUP l where l.TAGID = TAG.ID)")
+        self._cur.execute(clean)
 
-    def listtags(self, all=False):
-        pass  # pragma: no cover
+    def _get_node_tags(self, node):
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = %s"
+        self._cur.execute(sql, (str(node[0]),))
+        tagids = self._cur.fetchall()
+        if tagids:
+            sql = ("SELECT DATA FROM TAG WHERE ID IN (%s)"
+                   "" % ','.join(['%s']*len(tagids)))
+            tagids = [str(id[0]) for id in tagids]
+            self._cur.execute(sql, (tagids))
+            tags = self._cur.fetchall()
+            for t in tags:
+                yield t[0]
 
-    #def currenttags(self):
-    #    return self._filtertags
+    def _setnodetags(self, nodeid, tags):
+        for tag in tags:
+            tid = self._get_or_create_tag(tag)
+            self._update_tag_lookup(nodeid, tid)
 
-    def addnodes(self, nodes):
-        pass  # pragma: no cover
+    def _get_tag(self, tagcipher):
+        sql_search = "SELECT ID FROM TAG WHERE DATA = %s"
+        self._cur.execute(sql_search, ([tagcipher]))
+        rv = self._cur.fetchone()
+        return rv
 
-    def editnode(self, id, node):
-        pass  # pragma: no cover
+    def _get_or_create_tag(self, tagcipher):
+        rv = self._get_tag(tagcipher)
+        if rv:
+            return rv[0]
+        else:
+            self._cur.execute(self._insert_tag_sql, ([tagcipher]))
+            try:
+                return self._cur.fetchone()[0]
+            except TypeError:
+                return self._cur.lastrowid
 
-    def removenodes(self, nodes):
-        pass  # pragma: no cover
+    def _update_tag_lookup(self, nodeid, tid):
+        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(%s, %s)"
+        self._cur.execute(sql_lookup, (nodeid, tid))
+        self._con.commit()
 
-    def listnodes(self):
-        pass  # pragma: no cover
+    def getnodes(self, ids):
+        if ids:
+            sql = ("SELECT * FROM NODE WHERE ID IN ({})"
+                   "".format(','.join('%s' for i in ids)))
+        else:
+            sql = "SELECT * FROM NODE"
+        self._cur.execute(sql, (ids))
+        nodes = self._cur.fetchall()
+        nodes_w_tags = []
+        for node in nodes:
+            tags = list(self._get_node_tags(node))
+            nodes_w_tags.append(list(node) + tags)
 
-    def savekey(self, key):
-        pass  # pragma: no cover
+        return nodes_w_tags
+
+    def listnodes(self, filter=None):
+        if not filter:
+            sql_all = "SELECT ID FROM NODE"
+            self._cur.execute(sql_all)
+            ids = self._cur.fetchall()
+            return [id[0] for id in ids]
+        else:
+            tagid = self._get_tag(filter)
+            if not tagid:
+                return []  # pragma: no cover
+
+            sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = %s "
+            self._cur.execute(sql_filter, (tagid))
+            self._con.commit()
+            ids = self._cur.fetchall()
+            return [id[0] for id in ids]
+
+    def add_node(self, node):
+        node_tags = list(node)
+        node, tags = node_tags[:4], node_tags[-1]
+        self._cur.execute(self._add_node_sql, (node))
+        try:
+            nid = self._cur.fetchone()[0]
+        except TypeError:
+            nid = self._cur.lastrowid
+        self._setnodetags(nid, tags)
+        self._con.commit()
+
+    def listtags(self):
+        self._clean_orphans()
+        get_tags = "select DATA from TAG"
+        self._cur.execute(get_tags)
+        tags = self._cur.fetchall()
+        if tags:
+            return [t[0] for t in tags]
+        return []  # pragma: no cover
+
+    # TODO: add this to tests !
+    def editnode(self, nid, **kwargs):  # pragma: no cover
+        tags = kwargs.pop('tags', None)
+        sql = ("UPDATE NODE SET %s WHERE ID = %%s "
+               "" % ','.join('%s=%%s' % k for k in list(kwargs)))
+        self._cur.execute(sql, (list(kwargs.values()) + [nid]))
+        if tags:
+            # update all old node entries in lookup
+            # create new entries
+            # clean all old tags
+            sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
+            self._cur.execute(sql_clean, (str(nid),))
+            self._setnodetags(nid, tags)
+
+        self._con.commit()
+
+    def removenodes(self, nid):
+        # shall we do this also in the sqlite driver?
+        sql_clean = "DELETE FROM LOOKUP WHERE NODEID=%s"
+        self._cur.execute(sql_clean, nid)
+        sql_rm = "delete from NODE where ID = %s"
+        self._cur.execute(sql_rm, nid)
+        self._con.commit()
+        self._con.commit()
+
+    def fetch_crypto_info(self):
+        self._cur.execute("SELECT * FROM CRYPTO")
+        row = self._cur.fetchone()
+        return row
+
+    def save_crypto_info(self, seed, digest):
+        """save the random seed and the digested key"""
+        self._cur.execute("DELETE  FROM CRYPTO")
+        self._cur.execute("INSERT INTO CRYPTO VALUES(%s, %s)", (seed, digest))
+        self._con.commit()
 
     def loadkey(self):
-        pass  # pragma: no cover
+        sql = "SELECT * FROM CRYPTO"
+        try:
+            self._cur.execute(sql)
+            seed, digest = self._cur.fetchone()
+            return seed + u'$6$' + digest
+        except TypeError:  # pragma: no cover
+            return None
+
+    def savekey(self, key):
+        salt, digest = key.split('$6$')
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES(%s,%s)"
+        self._cur.execute("DELETE FROM CRYPTO")
+        self._cur.execute(sql, (salt, digest))
+        self._digest = digest.encode('utf-8')
+        self._salt = salt.encode('utf-8')
+        self._con.commit()
+
+    def close(self):  # pragma: no cover
+        self._clean_orphans()
+        self._cur.close()
+        self._con.close()
