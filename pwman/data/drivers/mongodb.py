@@ -28,10 +28,10 @@ class MongoDB(Database):
         pass
 
     def __init__(self, mongodb_uri, dbformat=__DB_FORMAT__):
-        pass
+        self.uri = mongodb_uri
 
     def _open(self):
-        pass
+        self._con = pymongo.Connection(self.uri)
 
     def getnodes(self, ids):
         pass
