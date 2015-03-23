@@ -61,6 +61,8 @@ class PostgresqlDatabase(Database):
         """
         self._pgsqluri = pgsqluri
         self.dbversion = dbformat
+        self._sub = "%s"
+        self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = %s "
         self._add_node_sql = ('INSERT INTO NODE(USERNAME, PASSWORD, URL, '
                               'NOTES) VALUES(%s, %s, %s, %s) RETURNING ID')
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(%s) RETURNING ID"

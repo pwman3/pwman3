@@ -101,14 +101,15 @@ class Database(object):
         clean = ("delete from TAG where not exists "
                  "(select 'x' from LOOKUP l where l.TAGID = TAG.ID)")
         self._cur.execute(clean)
+        self._con.commit()
 
     def _get_node_tags(self, node):
-        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = %s"
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = {}".format(self._sub)
         self._cur.execute(sql, (str(node[0]),))
         tagids = self._cur.fetchall()
         if tagids:
-            sql = ("SELECT DATA FROM TAG WHERE ID IN (%s)"
-                   "" % ','.join(['%s']*len(tagids)))
+            sql = ("SELECT DATA FROM TAG WHERE ID IN"
+                   " ({})".format(','.join([self._sub]*len(tagids))))
             tagids = [str(id[0]) for id in tagids]
             self._cur.execute(sql, (tagids))
             tags = self._cur.fetchall()
@@ -121,7 +122,7 @@ class Database(object):
             self._update_tag_lookup(nodeid, tid)
 
     def _get_tag(self, tagcipher):
-        sql_search = "SELECT ID FROM TAG WHERE DATA = %s"
+        sql_search = "SELECT ID FROM TAG WHERE DATA = {}".format(self._sub)
         self._cur.execute(sql_search, ([tagcipher]))
         rv = self._cur.fetchone()
         return rv
@@ -138,14 +139,15 @@ class Database(object):
                 return self._cur.lastrowid
 
     def _update_tag_lookup(self, nodeid, tid):
-        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES(%s, %s)"
+        sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES({}, {})".format(
+            self._sub, self._sub)
         self._cur.execute(sql_lookup, (nodeid, tid))
         self._con.commit()
 
     def getnodes(self, ids):
         if ids:
             sql = ("SELECT * FROM NODE WHERE ID IN ({})"
-                   "".format(','.join('%s' for i in ids)))
+                   "".format(','.join(self._sub for i in ids)))
         else:
             sql = "SELECT * FROM NODE"
         self._cur.execute(sql, (ids))
@@ -158,6 +160,7 @@ class Database(object):
         return nodes_w_tags
 
     def listnodes(self, filter=None):
+        """return a list of node ids"""
         if not filter:
             sql_all = "SELECT ID FROM NODE"
             self._cur.execute(sql_all)
@@ -168,8 +171,7 @@ class Database(object):
             if not tagid:
                 return []  # pragma: no cover
 
-            sql_filter = "SELECT NODEID FROM LOOKUP WHERE TAGID = %s "
-            self._cur.execute(sql_filter, (tagid))
+            self._cur.execute(self._list_nodes_sql, (tagid))
             self._con.commit()
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
@@ -194,17 +196,19 @@ class Database(object):
             return [t[0] for t in tags]
         return []  # pragma: no cover
 
-    # TODO: add this to tests !
-    def editnode(self, nid, **kwargs):  # pragma: no cover
+    # TODO: add this to tests of postgresql and mysql!
+    def editnode(self, nid, **kwargs):
         tags = kwargs.pop('tags', None)
-        sql = ("UPDATE NODE SET %s WHERE ID = %%s "
-               "" % ','.join('%s=%%s' % k for k in list(kwargs)))
+        sql = ("UPDATE NODE SET {} WHERE ID = {} ".format(
+            ','.join(['{}={}'.format(k, self._sub) for k in list(kwargs)]),
+            self._sub))
+
         self._cur.execute(sql, (list(kwargs.values()) + [nid]))
         if tags:
             # update all old node entries in lookup
             # create new entries
             # clean all old tags
-            sql_clean = "DELETE FROM LOOKUP WHERE NODEID=?"
+            sql_clean = "DELETE FROM LOOKUP WHERE NODEID={}".format(self._sub)
             self._cur.execute(sql_clean, (str(nid),))
             self._setnodetags(nid, tags)
 
@@ -212,9 +216,9 @@ class Database(object):
 
     def removenodes(self, nid):
         # shall we do this also in the sqlite driver?
-        sql_clean = "DELETE FROM LOOKUP WHERE NODEID=%s"
+        sql_clean = "DELETE FROM LOOKUP WHERE NODEID={}".format(self._sub)
         self._cur.execute(sql_clean, nid)
-        sql_rm = "delete from NODE where ID = %s"
+        sql_rm = "delete from NODE where ID = {}".format(self._sub)
         self._cur.execute(sql_rm, nid)
         self._con.commit()
         self._con.commit()
@@ -227,10 +231,15 @@ class Database(object):
     def save_crypto_info(self, seed, digest):
         """save the random seed and the digested key"""
         self._cur.execute("DELETE  FROM CRYPTO")
-        self._cur.execute("INSERT INTO CRYPTO VALUES(%s, %s)", (seed, digest))
+        self._cur.execute("INSERT INTO CRYPTO VALUES({}, {})".format(self._sub,
+                                                                     self._sub),
+                          (seed, digest))
         self._con.commit()
 
     def loadkey(self):
+        """
+        return _keycrypted
+        """
         sql = "SELECT * FROM CRYPTO"
         try:
             self._cur.execute(sql)
@@ -241,7 +250,8 @@ class Database(object):
 
     def savekey(self, key):
         salt, digest = key.split('$6$')
-        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES(%s,%s)"
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,
+                                                                      self._sub)
         self._cur.execute("DELETE FROM CRYPTO")
         self._cur.execute(sql, (salt, digest))
         self._digest = digest.encode('utf-8')

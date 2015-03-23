@@ -30,8 +30,8 @@ from pwman.util.crypto_engine import CryptoEngine
 # testing on linux host
 # su - postgres
 # psql
-# postgres=# create user $YOUR_USERNAME;
-# postgres=# grant ALL ON DATABASE pwman to $YOUR_USERNAME;
+# postgres=# CREATE USER tester WITH PASSWORD '123456';
+# postgres=# grant ALL ON DATABASE pwman to tester;
 #
 ##
 

@@ -16,10 +16,10 @@
 # ============================================================================
 # Copyright (C) 2012-2015 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
-#mysql -u root -p
-#create database pwmantest
-#create user 'pwman'@'localhost' IDENTIFIED BY '123456';
-#grant all on pwmantest.* to 'pwman'@'localhost';
+# mysql -u root -p
+# create database pwmantest
+# create user 'pwman'@'localhost' IDENTIFIED BY '123456';
+# grant all on pwmantest.* to 'pwman'@'localhost';
 
 """MySQL Database implementation."""
 from pwman.data.database import Database, __DB_FORMAT__
@@ -53,6 +53,8 @@ class MySQLDatabase(Database):
     def __init__(self, mysqluri, dbformat=__DB_FORMAT__):
         self.dburi = mysqluri
         self.dbversion = dbformat
+        self._sub = "%s"
+        self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = %s "
         self._add_node_sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, "
                               "NOTES) "
                               "VALUES(%s, %s, %s, %s)")

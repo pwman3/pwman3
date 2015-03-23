@@ -151,7 +151,8 @@ class TestSQLite(unittest.TestCase):
         self.assertEqual(4, len(list(tags)))
 
     def test_a11_test_rmnodes(self):
-        self.db.removenodes([1, 2])
+        for n in [1, 2]:
+            self.db.removenodes([n])
         rv = self.db._cur.execute("select * from node").fetchall()
         self.assertListEqual(rv, [])
 
