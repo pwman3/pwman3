@@ -49,21 +49,20 @@ class TestMongoDB(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Drop collections here
-        pass
+        coll = cls.db._db['crypto']
+        coll.drop()
 
     def test_1_con(self):
         self.assertIsInstance(self.db._con, pymongo.Connection)
 
-    @unittest.skip("")
+    @unittest.skip("MongoDB creates collections on the fly")
     def test_2_create_collections(self):
         pass
 
-    @unittest.skip("")
     def test_3_load_key(self):
         self.db.savekey('SECRET$6$KEY')
         secretkey = self.db.loadkey()
-        self.assertEqual(secretkey, 'SECRET$6$KEY')
+        self.assertEqual(secretkey, u'SECRET$6$KEY')
 
     @unittest.skip("")
     def test_4_save_crypto(self):

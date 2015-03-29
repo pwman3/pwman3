@@ -32,6 +32,7 @@ class MongoDB(Database):
 
     def _open(self):
         self._con = pymongo.Connection(self.uri)
+        self._db = self._con.get_default_database()
 
     def getnodes(self, ids):
         pass
@@ -55,10 +56,15 @@ class MongoDB(Database):
         pass
 
     def savekey(self, key):
-        pass
+        coll = self._db['crypto']
+        salt, digest = key.split('$6$')
+        coll.insert({'salt': salt, 'key': digest})
 
     def loadkey(self):
-        pass
+        coll = self._db['crypto']
+        key = coll.find_one({}, {'_id': 0})
+        key = key['salt'] + '$6$' + key['key']
+        return key
 
     def close(self):
         pass
