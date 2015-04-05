@@ -34,6 +34,18 @@ class MongoDB(Database):
         self._con = pymongo.Connection(self.uri)
         self._db = self._con.get_default_database()
 
+        counters = self._db.counters.find()
+        if not counters.count():
+            self._db.counters.insert({'_id': 'nodeid', 'seq': 0})
+
+    def _get_next_node_id(self):
+        # for newer pymongo versions ...
+        # return_document=ReturnDocument.AFTER
+        nodeid = self._db.counters.find_and_modify(
+            {'_id': 'nodeid'}, {'$inc': {'seq': 1}}, new=True,
+            fields={'seq': 1, '_id': 0})
+        return nodeid['seq']
+
     def getnodes(self, ids):
         pass
 
@@ -41,7 +53,8 @@ class MongoDB(Database):
         pass
 
     def add_node(self, node):
-        pass
+        nid = self._get_next_node_id()
+        return nid
 
     def listtags(self):
         pass

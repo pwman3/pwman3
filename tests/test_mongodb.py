@@ -51,6 +51,7 @@ class TestMongoDB(unittest.TestCase):
     def tearDownClass(cls):
         coll = cls.db._db['crypto']
         coll.drop()
+        cls.db._db['counters'].drop()
 
     def test_1_con(self):
         self.assertIsInstance(self.db._con, pymongo.Connection)
@@ -72,14 +73,14 @@ class TestMongoDB(unittest.TestCase):
         row = self.db.fetch_crypto_info()
         self.assertEqual(row, ('TOP', 'SECRET'))
 
-    @unittest.skip("")
     def test_5_add_node(self):
         innode = ["TBONE", "S3K43T", "example.org", "some note",
                   ["bartag", "footag"]]
-        self.db.add_node(innode)
+        nid = self.db.add_node(innode)
+        self.assertEquals(1, nid)
 
-        outnode = self.db.getnodes([1])[0]
-        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
+        # outnode = self.db.getnodes([1])[0]
+        # self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
     @unittest.skip("")
     def test_6_list_nodes(self):
