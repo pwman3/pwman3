@@ -56,7 +56,6 @@ class SQLite(Database):
         self._cur = self._con.cursor()
         self._create_tables()
 
-
     def _create_tables(self):
         self._cur.execute("PRAGMA TABLE_INFO(NODE)")
         if self._cur.fetchone() is not None:
@@ -94,4 +93,3 @@ class SQLite(Database):
         except Exception as e:  # pragma: no cover
             self._con.rollback()
             raise e
-
