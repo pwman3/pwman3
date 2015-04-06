@@ -80,7 +80,6 @@ class TestMongoDB(unittest.TestCase):
         outnode = self.db.getnodes([1])[0]
         self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
-    @unittest.skip("")
     def test_6_list_nodes(self):
         ret = self.db.listnodes()
         self.assertEqual(ret, [1])

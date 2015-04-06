@@ -63,7 +63,13 @@ class MongoDB(Database):
         return nodes
 
     def listnodes(self, filter=None):
-        pass
+        if not filter:
+            nodes = self._db.nodes.find({}, {'_id': 1})
+
+        else:
+            nodes = self._db.nodes.find({"tags": {'$in': [filter]}}, {'_id': 1})
+
+        return [node['_id'] for node in list(nodes)]
 
     def add_node(self, node):
         nid = self._get_next_node_id()
