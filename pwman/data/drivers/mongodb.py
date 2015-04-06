@@ -47,13 +47,35 @@ class MongoDB(Database):
         return nodeid['seq']
 
     def getnodes(self, ids):
-        pass
+
+        node_dicts = self._db.nodes.find({'_id': {'$in': ids}})
+        nodes = []
+        for node in node_dicts:
+            n = [node['_id'],
+                 node['username'],
+                 node['password'],
+                 node['url'],
+                 node['notes']]
+
+            [n.append(t) for t in node['tags']]
+            nodes.append(n)
+
+        return nodes
 
     def listnodes(self, filter=None):
         pass
 
     def add_node(self, node):
         nid = self._get_next_node_id()
+        node = {
+            '_id': nid,
+            'username': node[0],
+            'password': node[1],
+            'url': node[2],
+            'notes': node[3],
+            'tags': node[4]
+            }
+        self._db.nodes.insert(node)
         return nid
 
     def listtags(self):
