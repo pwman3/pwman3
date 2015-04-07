@@ -86,12 +86,10 @@ class TestMongoDB(unittest.TestCase):
         ret = self.db.listnodes("footag")
         self.assertEqual(ret, [1])
 
-    @unittest.skip("")
     def test_6a_list_tags(self):
         ret = self.db.listtags()
         self.assertListEqual(ret, ['bartag', 'footag'])
 
-    @unittest.skip("")
     def test_6b_get_nodes(self):
         ret = self.db.getnodes([1])
         retb = self.db.getnodes([])

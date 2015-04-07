@@ -47,8 +47,10 @@ class MongoDB(Database):
         return nodeid['seq']
 
     def getnodes(self, ids):
-
-        node_dicts = self._db.nodes.find({'_id': {'$in': ids}})
+        if ids:
+            node_dicts = self._db.nodes.find({'_id': {'$in': ids}})
+        else:
+            node_dicts = self._db.nodes.find({})
         nodes = []
         for node in node_dicts:
             n = [node['_id'],
@@ -85,7 +87,8 @@ class MongoDB(Database):
         return nid
 
     def listtags(self):
-        pass
+        tags = self._db.nodes.distinct('tags')
+        return tags
 
     def editnode(self, nid, **kwargs):
         pass
