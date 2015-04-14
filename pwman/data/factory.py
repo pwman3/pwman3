@@ -39,8 +39,7 @@ else:
 import os
 
 from pwman.data.database import DatabaseException, __DB_FORMAT__
-from pwman.data.drivers import sqlite
-from pwman.data.drivers import postgresql
+from pwman.data import drivers
 
 
 def check_db_version(dburi):
@@ -50,10 +49,13 @@ def check_db_version(dburi):
     dbtype = dburi.scheme
     filename = os.path.abspath(dburi.path)
     if dbtype == "sqlite":
-        ver = sqlite.SQLite.check_db_version(filename)
-    if dbtype == "postgresql":
-        #  ver = postgresql.PostgresqlDatabase.check_db_version(dburi)
-        ver = postgresql.PostgresqlDatabase.check_db_version(dburi.geturl())
+        ver = drivers.SQLite.check_db_version(filename)
+    elif dbtype == "postgresql":
+        ver = drivers.PostgresqlDatabase.check_db_version(dburi.geturl())
+    elif dbtype == "mysql":
+        ver = drivers.MySQLDatabase.check_db_version(dburi)
+    elif dbtype == "mongodb":
+        pass
 
     return float(ver.strip("\'"))
 
@@ -76,9 +78,15 @@ def createdb(dburi, version):
     elif dbtype == "mysql":  # pragma: no cover
         try:
             from pwman.data.drivers import mysql
-            db = mysql.MySQLDatabase()
+            db = mysql.MySQLDatabase(dburi)
         except ImportError:
             raise DatabaseException("python-mysqldb not installed")
+    elif dbtype == 'mongodb':
+        try:
+            from pwman.data.drivers import mongodb
+            db = mongodb.MongoDB(dburi)
+        except ImportError:
+            raise DatabaseException("pymongo not installed")
     else:
         raise DatabaseException("Unknown database type specified")
     return db
