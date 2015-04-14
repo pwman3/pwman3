@@ -94,7 +94,7 @@ class MongoDB(Database):
         pass
 
     def removenodes(self, nid):
-        pass
+        self._db.nodes.remove({'_id': {'$in': nid}})
 
     def fetch_crypto_info(self):
         pass
@@ -111,4 +111,4 @@ class MongoDB(Database):
         return key
 
     def close(self):
-        pass
+        self._con.close()

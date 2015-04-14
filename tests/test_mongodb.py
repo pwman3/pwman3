@@ -52,6 +52,8 @@ class TestMongoDB(unittest.TestCase):
         coll = cls.db._db['crypto']
         coll.drop()
         cls.db._db['counters'].drop()
+        cls.db._db['nodes'].drop()
+        cls.db.close()
 
     def test_1_con(self):
         self.assertIsInstance(self.db._con, pymongo.Connection)
@@ -95,39 +97,22 @@ class TestMongoDB(unittest.TestCase):
         retb = self.db.getnodes([])
         self.assertListEqual(ret, retb)
 
-    @unittest.skip("")
+    @unittest.skip("tags are created in situ in mongodb")
     def test_7_get_or_create_tag(self):
-        s = self.db._get_or_create_tag("SECRET")
-        s1 = self.db._get_or_create_tag("SECRET")
+        pass
 
-        self.assertEqual(s, s1)
-
-    @unittest.skip("")
+    @unittest.skip("tags are removed with their node")
     def test_7a_clean_orphans(self):
+        pass
 
-        self.db._clean_orphans()
-        rv = self.db._get_tag("SECRET")
-        self.assertIsNone(rv)
-
-    @unittest.skip("")
     def test_8_remove_node(self):
         self.db.removenodes([1])
         n = self.db.listnodes()
         self.assertEqual(len(n), 0)
 
-    @unittest.skip("")
+    @unittest.skip("No schema migration with mongodb")
     def test_9_check_db_version(self):
-
-        dburi = "mysql://pwman:123456@localhost:3306/pwmantest"
-        v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, '0.6')
-        self.db._cur.execute("DROP TABLE DBVERSION")
-        self.db._con.commit()
-        v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, None)
-        self.db._cur.execute("CREATE TABLE DBVERSION("
-                             "VERSION TEXT NOT NULL) ")
-        self.db._con.commit()
+        pass
 
 
 if __name__ == '__main__':
