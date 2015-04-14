@@ -50,6 +50,8 @@ class MySQLDatabase(Database):
         except mysql.ProgrammingError:
             con.rollback()
 
+        return str(__DB_FORMAT__)
+
     def __init__(self, mysqluri, dbformat=__DB_FORMAT__):
         self.dburi = mysqluri
         self.dbversion = dbformat

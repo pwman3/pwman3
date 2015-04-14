@@ -117,7 +117,7 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._con.commit()
         v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, None)
+        self.assertEqual(v, '0.6')
         self.db._cur.execute("CREATE TABLE DBVERSION("
                              "VERSION TEXT NOT NULL) ")
         self.db._con.commit()
