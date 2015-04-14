@@ -345,7 +345,8 @@ setup(name=pwman.appname,
                    'Intended Audience :: End Users/Desktop',
                    'Intended Audience :: Developers',
                    'Intended Audience :: System Administrators',
-                   'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                   ('License :: OSI Approved :: GNU General Public License'
+                    ' v3 or later (GPLv3+)'),
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
                    'Programming Language :: Python :: 2.7',
@@ -360,6 +361,6 @@ setup(name=pwman.appname,
           'build_manpage': BuildManPage
       },
       entry_points={
-      'console_scripts': [ 'pwman-cli = pwman.ui.cli:main' ]
-        }
+          'console_scripts': ['pwman3 = pwman.ui.cli:main']
+          }
       )
