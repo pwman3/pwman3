@@ -21,7 +21,7 @@ before_install:
   - sudo apt-get install python-mysqldb
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: 
-  - "pip install pymongo"  
+  - "pip install pymongo==2.8"  
   - "pip install pymysql"   
   - "pip install -r requirements.txt -r test_requirements.txt"
   - "pip install coveralls"
