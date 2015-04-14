@@ -123,5 +123,5 @@ def get_conf_options(args, OSX):
 
 
 def get_db_version(config, args):
-    dbver = factory.check_db_version(config.get_value("Database", "dburi"))
-    return dbver
+    dburi = factory.check_db_version(config.get_value("Database", "dburi"))
+    return dburi
