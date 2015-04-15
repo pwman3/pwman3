@@ -60,6 +60,9 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
     suite.addTest(loader.loadTestsFromTestCase(TestInit))
     suite.addTest(loader.loadTestsFromTestCase(TestNode))
-    #if 'win' not in sys.platform:
-    #    suite.addTest(loader.loadTestsFromTestCase(Ferrum))
+    if 'win' not in sys.platform:
+        suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2, failfast=True)
