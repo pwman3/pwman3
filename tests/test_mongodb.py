@@ -18,7 +18,6 @@
 # ============================================================================
 
 import unittest
-import sys
 from .test_crypto_engine import give_key, DummyCallback
 import pymongo
 from pwman.data.drivers.mongodb import MongoDB
