@@ -20,8 +20,7 @@
 # ============================================================================
 
 """SQLite Database implementation."""
-from pwman.data.database import Database
-from pwman.data.database import __DB_FORMAT__
+from ..database import Database, __DB_FORMAT__
 import sqlite3 as sqlite
 
 
@@ -32,7 +31,11 @@ class SQLite(Database):
         """
         check the database version.
         """
-        con = sqlite.connect(fname)
+        try:
+            con = sqlite.connect(fname)
+        except sqlite.OperationalError as E:
+            print "could not open %s" % fname
+            raise E
         cur = con.cursor()
         cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
         row = cur.fetchone()

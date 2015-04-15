@@ -54,6 +54,7 @@ class PostgresqlDatabase(Database):
             return version[-1]
         except pg.ProgrammingError:
             con.rollback()
+            return __DB_FORMAT__
 
     def __init__(self, pgsqluri, dbformat=__DB_FORMAT__):
         """

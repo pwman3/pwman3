@@ -25,7 +25,7 @@ class MongoDB(Database):
 
     @classmethod
     def check_db_version(cls, dburi):
-        pass
+        return __DB_FORMAT__
 
     def __init__(self, mongodb_uri, dbformat=__DB_FORMAT__):
         self.uri = mongodb_uri
