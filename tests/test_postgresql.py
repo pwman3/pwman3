@@ -120,11 +120,11 @@ class TestPostGresql(unittest.TestCase):
 
         dburi = "postgresql://tester:123456@localhost/pwman"
         v = self.db.check_db_version(dburi)
-        self.assertEqual(v, '0.6')
+        self.assertEqual(str(v), '0.6')
         self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._con.commit()
         v = self.db.check_db_version(dburi)
-        self.assertEqual(v, None)
+        self.assertEqual(str(v), '0.6')
         self.db._cur.execute("CREATE TABLE DBVERSION("
                              "VERSION TEXT NOT NULL DEFAULT {}"
                              ")".format('0.6'))
