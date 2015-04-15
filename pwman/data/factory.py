@@ -14,22 +14,9 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012-2014 Oz Nahum Tiram <nahumoz@gmail.com>
-# ============================================================================
-# Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
+# Copyright (C) 2012-2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 
-"""
-Factory to create Database instances
-A Generic interface for all DB engines.
-Usage:
-
-import pwman.data.factory as DBFactory
-
-db = DBFactory.create(params)
-db.open()
-.....
-"""
 import sys
 if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
@@ -38,55 +25,58 @@ else:
 
 import os
 
-from pwman.data.database import DatabaseException, __DB_FORMAT__
+from pwman.data.database import DatabaseException
 from pwman.data import drivers
+
+
+def parse_sqlite_uri(dburi):
+    filename = os.path.abspath(dburi.path)
+    return filename
+
+
+def parse_postgres_uri(dburi):
+    return dburi.geturl()
+
+
+def no_parse_uri(dburi):
+    return dburi
+
+
+class_db_map = {'sqlite':
+                ['SQLite', parse_sqlite_uri],
+                'postgresql': ['PostgresqlDatabase', parse_postgres_uri,
+                               'python-psycopg2'],
+                'mysql': ['MySQLDatabase', no_parse_uri, 'pymysql'],
+                'mongodb': ['MongoDB', no_parse_uri, 'pymongo']
+                }
+create_db_map = {'sqlite':
+                ['SQLite', parse_sqlite_uri],
+                'postgresql': ['PostgresqlDatabase', no_parse_uri,
+                               'python-psycopg2'],
+                'mysql': ['MySQLDatabase', no_parse_uri, 'pymysql'],
+                'mongodb': ['MongoDB', no_parse_uri, 'pymongo']
+                }
 
 
 def check_db_version(dburi):
 
-    ver = str(__DB_FORMAT__)
     dburi = urlparse(dburi)
     dbtype = dburi.scheme
-    filename = os.path.abspath(dburi.path)
-    if dbtype == "sqlite":
-        ver = drivers.SQLite.check_db_version(filename)
-    elif dbtype == "postgresql":
-        ver = drivers.PostgresqlDatabase.check_db_version(dburi.geturl())
-    elif dbtype == "mysql":
-        ver = drivers.MySQLDatabase.check_db_version(dburi)
-    elif dbtype == "mongodb":
-        pass
-
-    return float(ver.strip("\'"))
-
+    try:
+        cls = getattr(drivers, class_db_map[dbtype][0])
+        ver = cls.check_db_version(class_db_map[dbtype][1](dburi))
+        return ver
+    except AttributeError:
+        raise DatabaseException(
+            '%s not installed? ' % class_db_map[dbtype][-1])
 
 def createdb(dburi, version):
+
     dburi = urlparse(dburi)
     dbtype = dburi.scheme
-    filename = dburi.path
-
-    if dbtype == "sqlite":
-        from pwman.data.drivers import sqlite
-        db = sqlite.SQLite(filename, dbformat=version)
-
-    elif dbtype == "postgresql":
-        try:
-            from pwman.data.drivers import postgresql
-            db = postgresql.PostgresqlDatabase(dburi)
-        except ImportError:  # pragma: no cover
-            raise DatabaseException("python-psycopg2 not installed")
-    elif dbtype == "mysql":  # pragma: no cover
-        try:
-            from pwman.data.drivers import mysql
-            db = mysql.MySQLDatabase(dburi)
-        except ImportError:
-            raise DatabaseException("python-mysqldb not installed")
-    elif dbtype == 'mongodb':
-        try:
-            from pwman.data.drivers import mongodb
-            db = mongodb.MongoDB(dburi)
-        except ImportError:
-            raise DatabaseException("pymongo not installed")
-    else:
-        raise DatabaseException("Unknown database type specified")
-    return db
+    try:
+        cls = getattr(drivers, create_db_map[dbtype][0])
+        return cls(create_db_map[dbtype][1](dburi))
+    except AttributeError:
+        raise DatabaseException(
+            '%s not installed? ' % class_db_map[dbtype][-1])
