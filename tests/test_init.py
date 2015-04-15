@@ -74,9 +74,9 @@ class TestInit(unittest.TestCase):
 
     def test_get_db_version(self):
         v = get_db_version(self.tester.configp, 'sqlite')
-        self.assertEqual(v, __DB_FORMAT__)
+        self.assertEqual(v, u"'0.6'")
         v = get_db_version(self.tester.configp, 'sqlite')
-        self.assertEqual(v, 0.6)
+        self.assertEqual(v, u"'0.6'")
         os.unlink(testdb)
 
     def test_set_xsel(self):
