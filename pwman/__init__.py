@@ -25,7 +25,7 @@ import sys
 import re
 import colorama
 from pwman.util import config
-from pwman.data import factory
+from pwman.data.factory import check_db_version
 
 appname = "pwman3"
 
@@ -123,5 +123,5 @@ def get_conf_options(args, OSX):
 
 
 def get_db_version(config, args):
-    dburi = factory.check_db_version(config.get_value("Database", "dburi"))
+    dburi = check_db_version(config.get_value("Database", "dburi"))
     return dburi
