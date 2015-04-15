@@ -18,14 +18,12 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
-
 from pwman.util.crypto_engine import CryptoEngine
-
 __DB_FORMAT__ = 0.6
 
 
 class DatabaseException(Exception):
-    pass  # prage: no cover
+    pass  # pragma: no cover
 
 
 class Database(object):
