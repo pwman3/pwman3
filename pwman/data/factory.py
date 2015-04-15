@@ -50,12 +50,12 @@ class_db_map = {'sqlite':
                 'mongodb': ['MongoDB', no_parse_uri, 'pymongo']
                 }
 create_db_map = {'sqlite':
-                ['SQLite', parse_sqlite_uri],
-                'postgresql': ['PostgresqlDatabase', no_parse_uri,
-                               'python-psycopg2'],
-                'mysql': ['MySQLDatabase', no_parse_uri, 'pymysql'],
-                'mongodb': ['MongoDB', no_parse_uri, 'pymongo']
-                }
+                 ['SQLite', parse_sqlite_uri],
+                 'postgresql': ['PostgresqlDatabase', no_parse_uri,
+                                'python-psycopg2'],
+                 'mysql': ['MySQLDatabase', no_parse_uri, 'pymysql'],
+                 'mongodb': ['MongoDB', no_parse_uri, 'pymongo']
+                 }
 
 
 def check_db_version(dburi):
@@ -70,6 +70,7 @@ def check_db_version(dburi):
         raise DatabaseException(
             '%s not installed? ' % class_db_map[dbtype][-1])
 
+
 def createdb(dburi, version):
 
     dburi = urlparse(dburi)
@@ -80,3 +81,5 @@ def createdb(dburi, version):
     except AttributeError:
         raise DatabaseException(
             '%s not installed? ' % class_db_map[dbtype][-1])
+    except KeyError:
+        raise DatabaseException('Unknown database [%s] given ...' % (dbtype))
