@@ -1,21 +1,21 @@
 try:
     from .sqlite import SQLite
 except ImportError:
-    pass
+    SQLite = None
 
 try:
     from .postgresql import PostgresqlDatabase
 except ImportError:
-    pass
+    PostgresqlDatabase = None
 
 try:
     from .mysql import MySQLDatabase
 except ImportError:
-    pass
+    MySQLDatabase = None
 
 try:
     from .mongodb import MongoDB
 except ImportError:
-    pass
+    MongoDB = None
 
 _all__ = [SQLite, PostgresqlDatabase, MySQLDatabase, MongoDB]
