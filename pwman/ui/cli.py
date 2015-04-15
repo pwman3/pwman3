@@ -21,15 +21,6 @@
 from __future__ import print_function
 import sys
 import cmd
-import pwman
-from pwman.ui.baseui import BaseCommands
-from pwman import get_conf_options, get_db_version
-from pwman import parser_options
-from pwman.ui.tools import CLICallback
-import pwman.data.factory
-from pwman.exchange.importer import Importer
-from pwman.util.crypto_engine import CryptoEngine
-
 if sys.version_info.major > 2:
     raw_input = input
 
@@ -38,6 +29,14 @@ try:
     _readline_available = True
 except ImportError as e:  # pragma: no cover
     _readline_available = False
+
+from pwman.ui.baseui import BaseCommands
+from pwman import (get_conf_options, get_db_version, version, appname,
+                   parser_options, website)
+from pwman.ui.tools import CLICallback
+from pwman.data import factory
+from pwman.exchange.importer import Importer
+from pwman.util.crypto_engine import CryptoEngine
 
 
 class PwmanCli(cmd.Cmd, BaseCommands):
@@ -53,8 +52,8 @@ class PwmanCli(cmd.Cmd, BaseCommands):
         connecion, see if we have xsel ...
         """
         super(PwmanCli, self).__init__(**kwargs)
-        self.intro = "%s %s (c) visit: %s" % (pwman.appname, pwman.version,
-                                              pwman.website)
+        self.intro = "%s %s (c) visit: %s" % (appname, version,
+                                              website)
         self._historyfile = config_parser.get_value("Readline", "history")
         self.hasxsel = hasxsel
         self.config = config_parser
@@ -76,7 +75,7 @@ class PwmanCli(cmd.Cmd, BaseCommands):
 
         self.prompt = "pwman> "
 
-		
+
 def get_ui_platform(platform):  # pragma: no cover
     if 'darwin' in platform:
         from pwman.ui.mac import PwmanCliMac as PwmanCli
@@ -100,8 +99,8 @@ def main():
     dbver = get_db_version(config, args)
     CryptoEngine.get()
 
-    
-    db = pwman.data.factory.createdb(dburi, dbver)
+
+    db = factory.createdb(dburi, dbver)
 
     if args.import_file:
         importer = Importer((args, config, db))
