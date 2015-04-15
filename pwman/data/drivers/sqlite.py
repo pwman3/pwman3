@@ -20,6 +20,7 @@
 # ============================================================================
 
 """SQLite Database implementation."""
+from __future__ import print_function
 from ..database import Database, __DB_FORMAT__
 import sqlite3 as sqlite
 
@@ -34,7 +35,7 @@ class SQLite(Database):
         try:
             con = sqlite.connect(fname)
         except sqlite.OperationalError as E:
-            print "could not open %s" % fname
+            print("could not open %s" % fname)
             raise E
         cur = con.cursor()
         cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
