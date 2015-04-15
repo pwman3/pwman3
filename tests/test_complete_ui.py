@@ -20,22 +20,26 @@
 from __future__ import print_function
 import pexpect
 import unittest
+import sys
 import os
-import shutil
-
+from pwman import which
 
 class Ferrum(unittest.TestCase):
     def clean_files(self):
-        lfile = 'convert-test.log'
-        with open(lfile) as l:
-            lines = l.readlines()
-            orig = lines[0].split(':')[-1].strip()
-            backup = lines[1].split()[-1].strip()
-        shutil.copy(backup, orig)
+        #lfile = 'convert-test.log'
+        #with open(lfile) as l:
+        #    lines = l.readlines()
+        #    orig = lines[0].split(':')[-1].strip()
+        #    backup = lines[1].split()[-1].strip()
+        #shutil.copy(backup, orig)
         # do some cleaning
-        os.remove(lfile)
-        os.remove('test-chg_passwd.log')
-        os.remove(backup)
+        # os.remove(lfile)
+        if os.path.exists('test-chg_passwd.log'):
+            os.remove('test-chg_passwd.log')
+        #os.remove(backup)
+        db = os.path.join(os.path.dirname(__file__), 'foo.baz.db')
+        if os.path.exists(db):
+            os.remove(db)
 
     @unittest.skip("obsolete")
     def test_b_run_convert(self):
@@ -56,12 +60,11 @@ class Ferrum(unittest.TestCase):
     def test_c_change_pass(self):
         lfile = 'test-chg_passwd.log'
         logfile = open(lfile, 'wb')
-        child = pexpect.spawn(os.path.join(os.path.dirname(__file__),
-                                           '../scripts/pwman3') +
-                              ' -d ', logfile=logfile)
-        child.sendline('passwd')
-        child.expect("Please enter your current password:")
-        child.sendline('12345')
+        cmd = which('pwman3')
+        db = 'sqlite://' + os.path.join(os.path.dirname(__file__), 'foo.baz.db')
+        child = pexpect.spawn(cmd + ' -d ' + db, logfile=logfile)
+        if sys.version_info[0] > 2:
+            child.expect('[\s|\S]+(password:)$', timeout=10)
         child.sendline('foobar')
         child.sendline('foobar')
         self.clean_files()
