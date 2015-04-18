@@ -20,6 +20,7 @@
 from pwman.data.database import Database, __DB_FORMAT__
 import pymongo
 
+# TODO: EDIT node is still not working
 
 class MongoDB(Database):
 
@@ -28,7 +29,7 @@ class MongoDB(Database):
         return __DB_FORMAT__
 
     def __init__(self, mongodb_uri, dbformat=__DB_FORMAT__):
-        self.uri = mongodb_uri
+        self.uri = mongodb_uri.geturl()
 
     def _open(self):
         self._con = pymongo.Connection(self.uri)
@@ -54,7 +55,7 @@ class MongoDB(Database):
         nodes = []
         for node in node_dicts:
             n = [node['_id'],
-                 node['username'],
+                 node['user'],
                  node['password'],
                  node['url'],
                  node['notes']]
@@ -75,14 +76,8 @@ class MongoDB(Database):
 
     def add_node(self, node):
         nid = self._get_next_node_id()
-        node = {
-            '_id': nid,
-            'username': node[0],
-            'password': node[1],
-            'url': node[2],
-            'notes': node[3],
-            'tags': node[4]
-            }
+        node = node.to_encdict()
+        node['_id'] = nid
         self._db.nodes.insert(node)
         return nid
 
@@ -106,8 +101,11 @@ class MongoDB(Database):
 
     def loadkey(self):
         coll = self._db['crypto']
-        key = coll.find_one({}, {'_id': 0})
-        key = key['salt'] + '$6$' + key['key']
+        try:
+            key = coll.find_one({}, {'_id': 0})
+            key = key['salt'] + '$6$' + key['key']
+        except TypeError:
+            key = None
         return key
 
     def close(self):

@@ -194,7 +194,7 @@ class Database(object):
             return [t[0] for t in tags]
         return []  # pragma: no cover
 
-    # TODO: add this to tests of postgresql and mysql!
+    # TODO: add this to test of postgresql and mysql!
     def editnode(self, nid, **kwargs):
         tags = kwargs.pop('tags', None)
         sql = ("UPDATE NODE SET {} WHERE ID = {} ".format(
