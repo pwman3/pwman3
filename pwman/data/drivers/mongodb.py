@@ -20,7 +20,6 @@
 from pwman.data.database import Database, __DB_FORMAT__
 import pymongo
 
-# TODO: EDIT node is still not working
 
 class MongoDB(Database):
 
@@ -49,13 +48,14 @@ class MongoDB(Database):
 
     def getnodes(self, ids):
         if ids:
+            ids = list(map(int, ids))
             node_dicts = self._db.nodes.find({'_id': {'$in': ids}})
         else:
             node_dicts = self._db.nodes.find({})
         nodes = []
         for node in node_dicts:
             n = [node['_id'],
-                 node['username'],
+                 node['user'],
                  node['password'],
                  node['url'],
                  node['notes']]
