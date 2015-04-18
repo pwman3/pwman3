@@ -55,7 +55,7 @@ class MongoDB(Database):
         nodes = []
         for node in node_dicts:
             n = [node['_id'],
-                 node['user'],
+                 node['username'],
                  node['password'],
                  node['url'],
                  node['notes']]
@@ -86,7 +86,8 @@ class MongoDB(Database):
         return tags
 
     def editnode(self, nid, **kwargs):
-        pass
+        self._db.nodes.update({'_id': nid}, { '$set' : kwargs})
+
 
     def removenodes(self, nid):
         self._db.nodes.remove({'_id': {'$in': nid}})
