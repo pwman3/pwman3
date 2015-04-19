@@ -88,8 +88,8 @@ class MongoDB(Database):
     def editnode(self, nid, **kwargs):
         self._db.nodes.update({'_id': nid}, { '$set' : kwargs})
 
-
     def removenodes(self, nid):
+        nid = list(map(int, nid))
         self._db.nodes.remove({'_id': {'$in': nid}})
 
     def fetch_crypto_info(self):
