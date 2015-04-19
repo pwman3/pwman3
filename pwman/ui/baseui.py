@@ -213,12 +213,11 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
 
     def do_copy(self, args):  # pragma: no cover
         """copy item to clipboard"""
-        if not self._xsel:
+        if not self.hasxsel:
             return
         if not args.isdigit():
             print("Copy accepts only IDs ...")
             return
-
         ids = args.split()
         if len(ids) > 1:
             print("Can copy only 1 password at a time...")
