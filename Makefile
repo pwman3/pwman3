@@ -40,7 +40,7 @@ lint:
 
 test: install clean
 	python setup.py test
-	@rm -f pwman/tests/test.conf
+	@rm -f tests/test.conf
 
 test-all:
 	tox

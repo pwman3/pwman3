@@ -213,12 +213,11 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
 
     def do_copy(self, args):  # pragma: no cover
         """copy item to clipboard"""
-        if not self._xsel:
+        if not self.hasxsel:
             return
         if not args.isdigit():
             print("Copy accepts only IDs ...")
             return
-
         ids = args.split()
         if len(ids) > 1:
             print("Can copy only 1 password at a time...")
@@ -249,7 +248,12 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             url = ce.decrypt(node[3])
             if not url.startswith(("http://", "https://")):
                 url = "https://" + url
+            os.umask(22)
             tools.open_url(url)
+
+            umask = self.config.get_value("Global", "umask")
+            if re.search(r'^\d{4}$', umask):
+                os.umask(int(umask))
 
     def do_exit(self, args):  # pragma: no cover
         """close the text console"""

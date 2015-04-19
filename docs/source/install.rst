@@ -47,3 +47,14 @@ like to change your default Python interpreter to Python 3 serious, it is recomm
 that you export your database and re-import it to a new database created using Python 
 3.X . 
 
+Database versions 
+----------------- 
+
+The current version of Pwman3 is tested with Postgresql-9.3, MySQL-5.5,
+MongoDB 2.6.X and SQLite3. 
+
+The required python drivers are:
+ 
+ * pymysql  version 0.6.6 
+ * psycopg2 version 2.6
+ * pymongo version 2.8

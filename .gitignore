@@ -13,3 +13,4 @@ MANIFEST
 htmlcov/*
 .ropeproject*
 secret.txt
+.tox

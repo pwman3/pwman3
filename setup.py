@@ -13,7 +13,6 @@ from setuptools import find_packages
 import sys
 from setuptools.command.install import install
 import os
-from subprocess import Popen, PIPE
 import pwman
 
 # The BuildManPage code is distributed
@@ -296,15 +295,6 @@ class ManPageCreator(object):
 sys.path.insert(0, os.getcwd())
 
 
-def describe():
-    des = Popen('git describe', shell=True, stdout=PIPE)
-    ver = des.stdout.readlines()
-    if ver:
-        return ver[0].decode().strip()
-    else:
-        return pwman.version
-
-
 class PyCryptoInstallCommand(install):
 
     """
@@ -329,7 +319,7 @@ class PyCryptoInstallCommand(install):
 
 
 setup(name=pwman.appname,
-      version=describe(),
+      version=pwman.version,
       description=pwman.description,
       long_description=pwman.long_description,
       author=pwman.author,
@@ -345,10 +335,11 @@ setup(name=pwman.appname,
                    'Intended Audience :: End Users/Desktop',
                    'Intended Audience :: Developers',
                    'Intended Audience :: System Administrators',
-                   'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                   ('License :: OSI Approved :: GNU General Public License'
+                    ' v3 or later (GPLv3+)'),
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
-                   'Programming Language :: Python :: 2.7'
+                   'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
@@ -359,7 +350,7 @@ setup(name=pwman.appname,
           'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
       },
-	  entry_points={
-	  'console_scripts': [ 'pwman-cli = pwman.ui.cli:main' ]
-		}
+      entry_points={
+          'console_scripts': ['pwman3 = pwman.ui.cli:main']
+          }
       )

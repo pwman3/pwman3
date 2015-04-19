@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pwman3/badge/?version=latest)](https://readthedocs.org/projects/pwman3/?badge=latest)
 
 A nice command line password manager, which can use different database to store your passwords (currently, SQLite, MySQL, 
-    and PostGresql are supported).  
+    and PostGresql and MongoDB are supported).  
 Pwman3 can also copy passwords to the clipboard without exposing them!
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
 
