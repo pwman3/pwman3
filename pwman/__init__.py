@@ -19,7 +19,6 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 import os
-import pkg_resources
 import argparse
 import sys
 import re
@@ -28,12 +27,7 @@ from pwman.util import config
 from pwman.data.factory import check_db_version
 
 appname = "pwman3"
-
-
-try:
-    version = pkg_resources.get_distribution('pwman3').version
-except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.6"
+version = "0.7"
 
 website = "http://pwman3.github.io/pwman3/"
 author = "Oz Nahum Tiram"

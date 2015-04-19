@@ -13,7 +13,6 @@ from setuptools import find_packages
 import sys
 from setuptools.command.install import install
 import os
-from subprocess import Popen, PIPE
 import pwman
 
 # The BuildManPage code is distributed
@@ -296,15 +295,6 @@ class ManPageCreator(object):
 sys.path.insert(0, os.getcwd())
 
 
-def describe():
-    des = Popen('git describe', shell=True, stdout=PIPE)
-    ver = des.stdout.readlines()
-    if ver:
-        return ver[0].decode().strip()
-    else:
-        return pwman.version
-
-
 class PyCryptoInstallCommand(install):
 
     """
@@ -329,7 +319,7 @@ class PyCryptoInstallCommand(install):
 
 
 setup(name=pwman.appname,
-      version=describe(),
+      version=pwman.version,
       description=pwman.description,
       long_description=pwman.long_description,
       author=pwman.author,
