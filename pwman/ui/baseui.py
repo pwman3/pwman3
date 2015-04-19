@@ -248,7 +248,12 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             url = ce.decrypt(node[3])
             if not url.startswith(("http://", "https://")):
                 url = "https://" + url
+            os.umask(22)
             tools.open_url(url)
+
+            umask = self.config.get_value("Global", "umask")
+            if re.search(r'^\d{4}$', umask):
+                os.umask(int(umask))
 
     def do_exit(self, args):  # pragma: no cover
         """close the text console"""
