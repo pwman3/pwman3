@@ -86,7 +86,7 @@ class MongoDB(Database):
         return tags
 
     def editnode(self, nid, **kwargs):
-        self._db.nodes.update({'_id': nid}, { '$set' : kwargs})
+        self._db.nodes.find_and_modify({'_id': nid}, kwargs)
 
     def removenodes(self, nid):
         nid = list(map(int, nid))
