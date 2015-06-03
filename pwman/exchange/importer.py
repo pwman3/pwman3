@@ -56,6 +56,12 @@ class CSVImporter(BaseImporter):
 
     def _create_node(self, row):
         """create a node object with encrypted properties"""
+        # Exports from version 0.5.X may not get parsed correctly. Python 
+        # may parse the list, row, as 1 element rather than delimiting by '|'.
+        # This hack checks if len(row) == 1, and parses it correctly for 
+        # the nodes. 
+        if len(row) == 1:
+            row = row[0].split('|')
         n = {'clear_text': True,
              'username': row[0], 'password': row[2], 'url': row[1],
              'notes': row[3],
