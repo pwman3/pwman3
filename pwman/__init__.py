@@ -62,7 +62,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
-    parser.add_argument('-i', '--import', dest='import_file',
+    parser.add_argument('-i', '--import', nargs=2, dest='import_file, delimitter',
                         type=argparse.FileType())
     return parser
 

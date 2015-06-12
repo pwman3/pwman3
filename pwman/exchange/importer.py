@@ -48,25 +48,29 @@ class CSVImporter(BaseImporter):
 
     def _read_file(self):
         """read the csv file, remove empty lines and the header"""
-        fh = self.args.import_file
-        csv_f = csv.reader(fh, delimiter=';')
+        inp1 = self.args.import_file[0]
+        inp2 = self.args.import_file[1]
+        # Check if import_file[0] or [1] is the delimitter
+        try:
+            csv_f = csv.reader(inp1, delimiter=inp2)
+        except IOerror:
+            csv_f = csv.reader(inp2, delimiter=inp1)
         lines = [line for line in csv_f]
         lines = list(filter(None, lines))
         return lines[1:]
 
     def _create_node(self, row):
         """create a node object with encrypted properties"""
-        # Exports from version 0.5.X may not get parsed correctly. Python 
-        # may parse the list, row, as 1 element rather than delimiting by '|'.
-        # This hack checks if len(row) == 1, and parses it correctly for 
-        # the nodes. 
-        if len(row) == 1:
-            row = row[0].split('|')
-        n = {'clear_text': True,
-             'username': row[0], 'password': row[2], 'url': row[1],
-             'notes': row[3],
-             'tags': row[4].split(',')}
-        node = Node(**n)
+        # Check if delimiter matches file. 
+        try:
+            n = {'clear_text': True,
+                 'username': row[0], 'password': row[2], 'url': row[1],
+                 'notes': row[3],
+                 'tags': row[4].split(',')}
+            node = Node(**n)
+        except IndexError as err:
+            print '{}\nDid you specify the correct delimiter?'.format(err)
+            sys.exit(1)
         return node
 
     def _insert_node(self, node):
