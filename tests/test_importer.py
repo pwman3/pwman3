@@ -52,8 +52,8 @@ class TestImporter(unittest.TestCase):
     def setUp(self):
         config = {}
         db = SQLite('test-importer.db')
-        Args = namedtuple('args', 'import_file')
-        args = Args(import_file=open('import_file.csv'))
+        Args = namedtuple('args', 'file_delim')
+        args = Args(file_delim=['import_file.csv', ';'])
         self.importer = CSVImporter(args,
                                     config, db)
 
@@ -90,19 +90,17 @@ class TestImporter(unittest.TestCase):
         """
 
         # args need import_file , db,
-        Args = namedtuple('Args', 'import_file, db')
+        Args = namedtuple('Args', 'file_delim, db')
         if os.path.exists('importdummy.db'):
             os.unlink('importdummy.db')
-        args = Args(import_file=open('import_file.csv'), db='importdummy.db')
+        args = Args(file_delim=['import_file.csv', ';'], db='importdummy.db')
         db = pwman.data.factory.createdb('sqlite:///' + os.getcwd() +
                                          '/importdummy.db', 0.6)
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
-        args.import_file.close()
 
     def tearDown(self):
-        self.importer.args.import_file.close()
-
+        pass
 
 if __name__ == '__main__':
 
