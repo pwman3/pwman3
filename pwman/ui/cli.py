@@ -99,10 +99,9 @@ def main():
     dbver = get_db_version(config, args)
     CryptoEngine.get()
 
-
     db = factory.createdb(dburi, dbver)
 
-    if args.import_file:
+    if args.file_delim:
         importer = Importer((args, config, db))
         importer.run()
         sys.exit(0)
