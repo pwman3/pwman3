@@ -57,14 +57,16 @@ Following is a table describing the parameters and their meanings:
     -----------   -----------
     **Section**   *Database* 
     -----------   -----------
-    dburi         Database URI conforming to `RFC3986`_. SQLite, Postgreql and
-                  MySQL are currently supported. 
+    dburi         Database URI conforming to `RFC3986`_. SQLite, Postgreql, 
+                  MySQL and MongoDB are currently supported. 
        
                   SQLite example: `sqlite:///path/to/your/db`
 
                   Postgreql example: `postgresql://<user>:<pass>@<host[:port]>/<database>`
 
-                  MySQL example:      `mysql://<user>:<pass>@<host[:port]>/<database>`
+                  MySQL example:     `mysql://<user>:<pass>@<host[:port]>/<database>`
+                  
+                  MongoDB example:   `mongodb://<user>:<pass>@<host[:port]>/<database>`
     ===========   ===========
 
 
