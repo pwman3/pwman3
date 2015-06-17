@@ -20,6 +20,7 @@
 A module to hold the importer class
 '''
 import csv
+import sys
 from pwman.data.nodes import Node
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.ui.tools import CLICallback
@@ -48,19 +49,29 @@ class CSVImporter(BaseImporter):
 
     def _read_file(self):
         """read the csv file, remove empty lines and the header"""
-        fh = self.args.import_file
-        csv_f = csv.reader(fh, delimiter=';')
+        try:
+            fh, delim = open(self.args.file_delim[0]), self.args.file_delim[1]
+            csv_f = csv.reader(fh, delimiter=delim)
+        except IOError:
+            fh, delim = open(self.args.file_delim[1]), self.args.file_delim[0]
+            csv_f = csv.reader(fh, delimiter=delim)
+
         lines = [line for line in csv_f]
         lines = list(filter(None, lines))
+        fh.close()
         return lines[1:]
 
     def _create_node(self, row):
         """create a node object with encrypted properties"""
-        n = {'clear_text': True,
-             'username': row[0], 'password': row[2], 'url': row[1],
-             'notes': row[3],
-             'tags': row[4].split(',')}
-        node = Node(**n)
+        try:
+            n = {'clear_text': True,
+                 'username': row[0], 'password': row[2], 'url': row[1],
+                 'notes': row[3],
+                 'tags': row[4].split(',')}
+            node = Node(**n)
+        except IndexError as err:
+            print('{}\nDid you specify the correct delimiter?'.format(err))
+            sys.exit(1)
         return node
 
     def _insert_node(self, node):
