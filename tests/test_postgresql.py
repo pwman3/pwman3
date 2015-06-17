@@ -30,8 +30,8 @@ from pwman.util.crypto_engine import CryptoEngine
 # testing on linux host
 # su - postgres
 # psql
-# postgres=# create user $YOUR_USERNAME;
-# postgres=# grant ALL ON DATABASE pwman to $YOUR_USERNAME;
+# postgres=# CREATE USER tester WITH PASSWORD '123456';
+# postgres=# grant ALL ON DATABASE pwman to tester;
 #
 ##
 
@@ -120,11 +120,11 @@ class TestPostGresql(unittest.TestCase):
 
         dburi = "postgresql://tester:123456@localhost/pwman"
         v = self.db.check_db_version(dburi)
-        self.assertEqual(v, '0.6')
+        self.assertEqual(str(v), '0.6')
         self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._con.commit()
         v = self.db.check_db_version(dburi)
-        self.assertEqual(v, None)
+        self.assertEqual(str(v), '0.6')
         self.db._cur.execute("CREATE TABLE DBVERSION("
                              "VERSION TEXT NOT NULL DEFAULT {}"
                              ")".format('0.6'))

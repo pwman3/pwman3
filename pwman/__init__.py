@@ -19,16 +19,14 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 import os
-import pkg_resources
 import argparse
 import sys
 import re
 import colorama
 from pwman.util import config
-from pwman.data import factory
+from pwman.data.factory import check_db_version
 
 appname = "pwman3"
-
 
 try:
     version = pkg_resources.get_distribution('pwman3').version
@@ -123,5 +121,5 @@ def get_conf_options(args, OSX):
 
 
 def get_db_version(config, args):
-    dbver = factory.check_db_version(config.get_value("Database", "dburi"))
-    return dbver
+    dburi = check_db_version(config.get_value("Database", "dburi"))
+    return dburi

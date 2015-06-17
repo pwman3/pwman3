@@ -59,7 +59,7 @@ class TestPassGenerator(unittest.TestCase):
     def test_len(self):
         self.assertEqual(13, len(generate_password(pass_len=13)))
 
-    def test_has_upper(self):
+    def test_has_no_lower(self):
         password = generate_password(uppercase=True, lowercase=False)
         lower = set(string.ascii_lowercase)
         it = lower.intersection(set(password))

@@ -116,15 +116,15 @@ def text_to_mcclipboard(text):  # pragma: no cover
         print (e, "\nExecuting pbcoy failed...")
 
 
-def open_url(link, macosx=False):  # pragma: no cover
+def open_url(link, macosx=False, ):  # pragma: no cover
     """
     launch xdg-open or open in MacOSX with url
     """
-    uopen = "xdg-open"
+    uopen = "xdg-open "
     if macosx:
-        uopen = "open"
+        uopen = "open "
     try:
-        sp.Popen([uopen, link], stdin=sp.PIPE)
+        sp.call(uopen+link, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
     except OSError as e:
         print("Executing open_url failed with:\n", e)
 

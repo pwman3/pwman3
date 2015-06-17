@@ -1,7 +1,7 @@
 # ============================================================================
 # This file is part of Pwman3.
 #
-# Pwman3 is free software; you can redistribute iut and/or modify
+# Pwman3 is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License, version 2
 # as published by the Free Software Foundation;
 #
@@ -16,52 +16,62 @@
 # ============================================================================
 # Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
+
 import unittest
 import sys
-from .test_crypto_engine import give_key, DummyCallback
 if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:  # pragma: no cover
     from urlparse import urlparse
-
-import pymysql
-from pwman.data.drivers.mysql import MySQLDatabase
+import pymongo
+from .test_crypto_engine import give_key, DummyCallback
 from pwman.util.crypto_engine import CryptoEngine
+from pwman.data.drivers.mongodb import MongoDB
+from pwman.data.nodes import Node
+# use pwmantest
+
+# db.createUser(
+#    {
+#      user: "tester",
+#      pwd: "12345678",
+#       roles: [{ role: "dbAdmin", db: "pwmantest" },
+#               { role: "readWrite", db: "pwmantest" },]
+#    })
 
 
-class TestMySQLDatabase(unittest.TestCase):
+class TestMongoDB(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
-        u = "mysql://pwman:123456@localhost:3306/pwmantest"
-        u = urlparse(u)
-        # password required, for all hosts
-        # u = "mysql://<user>:<pass>@localhost/pwmantest"
-        self.db = MySQLDatabase(u)
-        self.db._open()
+    def setUpClass(cls):
+        u = u"mongodb://tester:12345678@localhost:27017/pwmantest"
+        cls.db = MongoDB(urlparse(u))
+        cls.db._open()
 
     @classmethod
-    def tearDownClass(self):
-        self.db._cur.execute("DROP TABLE LOOKUP")
-        self.db._cur.execute("DROP TABLE TAG")
-        self.db._cur.execute("DROP TABLE NODE")
-        self.db._cur.execute("DROP TABLE DBVERSION")
-        self.db._cur.execute("DROP TABLE CRYPTO")
-        self.db._con.commit()
+    def tearDownClass(cls):
+        coll = cls.db._db['crypto']
+        coll.drop()
+        cls.db._db['counters'].drop()
+        cls.db._db['nodes'].drop()
+        cls.db.close()
 
     def test_1_con(self):
-        self.assertIsInstance(self.db._con, pymysql.connections.Connection)
+        self.assertIsInstance(self.db._con, pymongo.Connection)
 
-    def test_2_create_tables(self):
-        self.db._create_tables()
-        # invoking this method a second time should not raise an exception
-        self.db._create_tables()
+    @unittest.skip("MongoDB creates collections on the fly")
+    def test_2_create_collections(self):
+        pass
 
-    def test_3_load_key(self):
+    def test_3a_load_key(self):
+        secretkey = self.db.loadkey()
+        self.assertIsNone(secretkey)
+
+    def test_3b_load_key(self):
         self.db.savekey('SECRET$6$KEY')
         secretkey = self.db.loadkey()
-        self.assertEqual(secretkey, 'SECRET$6$KEY')
+        self.assertEqual(secretkey, u'SECRET$6$KEY')
 
+    @unittest.skip("")
     def test_4_save_crypto(self):
         self.db.save_crypto_info("TOP", "SECRET")
         secretkey = self.db.loadkey()
@@ -70,57 +80,59 @@ class TestMySQLDatabase(unittest.TestCase):
         self.assertEqual(row, ('TOP', 'SECRET'))
 
     def test_5_add_node(self):
-        innode = ["TBONE", "S3K43T", "example.org", "some note",
-                  ["bartag", "footag"]]
-        self.db.add_node(innode)
+        innode = [u"TBONE", u"S3K43T", u"example.org", u"some note",
+                  [u"bartag", u"footag"]]
 
+        kwargs = {
+            "username":innode[0], "password": innode[1],
+            "url": innode[2], "notes": innode[3], "tags": innode[4]
+        }
+
+        node = Node(clear_text=True, **kwargs)
+        self.db.add_node(node)
         outnode = self.db.getnodes([1])[0]
-        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
+        no = outnode[1:5]
+        no.append(outnode[5:])
+        o = Node.from_encrypted_entries(*no)
+        self.assertEqual(list(node), list(o))
 
     def test_6_list_nodes(self):
         ret = self.db.listnodes()
         self.assertEqual(ret, [1])
-        ret = self.db.listnodes("footag")
+        ce = CryptoEngine.get()
+        fltr = ce.encrypt("footag")
+        ret = self.db.listnodes(fltr)
         self.assertEqual(ret, [1])
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
-        self.assertListEqual(ret, ['bartag', 'footag'])
+        ce = CryptoEngine.get()
+        ec_tags = map(ce.encrypt,[u'bartag', u'footag'])
+        for t in ec_tags:
+            self.assertIn(t, ret)
 
     def test_6b_get_nodes(self):
         ret = self.db.getnodes([1])
         retb = self.db.getnodes([])
         self.assertListEqual(ret, retb)
 
+    @unittest.skip("tags are created in situ in mongodb")
     def test_7_get_or_create_tag(self):
-        s = self.db._get_or_create_tag("SECRET")
-        s1 = self.db._get_or_create_tag("SECRET")
+        pass
 
-        self.assertEqual(s, s1)
-
+    @unittest.skip("tags are removed with their node")
     def test_7a_clean_orphans(self):
-
-        self.db._clean_orphans()
-        rv = self.db._get_tag("SECRET")
-        self.assertIsNone(rv)
+        pass
 
     def test_8_remove_node(self):
         self.db.removenodes([1])
         n = self.db.listnodes()
         self.assertEqual(len(n), 0)
 
+    @unittest.skip("No schema migration with mongodb")
     def test_9_check_db_version(self):
+        pass
 
-        dburi = "mysql://pwman:123456@localhost:3306/pwmantest"
-        v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, '0.6')
-        self.db._cur.execute("DROP TABLE DBVERSION")
-        self.db._con.commit()
-        v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, '0.6')
-        self.db._cur.execute("CREATE TABLE DBVERSION("
-                             "VERSION TEXT NOT NULL) ")
-        self.db._con.commit()
 
 if __name__ == '__main__':
 
