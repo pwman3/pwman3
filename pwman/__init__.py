@@ -23,6 +23,7 @@ import argparse
 import sys
 import re
 import colorama
+import pkg_resources
 from pwman.util import config
 from pwman.data.factory import check_db_version
 
