@@ -16,6 +16,17 @@
 # ============================================================================
 # Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
+
+"""
+setting up mysql for testing
+
+$ mysql -u root -h localhost -p
+
+mysql > CREATE DATABASE pwmantest;
+mysql > CREATE USER pwman IDENTIFIED BY '123456';
+mysql > GRANT ALL on pwmantest.* to 'pwman'@'localhost';
+"""
+
 import unittest
 import sys
 from .test_crypto_engine import give_key, DummyCallback
