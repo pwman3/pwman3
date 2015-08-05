@@ -141,11 +141,6 @@ nav a:hover {
     padding: 0px 5% 10px;
 }
 
-.footer-container footer {
-    color: white;
-    padding: 20px 0;
-}
-
 /* ===============
     ALL: IE Fixes
    =============== */
@@ -261,6 +256,27 @@ nav a:hover {
     .wrapper {
         width: 1026px; /* 1140px - 10% for margins */
         margin: 0 auto;
+    }
+    
+    .header-container,
+    .main aside {
+    background: #f16529;
+    margin-left: 10%;
+    margin-right: 10%;
+    }
+    
+    .footer-container, footer{
+	background: #f16529;
+    margin-left: 10%;
+    margin-right: 10%;
+    width:80%;
+    height: 15%;
+	position:absolute;
+	bottom:0;
+    }
+    .forget-button {
+     width: 50%;
+     margin: 4% 46%;
     }
 }
 

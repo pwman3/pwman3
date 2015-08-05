@@ -20,7 +20,7 @@
         <tr><td>Password:</td> <td>{{ node.password }}</td></tr>
         <tr><td>Url:</td> <td>{{node.url}} </td></tr>
         <tr><td>Notes:</td> <td>{{node.notes}}</td></tr>
-        <tr><td>Tags:</td> <td>{{node.tags}}</td></tr>
+        <tr><td>Tags:</td> <td>{{ ','.join((t for t in node.tags)) }}</td></tr>
     </table>
     </article>
     </div>

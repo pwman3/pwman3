@@ -28,11 +28,10 @@
                 </select>
                 </form>
                 </aside>
-                
                 <article>
                     <header>
                     </header>
-                    <h2>Click on username to view the details:</h2>
+                    <h2>Click on a username to view the details:</h2>
                     <table border="1">
                     %for node in nodes:
                     <tr>
@@ -47,18 +46,13 @@
 
             </div> <!-- #main -->
         </div> <!-- #main-container -->
-
         <div class="footer-container">
-            <footer class="wrapper">
-                <h3></h3>
+        <div class="forget-button">
         <form action="/forget" method="POST">
         <input type="submit" value="Forget password">
         </form>
-            </footer>
         </div>
-
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.js"><\/script>')</script>
-
-        <script src="js/plugins.js"></script>
-        <script src="js/main.js"></script>
+        </div>
+        <script src="static/js/vendor/jquery-1.11.0.js"></script>
+        <script src="static/js/plugins.js"></script>
+        <script src="static/js/main.js"></script>

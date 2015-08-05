@@ -19,18 +19,18 @@
 # ============================================================================
 from __future__ import print_function
 from bottle import route, run, debug, template, request, redirect, static_file
-from pwman.util.crypto import CryptoEngine
+from pwman.util.crypto_engine import CryptoEngine
 import pwman.data.factory
-from pwman.data.tags import TagNew
+from pwman.data.nodes import Node
 from pwman import parser_options, get_conf_options
 from pkg_resources import resource_filename
-import itertools
 import sys
 from signal import SIGTERM
 import os
 
 templates_path = [resource_filename('pwman', 'ui/templates')]
 statics = [resource_filename('pwman', 'ui/templates/static')][0]
+
 
 AUTHENTICATED = False
 TAGS = None
@@ -57,12 +57,23 @@ def require_auth(fn):
     return check_auth
 
 
+@route('/static/<filename:path>')
+def send_static(filename):
+    return static_file(filename, root=statics)
+
+
 @route('/node/:no')
 @require_auth
 def view_node(no):
     global DB
     node = DB.getnodes([no])
-    output = template("view.tpl", node=node[0], template_lookup=templates_path)
+    node = DB.getnodes([no])[0]
+    node = Node.from_encrypted_entries(node[1],
+                                       node[2],
+                                       node[3],
+                                       node[4],
+                                       node[5:])
+    output = template("view.tpl", node=node, template_lookup=templates_path)
     return output
 
 
@@ -82,19 +93,11 @@ def edit_node(no=None):
 
     if no:
         node = DB.getnodes([no])[0]
-    else:
-
-        class Node(object):
-
-            def __init__(self):
-                self._id = None
-                self.username = ''
-                self.password = ''
-                self.url = ''
-                self.notes = ''
-                self.tags = ''
-
-        node = Node()
+        node = Node.from_encrypted_entries(node[1],
+                                           node[2],
+                                           node[3],
+                                           node[4],
+                                           node[5:])
 
     output = template('edit.tpl', node=node,
                       template_lookup=templates_path)
@@ -114,13 +117,13 @@ def forget():
 @route('/auth', method=['GET', 'POST'])
 def is_authenticated():
     global AUTHENTICATED
-    crypto = CryptoEngine.get(dbver=0.5)
+    crypto = CryptoEngine.get()
 
     if request.method == 'POST':
         key = request.POST.get('pwd', '')
         while True:
             try:
-                crypto.auth(key)
+                crypto.authenticate(key)
                 break
             except Exception:
                 redirect('/auth')
@@ -142,27 +145,25 @@ def listnodes(apply=['require_login']):
     if 'POST' in request.method:
         _filter = request.POST.get('tag')
         if _filter:
-            DB._filtertags = [TagNew(_filter.strip())]
+            DB._filtertags = []
         if _filter == 'None':
             DB._filtertags = []
 
     nodeids = DB.listnodes()
-    nodes = DB.getnodes(nodeids)
-
-    nodesd = [''] * len(nodes)
-    for idx, node in enumerate(nodes):
-        ntags = [t.strip() for t in filter(None, node.tags)]
-        nodesd[idx] = ('@'.join((node.username, node.url)),
-                       ', '.join(ntags))
-
-    if not TAGS:
-        t = [node.tags for node in nodes]
-        t1 = list(itertools.chain.from_iterable(t))
-        TAGS = list(set(t1))
-        TAGS.sort()
-        TAGS.insert(0, 'None')
-
-    html_nodes = template("main.tpl", nodes=nodes, tags=TAGS,
+    raw_nodes = DB.getnodes(nodeids)
+    _nodes_inst = []
+    for node in raw_nodes:
+        _nodes_inst.append(Node.from_encrypted_entries(
+            node[1],
+            node[2],
+            node[3],
+            node[4],
+            node[5:]))
+        _nodes_inst[-1]._id = node[0]
+    nodesd = _nodes_inst
+    ce = CryptoEngine.get()
+    tags = [ce.decrypt(t).decode() for t in DB.listtags()]
+    html_nodes = template("main.tpl", nodes=nodesd, tags=tags,
                           template_lookup=[resource_filename('pwman',
                                                              'ui/templates')])
     return html_nodes
@@ -180,18 +181,14 @@ class Pwman3WebDaemon(object):
 
     def run(self):
         global AUTHENTICATED, TAGS, DB
-
         OSX = False
         sys.argv = []
-
         args = parser_options().parse_args()
-        xselpath, dbtype = get_conf_options(args, OSX)
-        dbver = 0.5
-        DB = pwman.data.factory.create(dbtype, dbver)
-        DB.open(dbver=0.5)
+        xselpath, dburi, configp = get_conf_options(args, OSX)
+        DB = pwman.data.factory.createdb(dburi, None)
+        DB.open()
         print(dir(DB))
-        CryptoEngine.get(dbver=0.5)
-        print(pwman.config._conf)
+        CryptoEngine.get()
         debug(True)
         run(port=9030)
 
