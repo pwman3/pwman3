@@ -122,7 +122,8 @@ class Node(object):
 
     @tags.setter
     def tags(self, value):
-        self._tags = [tag for tag in value]
+        enc = CryptoEngine.get()
+        self._tags = [enc.encrypt(tag).strip() for tag in value]
 
     @property
     def url(self):

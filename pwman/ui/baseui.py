@@ -394,8 +394,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 menu.add(CliMenuItem("Url", node.url))
                 menunotes = CliMenuItem("Notes", node.notes)
                 menu.add(menunotes)
-                tgetter = lambda: ', '.join(t for t in node.tags)
-                menu.add(CliMenuItem("Tags", tgetter()))
+                menu.add(CliMenuItem("Tags", ','.join(node.tags)))
             menu.run(node)
             self._db.editnode(i, **node.to_encdict())
             # when done with node erase it
