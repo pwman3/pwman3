@@ -12,6 +12,8 @@
         <link rel="stylesheet" href="/static/css/normalize.min.css">
         <link rel="stylesheet" href="/static/css/main.css">
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	<script type="text/javascript"
+	  src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     </head>
 <body>
     <!--[if lt IE 7]>

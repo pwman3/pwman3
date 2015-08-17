@@ -27,6 +27,7 @@ from pkg_resources import resource_filename
 import sys
 from signal import SIGTERM
 import os
+import json
 
 templates_path = [resource_filename('pwman', 'ui/templates')]
 statics = [resource_filename('pwman', 'ui/templates/static')][0]
@@ -57,11 +58,6 @@ def require_auth(fn):
     return check_auth
 
 
-@route('/static/<filename:path>')
-def send_static(filename):
-    return static_file(filename, root=statics)
-
-
 @route('/node/:no')
 @require_auth
 def view_node(no):
@@ -73,8 +69,23 @@ def view_node(no):
                                        node[3],
                                        node[4],
                                        node[5:])
-    output = template("view.tpl", node=node, template_lookup=templates_path)
-    return output
+    return template("ajax.tpl", request=request, node=node,
+                    template_lookup=templates_path)
+
+
+@route('/_add_numbers')
+def add_numbers():
+    """Add two numbers server side, ridiculous but well..."""
+    a = request.params.get('a', 0, type=int)
+    b = request.params.get('b', 0, type=int)
+    return json.dumps({'result': a+b})
+
+
+
+
+@route('/static/<filename:path>')
+def send_static(filename):
+    return static_file(filename, root=statics)
 
 
 def submit_node(id, request):
@@ -99,7 +110,7 @@ def edit_node(no=None):
                                            node[4],
                                            node[5:])
 
-    output = template('edit.tpl', node=node,
+    output = template('edit.tpl', node=node,  
                       template_lookup=templates_path)
     return output
 
@@ -131,7 +142,16 @@ def is_authenticated():
         AUTHENTICATED = True
         redirect('/')
     else:
-        return template("login.tpl", template_lookup=templates_path)
+        return template("login.tpl", template_lookup=templates_path, request=request)
+
+
+@route('/auth', method=['GET', 'POST'])
+def is_authenticated():
+    crypto = CryptoEngine.get()
+    crypto.authenticate('foobar')
+    global AUTHENTICATED
+    AUTHENTICATED = True
+    redirect('/')
 
 
 @route('/', method=['GET', 'POST'])
@@ -163,7 +183,7 @@ def listnodes(apply=['require_login']):
     nodesd = _nodes_inst
     ce = CryptoEngine.get()
     tags = [ce.decrypt(t).decode() for t in DB.listtags()]
-    html_nodes = template("main.tpl", nodes=nodesd, tags=tags,
+    html_nodes = template("main.tpl", nodes=nodesd, tags=tags, request=request,
                           template_lookup=[resource_filename('pwman',
                                                              'ui/templates')])
     return html_nodes
