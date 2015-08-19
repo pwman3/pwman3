@@ -1,0 +1,104 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Case</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="styles.css"> 
+    
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Page 1-1</a></li>
+            <li><a href="#">Page 1-2</a></li>
+            <li><a href="#">Page 1-3</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Page 2</a></li>
+        <li><a href="#">Page 3</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+            <form class="navbar-form navbar-right" role="button"> 
+            <button type="button" class="btn btn-default" id="hide">
+                <span class="glyphicon glyphicon-log-in"></span> Authenticate
+            </button>        
+            </form>
+        </li>
+        <!-- This should only be shown if authenticated -->
+        <!-- 
+         <li>
+            <form class="navbar-form navbar-right" role="button"> 
+            <button type="button" class="btn btn-default" id="hide">
+                <span class="glyphicon glyphicon-log-out"></span> Leave
+            </button>        
+            </form>
+        </li>
+        -->
+        <!-- End of hidden part -->
+        <li>
+            <form class="navbar-form navbar-right" role="button">
+                    <div class="form-group" id="show" style="display: none;">
+                        <input type="text" class="form-control" name="password" placeholder="Password">
+                    <button type="submit" class="btn btn-default" id="signin">Sign In</button>
+                    </div>
+            </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<div class="container">
+  <div class="row">
+  <div class="col-md-6 col-md-push-6">B
+        <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Home</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu 1 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Submenu 1-1</a></li>
+            <li><a href="#">Submenu 1-2</a></li>
+            <li><a href="#">Submenu 1-3</a></li>                        
+          </ul>
+        </li>
+        <li><a href="#">Menu 2</a></li>
+        <li><a href="#">Menu 3</a></li>
+      </ul>
+  </div>
+  <div class="col-md-6 col-md-pull-6">A</div>
+  </div>
+    <div class="clearfix visible-lg"></div>
+  </div>
+</div>
+<script type="text/javascript">
+$("#hide").click(function () {
+   $("#show").show('fast');
+});
+
+$("#hide").click(function () {
+   $("#hide").hide(1000);
+});
+</script>
+</body>
+</html>
+
