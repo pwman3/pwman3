@@ -1,3 +1,9 @@
+2015-Oct-21 Oz Nahum Tiram <nahumoz@gmail.com>
+	* Version 0.7.2
+	* Fix bug on Windows OS 
+	* Catch up with 0.7
+	* See git log for major changes between 0.6 and 0.7
+
 2015-Mar-19 Oz Nahum Tiram <nahumoz@gmail.com>
 	
 	* version 0.6
