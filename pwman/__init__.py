@@ -92,7 +92,7 @@ def set_xsel(configp, OSX):
 
 
 def set_win_colors(config):  # pragma: no cover
-    if sys.platform.startwith('win'):
+    if sys.platform.startswith('win'):
         colorama.init()
 
 
