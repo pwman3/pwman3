@@ -28,7 +28,9 @@ try:
     import readline
     _readline_available = True
 except ImportError as e:  # pragma: no cover
-    _readline_available = False
+    import pyreadline as readline
+    _readline_available = True
+
 
 from pwman.ui.baseui import BaseCommands
 from pwman import (get_conf_options, get_db_version, version, appname,
