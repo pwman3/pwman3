@@ -27,7 +27,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
             <form class="navbar-form navbar-right" role="button"> 
-            <button type="button" class="btn btn-default" id="hide">
+            <button type="button" class="btn btn-default" id="auth-btn">
                 <span class="glyphicon glyphicon-log-in"></span> Authenticate
             </button>        
             </form>
@@ -35,7 +35,7 @@
         <li>
             <form class="navbar-form navbar-right" role="button">
                     <div class="form-group" id="show" style="display: none;">
-                        <input type="text" class="form-control" name="password" placeholder="Password">
+                        <input type="password" class="form-control" name="auth-pwd" placeholder="Password">
                     <button type="submit" class="btn btn-default" id="signin">Sign In</button>
                     </div>
             </form>
@@ -142,13 +142,39 @@
   </div>
 </div>
 <script type="text/javascript">
-$("#hide").click(function () {
+$("#auth-btn").click(function () {
    $("#show").show('fast');
 });
 
-$("#hide").click(function () {
-   $("#hide").hide(1000);
+$("#auth-btn").click(function () {
+   $("#auth-btn").hide(1000);
 });
+</script>
+<script>
+
+// Attach a submit handler to the form
+$( "#signin" ).submit(function( event ) {
+// Stop form from submitting normally
+event.preventDefault();
+// Get some values from elements on the page:
+var $form = $( this ),
+term = $form.find( "input[name='auth-pwd']" ).val(),
+url = "/_auth";
+// Send the data using post
+var posting = $.post( url, { s: term } );
+
+var posting = $.post( url, { s: term }, function( data ) {
+    console.log( data ); 
+}, "json");
+
+
+// Put the results in a div
+posting.done(function( data ) {
+var content =  data ;
+$( "#result" ).empty().append( content );
+});
+});
+
 </script>
 </body>
 </html>
