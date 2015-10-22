@@ -36,14 +36,14 @@ from pwman.util.crypto_engine import generate_password
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
-if sys.platform != 'win32':
+if not sys.platform.startswith('win'):
     import termios
     import fcntl
     import readline
     _readline_available = True
 else:  # pragma: no cover
     try:
-        import readline
+        import pyreadline
         _readline_available = True
     except ImportError as e:
         _readline_available = False

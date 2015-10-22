@@ -59,9 +59,12 @@ finally you should step into:
   2. Make new passwords according to user defined rules. 
 
 # build the package with 
+
   python setup.py sdist
+
 # upload  
-  python setup.py sdist upload
+  
+  twine upload dist/pwman.tar.gz
 
 # PyCrypto Alternatives:
 
