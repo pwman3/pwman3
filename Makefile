@@ -38,6 +38,11 @@ clean-pyc:
 lint:
 	flake8 pwman scripts
 
+pre-test:
+	$(shell sudo service postgresql-9.4 start)
+	$(shell sudo service mysql start)
+	$(shell sudo service mongodb start)
+
 test: install clean
 	python setup.py test
 	@rm -f tests/test.conf
