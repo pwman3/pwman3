@@ -319,7 +319,7 @@ class PyCryptoInstallCommand(install):
 
 
 install_requires=['pycrypto>=2.6',
-                'colorama>=0.2.4'],
+                  'colorama>=0.2.4']
 
 if sys.platform.startswith('win'):
     install_requires.append('pyreadeline')
