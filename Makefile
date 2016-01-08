@@ -12,7 +12,7 @@ help:
 	@echo "dist - package"
 
 clean_all:
-	clean 
+	clean
 	clean_docs
 	clean_coverage_report
 
@@ -76,4 +76,4 @@ dist: clean
 
 install:
 	pip uninstall -y pwman3
-	python setup.py -q install 
+	pip install -e .

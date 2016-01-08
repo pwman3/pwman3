@@ -13,7 +13,7 @@ from setuptools import find_packages
 import sys
 from setuptools.command.install import install
 import os
-import pwman
+
 
 # The BuildManPage code is distributed
 # under the same License of Python
