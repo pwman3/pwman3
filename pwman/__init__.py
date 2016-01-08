@@ -22,6 +22,7 @@ import os
 import argparse
 import sys
 import re
+import string
 import colorama
 import pkg_resources
 from pwman.util import config
@@ -34,17 +35,29 @@ try:
 except pkg_resources.DistributionNotFound:  # pragma: no cover
     version = "0.7.2"
 
-website = "http://pwman3.github.io/pwman3/"
-author = "Oz Nahum Tiram"
-authoremail = "nahumoz@gmail.com"
-description = "a command line password manager with support for multiple databases."
-keywords = "password management sqlite crypto"
-long_description = u"""
-Pwman3 aims to provide a simple but powerful commandline interface for
-password management.
-It allows one to store passwords in database locked by master password which
-is AES encrypted.
-Pwman3 supports MySQL, Postgresql and SQLite"""
+
+class PkgMetadata(object):
+
+    def __init__(self):
+        p = pkg_resources.get_distribution('pwman3')
+        f = open(os.path.join(p.location+'-info','PKG-INFO'))
+        lines = f.readlines()
+        self.summary = lines[3].split(':')[-1].strip()
+        self.description = ''.join(map(string.strip, lines[9:14]))
+        self.author_email = lines[6].split(':')[-1].strip()
+        self.author = lines[5].split(':')[-1].strip()
+        self.home_page = lines[4].split(':')[-1].strip()
+
+try:
+    pkg_meta = PkgMetadata()
+    website = pkg_meta.home_page
+    author = pkg_meta.author
+    authoremail = pkg_meta.author_email
+    description = pkg_meta.summary
+    long_description = pkg_meta.description
+except IOError as E:
+    # this should only happen once when installing the package
+    pass
 
 
 def which(cmd):  # pragma: no cover

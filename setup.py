@@ -325,13 +325,21 @@ if sys.platform.startswith('win'):
     install_requires.append('pyreadeline')
 
 
-setup(name=pwman.appname,
+long_description = u"""\
+Pwman3 aims to provide a simple but powerful commandline interface for
+password management.
+It allows one to store passwords in database locked by master password which
+is AES encrypted.
+Pwman3 supports MySQL, Postgresql and SQLite"""
+
+
+setup(name='pwman3',
       version='0.7.3.dev',
-      description=pwman.description,
-      long_description=pwman.long_description,
-      author=pwman.author,
-      author_email=pwman.authoremail,
-      url=pwman.website,
+      description = "a command line password manager with support for multiple databases.",
+      long_description=long_description,
+      author='Oz Nahum Tiram',
+      author_email='nahumoz@gmail.com',
+      url='http://pwman3.github.io/pwman3/',
       license="GNU GPL",
       packages=find_packages(exclude=['tests']),
       include_package_data=True,
