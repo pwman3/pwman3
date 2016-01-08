@@ -33,7 +33,7 @@ except ImportError as e:  # pragma: no cover
 
 
 from pwman.ui.baseui import BaseCommands
-from pwman import (get_conf_options, get_db_version, version, pkg_meta, parser_options)
+from pwman import (get_conf_options, get_db_version, version, website, parser_options)
 from pwman.ui.tools import CLICallback
 from pwman.data import factory
 from pwman.exchange.importer import Importer
@@ -53,8 +53,7 @@ class PwmanCli(cmd.Cmd, BaseCommands):
         connecion, see if we have xsel ...
         """
         super(PwmanCli, self).__init__(**kwargs)
-        self.intro = "%s %s (c) visit: %s" % ('pwman3', version,
-                                              pkg_meta.home_page)
+        self.intro = "%s %s (c) visit: %s" % ('pwman3', version, website)
         self._historyfile = config_parser.get_value("Readline", "history")
         self.hasxsel = hasxsel
         self.config = config_parser

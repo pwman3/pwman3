@@ -57,7 +57,8 @@ try:
     long_description = pkg_meta.description
 except IOError as E:
     # this should only happen once when installing the package
-    pass
+    description = "a command line password manager with support for multiple databases."
+    website = 'http://pwman3.github.io/pwman3/'
 
 
 def which(cmd):  # pragma: no cover
@@ -73,9 +74,10 @@ config_dir = os.path.expanduser("~/.pwman")
 
 
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
-    parser = argparse.ArgumentParser(prog=appname,
-                                     description=description,
-                                     formatter_class=formatter_class)
+    parser = argparse.ArgumentParser(
+            prog='pwman3',
+            description=description,
+            formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
