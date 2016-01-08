@@ -326,7 +326,7 @@ if sys.platform.startswith('win'):
 
 
 setup(name=pwman.appname,
-      version=pwman.version,
+      version='0.7.3.dev',
       description=pwman.description,
       long_description=pwman.long_description,
       author=pwman.author,
