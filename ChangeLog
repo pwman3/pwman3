@@ -1,54 +1,60 @@
+2016-Jan-01 Oz Nahum Tiram <nahumoz@gmail.com>
+	* Version 0.7.3
+	* Multiple fixes
+	* New Crypto engine - different from 0.6
+	* Fixes for windows
+
 2015-Mar-19 Oz Nahum Tiram <nahumoz@gmail.com>
-	
+
 	* version 0.6
 	* Rewrite Crypto Engine
 	* Multiple fixes in all DB drivers
 	* Fixes for all platforms
-	* For the complete log see git log. 
+	* For the complete log see git log.
 
 2014-May-5 Oz Nahum <nahumoz@gmail.com>
-    * Version 0.5.1 
+	* Version 0.5.1
 	* Convert old database before starting Pwman3
 
 2014-Apr-8  Oz Nahum <nahumoz@gmail.com>
-    * Version 0.5. 
-	* Multiple bug fixes. 
-	* 95% test coverage. 
+	* Version 0.5.
+	* Multiple bug fixes.
+	* 95% test coverage.
 	* Drop supprt for old database format that uses cPickle.
 	  Everything is stored in SQLite as encrypted strings.
 
 2014-Feb-27 Oz Nahum <nahumoz@gmail.com>
-	* Version 0.4.5 
+	* Version 0.4.5
 	* Fix for old database format
 	* The tag is on commit 5304181711797bb2da68addc18b97740f6540da3
 
 2014-Feb-25 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.4
-	* Multiple bug fixes 
-	* Complete test coverage 
+	* Multiple bug fixes
+	* Complete test coverage
 	* Last version supporting old data base format.
-	  The next version will break compatability. 
-	  The compatability will be broken because the old code 
-	  is not testable, and immposible to maintain. 
-	  Therefore this version still includes the converter. 
+	  The next version will break compatability.
+	  The compatability will be broken because the old code
+	  is not testable, and immposible to maintain.
+	  Therefore this version still includes the converter.
 
 2013-11-23 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.4.3
 	* fix for   #726987 in Debian
 	* fix issue #21
-	* fix for ##726884 in Debian 
+	* fix for ##726884 in Debian
 
 2013-09-28 Oz Nahum <nahumoz@gmail.com>
-	* Version 0.4.2 
+	* Version 0.4.2
 	* Fix typos `help` option.
 
 2013-09-25 Oz Nahum <nahumoz@gmail.com>
-	* Version 0.4.1 
+	* Version 0.4.1
 	* Fix broken usability with old database format.
 
 2013-09-21 Oz Nahum <nahumoz@gmail.com>
-	* Version 0.4.0 
-	* Multiple bug fixes 
+	* Version 0.4.0
+	* Multiple bug fixes
 	* Most changes are developer related (e.g. add unit testing)
 	* Nodes data was writen to DB with cPickle.dumps, hence
 	  loading the data was done cPickle.loads. New node
@@ -57,7 +63,7 @@
 
 2013-07-21 Oz Nahum <nahumoz@gmail.com>
 	* Version 0.3.9d
-	* Fix for filtering tags 
+	* Fix for filtering tags
 	* remove exception when old DB file exists
 	  when converting. Instead exist with error
 	  status and explanation.
@@ -75,7 +81,7 @@
 	* Version 0.3.9
 	* Fix reading of Nodes and Tags a cPickle object
 	* Add earasing of passwords from memory.
-	* Add Class and command line flag to convert old DataBase 
+	* Add Class and command line flag to convert old DataBase
 	  format to new format.
 2012-12-14 Oz Nahum <nahumoz@gmail.com>
     * Version 0.3.0
@@ -83,18 +89,18 @@
           signs.
     * Individual password policy.
     * Fix bug with Random number generation (thank you Rian).
-    * fix bug that prevented not working on other system than MacOSX 
+    * fix bug that prevented not working on other system than MacOSX
          (thank you Rian).
     * fix autoflashing of passwords, a timeout before flashing can specified
           or completly disables with -1.
     * Improvements documentation
-        
+
 2012-12-14 Oz Nahum <nahumoz@gmail.com>
-    * Version 0.2.1 
+    * Version 0.2.1
     * implement open uri function
     * better MacOSX logic
     * implement test mode, so code can run locally
-    * use ArgParse 
+    * use ArgParse
     * some improvements on documentation
 
 2012-10-06 Oz Nahum <nahumoz@gmail.com>
@@ -109,7 +115,7 @@
 
 2009-09-06 Ivan Kelly <ivan@ivankelly.net>
     * pwman/__init__.py: Version 0.0.8
-        
+
 2010-09-06 Emmanuel Bouthenot <kolter@openics.org>
     * pwman/ui/cli.py: Improved list output (patch from Emmanuel Bouthenot)
 
@@ -122,10 +128,10 @@
 
 2009-03-05 IKEGAMI Hiroyuki <ikegam@mixallow.net>
     * pwman/util/generator.py, pwman/ui/cli.py: Added numerous password generation options.
-    
+
 2009-02-16 Ivan Kelly <ivan@ivankelly.net>
     * pwman/__init__.py: Version 0.0.7
-        
+
 2009-02-16 Ivan Kelly <ivan@ivankelly.net>
     * pwman/ui/cli.py: Added short commands
     * pwman/exchange/exporter.py, pwman/exchange/importer.py, pwman/ui/cli.py, scripts/pwman3: Added patches that usually go in debian package. Removed echo on password input
