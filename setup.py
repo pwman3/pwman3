@@ -322,7 +322,7 @@ install_requires=['pycrypto>=2.6',
                   'colorama>=0.2.4']
 
 if sys.platform.startswith('win'):
-    install_requires.append('pyreadeline')
+    install_requires.append('pyreadline')
 
 
 long_description = u"""\
@@ -334,7 +334,7 @@ Pwman3 supports MySQL, Postgresql and SQLite"""
 
 
 setup(name='pwman3',
-      version='0.7.3',
+      version='0.7.4',
       description = "a command line password manager with support for multiple databases.",
       long_description=long_description,
       author='Oz Nahum Tiram',
