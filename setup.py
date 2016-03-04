@@ -284,7 +284,6 @@ class ManPageCreator(object):
     This class makes it easy for package maintainer to create man pages in
     cases, that there is no ArgumentParser.
     """
-    pass
 
     def _mk_name(self, distribution):
         """
@@ -330,7 +329,7 @@ Pwman3 aims to provide a simple but powerful commandline interface for
 password management.
 It allows one to store passwords in database locked by master password which
 is AES encrypted.
-Pwman3 supports MySQL, Postgresql and SQLite"""
+Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
 
 setup(name='pwman3',
