@@ -66,8 +66,8 @@ docs:
 	xdg-open docs/build/html/index.html
 
 release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist
+	twine upload --skip-existing dist/*
 
 dist: clean
 	python setup.py sdist
