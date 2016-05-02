@@ -43,11 +43,15 @@ if not sys.platform.startswith('win'):
     _readline_available = True
 else:  # pragma: no cover
     try:
-        import pyreadline
+        import readline
         _readline_available = True
     except ImportError as e:
-        _readline_available = False
-
+        try: 
+            import pyreadline as readrline
+            _readline_available = True
+        except ImportError as e:
+            _readline_available = False
+    
 _defaultwidth = 10
 
 
@@ -236,15 +240,15 @@ def getinput(question, default="", reader=raw_input,
         else:
             def defaulter():
                 """define default behavior startup"""
-                if _readline_available:
-                    readline.insert_text(default)
+                readline.insert_text(default)
+            
+            if _readline_available:
                 readline.set_startup_hook(defaulter)
                 readline.get_completer()
                 readline.set_completer(completer)
-
+                
             x = raw_input(question.ljust(width))
-            readline.set_completer(completer)
-            readline.set_startup_hook()
+            
             if not x:
                 return default
             return x
