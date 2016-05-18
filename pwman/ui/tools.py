@@ -46,12 +46,12 @@ else:  # pragma: no cover
         import readline
         _readline_available = True
     except ImportError as e:
-        try: 
+        try:
             import pyreadline as readrline
             _readline_available = True
         except ImportError as e:
             _readline_available = False
-    
+
 _defaultwidth = 10
 
 
@@ -128,7 +128,7 @@ def open_url(link, macosx=False, ):  # pragma: no cover
     if macosx:
         uopen = "open "
     try:
-        sp.call(uopen+link, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
+        sp.call(uopen + link, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
     except OSError as e:
         print("Executing open_url failed with:\n", e)
 
@@ -241,17 +241,18 @@ def getinput(question, default="", reader=raw_input,
             def defaulter():
                 """define default behavior startup"""
                 readline.insert_text(default)
-            
+
             if _readline_available:
                 readline.set_startup_hook(defaulter)
                 readline.get_completer()
                 readline.set_completer(completer)
-                
+
             x = raw_input(question.ljust(width))
-            
-            if not x:
-                return default
-            return x
+
+            if _readline_available:
+                readline.set_startup_hook()
+            return x if x else default
+
     else:
         return reader()
 
@@ -301,19 +302,19 @@ def _get_secret():
 
 def set_selection(new_node, items, selection, reader):  # pragma: no cover
     if selection == 0:
-        new_node.username = getinput("Username:")
+        new_node.username = getinput("Username:", new_node.username)
         items[0].getter = new_node.username
     elif selection == 1:  # for password
         new_node.password = _get_secret()
         items[1].getter = new_node.password
     elif selection == 2:
-        new_node.url = getinput("Url:")
+        new_node.url = getinput("Url:", new_node.url)
         items[2].getter = new_node.url
     elif selection == 3:  # for notes
-        new_node.notes = reader("Notes:")
+        new_node.notes = getinput("Notes :", new_node.notes)
         items[3].getter = new_node.notes
     elif selection == 4:
-        taglist = getinput("Tags:")
+        taglist = getinput("Tags:", " ".join(new_node.tags))
         tags = taglist.split()
         new_node.tags = tags
         items[4].getter = ','.join(new_node.tags)
@@ -339,6 +340,7 @@ class CMDLoop(object):
                 print ("%s - %s: %s" % (i + 1, x.name, x.getter))
 
             print("X - Finish editing")
+            # read just the first character entered
             option = reader("Enter your choice:")[0]
             try:
                 print ("Selection, ", option)
