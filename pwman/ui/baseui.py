@@ -56,11 +56,13 @@ def _wait_until_enter(predicate, timeout, period=0.25):  # pragma: no cover
 
 
 class HelpUIMixin(object):  # pragma: no cover
+
     """
     this class holds all the UI help functionality.
     in PwmanCliNew. The later inherits from this class
     and allows it to print help messages to the console.
     """
+
     def _usage(self, string):
         print ("Usage: %s" % (string))
 
@@ -140,9 +142,11 @@ class HelpUIMixin(object):  # pragma: no cover
 
 
 class AliasesMixin(object):  # pragma: no cover
+
     """
     Define all the alias you want here...
     """
+
     def do_cp(self, args):
         self.do_copy(args)
 
@@ -197,7 +201,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
                 if not end > begin:
                     print("Start node should be smaller than end node")
                     return ids
-                ids += range(begin, end+1)
+                ids += range(begin, end + 1)
                 return ids
             except TypeError:
                 ids.append(int(begin))
@@ -346,7 +350,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
     def _print_node_line(self, node, rows, cols):
         tagstring = ','.join([t for t in node.tags])
         fmt = self._format_line(cols, node._id, node.username,
-                                node.url[:20]+'...' if (len(node.url) > 22)
+                                node.url[:20] + '...' if (len(node.url) > 22)
                                 else node.url,
                                 tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
@@ -388,7 +392,6 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
             if not menu:
                 menu = CMDLoop(self.config)
                 print ("Editing node %d." % (i))
-
                 menu.add(CliMenuItem("Username", node.username))
                 menu.add(CliMenuItem("Password",  node.password))
                 menu.add(CliMenuItem("Url", node.url))
@@ -408,7 +411,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin):
         nodeids = self._get_node_ids(args)
         raw_nodes = self._db.getnodes(nodeids)
         _nodes_inst = self._db_entries_to_nodes(raw_nodes)
-        head = self._format_line(cols-32)
+        head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
         for idx, node in enumerate(_nodes_inst):
             self._print_node_line(node, rows, cols)
