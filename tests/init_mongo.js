@@ -1,4 +1,4 @@
-# run this script with $ mongo < init_mongo.js
+// run this script with $ mongo < init_mongo.js
 
 use pwmantest
 
