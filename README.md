@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pwman3/badge/?version=latest)](https://readthedocs.org/projects/pwman3/?badge=latest)
 
 A nice command line password manager, which can use different database to store your passwords (currently, SQLite, MySQL, 
-    and PostGresql and MongoDB are supported).  
+    and Postgresql and MongoDB are supported).
 Pwman3 can also copy passwords to the clipboard without exposing them!
 Besides managing and storing passwords, Pwman3 can also generate passwords using different algorithms. 
 
@@ -39,10 +39,10 @@ Besides managing and storing passwords, Pwman3 can also generate passwords using
 
 Pwman3 requires the following debian packages:
  
- python-colorama
- python-crypto 
+ python-colorama 
  xsel - to copy password to clipboard on Linux
-    
+
+It is also recommended to install python-crypto.
 Pwman supports Python 2.7-3.x. 
 
 To install from source:
@@ -55,7 +55,10 @@ You can also install PWMAN3 using python pip:
 
 ### Windows Users:
 
-Before installing pwman3 you need to install PyCrypto. To you can install PyCrypto with:
+Pwman3 comes with a pure python implementation of the AES encryptio algorithm based
+of PythonCrypto-Plus.
+ 
+Pwman3 can also help you install PyCrypto. To you can install PyCrypto with:
 
     python setup install_pycrypto
 
@@ -151,7 +154,7 @@ The config file  must have the following option:
 
    
  * Copying password to X11 or Mac clip board:
-  - On Mac OSX systems copying utilizes `pbcopy`  
+  - On Mac OSX systems copying utilizes `pbcopy`
   - On X11 Systems  Specify the path to `xsel` if you already have `~/.pwman/config` 
       
      ```
