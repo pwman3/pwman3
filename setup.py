@@ -53,7 +53,8 @@ add to your ```setup.cfg``` the following::
     parser = <path_to_your_parser>
 """
 
-build.sub_commands.append(('build_manpage', None))
+
+# build.sub_commands.append(('build_manpage', None))
 
 
 class BuildManPage(Command):
@@ -317,8 +318,7 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 
-install_requires=['pycrypto>=2.6',
-                  'colorama>=0.2.4']
+install_requires=['colorama>=0.2.4']
 
 if sys.platform.startswith('win'):
     install_requires.append('pyreadline')
@@ -333,7 +333,7 @@ Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
 
 setup(name='pwman3',
-      version='0.7.4',
+      version='0.7.5-dev',
       description = "a command line password manager with support for multiple databases.",
       long_description=long_description,
       author='Oz Nahum Tiram',
