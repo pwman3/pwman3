@@ -2,8 +2,3 @@ include ChangeLog
 include requirements.txt
 include test_requirements.txt
 recursive-include docs *
-include pwman/ui/templates/*
-include pwman/ui/templates/static/css/*
-include pwman/ui/templates/static/js/*
-include pwman/ui/templates/static/js/vendor/*
-
