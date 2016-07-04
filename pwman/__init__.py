@@ -70,6 +70,7 @@ def which(cmd):  # pragma: no cover
             return cmd
     return ''
 
+
 config_dir = os.path.expanduser("~/.pwman")
 
 
@@ -106,10 +107,12 @@ def set_xsel(configp, OSX):
         configp.set_value("Global", "xsel", pbcopypath)
 
 
-def set_win_colors(config):  # pragma: no cover
-    if sys.platform.startswith('win'):
-        colorama.init()
-
+#def set_win_colors(config):  # pragma: no cover
+#    try:
+#        if sys.platform.startswith('win'):
+#            colorama.init()
+#   except ImportError:  # when installing colorama is still not there
+#        pass
 
 def set_umask(configp):
     umask = configp.get_value("Global", "umask")
@@ -129,7 +132,7 @@ def get_conf_options(args, OSX):
     if not xselpath:  # pragma: no cover
         set_xsel(configp, OSX)
 
-    set_win_colors(configp)
+    #set_win_colors(configp)
     set_db(args, configp)
     set_umask(configp)
     dburi = configp.get_value("Database", "dburi")

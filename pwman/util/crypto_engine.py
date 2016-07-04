@@ -37,9 +37,7 @@ except ImportError:
     # or embeded devices where compilation is a bit harder
     from pwman.util.crypto import AES
     from pwman.util.crypto.pypbkdf2 import PBKDF2
-    print("WARNING: You are not using PyCrypto!!!")
-    print("WARNING: You should install PyCrypto for better security and perfomance")
-    print("WARNING: You can supress this warning by editing pwman config file.")
+
 
 from pwman.util.callback import Callback
 

@@ -21,16 +21,22 @@
 # ============================================================================
 """
 from __future__ import print_function
-import time
 import ctypes
 import os
+import time
+
 try:
     import msvcrt
 except ImportError:
     pass
 
+import colorama
+
 from pwman.ui.cli import PwmanCli
 from pwman.util.crypto_engine import CryptoEngine
+
+
+colorama.init()
 
 
 def heardEnterWin():

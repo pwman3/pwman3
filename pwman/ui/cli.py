@@ -19,8 +19,12 @@
 # pylint: disable=I0011
 
 from __future__ import print_function
-import sys
+
 import cmd
+import os
+import sys
+
+
 if sys.version_info.major > 2:
     raw_input = input
 
@@ -38,7 +42,7 @@ from pwman.ui.tools import CLICallback
 from pwman.data import factory
 from pwman.exchange.importer import Importer
 from pwman.util.crypto_engine import CryptoEngine
-
+from pwman.util.crypto_engine import AES
 
 class PwmanCli(cmd.Cmd, BaseCommands):
     """
@@ -95,6 +99,16 @@ def main():
     PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
+
+    if os.path.join("Crypto", "Cipher") not in AES.__file__:  # we are using built in AES.py
+        import colorama
+        if config.get_value('Crypto', 'supress_warning').lower() != 'yes':
+            print("{}WARNING: You are not using PyCrypto!!!\n"
+                  "WARNING: You should install PyCrypto for better security and "
+                  "perfomance\nWARNING: You can supress this warning by editing "
+                  "pwman config file.{}".format(colorama.Fore.RED,
+                                                colorama.Style.RESET_ALL))
+
     print(dburi)
     dbver = get_db_version(config, args)
     CryptoEngine.get()
