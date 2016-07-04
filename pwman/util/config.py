@@ -38,7 +38,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                       'dburi': 'sqlite://' + os.path.join(config_dir,
                                                           'pwman.db')},
                   'Readline': {'history': os.path.join(config_dir,
-                                                       'history')}
+                                                       'history')},
+                  'Crypto': {'warning': 'yes'},
                   }
 
 if 'win' in sys.platform:

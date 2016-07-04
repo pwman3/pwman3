@@ -19,16 +19,30 @@
 
 from __future__ import print_function
 import base64
-import ctypes
-import string
-import os
-import sys
 import binascii
-import time
+import ctypes
+import os
 import random
-from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
+import string
+import sys
+import time
+
+try:
+    from Crypto.Cipher import AES
+    from Crypto.Protocol.KDF import PBKDF2
+except ImportError:
+    # PyCryptop not found, we use a compatible implementation
+    # in pure Python.
+    # This is good for Windows where software installation suck
+    # or embeded devices where compilation is a bit harder
+    from pwman.util.crypto import AES
+    from pwman.util.crypto.pypbkdf2 import PBKDF2
+    print("WARNING: You are not using PyCrypto!!!")
+    print("WARNING: You should install PyCrypto for better security and perfomance")
+    print("WARNING: You can supress this warning by editing pwman config file.")
+
 from pwman.util.callback import Callback
+
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
@@ -74,7 +88,10 @@ def get_digest(password, salt):
     iterations = 5000
     if isinstance(password, bytes):
         password = password.decode()
-    return PBKDF2(password, salt, dkLen=32, count=iterations)
+    try:
+        return PBKDF2(password, salt, dkLen=32, count=iterations)
+    except TypeError:
+        return PBKDF2(password, salt, iterations=iterations).read(32)
 
 
 def get_cipher(password, salt):
