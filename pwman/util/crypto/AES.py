@@ -24,8 +24,8 @@ IN THE SOFTWARE.
 This code is taken from https://github.com/doegox/python-cryptoplus/
 
 """
-from blockcipher import *
-from rijndael import rijndael
+from .blockcipher import *
+from .rijndael import rijndael
 
 def new(key,mode=MODE_ECB,IV=None,counter=None,segment_size=None):
     """Create a new cipher object

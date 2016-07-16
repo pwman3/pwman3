@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # =============================================================================
-import util
-import padding
+from . import util
+from . import padding
+import collections
 
 MODE_ECB = 1
 MODE_CBC = 2
@@ -55,36 +56,36 @@ class BlockCipher():
         else:
             self.IV = IV
 
-        if mode <> MODE_XTS:
+        if mode != MODE_XTS:
             self.cipher = cipher_module(self.key,**args)
         if mode == MODE_ECB:
             self.chain = ECB(self.cipher, self.blocksize)
         elif mode == MODE_CBC:
-            if len(self.IV) <> self.blocksize:
-                raise Exception,"the IV length should be %i bytes"%self.blocksize
+            if len(self.IV) != self.blocksize:
+                raise Exception("the IV length should be %i bytes"%self.blocksize)
             self.chain = CBC(self.cipher, self.blocksize,self.IV)
         elif mode == MODE_CFB:
-            if len(self.IV) <> self.blocksize:
-                raise Exception,"the IV length should be %i bytes"%self.blocksize
+            if len(self.IV) != self.blocksize:
+                raise Exception("the IV length should be %i bytes"%self.blocksize)
             if segment_size == None:
-                raise ValueError,"segment size must be defined explicitely for CFB mode"
-            if segment_size > self.blocksize*8 or segment_size%8 <> 0:
+                raise ValueError("segment size must be defined explicitely for CFB mode")
+            if segment_size > self.blocksize*8 or segment_size%8 != 0:
                 # current CFB implementation doesn't support bit level acces => segment_size should be multiple of bytes
-                raise ValueError,"segment size should be a multiple of 8 bits between 8 and %i"%(self.blocksize*8)
+                raise ValueError("segment size should be a multiple of 8 bits between 8 and %i"%(self.blocksize*8))
             self.chain = CFB(self.cipher, self.blocksize,self.IV,segment_size)
         elif mode == MODE_OFB:
-            if len(self.IV) <> self.blocksize:
+            if len(self.IV) != self.blocksize:
                 raise ValueError("the IV length should be %i bytes"%self.blocksize)
             self.chain = OFB(self.cipher, self.blocksize,self.IV)
         elif mode == MODE_CTR:
-            if (counter == None) or  not callable(counter):
-                raise Exception,"Supply a valid counter object for the CTR mode"
+            if (counter == None) or  not isinstance(counter, collections.Callable):
+                raise Exception("Supply a valid counter object for the CTR mode")
             self.chain = CTR(self.cipher,self.blocksize,counter)
         elif mode == MODE_XTS:
-            if self.blocksize <> 16:
-                raise Exception,'XTS only works with blockcipher that have a 128-bit blocksize'
+            if self.blocksize != 16:
+                raise Exception('XTS only works with blockcipher that have a 128-bit blocksize')
             if not(type(key) == tuple and len(key) == 2):
-                raise Exception,'Supply two keys as a tuple when using XTS'
+                raise Exception('Supply two keys as a tuple when using XTS')
             if 'keylen_valid' in dir(self): #wrappers for pycrypto functions don't have this function
              if not self.keylen_valid(key[0]) or  not self.keylen_valid(key[1]):
                 raise ValueError(self.key_error_message)
@@ -93,10 +94,10 @@ class BlockCipher():
             self.chain = XTS(self.cipher, self.cipher2)
         elif mode == MODE_CMAC:
             if self.blocksize not in (8,16):
-                raise Exception,'CMAC only works with blockcipher that have a 64 or 128-bit blocksize'
+                raise Exception('CMAC only works with blockcipher that have a 64 or 128-bit blocksize')
             self.chain = CMAC(self.cipher,self.blocksize,self.IV)
         else:
-                raise Exception,"Unknown chaining mode!"
+                raise Exception("Unknown chaining mode!")
 
     def encrypt(self,plaintext,n=''):
         """Encrypt some plaintext
@@ -249,7 +250,7 @@ class ECB:
         self.cache += data
         if len(self.cache) < self.blocksize:
             return ''
-        for i in xrange(0, len(self.cache)-self.blocksize+1, self.blocksize):
+        for i in range(0, len(self.cache)-self.blocksize+1, self.blocksize):
             #the only difference between encryption/decryption in the chain is the cipher block
             if ed == 'e':
                 output_blocks.append(self.codebook.encrypt( self.cache[i:i + self.blocksize] ))
@@ -287,7 +288,7 @@ class CBC:
             self.cache += data
             if len(self.cache) < self.blocksize:
                 return ''
-            for i in xrange(0, len(self.cache)-self.blocksize+1, self.blocksize):
+            for i in range(0, len(self.cache)-self.blocksize+1, self.blocksize):
                 self.IV = self.codebook.encrypt(util.xorstring(self.cache[i:i+self.blocksize],self.IV))
                 encrypted_blocks += self.IV
             self.cache = self.cache[i+self.blocksize:]
@@ -297,7 +298,7 @@ class CBC:
             self.cache += data
             if len(self.cache) < self.blocksize:
                 return ''
-            for i in xrange(0, len(self.cache)-self.blocksize+1, self.blocksize):
+            for i in range(0, len(self.cache)-self.blocksize+1, self.blocksize):
                 plaintext = util.xorstring(self.IV,self.codebook.decrypt(self.cache[i:i + self.blocksize]))
                 self.IV = self.cache[i:i + self.blocksize]
                 decrypted_blocks+=plaintext
@@ -333,7 +334,7 @@ class CFB:
         """
         output = list(data)
 
-        for i in xrange(len(data)):
+        for i in range(len(data)):
             if ed =='e':
                 if len(self.keystream) == 0:
                     block = self.codebook.encrypt(self.IV)
@@ -380,7 +381,7 @@ class OFB:
         blocksize = self.blocksize
         output = list(data)
 
-        for i in xrange(n):
+        for i in range(n):
             if len(self.keystream) == 0: #encrypt a new counter block when the current keystream is fully used
                 self.IV = self.codebook.encrypt(self.IV)
                 self.keystream = list(self.IV)
@@ -420,7 +421,7 @@ class CTR:
         blocksize = self.blocksize
 
         output = list(data)
-        for i in xrange(n):
+        for i in range(n):
             if len(self.keystream) == 0: #encrypt a new counter block when the current keystream is fully used
                 block = self.codebook.encrypt(self.counter())
                 self.keystream = list(block)
@@ -504,7 +505,7 @@ class XTS:
         # if (Cout)
         if self.T >> (8*16):
             #T[0] ^= GF_128_FDBK;
-            self.T = self.T ^ 0x100000000000000000000000000000087L
+            self.T = self.T ^ 0x100000000000000000000000000000087
 
 
 class CMAC:
@@ -520,7 +521,7 @@ class CMAC:
     # TODO: change update behaviour to .update() and .digest() as for all hash modules?
     #       -> other hash functions in pycrypto: calling update, concatenates current input with previous input and hashes everything
     __Rb_dictionary = {64:0x000000000000001b,128:0x00000000000000000000000000000087}
-    supported_blocksizes = __Rb_dictionary.keys()
+    supported_blocksizes = list(__Rb_dictionary.keys())
     def __init__(self,codebook,blocksize,IV):
         # Purpose of init: calculate Lu & Lu2
         #blocksize (in bytes): to select the Rb constant in the dictionary
