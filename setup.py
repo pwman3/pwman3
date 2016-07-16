@@ -318,7 +318,10 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 
-install_requires=['colorama>=0.2.4']
+install_requires = ['colorama>=0.2.4']
+
+if sys.version_info.major < 3:
+    install_requires.append("future")
 
 if sys.platform.startswith('win'):
     install_requires.append('pyreadline')
