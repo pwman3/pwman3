@@ -202,11 +202,12 @@ class Pwman3WebDaemon(object):
     def run(self):
         global AUTHENTICATED, TAGS, DB
         OSX = False
-        sys.argv = []
+        print(sys.argv)
         args = parser_options().parse_args()
         xselpath, dburi, configp = get_conf_options(args, OSX)
         DB = pwman.data.factory.createdb(dburi, None)
         DB.open()
+        print(dburi)
         print(dir(DB))
         CryptoEngine.get()
         debug(True)
