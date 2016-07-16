@@ -183,7 +183,7 @@ def listnodes(apply=['require_login']):
     nodesd = _nodes_inst
     ce = CryptoEngine.get()
     tags = [ce.decrypt(t).decode() for t in DB.listtags()]
-    html_nodes = template("main.tpl", nodes=nodesd, tags=tags, request=request,
+    html_nodes = template("index.tpl", nodes=nodesd, tags=tags, request=request,
                           template_lookup=[resource_filename('pwman',
                                                              'ui/templates')])
     return html_nodes
