@@ -73,11 +73,18 @@ class Node(object):
         the encrypted entities from the database
         """
         node = Node(clear_text=False)
-        node._username = bytes(username, 'utf8').strip()
-        node._password = bytes(password, 'utf8').strip()
-        node._url = bytes(url, 'utf8').strip()
-        node._notes = bytes(notes, 'utf8').strip()
-        node._tags = [bytes(t, 'utf8').strip() for t in tags]
+        if type(username) == bytes:
+            node._username = username.strip()
+            node._password = password.strip()
+            node._url = url.strip()
+            node._notes = notes.strip()
+            node._tags = [t.strip() for t in tags] 
+        else:
+            node._username = bytes(username, 'utf8').strip()
+            node._password = bytes(password, 'utf8').strip()
+            node._url = bytes(url, 'utf8').strip()
+            node._notes = bytes(notes, 'utf8').strip()
+            node._tags = [bytes(t, 'utf8').strip() for t in tags]
         return node
 
     def __iter__(self):

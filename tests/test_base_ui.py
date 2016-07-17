@@ -92,9 +92,9 @@ class TestBaseUI(unittest.TestCase):
     def test_2_do_list(self):
         self.output = StringIO()
         sys.stdout = self.output
-        self.tester.cli.do_list('')
-        self.tester.cli.do_list('foo')
-        self.tester.cli.do_list('bar')
+        self.tester.cli.do_list(u'')
+        self.tester.cli.do_list(u'foo')
+        self.tester.cli.do_list(u'bar')
         sys.stdout = sys.__stdout__
         self.output.getvalue()
 
