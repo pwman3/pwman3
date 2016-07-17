@@ -318,7 +318,10 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 
-install_requires=['colorama>=0.2.4']
+install_requires = ['colorama>=0.2.4']
+
+if sys.version_info.major < 3:
+    install_requires.append("future")
 
 if sys.platform.startswith('win'):
     install_requires.append('pyreadline')
@@ -333,7 +336,7 @@ Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
 
 setup(name='pwman3',
-      version='0.8.0',
+      version='0.8.1',
       description = "a command line password manager with support for multiple databases.",
       long_description=long_description,
       author='Oz Nahum Tiram',
