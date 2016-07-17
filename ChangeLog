@@ -1,9 +1,14 @@
+2016-July-16 Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release 0.8.1 - Tag only, not on pypi
+	* Fixes of Python2 - Python3 compatablity issues
+	* Pure AES module converted with 2to3 to python3
+
 2016-July-O4 Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release 0.8.0
 	* Remove automatic build of man page. Explicit build is still possible.
-    * Add pure Python AES module
-    * On systems where Pycrypto is not available use own AES
-     
+	* Add pure Python AES module
+	* On systems where Pycrypto is not available use own AES
+
 2016-Jan-15 Oz Nahum Tiram <nahumoz@gmail.com>
 	* Release 0.7.4
 	* Fix typo in setup.py which affects windows installation

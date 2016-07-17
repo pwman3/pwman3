@@ -336,7 +336,7 @@ Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
 
 setup(name='pwman3',
-      version='0.8.1-dev',
+      version='0.8.1',
       description = "a command line password manager with support for multiple databases.",
       long_description=long_description,
       author='Oz Nahum Tiram',
