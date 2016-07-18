@@ -187,7 +187,6 @@ img {
 
 .auth {
   display: inline-block;
-  position: relative;
   float: right;
 }
 
@@ -252,6 +251,7 @@ img {
 	font-size: 1.6rem;
   padding: 0px 1.3rem;
   margin-top: 1rem;
+  float: right;
 
 }
 .navigation-link {
@@ -348,8 +348,7 @@ img {
 }
 
 
-/* Prettify
-*/
+/* Prettify */
 
 pre.prettyprint {
 	border: 0 !important;
@@ -386,3 +385,10 @@ pre.prettyprint .var { color: #ca4949; }
 pre.prettyprint .fun { color: #7272ca; }
 /* markdown content */
 pre.prettyprint.lang-md * { color: #655d5d !important; }
+
+
+.password-box {
+  border: 0.1rem solid #D1D1D1;
+  border-radius: 0.4rem;
+  margin-bottom: 1rem;
+}

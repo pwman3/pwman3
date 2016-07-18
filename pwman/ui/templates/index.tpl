@@ -12,26 +12,42 @@
 
 
 <main class="wrapper">
-  <nav class="navigation">
+  <nav class="navigation" >
   <section class="container">
     <a class="navigation-title" href="https://pwman3.github.io/">
     <img class="img" src="https://openclipart.org/download/190821/Cles-de-serrure-lock-keys.svg" height="30" alt="pwman3" title="pwman3">
     <h1 class="title">Pwman3</h1>
     </a>
     <span class="auth">
-    <form class="auth-form">
-      <button id="auth-btn" class="button">Auth</button>
-      <input id="pwd-input" class="navigation-button" type="password" name="auth-pwd" placeholder="Password" style="display: none;" >
-      <input id="show" class="button-primary navigation-button" style="display:none;" value="Submit" type="submit">
+    <button id="auth-btn" class="button">Auth</button>
+    <div style="float: right">
+    <form id="show" class="auth-form" style="display: none">
+      <input id="" class="navigation-button" type="password" name="auth-pwd" placeholder="Password"  >
+      <input id="" class="button-primary navigation-button"  value="Submit" type="submit">
     </form>
+    <div>
     </span>
   </section>
   </nav>
+  
+  <section class="container password-box" style="margin-top: 7rem; ">
+  <div class="">  
+  kkkkkkkkkkkkkkkkkkkk
+  </div>  
+</section>
+  <section class="container password-box">
+  kkkkkkkkkkkk
+  </section>
+  <section class="container password-box">
+  kkkkkkkkkkkkkkk
+  </section>
+  <section class="container password-box">
+  kkkkkkkkkk
+  </section>
 </main>
 
 <script type="text/javascript">
 $("#auth-btn").click(function () {
-   $("#pwd-input").show('fast');
    $("#show").show('fast');
 });
 
