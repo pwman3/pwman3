@@ -392,3 +392,8 @@ pre.prettyprint.lang-md * { color: #655d5d !important; }
   border-radius: 0.4rem;
   margin-bottom: 1rem;
 }
+
+.container-nav {
+  padding-right: 0px;
+}
+
