@@ -6,6 +6,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="/static/css/milligram.css">
 	<link rel="stylesheet" href="/static/css/style.css">
     </head>
@@ -21,8 +22,8 @@
     <span class="float-right" style="display: inline-block; float: right; padding-top: 0.5rem;">
     <div style="padding-right: 0rem; padding-left: 60px; float: right">
     <form id="show" class="">
-      <input id="" class="" type="password" name="auth-pwd" placeholder="Password" style="width:65%" >
-      <input id="" class=""  value="Submit" type="submit" style="width:33%; display: inline-block">
+      <input id="" class="" type="password" name="auth-pwd" placeholder="Password" style="width:60%" >
+      <input id="" class=""  value="Submit" type="submit" style="float: right; width:33.%; display: inline-block">
     </form>
     <div>
     </span>
@@ -31,11 +32,21 @@
   
   <section class="container password-box" style="margin-top: 7rem; ">
   <div class="">  
-  kkkkkkkkkkkkkkkkkkkk
-  </div>  
-</section>
+  
+  </div> 
+  </section>
   <section class="container password-box">
-  kkkkkkkkkkkk
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
+  
+   <div class="tags">
+    Tags: 
+     <button>net</button>
+     <button>learning</button>  
+    </div>
   </section>
   <section class="container password-box">
   kkkkkkkkkkkkkkk
