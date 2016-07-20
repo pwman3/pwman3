@@ -348,45 +348,6 @@ img {
 }
 
 
-/* Prettify */
-
-pre.prettyprint {
-	border: 0 !important;
-	border-left: .3rem solid #9b4dca !important;
-	color: #655d5d;
-}
-/* string content */
-pre.prettyprint .str { color: #4b8b8b; }
-/* a keyword */
-pre.prettyprint .kwd { color: #8464c4; }
-/* a comment */
-pre.prettyprint .com { color: #adadad; }
-/* a type name */
-pre.prettyprint .typ { color: #7272ca; }
-/* a literal value */
-pre.prettyprint .lit { color: #9b4dca; }
-/* punctuation */
-pre.prettyprint .pun { color: #5485b6; }
-/* lisp open bracket */
-pre.prettyprint .opn { color: #f4ecec; }
-/* lisp close bracket */
-pre.prettyprint .clo { color: #f4ecec; }
-/* a markup tag name */
-pre.prettyprint .tag { color: #9b4dca; }
-/* a markup attribute name */
-pre.prettyprint .atn { color: #9b4dca; }
-/* a markup attribute value */
-pre.prettyprint .atv { color: #5485b6; }
-/* a declaration */
-pre.prettyprint .dec { color: #b45a3c; }
-/* a variable name */
-pre.prettyprint .var { color: #ca4949; }
-/* a function name */
-pre.prettyprint .fun { color: #7272ca; }
-/* markdown content */
-pre.prettyprint.lang-md * { color: #655d5d !important; }
-
-
 .password-box {
   border: 0.1rem solid #D1D1D1;
   border-radius: 0.4rem;
@@ -397,3 +358,17 @@ pre.prettyprint.lang-md * { color: #655d5d !important; }
   padding-right: 0px;
 }
 
+
+.tags {
+
+ height: 10%;
+
+}
+
+.password-box strong {
+    font-family: 'ColaborateMediumRegular', Arial, sans-serif;
+    font-weight: 700;
+}
+.tag-button {
+  
+}
