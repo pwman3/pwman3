@@ -361,8 +361,10 @@ img {
 
 .tags {
 
- height: 10%;
-
+  height: 10%;
+  position: absolute;
+	top: 80%;
+  left: 60%;
 }
 
 .password-box strong {
