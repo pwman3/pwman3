@@ -31,9 +31,31 @@
   </nav>
   
   <section class="container password-box" style="margin-top: 7rem; ">
-  <div class="">  
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
   
-  </div> 
+   <div class="tags float-right">
+    Tags: 
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
+    </div>
+  </section>
+  <section class="container password-box">
+  <div>
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
+   <div class="tags float-right">
+    Tags: 
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
+    </div>
+  </div>  
   </section>
   <section class="container password-box">
   Login: <strong>oz.tiram@gmail.com</strong>
@@ -41,18 +63,47 @@
   <br>Password: <strong>********</strong><br>  
   Notes: Some notes about this entry 
   <br>
-  
-   <div class="tags">
+   <div class="tags float-right">
     Tags: 
-     <button>net</button>
-     <button>learning</button>  
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
     </div>
   </section>
   <section class="container password-box">
-  kkkkkkkkkkkkkkk
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
+   <div class="tags float-right">
+    Tags: 
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
+    </div>
   </section>
   <section class="container password-box">
-  kkkkkkkkkk
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
+   <div class="tags float-right">
+    Tags: 
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
+    </div>
+  </section>
+  <section class="container password-box">
+  Login: <strong>oz.tiram@gmail.com</strong>
+  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Password: <strong>********</strong><br>  
+  Notes: Some notes about this entry 
+  <br>
+   <div class="tags float-right">
+    Tags: 
+     <button class="button button-clear button-clear button-tag">net</button>
+     <button class="button button-clear button-tag">learning</button>  
+    </div>
   </section>
 </main>
 

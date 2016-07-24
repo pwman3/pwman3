@@ -352,6 +352,8 @@ img {
   border: 0.1rem solid #D1D1D1;
   border-radius: 0.4rem;
   margin-bottom: 1rem;
+	padding-top: 2rem;
+  padding-bottom: 4rem;
 }
 
 .container-nav {
@@ -362,9 +364,10 @@ img {
 .tags {
 
   height: 10%;
-  position: absolute;
+  position: relative;
+	margin-top: 0;
+	padding-top: 0rem;
 	top: 80%;
-  left: 60%;
 }
 
 .password-box strong {
@@ -373,4 +376,8 @@ img {
 }
 .tag-button {
   
+}
+
+.button-tag {
+  padding: 0px 0px;
 }
