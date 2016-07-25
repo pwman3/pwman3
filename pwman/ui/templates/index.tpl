@@ -15,7 +15,7 @@
 <main class="wrapper">
   <nav class="navigation" >
   <section class="container container-nav">
-    <a class="navigation-title" href="https://pwman3.github.io/">
+    <a class="navigation-title" href="#openModal">
     <img class="img" src="https://openclipart.org/download/190821/Cles-de-serrure-lock-keys.svg" height="30" alt="pwman3" title="pwman3">
     <h1 class="title">Pwman3</h1>
     </a>
@@ -27,7 +27,20 @@
     </form>
     <div>
     </span>
-  </section>
+
+    <div id="openModal" class="modalDialog">
+      <div>
+        <a href="#close" title="Close" class="close">x</a>
+        <h2>Pwmam3 - Web</h2>
+        <p> Pwman3 is distributed under the GPL v. 3.
+        <p> Pwman3 Logo is made by <pre> enolynn</pre> and was downloaded
+        from openclipart: 
+	<a href="https://openclipart.org/detail/190821/cles-de-serrure-lock-keys">logo</a>. 
+	This logo is distributed under the Creative Commons license.
+        You can learn more about this Software in 
+	<a href="http://pwman3.github.io/pwman3/">pwman3's home page</a>.</div>. 
+    </div>
+    </section>
   </nav>
   
   <section class="container password-box" style="margin-top: 7rem; ">
@@ -51,7 +64,6 @@
   Notes: Some notes about this entry 
   <br>
    <div class="tags float-right">
-    Tags: 
      <button class="button button-clear button-clear button-tag">net</button>
      <button class="button button-clear button-tag">learning</button>  
     </div>
@@ -59,52 +71,49 @@
   </section>
   <section class="container password-box">
   Login: <strong>oz.tiram@gmail.com</strong>
-  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Website: <strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
   <br>Password: <strong>********</strong><br>  
   Notes: Some notes about this entry 
   <br>
    <div class="tags float-right">
-    Tags: 
      <button class="button button-clear button-clear button-tag">net</button>
      <button class="button button-clear button-tag">learning</button>  
     </div>
   </section>
   <section class="container password-box">
   Login: <strong>oz.tiram@gmail.com</strong>
-  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Website: <strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
   <br>Password: <strong>********</strong><br>  
   Notes: Some notes about this entry 
   <br>
    <div class="tags float-right">
-    Tags: 
      <button class="button button-clear button-clear button-tag">net</button>
      <button class="button button-clear button-tag">learning</button>  
     </div>
   </section>
   <section class="container password-box">
   Login: <strong>oz.tiram@gmail.com</strong>
-  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Website: <strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
   <br>Password: <strong>********</strong><br>  
   Notes: Some notes about this entry 
   <br>
    <div class="tags float-right">
-    Tags: 
      <button class="button button-clear button-clear button-tag">net</button>
      <button class="button button-clear button-tag">learning</button>  
     </div>
   </section>
   <section class="container password-box">
   Login: <strong>oz.tiram@gmail.com</strong>
-  <br>Website:<strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
+  <br>Website: <strong><a href="stackoverflow.com">http://stackoverflow.com</a></strong>
   <br>Password: <strong>********</strong><br>  
   Notes: Some notes about this entry 
   <br>
    <div class="tags float-right">
-    Tags: 
      <button class="button button-clear button-clear button-tag">net</button>
      <button class="button button-clear button-tag">learning</button>  
     </div>
   </section>
+
 </main>
 
 <script type="text/javascript">
