@@ -23,6 +23,7 @@
 from . import util
 from . import padding
 import collections
+import sys
 
 MODE_ECB = 1
 MODE_CBC = 2
@@ -55,7 +56,6 @@ class BlockCipher():
             self.IV = '\x00'*self.blocksize
         else:
             self.IV = IV
-
         if mode != MODE_XTS:
             self.cipher = cipher_module(self.key,**args)
         if mode == MODE_ECB:
@@ -227,7 +227,10 @@ class ECB:
     """ECB chaining mode
     """
     def __init__(self, codebook, blocksize):
-        self.cache = ''
+        if sys.version_info.major > 2:
+            self.cache = b''
+        else:
+            self.cache = ''
         self.codebook = codebook
         self.blocksize = blocksize
 
@@ -257,7 +260,10 @@ class ECB:
             else:
                 output_blocks.append(self.codebook.decrypt( self.cache[i:i + self.blocksize] ))
         self.cache = self.cache[i+self.blocksize:]
-        return ''.join(output_blocks)
+        if sys.version_info.major < 3:
+            return ''.join(output_blocks)
+        else:
+            return output_blocks[0]
 
 class CBC:
     """CBC chaining mode

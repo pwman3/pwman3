@@ -30,8 +30,8 @@ import time
 try:
     from Crypto.Cipher import AES
     from Crypto.Protocol.KDF import PBKDF2
-except ImportError:
-    # PyCryptop not found, we use a compatible implementation
+except ImportError as E:
+    # PyCrypto not found, we use a compatible implementation
     # in pure Python.
     # This is good for Windows where software installation suck
     # or embeded devices where compilation is a bit harder

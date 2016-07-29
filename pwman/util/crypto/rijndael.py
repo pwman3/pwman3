@@ -53,6 +53,7 @@ If any strings are of the wrong length a ValueError is thrown
 # deleting all the comments and renaming all the variables
 
 import copy
+import sys
 
 
 #-----------------------
@@ -252,9 +253,19 @@ class rijndael:
 
         # copy user material bytes into temporary ints
         tk = []
-        for i in range(0, KC):
-            tk.append((ord(key[i * 4]) << 24) | (ord(key[i * 4 + 1]) << 16) |
-                (ord(key[i * 4 + 2]) << 8) | ord(key[i * 4 + 3]))
+
+        if sys.version_info.major < 3:
+            for i in range(0, KC):
+                tk.append((ord(key[i * 4]) << 24) |
+                          (ord(key[i * 4 + 1]) << 16) |
+                          (ord(key[i * 4 + 2]) << 8) |
+                          ord(key[i * 4 + 3]))
+        else:
+            for i in range(0, KC):
+                tk.append((key[i * 4] << 24) |
+                          (key[i * 4 + 1] << 16) |
+                          (key[i * 4 + 2] << 8) |
+                          (key[i * 4 + 3]))
 
         # copy values into round key arrays
         t = 0
@@ -326,11 +337,18 @@ class rijndael:
         # temporary work array
         t = []
         # plaintext to ints + key
-        for i in range(BC):
-            t.append((ord(plaintext[i * 4    ]) << 24 |
-                      ord(plaintext[i * 4 + 1]) << 16 |
-                      ord(plaintext[i * 4 + 2]) <<  8 |
-                      ord(plaintext[i * 4 + 3])        ) ^ Ke[0][i])
+        if sys.version_info.major < 3:
+            for i in range(BC):
+                t.append((ord(plaintext[i * 4    ]) << 24 |
+                          ord(plaintext[i * 4 + 1]) << 16 |
+                          ord(plaintext[i * 4 + 2]) <<  8 |
+                          ord(plaintext[i * 4 + 3])        ) ^ Ke[0][i])
+        else:
+            for i in range(BC):
+                t.append((plaintext[i * 4    ] << 24 |
+                          plaintext[i * 4 + 1] << 16 |
+                          plaintext[i * 4 + 2] <<  8 |
+                          plaintext[i * 4 + 3]) ^ Ke[0][i])
         # apply round transforms
         for r in range(1, ROUNDS):
             for i in range(BC):
@@ -346,8 +364,11 @@ class rijndael:
             result.append((S[(t[ i           ] >> 24) & 0xFF] ^ (tt >> 24)) & 0xFF)
             result.append((S[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((S[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
-            result.append((S[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return "".join(list(map(chr, result)))
+            result.append((S[ t[(i + s3) % BC]  & 0xFF] ^  tt       ) & 0xFF)
+        if sys.version_info.major < 3:
+            return "".join(list(map(chr, result)))
+        else:
+            return bytearray(result)
 
     def decrypt(self, ciphertext):
         if len(ciphertext) != self.block_size:
@@ -369,11 +390,18 @@ class rijndael:
         # temporary work array
         t = [0] * BC
         # ciphertext to ints + key
-        for i in range(BC):
-            t[i] = (ord(ciphertext[i * 4    ]) << 24 |
-                    ord(ciphertext[i * 4 + 1]) << 16 |
-                    ord(ciphertext[i * 4 + 2]) <<  8 |
-                    ord(ciphertext[i * 4 + 3])        ) ^ Kd[0][i]
+        if sys.version_info.major < 3:
+            for i in range(BC):
+                t[i] = (ord(ciphertext[i * 4    ]) << 24 |
+                        ord(ciphertext[i * 4 + 1]) << 16 |
+                        ord(ciphertext[i * 4 + 2]) <<  8 |
+                        ord(ciphertext[i * 4 + 3])        ) ^ Kd[0][i]
+        else:
+            for i in range(BC):
+                t[i] = (ciphertext[i * 4    ] << 24 |
+                        ciphertext[i * 4 + 1] << 16 |
+                        ciphertext[i * 4 + 2] <<  8 |
+                        ciphertext[i * 4 + 3]        ) ^ Kd[0][i]
         # apply round transforms
         for r in range(1, ROUNDS):
             for i in range(BC):
@@ -390,14 +418,18 @@ class rijndael:
             result.append((Si[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((Si[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((Si[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return "".join(list(map(chr, result)))
 
+        if sys.version_info.major < 3:
+            return "".join(list(map(chr, result)))
+        else:
+            return bytearray(result)
 
 def encrypt(key, block):
     return rijndael(key, len(block)).encrypt(block)
 
 
 def decrypt(key, block):
+    import pdb; pdb.set_trace()
     return rijndael(key, len(block)).decrypt(block)
 
 

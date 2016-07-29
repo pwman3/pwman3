@@ -308,16 +308,16 @@ def new(key,mode=MODE_ECB,IV=None,counter=None,segment_size=None):
 
 block_size = 16
 
+
 class AES(BlockCipher):
-    
+
     key_error_message = ("Key should be 128, 192 or 256 bits")
     block_size = 16
-    
-    def __init__(self,key,mode,IV,counter,segment_size):
+
+    def __init__(self, key, mode, IV, counter, segment_size):
         cipher_module = rijndael
         self.blocksize = 16
         args = {'block_size':16}
-        
         BlockCipher.__init__(self,key,mode,IV,counter,cipher_module,segment_size,args)
 
     def keylen_valid(self,key):
