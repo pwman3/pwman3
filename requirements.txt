@@ -1,2 +1,2 @@
-pycrypto>=2.6
+pycryptodome
 colorama>=0.2.4
