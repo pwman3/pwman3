@@ -53,8 +53,6 @@ If any strings are of the wrong length a ValueError is thrown
 # deleting all the comments and renaming all the variables
 
 import copy
-import string
-
 
 
 #-----------------------
@@ -243,15 +241,14 @@ class rijndael:
         if len(key) != 16 and len(key) != 24 and len(key) != 32:
             raise ValueError('Invalid key size: ' + str(len(key)))
         self.block_size = block_size
-
         ROUNDS = num_rounds[len(key)][block_size]
-        BC = block_size / 4
+        BC = block_size // 4
         # encryption round keys
         Ke = [[0] * BC for i in range(ROUNDS + 1)]
         # decryption round keys
         Kd = [[0] * BC for i in range(ROUNDS + 1)]
         ROUND_KEY_COUNT = (ROUNDS + 1) * BC
-        KC = len(key) / 4
+        KC = len(key) // 4
 
         # copy user material bytes into temporary ints
         tk = []
@@ -263,8 +260,8 @@ class rijndael:
         t = 0
         j = 0
         while j < KC and t < ROUND_KEY_COUNT:
-            Ke[t / BC][t % BC] = tk[j]
-            Kd[ROUNDS - (t / BC)][t % BC] = tk[j]
+            Ke[t // BC][t % BC] = tk[j]
+            Kd[ROUNDS - (t // BC)][t % BC] = tk[j]
             j += 1
             t += 1
         tt = 0
@@ -282,20 +279,20 @@ class rijndael:
                 for i in range(1, KC):
                     tk[i] ^= tk[i-1]
             else:
-                for i in range(1, KC / 2):
+                for i in range(1, KC // 2):
                     tk[i] ^= tk[i-1]
-                tt = tk[KC / 2 - 1]
-                tk[KC / 2] ^= (S[ tt        & 0xFF] & 0xFF)       ^ \
-                              (S[(tt >>  8) & 0xFF] & 0xFF) <<  8 ^ \
-                              (S[(tt >> 16) & 0xFF] & 0xFF) << 16 ^ \
-                              (S[(tt >> 24) & 0xFF] & 0xFF) << 24
-                for i in range(KC / 2 + 1, KC):
+                tt = tk[KC // 2 - 1]
+                tk[KC // 2] ^= (S[ tt        & 0xFF] & 0xFF)       ^ \
+                               (S[(tt >>  8) & 0xFF] & 0xFF) <<  8 ^ \
+                               (S[(tt >> 16) & 0xFF] & 0xFF) << 16 ^ \
+                               (S[(tt >> 24) & 0xFF] & 0xFF) << 24
+                for i in range(KC // 2 + 1, KC):
                     tk[i] ^= tk[i-1]
             # copy values into round key arrays
             j = 0
             while j < KC and t < ROUND_KEY_COUNT:
-                Ke[t / BC][t % BC] = tk[j]
-                Kd[ROUNDS - (t / BC)][t % BC] = tk[j]
+                Ke[t // BC][t % BC] = tk[j]
+                Kd[ROUNDS - (t // BC)][t % BC] = tk[j]
                 j += 1
                 t += 1
         # inverse MixColumn where needed
@@ -314,7 +311,7 @@ class rijndael:
             raise ValueError('wrong block length, expected ' + str(self.block_size) + ' got ' + str(len(plaintext)))
         Ke = self.Ke
 
-        BC = self.block_size / 4
+        BC = self.block_size // 4
         ROUNDS = len(Ke) - 1
         if BC == 4:
             SC = 0
@@ -350,14 +347,14 @@ class rijndael:
             result.append((S[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((S[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((S[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return string.join(list(map(chr, result)), '')
+        return "".join(list(map(chr, result)))
 
     def decrypt(self, ciphertext):
         if len(ciphertext) != self.block_size:
             raise ValueError('wrong block length, expected ' + str(self.block_size) + ' got ' + str(len(plaintext)))
         Kd = self.Kd
 
-        BC = self.block_size / 4
+        BC = self.block_size // 4
         ROUNDS = len(Kd) - 1
         if BC == 4:
             SC = 0
@@ -393,19 +390,24 @@ class rijndael:
             result.append((Si[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((Si[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((Si[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return string.join(list(map(chr, result)), '')
+        return "".join(list(map(chr, result)))
+
 
 def encrypt(key, block):
     return rijndael(key, len(block)).encrypt(block)
 
+
 def decrypt(key, block):
     return rijndael(key, len(block)).decrypt(block)
 
-def test():
+
+if __name__ == '__main__':
+    # test
     def t(kl, bl):
         b = 'b' * bl
         r = rijndael('a' * kl, bl)
         assert r.decrypt(r.encrypt(b)) == b
+
     t(16, 16)
     t(16, 24)
     t(16, 32)
