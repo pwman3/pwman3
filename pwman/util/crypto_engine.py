@@ -44,8 +44,13 @@ from pwman.util.callback import Callback
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
-EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
-DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip()
+
+def encode_AES(cipher, clear_text):
+    return base64.b64encode(cipher.encrypt(clear_text))
+
+
+def decode_AES(cipher, encoded_text):
+    return cipher.decrypt(base64.b64decode(encoded_text)).rstrip()
 
 
 def generate_password(pass_len=8, uppercase=True, lowercase=True, digits=True,
@@ -175,7 +180,7 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return EncodeAES(self._cipher, prepare_data(text, AES.block_size))
+        return encode_AES(self._cipher, prepare_data(text, AES.block_size))
 
     def decrypt(self, cipher_text):
         if not self._is_authenticated():
@@ -184,8 +189,8 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return DecodeAES(self._cipher, prepare_data(cipher_text,
-                                                    AES.block_size))
+        return decode_AES(self._cipher, prepare_data(cipher_text,
+                                                     AES.block_size))
 
     def forget(self):
         """
