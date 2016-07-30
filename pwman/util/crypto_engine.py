@@ -27,17 +27,10 @@ import string
 import sys
 import time
 
-try:
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
-except ImportError as E:
-    # PyCrypto not found, we use a compatible implementation
-    # in pure Python.
-    # This is good for Windows where software installation suck
-    # or embeded devices where compilation is a bit harder
-    from pwman.util.crypto import AES
-    from pwman.util.crypto.pypbkdf2 import PBKDF2
-
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from pwman.util.callback import Callback
 
@@ -88,23 +81,23 @@ def get_digest(password, salt):
     """
     Get a digest based on clear text password
     """
-    iterations = 5000
-    if isinstance(password, bytes):
-        password = password.decode()
-    try:
-        return PBKDF2(password, salt, dkLen=32, count=iterations)
-    except TypeError:
-        return PBKDF2(password, salt, iterations=iterations).read(32)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=5000,
+        backend=default_backend()
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password))
+    return key
 
 
 def get_cipher(password, salt):
     """
     Create a chiper object from a hashed password
     """
-    iv = os.urandom(AES.block_size)
     dig = get_digest(password, salt)
-    chiper = AES.new(dig, AES.MODE_ECB, iv)
-    return chiper
+    return Fernet(dig)
 
 
 def prepare_data(text, block_size):
@@ -164,8 +157,7 @@ class CryptoEngine(object):  # pagma: no cover
         salt = self._salt
         tries = 0
         while tries < 5:
-            password = self._getsecret("Please type in your master password"
-                                       ).encode('utf-8')
+            password = self._getsecret("Please type in your master password")
             if self.authenticate(password):
                 return password, salt
 
@@ -180,7 +172,7 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return encode_AES(self._cipher, prepare_data(text, AES.block_size))
+        return encode_AES(self._cipher, text)
 
     def decrypt(self, cipher_text):
         if not self._is_authenticated():
@@ -189,8 +181,7 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return decode_AES(self._cipher, prepare_data(cipher_text,
-                                                     AES.block_size))
+        return decode_AES(self._cipher, cipher_text)
 
     def forget(self):
         """
