@@ -183,7 +183,7 @@ class BaseUtilsMixin:
 
     def _get_ids(self, args):
         """
-        Command can get a single ID or
+        Each command can get a single ID or
         a range of IDs, with begin-end.
         e.g. 1-3 , will get 1 to 3.
         """
@@ -289,17 +289,9 @@ class BaseUtilsMixin:
         self._db.add_node(node)
         return node
 
-    def _do_rm(self, args):
-        for i in args.split():
-            if not i.isdigit():
-                print("%s is not a node ID" % i)
-                return None
-
-        for i in args.split():
-            ans = tools.getinput(("Are you sure you want to delete node {}"
-                                  " [y/N]?".format(i)))
-            if ans.lower() == 'y':
-                self._db.removenodes([i])
+    def _do_rm(self, nodes):
+        for i in nodes:
+            self._db.removenodes([i])
 
 
 class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
@@ -459,7 +451,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             self._print_node_line(node, rows, cols)
 
     def do_new(self, args):  # pragma: no cover
-        # The cmd module stops if and of do_* return something
+        # The cmd module stops if any of do_* return something
         # else than None ...
         # This is bad for testing, so everything that is do_*
         # should call _do_* method which is testable
@@ -484,9 +476,13 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         _wait_until_enter(_heard_enter, float(flushtimeout))
         self.do_cls('')
 
-    def do_delete(self, args):  # pragma: no cover
-        CryptoEngine.get()
-        self._do_rm(args)
+    def do_delete(self, args):
+        ids = self._get_ids(args)
+        ans = tools.getinput("Are you sure you want to delete node{} {}"
+                             " [y/N]?".format("s" if len(ids) > 1 else "",
+                                              ",".join(ids) if len(ids) > 1 else ids[0]))  # noqa
+        if ans.lower() == 'y':
+            self._do_rm(args)
 
     def do_info(self, args):
         print("Currently connected to: {}".format(
