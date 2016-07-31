@@ -26,6 +26,13 @@ import pkg_resources
 from pwman.util import config
 from pwman.data.factory import check_db_version
 
+try:
+    import cryptography
+    has_cryptography = True
+except ImportError:
+    has_cryptography = False
+
+
 appname = "pwman3"
 
 try:
