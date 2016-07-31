@@ -36,12 +36,12 @@ except ImportError as e:  # pragma: no cover
 
 
 from pwman.ui.baseui import BaseCommands
-from pwman import (get_conf_options, get_db_version, version, website, parser_options)  # noqa
+from pwman import (get_conf_options, get_db_version, version, website,
+                   parser_options, has_cryptography)
 from pwman.ui.tools import CLICallback
 from pwman.data import factory
 from pwman.exchange.importer import Importer
 from pwman.util.crypto_engine import CryptoEngine
-import pwman.util
 
 
 class PwmanCli(cmd.Cmd, BaseCommands):
@@ -100,7 +100,7 @@ def main():
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
 
-    if not pwman.util.has_cryptography:
+    if not has_cryptography:
         import colorama
         if config.get_value('Crypto', 'supress_warning').lower() != 'yes':
             print("{}WARNING: You are not using PyCrypto!!!\n"

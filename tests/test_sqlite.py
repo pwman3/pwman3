@@ -58,17 +58,15 @@ class TestSQLite(unittest.TestCase):
 
     def test_3_add_node(self):
         node = Node(clear_text=True,
-                    **{'username': u"alice", 'password': u"secret",
-                       'url': u"wonderland.com",
-                       'notes': u"a really great place",
-                       'tags': [u'foo', u'bar']})
+                    **{'username': "alice", 'password': "secret",
+                       'url': "wonderland.com",
+                       'notes': "a really great place",
+                       'tags': ['foo', 'bar']})
         self.db.add_node(node)
         rv = self.db._cur.execute("select * from node")
-        # clearly this fails, while alice is not found in clear text in the
-        # database!
         ce = CryptoEngine.get()
         res = rv.fetchone()
-        self.assertIn(ce.encrypt(u'alice'), res[1])
+        self.assertEqual(ce.decrypt(res[1]), b"alice")
 
     def test_4_test_tags(self):
         node = Node(clear_text=True,
