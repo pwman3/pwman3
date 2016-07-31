@@ -21,7 +21,6 @@
 from __future__ import print_function
 
 import cmd
-import os
 import sys
 
 
@@ -37,12 +36,13 @@ except ImportError as e:  # pragma: no cover
 
 
 from pwman.ui.baseui import BaseCommands
-from pwman import (get_conf_options, get_db_version, version, website, parser_options)
+from pwman import (get_conf_options, get_db_version, version, website, parser_options)  # noqa
 from pwman.ui.tools import CLICallback
 from pwman.data import factory
 from pwman.exchange.importer import Importer
 from pwman.util.crypto_engine import CryptoEngine
-from pwman.util.crypto_engine import AES
+import pwman.util
+
 
 class PwmanCli(cmd.Cmd, BaseCommands):
     """
@@ -100,12 +100,12 @@ def main():
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
 
-    if os.path.join("Crypto", "Cipher") not in AES.__file__:  # we are using built in AES.py
+    if not pwman.util.has_cryptography:
         import colorama
         if config.get_value('Crypto', 'supress_warning').lower() != 'yes':
             print("{}WARNING: You are not using PyCrypto!!!\n"
-                  "WARNING: You should install PyCrypto for better security and "
-                  "perfomance\nWARNING: You can supress this warning by editing "
+                  "WARNING: You should install PyCrypto for better security and "  # noqa
+                  "perfomance\nWARNING: You can supress this warning by editing "  # noqa
                   "pwman config file.{}".format(colorama.Fore.RED,
                                                 colorama.Style.RESET_ALL))
 

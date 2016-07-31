@@ -78,7 +78,7 @@ class Node(object):
             node._password = password.strip()
             node._url = url.strip()
             node._notes = notes.strip()
-            node._tags = [t.strip() for t in tags] 
+            node._tags = [t.strip() for t in tags]
         else:
             node._username = bytes(username, 'utf8').strip()
             node._password = bytes(password, 'utf8').strip()
@@ -123,7 +123,7 @@ class Node(object):
     def tags(self):
         enc = CryptoEngine.get()
         try:
-            return [enc.decrypt(tag).decode() for tag in
+            return [enc.decrypt(tag) for tag in
                     filter(None, self._tags)]
         except Exception:
             return [tag for tag in filter(None, self._tags)]
