@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2014 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2016 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
 
 from __future__ import print_function
