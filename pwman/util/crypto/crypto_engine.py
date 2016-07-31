@@ -99,7 +99,7 @@ def get_cipher(password, salt):
     """
     iv = os.urandom(AES.block_size)
     dig = get_digest(password, salt)
-    chiper = AES.new(dig, AES.MODE_ECB, iv)
+    chiper = AES.new(dig, AES.MODE_CBC, iv)
     return chiper
 
 
