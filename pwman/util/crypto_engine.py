@@ -39,6 +39,8 @@ if sys.version_info.major > 2:  # pragma: no cover
 
 
 def encode_AES(cipher, clear_text):
+    if not isinstance(clear_text, bytes):
+        clear_text = clear_text.encode()
     return base64.b64encode(cipher.encrypt(clear_text))
 
 

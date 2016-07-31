@@ -383,7 +383,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
                                                 node[4],
                                                 node[5:])
                 tags = n.tags
-                tags = ','.join(t.strip() for t in tags)
+                tags = ','.join(t.strip().decode() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
                 writer.writerow(r + [tags])
 
@@ -431,7 +431,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
                 menu.add(CliMenuItem("Url", node.url))
                 menunotes = CliMenuItem("Notes", node.notes)
                 menu.add(menunotes)
-                menu.add(CliMenuItem("Tags", ','.join(node.tags)))
+                menu.add(CliMenuItem("Tags", ','.join(map(lambda x: x.decode(), node.tags))))  # noqa
             menu.run(node)
             self._db.editnode(i, **node.to_encdict())
             # when done with node erase it
