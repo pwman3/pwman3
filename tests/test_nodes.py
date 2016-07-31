@@ -25,9 +25,9 @@ from .test_crypto_engine import give_key, DummyCallback
 class TestNode(unittest.TestCase):
 
     def setUp(self):
-        self.node = Node(username=u'foo', password=u's3kr3t',
-                         url=u'example.com', notes=u'just a reminder to self',
-                         tags=[u'baz', u'baz'])
+        self.node = Node(username=b'foo', password=b's3kr3t',
+                         url=b'example.com', notes=b'just a reminder to self',
+                         tags=[b'baz', b'baz'])
 
     def test_do_encdict(self):
         ce = CryptoEngine.get()
@@ -39,17 +39,18 @@ class TestNode(unittest.TestCase):
                 self.assertEqual(ce.decrypt(v).decode(), getattr(self.node, k))
 
     def test_setters(self):
-        new_node = {'username': 'baz', 'password': 'n3ws3k43t',
-                    'notes': 'i have changed the password',
-                    'url': 'newexample.com', 'tags': ['tag1', 'tag2']}
+        new_node = {'username': b'baz', 'password': b'n3ws3k43t',
+                    'notes': b'i have changed the password',
+                    'url': b'newexample.com', 'tags': [b'tag1', b'tag2']}
 
         for k in new_node:
             setattr(self.node, k, new_node[k])
 
-        self.assertEqual(getattr(self.node, 'username'), new_node['username'])
-        self.assertEqual(getattr(self.node, 'password'), new_node['password'])
-        self.assertEqual(getattr(self.node, 'url'), new_node['url'])
-        self.assertEqual(getattr(self.node, 'notes'), new_node['notes'])
+        for attribute in ['username', 'password', 'url', 'notes']:
+            self.assertEqual(bytearray(getattr(self.node, attribute), 'utf-8'), new_node[attribute])
+
+        self.assertEqual(bytearray(getattr(self.node, 'username'), 'utf-8'), new_node['username'])
+        self.assertEqual(bytearray(getattr(self.node, 'password'), 'utf-8'), new_node['password'])
         self.assertEqual(getattr(self.node, 'tags'), new_node['tags'])
 
 

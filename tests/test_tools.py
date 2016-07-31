@@ -31,38 +31,38 @@ PwmanCliNew, OSX = get_ui_platform(sys.platform)
 class DummyCallback(Callback):
 
     def getinput(self, question):
-        return u'12345'
+        return b'12345'
 
     def getsecret(self, question):
-        return u'12345'
+        return b'12345'
 
 
 class DummyCallback2(Callback):
 
     def getinput(self, question):
-        return u'newsecret'
+        return b'newsecret'
 
     def getsecret(self, question):
-        return u'wrong'
+        return b'wrong'
 
 
 class DummyCallback3(Callback):
 
     def getinput(self, question):
-        return u'newsecret'
+        return b'newsecret'
 
     def getsecret(self, question):
-        ans = '12345'
+        ans = b'12345'
         return ans
 
 
 class DummyCallback4(Callback):
 
     def getinput(self, question):
-        return u'newsecret'
+        return b'newsecret'
 
     def getsecret(self, question):
-        return u'newsecret'
+        return b'newsecret'
 
 
 config.default_config['Database'] = {'type': 'sqlite',
