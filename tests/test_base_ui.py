@@ -18,10 +18,7 @@
 # ============================================================================
 import os
 import unittest
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO, BytesIO
+from io import StringIO, BytesIO
 
 import sys
 from pwman.util.crypto_engine import CryptoEngine
