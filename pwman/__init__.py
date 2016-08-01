@@ -27,7 +27,7 @@ from pwman.util import config
 from pwman.data.factory import check_db_version
 
 try:
-    import cryptography
+    import cryptography  # noqa
     has_cryptography = True
 except ImportError:
     has_cryptography = False
@@ -45,7 +45,7 @@ class PkgMetadata(object):
 
     def __init__(self):
         p = pkg_resources.get_distribution('pwman3')
-        f = open(os.path.join(p.location+'-info','PKG-INFO'))
+        f = open(os.path.join(p.location+'-info', 'PKG-INFO'))
         lines = f.readlines()
         self.summary = lines[3].split(':')[-1].strip()
         self.description = ''.join(map(string.strip, lines[9:14]))
@@ -62,7 +62,7 @@ try:
     long_description = pkg_meta.description
 except IOError as E:
     # this should only happen once when installing the package
-    description = "a command line password manager with support for multiple databases."
+    description = "a command line password manager with support for multiple databases."  # noqa
     website = 'http://pwman3.github.io/pwman3/'
 
 
@@ -80,16 +80,15 @@ config_dir = os.path.expanduser("~/.pwman")
 
 
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
-    parser = argparse.ArgumentParser(
-            prog='pwman3',
-            description=description,
-            formatter_class=formatter_class)
+    parser = argparse.ArgumentParser(prog='pwman3',
+                                     description=description,
+                                     formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
-            help="Specify the file name and the delimeter type")
+                        help="Specify the file name and the delimeter type")
     return parser
 
 
@@ -112,13 +111,6 @@ def set_xsel(configp, OSX):
         configp.set_value("Global", "xsel", pbcopypath)
 
 
-#def set_win_colors(config):  # pragma: no cover
-#    try:
-#        if sys.platform.startswith('win'):
-#            colorama.init()
-#   except ImportError:  # when installing colorama is still not there
-#        pass
-
 def set_umask(configp):
     umask = configp.get_value("Global", "umask")
     if re.search(r'^\d{4}$', umask):
@@ -137,7 +129,6 @@ def get_conf_options(args, OSX):
     if not xselpath:  # pragma: no cover
         set_xsel(configp, OSX)
 
-    #set_win_colors(configp)
     set_db(args, configp)
     set_umask(configp)
     dburi = configp.get_value("Database", "dburi")
