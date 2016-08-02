@@ -50,8 +50,9 @@ class Database(object):
             self._cur.execute("SELECT 1 from DBVERSION")
             version = self._cur.fetchone()
             return version
-        except self.ProgrammingError:
+        except Exception:
             self._con.rollback()
+            return 0
 
     def _create_tables(self):
         if self._check_tables():
@@ -66,7 +67,7 @@ class Database(object):
 
             self._cur.execute("CREATE TABLE TAG"
                               "(ID  SERIAL PRIMARY KEY,"
-                              "DATA TEXT NOT NULL UNIQUE)")
+                              "DATA TEXT NOT NULL)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
                               "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
@@ -83,7 +84,7 @@ class Database(object):
                               (self.dbversion,))
 
             self._con.commit()
-        except self.ProgrammingError:  # pragma: no cover
+        except Exception:  # pragma: no cover
             self._con.rollback()
 
     def get_user_password(self):

@@ -53,12 +53,12 @@ class TestMySQLDatabase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-        self.db._cur.execute("DROP TABLE LOOKUP")
-        self.db._cur.execute("DROP TABLE TAG")
-        self.db._cur.execute("DROP TABLE NODE")
-        self.db._cur.execute("DROP TABLE DBVERSION")
-        self.db._cur.execute("DROP TABLE CRYPTO")
-        self.db._con.commit()
+        for table in ['LOOKUP', 'TAG', 'NODE', 'DBVERSION', 'CRYPTO']:
+            try:
+                self.db._cur.execute("DROP TABLE {}".format(table))
+            except Exception:
+                pass
+            self.db._con.commit()
 
     def test_1_con(self):
         self.assertIsInstance(self.db._con, pymysql.connections.Connection)
