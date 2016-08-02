@@ -133,22 +133,20 @@ class TestSQLite(unittest.TestCase):
         # db.close is called.
         self.db.editnode('2', **node)
 
-    def test_9_test_orphans(self):
+    def test_9_test_no_orphans(self):
         self.db._clean_orphans()
+        self.db._con.commit()
         ce = CryptoEngine.get()
-        baz_encrypted = ce.encrypt(b'baz')
-
-        self.db._cur.execute('SELECT DATA FROM TAG')
-        rv = self.db._cur.fetchall()
-        for data in rv:
-            if isinstance(data[0], str):
-                self.assertNotIn(b'bank', data[0])
-            else:
-                self.assertNotIn(baz_encrypted, data[0].decode())
+        tags = None
+        while not tags:
+            tags = self.db._cur.execute('SELECT * FROM tag').fetchall()
+        tags_clear = [ce.decrypt(tag[1]) for tag in tags]
+        self.assertNotIn(b"baz", tags_clear)
 
     def test_a10_test_listtags(self):
+        """there should be only 3 tags left"""
         tags = self.db.listtags()
-        self.assertEqual(4, len(list(tags)))
+        self.assertEqual(3, len(list(tags)))
 
     def test_a11_test_rmnodes(self):
         for n in [1, 2]:
