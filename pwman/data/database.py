@@ -164,6 +164,8 @@ class Database(object):
             sql = "SELECT * FROM NODE"
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
+        if not nodes:
+            return []
         # sqlite returns nodes as bytes, postgresql returns them as str
         if isinstance(nodes[0][1], str):
             nodes = [node for node in nodes]
