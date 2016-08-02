@@ -122,7 +122,7 @@ class Database(object):
     def _get_tag(self, tagcipher):
         sql_search = "SELECT * FROM TAG"
         self._cur.execute(sql_search)
-        
+
         ce = CryptoEngine.get()
         tag = ce.decrypt(tagcipher)
 
@@ -176,7 +176,7 @@ class Database(object):
             tagid = self._get_tag(filter)
             if not tagid:
                 return []  # pragma: no cover
-            
+
             # will this work for many nodes??? with the same tag?
             self._cur.execute(self._list_nodes_sql, (tagid,))
             self._con.commit()
@@ -239,7 +239,8 @@ class Database(object):
         """save the random seed and the digested key"""
         self._cur.execute("DELETE  FROM CRYPTO")
         self._cur.execute("INSERT INTO CRYPTO VALUES({}, {})".format(self._sub,
-                                                                     self._sub),
+                                                                     self._sub),  # noqa
+
                           (seed, digest))
         self._con.commit()
 
@@ -257,8 +258,8 @@ class Database(object):
 
     def savekey(self, key):
         salt, digest = key.split('$6$')
-        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,
-                                                                      self._sub)
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,  # noqa
+                                                                      self._sub)  # noqa
         self._cur.execute("DELETE FROM CRYPTO")
         self._cur.execute(sql, (salt, digest))
         self._digest = digest.encode('utf-8')
