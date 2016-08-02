@@ -52,7 +52,7 @@ class CSVImporter(BaseImporter):
         try:
             fh, delim = open(self.args.file_delim[0]), self.args.file_delim[1]
             csv_f = csv.reader(fh, delimiter=delim)
-        except IOError:
+        except FileNotFoundError:
             fh, delim = open(self.args.file_delim[1]), self.args.file_delim[0]
             csv_f = csv.reader(fh, delimiter=delim)
 

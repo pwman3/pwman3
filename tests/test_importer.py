@@ -57,12 +57,12 @@ class TestImporter(unittest.TestCase):
         self.importer = CSVImporter(args,
                                     config, db)
 
-    def test_read_file(self):
+    def test_1_read_file(self):
         lines = self.importer._read_file()
         self.assertNotIn(["Username", "URL", "Password", "Notes", " Tags"],
                          lines)
 
-    def test_create_node(self):
+    def test_2_create_node(self):
         # create a node , should be encrypted, but not yet inserted to db
         n = "alice;wonderland.com;secert;scratch;foo,bar".split(";")
         node = self.importer._create_node(n)
@@ -70,14 +70,14 @@ class TestImporter(unittest.TestCase):
         self.assertEqual(ce.decrypt(node._username).decode(), u'alice')
         self.assertEqual([b'foo', b'bar'], [t for t in node.tags])
 
-    def test_insert_node(self):
+    def test_3_insert_node(self):
+        self.importer._open_db()
         n = "alice;wonderland.com;secert;scratch;foo,bar".split(";")
         node = self.importer._create_node(n)
-        self.importer._open_db()
         # do the actual insert of the node to the databse
         self.importer._insert_node(node)
 
-    def test_runner(self):
+    def test_4_runner(self):
         # test the whole procees:
         """
           open csv
@@ -99,8 +99,6 @@ class TestImporter(unittest.TestCase):
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
 
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
 

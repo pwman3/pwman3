@@ -159,9 +159,11 @@ class CryptoEngine(object):  # pagma: no cover
         salt = self._salt
         tries = 0
         while tries < 5:
-            password = self._getsecret("Please type in your master password")
-            if self.authenticate(password):
-                return password, salt
+            passwd = self._getsecret("Please type in your master password")
+            if not isinstance(passwd, bytes):
+                passwd = passwd.encode()
+            if self.authenticate(passwd):
+                return passwd, salt
 
             print("You entered a wrong password...")
             tries += 1
@@ -237,6 +239,8 @@ class CryptoEngine(object):  # pagma: no cover
         """
         salt = base64.b64encode(os.urandom(32))
         passwd = self._getsecret("Please type in the master password")
+        if not isinstance(passwd, bytes):
+            passwd = passwd.encode()
         key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         self._digest = key
