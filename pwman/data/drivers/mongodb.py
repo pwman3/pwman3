@@ -18,6 +18,8 @@
 # ============================================================================
 
 from pwman.data.database import Database, __DB_FORMAT__
+from pwman.util.crypto_engine import CryptoEngine
+
 import pymongo
 
 
@@ -65,14 +67,19 @@ class MongoDB(Database):
 
         return nodes
 
-    def listnodes(self, filter=None):
-        if not filter:
+    def listnodes(self, filter_=None):
+        if not filter_:
             nodes = self._db.nodes.find({}, {'_id': 1})
-
+            return [node["_id"] for node in nodes]
         else:
-            nodes = self._db.nodes.find({"tags": {'$in': [filter]}}, {'_id': 1})
-
-        return [node['_id'] for node in list(nodes)]
+            matching = []
+            ce = CryptoEngine.get()
+            nodes = list(self._db.nodes.find({}, {'_id': 1, 'tags': 1}))
+            for node in nodes:
+                node['tags'] = [ce.decrypt(t) for t in node['tags']]
+                if filter_ in node['tags']:
+                    matching.append(node)
+            return [node["_id"] for node in matching]
 
     def add_node(self, node):
         nid = self._get_next_node_id()
