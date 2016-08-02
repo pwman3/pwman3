@@ -120,15 +120,23 @@ class Database(object):
             self._update_tag_lookup(nodeid, tid)
 
     def _get_tag(self, tagcipher):
-        sql_search = "SELECT ID FROM TAG WHERE DATA = {}".format(self._sub)
-        self._cur.execute(sql_search, ([tagcipher]))
-        rv = self._cur.fetchone()
-        return rv
+        sql_search = "SELECT * FROM TAG"
+        self._cur.execute(sql_search)
+        
+        ce = CryptoEngine.get()
+        tag = ce.decrypt(tagcipher)
+
+        rv = self._cur.fetchall()
+        for idx, cipher in rv:
+            if tag == ce.decrypt(cipher):
+                return idx
+
+        return
 
     def _get_or_create_tag(self, tagcipher):
         rv = self._get_tag(tagcipher)
         if rv:
-            return rv[0]
+            return rv
         else:
             self._cur.execute(self._insert_tag_sql, ([tagcipher]))
             try:
@@ -168,8 +176,9 @@ class Database(object):
             tagid = self._get_tag(filter)
             if not tagid:
                 return []  # pragma: no cover
-
-            self._cur.execute(self._list_nodes_sql, (tagid))
+            
+            # will this work for many nodes??? with the same tag?
+            self._cur.execute(self._list_nodes_sql, (tagid,))
             self._con.commit()
             ids = self._cur.fetchall()
             return [id[0] for id in ids]

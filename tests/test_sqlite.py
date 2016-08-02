@@ -73,13 +73,13 @@ class TestSQLite(unittest.TestCase):
                     **{'username': u"alice", 'password': u"secret",
                        'url': u"wonderland.com",
                        'notes': u"a really great place",
-                       'tags': [u'foo', u'bar']})
+                       'tags': ['foo', 'bar']})
         ce = CryptoEngine.get()
         self.db._get_or_create_tag(node._tags[0])
         self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
-        rv = self.db._get_or_create_tag(ce.encrypt('baz'))
-        self.db._con.commit()
+        rv = self.db._get_or_create_tag(ce.encrypt(b'baz'))
         self.assertEqual(3, rv)
+        self.db._con.commit()
 
     def test_5_test_lookup(self):
         self.db._cur.execute('SELECT nodeid, tagid FROM LOOKUP')
@@ -102,10 +102,10 @@ class TestSQLite(unittest.TestCase):
         # test_3_add_node
         # test_6_listnodes
 
-        tag = ce.encrypt(u'bar')
+        tag = ce.encrypt(b'bar')
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 2)
-        tag = ce.encrypt(u'baz')
+        tag = ce.encrypt(b'baz')
         # the tag 'baz' is found in a node created in
         # test_6_listnodes
         rv = self.db.listnodes(tag)
@@ -117,14 +117,16 @@ class TestSQLite(unittest.TestCase):
 
     def test_9_editnode(self):
         # delibertly insert clear text into the database
+        ce = CryptoEngine.get()
+        tags = [ce.encrypt("foo"), ce.encrypt("auto")]
         node = {'user': 'transparent', 'password': 'notsecret',
-                'tags': ['foo', 'bank']}
+                'tags': tags}
         self.db.editnode('2', **node)
         self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
-        self.assertEqual(rv, (u'transparent', u'notsecret'))
+        self.assertEqual(rv, ('transparent', 'notsecret'))
         node = {'user': 'modify', 'password': 'notsecret',
-                'tags': ['foo', 'auto']}
+                'tags': tags}
         # now the tags bank and baz are orphan ...
         # what happens? it should be completely removed.
         # To spare IO we only delete orphand tags when
@@ -134,13 +136,13 @@ class TestSQLite(unittest.TestCase):
     def test_9_test_orphans(self):
         self.db._clean_orphans()
         ce = CryptoEngine.get()
-        baz_encrypted = ce.encrypt(u'baz').decode()
+        baz_encrypted = ce.encrypt(b'baz')
 
         self.db._cur.execute('SELECT DATA FROM TAG')
         rv = self.db._cur.fetchall()
         for data in rv:
             if isinstance(data[0], str):
-                self.assertNotIn(u'bank', data[0])
+                self.assertNotIn(b'bank', data[0])
             else:
                 self.assertNotIn(baz_encrypted, data[0].decode())
 
