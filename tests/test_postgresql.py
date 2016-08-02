@@ -67,32 +67,32 @@ class TestPostGresql(unittest.TestCase):
     def test_3_load_key(self):
         self.db.savekey('SECRET$6$KEY')
         secretkey = self.db.loadkey()
-        self.assertEqual(secretkey, 'SECRET$6$KEY')
+        self.assertEqual(secretkey, b'SECRET$6$KEY')
 
     def test_4_save_crypto(self):
-        self.db.save_crypto_info("TOP", "SECRET")
+        self.db.save_crypto_info(b"TOP", b"SECRET")
         secretkey = self.db.loadkey()
-        self.assertEqual(secretkey, 'TOP$6$SECRET')
+        self.assertEqual(secretkey, b'TOP$6$SECRET')
         row = self.db.fetch_crypto_info()
-        self.assertEqual(row, ('TOP', 'SECRET'))
+        self.assertEqual(list(map(bytearray, row)),
+                         [bytearray(b'TOP'), bytearray(b'SECRET')])
 
     def test_5_add_node(self):
-        # fuck, saving b"TBONE" has is harder ...
-        innode = ["TBONE", "S3K43T", "example.org", "some note",
-                  ["footag", "bartag"]]
+        innode = [b"TBONE", b"S3K43T", b"example.org", b"some note",
+                  [b"footag", b"bartag"]]
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
         self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
     def test_6_list_nodes(self):
-        ret = self.db.listnodes()
-        self.assertEqual(ret, [1])
-        ret = self.db.listnodes("footag")
-        self.assertEqual(ret, [1])
+        ret1 = self.db.listnodes()
+        self.assertEqual(ret1, [1])
+        ret2 = self.db.listnodes(b"footag")
+        self.assertEqual(ret2, [1])
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
-        self.assertListEqual(ret, ['footag', 'bartag'])
+        self.assertListEqual(ret, [b'footag', b'bartag'])
 
     def test_6b_get_nodes(self):
         ret = self.db.getnodes([1])
@@ -100,8 +100,8 @@ class TestPostGresql(unittest.TestCase):
         self.assertListEqual(ret, retb)
 
     def test_7_get_or_create_tag(self):
-        s = self.db._get_or_create_tag("SECRET")
-        s1 = self.db._get_or_create_tag("SECRET")
+        s = self.db._get_or_create_tag(b"SECRET")
+        s1 = self.db._get_or_create_tag(b"SECRET")
 
         self.assertEqual(s, s1)
 

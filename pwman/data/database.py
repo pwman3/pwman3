@@ -122,7 +122,6 @@ class Database(object):
     def _get_tag(self, tagcipher):
         sql_search = "SELECT * FROM TAG"
         self._cur.execute(sql_search)
-
         ce = CryptoEngine.get()
 
         try:
@@ -144,7 +143,7 @@ class Database(object):
         if rv:
             return rv
         else:
-            self._cur.execute(self._insert_tag_sql, ([tagcipher]))
+            self._cur.execute(self._insert_tag_sql, list(map(self._data_wrapper, (tagcipher,))))  # noqa
             try:
                 return self._cur.fetchone()[0]
             except TypeError:
@@ -197,7 +196,7 @@ class Database(object):
     def add_node(self, node):
         node_tags = list(node)
         node, tags = node_tags[:4], node_tags[-1]
-        self._cur.execute(self._add_node_sql, (node))
+        self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
         try:
             nid = self._cur.fetchone()[0]
         except TypeError:
@@ -252,7 +251,7 @@ class Database(object):
         self._cur.execute("INSERT INTO CRYPTO VALUES({}, {})".format(self._sub,
                                                                      self._sub),  # noqa
 
-                          (seed, digest))
+                          list(map(self._data_wrapper, (seed, digest))))
         self._con.commit()
 
     def loadkey(self):
@@ -263,7 +262,7 @@ class Database(object):
         try:
             self._cur.execute(sql)
             seed, digest = self._cur.fetchone()
-            return seed + u'$6$' + digest
+            return seed + '$6$' + digest
         except TypeError:  # pragma: no cover
             return None
 
@@ -272,9 +271,9 @@ class Database(object):
         sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,  # noqa
                                                                       self._sub)  # noqa
         self._cur.execute("DELETE FROM CRYPTO")
-        self._cur.execute(sql, (salt, digest))
-        self._digest = digest.encode('utf-8')
-        self._salt = salt.encode('utf-8')
+        self._cur.execute(sql, list(map(self._data_wrapper, (salt, digest))))
+        self._digest = digest.encode()
+        self._salt = salt.encode()
         self._con.commit()
 
     def close(self):  # pragma: no cover

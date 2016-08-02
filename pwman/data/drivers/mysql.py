@@ -62,6 +62,7 @@ class MySQLDatabase(Database):
                               "NOTES) "
                               "VALUES(%s, %s, %s, %s)")
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(%s)"
+        self._data_wrapper = lambda x: x
         self.ProgrammingError = mysql.ProgrammingError
 
     def _open(self):
