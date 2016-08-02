@@ -54,7 +54,6 @@ class Database(object):
             self._con.rollback()
 
     def _create_tables(self):
-
         if self._check_tables():
             return
         try:
@@ -67,7 +66,7 @@ class Database(object):
 
             self._cur.execute("CREATE TABLE TAG"
                               "(ID  SERIAL PRIMARY KEY,"
-                              "DATA VARCHAR(255) NOT NULL UNIQUE)")
+                              "DATA TEXT NOT NULL UNIQUE)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
                               "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
@@ -124,14 +123,20 @@ class Database(object):
         self._cur.execute(sql_search)
 
         ce = CryptoEngine.get()
-        tag = ce.decrypt(tagcipher)
+
+        try:
+            tag = ce.decrypt(tagcipher)
+            encrypted = True
+        except Exception:
+            tag = tagcipher
+            encrypted = False
 
         rv = self._cur.fetchall()
         for idx, cipher in rv:
-            if tag == ce.decrypt(cipher):
+            if encrypted and tag == ce.decrypt(cipher):
                 return idx
-
-        return
+            elif tag == cipher:
+                return idx
 
     def _get_or_create_tag(self, tagcipher):
         rv = self._get_tag(tagcipher)
@@ -158,9 +163,12 @@ class Database(object):
             sql = "SELECT * FROM NODE"
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
+        # sqlite returns nodes as bytes, postgresql returns them as str
+        if isinstance(nodes[0][1], str):
+            nodes = [node for node in nodes]
         nodes_w_tags = []
         for node in nodes:
-            tags = list(self._get_node_tags(node))
+            tags = [t for t in self._get_node_tags(node)]
             nodes_w_tags.append(list(node) + tags)
 
         return nodes_w_tags

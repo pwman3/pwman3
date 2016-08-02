@@ -74,7 +74,7 @@ class SQLite(Database):
 
         self._cur.execute("CREATE TABLE TAG"
                           "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                          "DATA BLOB NOT NULL UNIQUE)")
+                          "DATA BLOB NOT NULL)")
 
         self._cur.execute("CREATE TABLE LOOKUP ("
                           "nodeid INTEGER NOT NULL, "

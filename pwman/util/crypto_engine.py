@@ -45,7 +45,11 @@ def encode_AES(cipher, clear_text):
 
 
 def decode_AES(cipher, encoded_text):
-    return cipher.decrypt(base64.b64decode(encoded_text)).rstrip()
+    if not isinstance(encoded_text, bytes):
+        encoded_text = encoded_text.encode()
+
+    encoded_text = base64.b64decode(encoded_text)
+    return cipher.decrypt(encoded_text).rstrip()
 
 
 def generate_password(pass_len=8, uppercase=True, lowercase=True, digits=True,
