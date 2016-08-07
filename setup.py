@@ -334,6 +334,12 @@ It allows one to store passwords in database locked by master password which
 is AES encrypted.
 Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
+packages = find_packages(exclude=['tests', 'pwman/ui/templates',
+                                      'pwman/util/crypto'])
+
+# hack to exclude crypto module
+packages.pop(packages.index('pwman.util.crypto'))
+
 
 setup(name='pwman3',
       version='0.8.1',
@@ -343,8 +349,7 @@ setup(name='pwman3',
       author_email='nahumoz@gmail.com',
       url='http://pwman3.github.io/pwman3/',
       license="GNU GPL",
-      packages=find_packages(exclude=['tests', 'pwman/ui/templates',
-                                      'pwman/util/crypto']),
+      packages=packages,
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
