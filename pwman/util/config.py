@@ -32,7 +32,7 @@ config_dir = os.path.expanduser("~/.pwman")
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '10', 'cp_timeout': '5',
-                             'save': 'True'
+                             'save': 'True', 'supress_version_check': 'no'
                              },
                   'Database': {
                       'dburi': 'sqlite://' + os.path.join(config_dir,
@@ -43,7 +43,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   }
 
 if 'win' in sys.platform:
-    default_config['Database']['dburi'] = default_config['Database']['dburi'].replace("\\", "/")
+    default_config['Database']['dburi'] = default_config['Database']['dburi'].replace("\\", "/")  # noqa
+
 
 class ConfigException(Exception):
     """Basic exception for config."""
@@ -108,7 +109,7 @@ class Config(object):
         self.parser.set(section, name, value)
 
     def save(self):
-        if not "False" in self.get_value("Global", "Save"):
+        if "False" not in self.get_value("Global", "Save"):
             with open(self.filename, "w") as fp:
                 self.parser.write(fp)
 

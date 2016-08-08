@@ -111,7 +111,8 @@ def main():
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
 
-    if config.get_value('Global', 'supress_version').lower() != 'yes':  # pragma: no cover
+    if config.get_value('Global',
+                        'supress_version_check').lower() != 'yes':
         if not is_latest_version():
             print("A newer version of Pwman3 was release, you should consider updating")  # noqa
 
