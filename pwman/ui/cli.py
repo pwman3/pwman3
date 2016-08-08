@@ -14,13 +14,13 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012, 2013, 2014, 2015 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2012-2016 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 # pylint: disable=I0011
 
-from __future__ import print_function
 
 import cmd
+import http.client
 import sys
 
 
@@ -33,7 +33,6 @@ try:
 except ImportError as e:  # pragma: no cover
     import pyreadline as readline
     _readline_available = True
-
 
 from pwman.ui.baseui import BaseCommands
 from pwman import (get_conf_options, get_db_version, version, website,
@@ -94,11 +93,27 @@ def get_ui_platform(platform):  # pragma: no cover
     return PwmanCli, OSX
 
 
+def is_latest_version():  # pragma: no cover
+    """check current version againt latest version"""
+    conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+    conn.request("GET", "/")
+    r = conn.getresponse()
+    data = r.read()  # This will return entire content.
+    if data.decode().split(".") > version.split("."):
+        return False
+    else:
+        return True
+
+
 def main():
     args = parser_options().parse_args()
     PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
+
+    if config.get_value('Global', 'supress_version').lower() != 'yes':  # pragma: no cover
+        if not is_latest_version():
+            print("A newer version of Pwman3 was release, you should consider updating")  # noqa
 
     if not has_cryptography:
         import colorama
