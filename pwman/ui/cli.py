@@ -93,19 +93,20 @@ def get_ui_platform(platform):  # pragma: no cover
     return PwmanCli, OSX
 
 
-def is_latest_version():  # pragma: no cover
+def is_latest_version(version):  # pragma: no cover
     """check current version againt latest version"""
     try:
         conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
-        conn.request("GET", "/")
+        conn.request("GET", "/is_latest/?current_version={}&os={}".format(
+            version, sys.platform))
         r = conn.getresponse()
         data = r.read()  # This will return entire content.
         if data.decode().split(".") > version.split("."):
-            return False
+            return None, False
         else:
-            return True
-    except Exception:
-        return True
+            return None, True
+    except Exception as E:
+        return E, True
 
 
 def main():
@@ -116,7 +117,8 @@ def main():
 
     if config.get_value('Global',
                         'supress_version_check').lower() != 'yes':
-        if not is_latest_version():
+        _, latest = is_latest_version(version)
+        if not latest:
             print("A newer version of Pwman3 was release, you should consider updating")  # noqa
 
     if not has_cryptography:
