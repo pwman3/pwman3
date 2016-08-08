@@ -95,13 +95,16 @@ def get_ui_platform(platform):  # pragma: no cover
 
 def is_latest_version():  # pragma: no cover
     """check current version againt latest version"""
-    conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
-    conn.request("GET", "/")
-    r = conn.getresponse()
-    data = r.read()  # This will return entire content.
-    if data.decode().split(".") > version.split("."):
-        return False
-    else:
+    try:
+        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+        conn.request("GET", "/")
+        r = conn.getresponse()
+        data = r.read()  # This will return entire content.
+        if data.decode().split(".") > version.split("."):
+            return False
+        else:
+            return True
+    except Exception:
         return True
 
 
