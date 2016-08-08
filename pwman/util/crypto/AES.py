@@ -3,8 +3,8 @@
 Copyright (c) 2014  Philippe Teuwen <phil@teuwen.org>
 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of 
-this software and associated documentation files (the "Software"), to deal in 
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to
 use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
 of the Software, and to permit persons to whom the Software is furnished to do
@@ -17,8 +17,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 This code is taken from https://github.com/doegox/python-cryptoplus/
@@ -27,7 +27,8 @@ This code is taken from https://github.com/doegox/python-cryptoplus/
 from .blockcipher import *
 from .rijndael import rijndael
 
-def new(key,mode=MODE_ECB,IV=None,counter=None,segment_size=None):
+
+def new(key, mode=MODE_ECB, IV=None, counter=None, segment_size=None):
     """Create a new cipher object
 
     Wrapper for pure python implementation rijndael.py
@@ -112,7 +113,7 @@ def new(key,mode=MODE_ECB,IV=None,counter=None,segment_size=None):
     CFB EXAMPLE: (CFB8-AES192)
     ------------
     NIST Special Publication 800-38A http://cryptome.org/bcm/sp800-38a.htm#F
-    
+
     >>> key = '2b7e151628aed2a6abf7158809cf4f3c'.decode('hex')
     >>> IV = '000102030405060708090a0b0c0d0e0f'.decode('hex')
     >>> plain = '6bc1bee22e409f96e93d7e117393172a'.decode('hex')
@@ -303,7 +304,7 @@ def new(key,mode=MODE_ECB,IV=None,counter=None,segment_size=None):
     >>> cipher.encrypt(plaintext).encode('hex')[:16]
     'dfa66747de9ae630'
     """
-    return AES(key,mode,IV,counter,segment_size)
+    return AES(key, mode, IV, counter, segment_size)
 
 
 block_size = 16
@@ -317,16 +318,18 @@ class AES(BlockCipher):
     def __init__(self, key, mode, IV, counter, segment_size):
         cipher_module = rijndael
         self.blocksize = 16
-        args = {'block_size':16}
-        BlockCipher.__init__(self,key,mode,IV,counter,cipher_module,segment_size,args)
+        args = {'block_size': 16}
+        BlockCipher.__init__(self, key, mode, IV, counter, cipher_module,
+                             segment_size, args)
 
-    def keylen_valid(self,key):
-        return len(key) in (16,24,32)
+    def keylen_valid(self, key):
+        return len(key) in (16, 24, 32)
+
 
 def _test():
     import doctest
     doctest.testmod()
 
+
 if __name__ == "__main__":
     _test()
-
