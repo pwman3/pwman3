@@ -319,9 +319,6 @@ class PyCryptoInstallCommand(install):
 
 install_requires = ['colorama>=0.2.4', 'cryptography']
 
-if sys.version_info.major < 3:
-    install_requires.append("future")
-
 if sys.platform.startswith('win'):
     install_requires.append('pyreadline')
 
@@ -337,7 +334,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.8.1',
+      version='0.9.0',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,

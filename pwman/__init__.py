@@ -40,7 +40,7 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.8.1"
+    version = "0.9.0"
 
 
 class PkgMetadata(object):
