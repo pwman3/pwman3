@@ -19,7 +19,7 @@ Contents:
 About pwman3:
 ^^^^^^^^^^^^^ 
 
-Pwman3 is a command line password manager for Python 2.7-3.X with support for 
+Pwman3 is a command line password manager for Python3 with support for 
 multiple databases.
 
 
