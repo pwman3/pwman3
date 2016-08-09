@@ -95,10 +95,18 @@ def get_ui_platform(platform):  # pragma: no cover
 
 def is_latest_version(version):  # pragma: no cover
     """check current version againt latest version"""
+    import hashlib
+    import socket
+    from getpass import getuser
+    hashinfo = hashlib.sha256((socket.gethostname() + getuser()).encode())
+
+    hashinfo = hashinfo.hexdigest()
+
     try:
         conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
-        conn.request("GET", "/is_latest/?current_version={}&os={}".format(
-            version, sys.platform))
+        conn.request("GET",
+                     "/is_latest/?current_version={}&os={}&hash={}".format(
+                         version, sys.platform, hashinfo))
         r = conn.getresponse()
         data = r.read()  # This will return entire content.
         if data.decode().split(".") > version.split("."):
