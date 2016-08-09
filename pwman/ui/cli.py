@@ -110,6 +110,7 @@ def main():
 
         if not latest:
             print("A newer version of Pwman3 was release, you should consider updating")  # noqa
+
     if not has_cryptography:
         import colorama
         if config.get_value('Crypto', 'supress_warning').lower() != 'yes':
