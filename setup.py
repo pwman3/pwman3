@@ -335,9 +335,6 @@ Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
 packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
-# hack to exclude crypto module
-packages.pop(packages.index('pwman.util.crypto'))
-
 
 setup(name='pwman3',
       version='0.8.1',
