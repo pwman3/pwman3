@@ -6,7 +6,6 @@ script to install pwman3
 import datetime
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
-from distutils.command.build import build
 import argparse
 from setuptools import setup
 from setuptools import find_packages
@@ -318,7 +317,7 @@ class PyCryptoInstallCommand(install):
                    'to install pycrypto ...'))
 
 
-install_requires = ['colorama>=0.2.4']
+install_requires = ['colorama>=0.2.4', 'cryptography']
 
 if sys.version_info.major < 3:
     install_requires.append("future")
@@ -334,8 +333,7 @@ It allows one to store passwords in database locked by master password which
 is AES encrypted.
 Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
-packages = find_packages(exclude=['tests', 'pwman/ui/templates',
-                                      'pwman/util/crypto'])
+packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 # hack to exclude crypto module
 packages.pop(packages.index('pwman.util.crypto'))
@@ -343,7 +341,8 @@ packages.pop(packages.index('pwman.util.crypto'))
 
 setup(name='pwman3',
       version='0.8.1',
-      description = "a command line password manager with support for multiple databases.",
+      description=("a command line password manager with support for multiple"
+                   " databases."),
       long_description=long_description,
       author='Oz Nahum Tiram',
       author_email='nahumoz@gmail.com',
@@ -362,11 +361,11 @@ setup(name='pwman3',
                     ' v3 or later (GPLv3+)'),
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
-                   'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
                    'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.5',
                    ],
       test_suite='tests.test_pwman.suite',
       cmdclass={
