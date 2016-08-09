@@ -18,11 +18,13 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
-import os
 import argparse
+import http.client
+import os
+import pkg_resources
 import re
 import string
-import pkg_resources
+import sys
 from pwman.util import config
 from pwman.data.factory import check_db_version
 
@@ -138,3 +140,29 @@ def get_conf_options(args, OSX):
 def get_db_version(config, args):
     dburi = check_db_version(config.get_value("Database", "dburi"))
     return dburi
+
+
+def calculate_client_info():  # pragma: no cover
+    import hashlib
+    import socket
+    from getpass import getuser
+    hashinfo = hashlib.sha256((socket.gethostname() + getuser()).encode())
+    hashinfo = hashinfo.hexdigest()
+    return hashinfo
+
+
+def is_latest_version(version, client_info):  # pragma: no cover
+    """check current version againt latest version"""
+    try:
+        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+        conn.request("GET",
+                     "/is_latest/?current_version={}&os={}&hash={}".format(
+                         version, sys.platform, client_info))
+        r = conn.getresponse()
+        data = r.read()  # This will return entire content.
+        if data.decode().split(".") > version.split("."):
+            return None, False
+        else:
+            return None, True
+    except Exception as E:
+        return E, True

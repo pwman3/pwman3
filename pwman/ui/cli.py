@@ -20,7 +20,6 @@
 
 
 import cmd
-import http.client
 import sys
 
 
@@ -36,7 +35,8 @@ except ImportError as e:  # pragma: no cover
 
 from pwman.ui.baseui import BaseCommands
 from pwman import (get_conf_options, get_db_version, version, website,
-                   parser_options, has_cryptography)
+                   parser_options, has_cryptography, calculate_client_info,
+                   is_latest_version)
 from pwman.ui.tools import CLICallback
 from pwman.data import factory
 from pwman.exchange.importer import Importer
@@ -93,30 +93,6 @@ def get_ui_platform(platform):  # pragma: no cover
     return PwmanCli, OSX
 
 
-def is_latest_version(version):  # pragma: no cover
-    """check current version againt latest version"""
-    import hashlib
-    import socket
-    from getpass import getuser
-    hashinfo = hashlib.sha256((socket.gethostname() + getuser()).encode())
-
-    hashinfo = hashinfo.hexdigest()
-
-    try:
-        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
-        conn.request("GET",
-                     "/is_latest/?current_version={}&os={}&hash={}".format(
-                         version, sys.platform, hashinfo))
-        r = conn.getresponse()
-        data = r.read()  # This will return entire content.
-        if data.decode().split(".") > version.split("."):
-            return None, False
-        else:
-            return None, True
-    except Exception as E:
-        return E, True
-
-
 def main():
     args = parser_options().parse_args()
     PwmanCli, OSX = get_ui_platform(sys.platform)
@@ -131,8 +107,9 @@ def main():
             config.set_value('Updater', 'client_info', client_info)
 
         _, latest = is_latest_version(version, client_info)
-            print("A newer version of Pwman3 was release, you should consider updating")  # noqa
 
+        if not latest:
+            print("A newer version of Pwman3 was release, you should consider updating")  # noqa
     if not has_cryptography:
         import colorama
         if config.get_value('Crypto', 'supress_warning').lower() != 'yes':
