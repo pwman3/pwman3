@@ -18,27 +18,36 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
-import os
 import argparse
+import http.client
+import os
+import pkg_resources
 import re
 import string
-import pkg_resources
+import sys
 from pwman.util import config
 from pwman.data.factory import check_db_version
+
+try:
+    import cryptography  # noqa
+    has_cryptography = True
+except ImportError:
+    has_cryptography = False
+
 
 appname = "pwman3"
 
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-        version = "0.8.1"
+    version = "0.9.0"
 
 
 class PkgMetadata(object):
 
     def __init__(self):
         p = pkg_resources.get_distribution('pwman3')
-        f = open(os.path.join(p.location+'-info','PKG-INFO'))
+        f = open(os.path.join(p.location+'-info', 'PKG-INFO'))
         lines = f.readlines()
         self.summary = lines[3].split(':')[-1].strip()
         self.description = ''.join(map(string.strip, lines[9:14]))
@@ -55,7 +64,7 @@ try:
     long_description = pkg_meta.description
 except IOError as E:
     # this should only happen once when installing the package
-    description = "a command line password manager with support for multiple databases."
+    description = "a command line password manager with support for multiple databases."  # noqa
     website = 'http://pwman3.github.io/pwman3/'
 
 
@@ -73,16 +82,15 @@ config_dir = os.path.expanduser("~/.pwman")
 
 
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
-    parser = argparse.ArgumentParser(
-            prog='pwman3',
-            description=description,
-            formatter_class=formatter_class)
+    parser = argparse.ArgumentParser(prog='pwman3',
+                                     description=description,
+                                     formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
                         default=os.path.expanduser("~/.pwman/config"),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
-            help="Specify the file name and the delimeter type")
+                        help="Specify the file name and the delimeter type")
     return parser
 
 
@@ -105,13 +113,6 @@ def set_xsel(configp, OSX):
         configp.set_value("Global", "xsel", pbcopypath)
 
 
-#def set_win_colors(config):  # pragma: no cover
-#    try:
-#        if sys.platform.startswith('win'):
-#            colorama.init()
-#   except ImportError:  # when installing colorama is still not there
-#        pass
-
 def set_umask(configp):
     umask = configp.get_value("Global", "umask")
     if re.search(r'^\d{4}$', umask):
@@ -130,7 +131,6 @@ def get_conf_options(args, OSX):
     if not xselpath:  # pragma: no cover
         set_xsel(configp, OSX)
 
-    #set_win_colors(configp)
     set_db(args, configp)
     set_umask(configp)
     dburi = configp.get_value("Database", "dburi")
@@ -140,3 +140,29 @@ def get_conf_options(args, OSX):
 def get_db_version(config, args):
     dburi = check_db_version(config.get_value("Database", "dburi"))
     return dburi
+
+
+def calculate_client_info():  # pragma: no cover
+    import hashlib
+    import socket
+    from getpass import getuser
+    hashinfo = hashlib.sha256((socket.gethostname() + getuser()).encode())
+    hashinfo = hashinfo.hexdigest()
+    return hashinfo
+
+
+def is_latest_version(version, client_info):  # pragma: no cover
+    """check current version againt latest version"""
+    try:
+        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+        conn.request("GET",
+                     "/is_latest/?current_version={}&os={}&hash={}".format(
+                         version, sys.platform, client_info))
+        r = conn.getresponse()
+        data = r.read()  # This will return entire content.
+        if data.decode().split(".") > version.split("."):
+            return None, False
+        else:
+            return None, True
+    except Exception as E:
+        return E, True

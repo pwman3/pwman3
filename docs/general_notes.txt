@@ -65,20 +65,7 @@ finally you should step into:
 # upload  
   
   twine upload dist/pwman.tar.gz
-
-# PyCrypto Alternatives:
-
-  * http://wiki.yobi.be/wiki/PyCryptoPlus#Differences_with_pycrypto
-  *  http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/
-  * puresalsa20 - not document so good
-  * http://code.google.com/p/pycrypt/
-  * https://github.com/trevp/tlslite/tree/master/tlslite/utils
-  * seems like the best next standard, but very young:
-    https://github.com/alex/cryptography
-  * another salsa Alternative: www.seanet.com/~bugbee/crypto/salsa20/salsa20.pyb
    
-# for windows port: https://pypi.python.org/pypi/colorama
-
 # db ... https://github.com/coleifer/peewee
          http://sqlobject.org/
          http://www.sqlalchemy.org/

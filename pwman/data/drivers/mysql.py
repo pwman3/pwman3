@@ -24,6 +24,7 @@
 """MySQL Database implementation."""
 from pwman.data.database import Database, __DB_FORMAT__
 
+import pymysql
 import pymysql as mysql
 mysql.install_as_MySQLdb()
 
@@ -61,6 +62,7 @@ class MySQLDatabase(Database):
                               "NOTES) "
                               "VALUES(%s, %s, %s, %s)")
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(%s)"
+        self._data_wrapper = lambda x: x
         self.ProgrammingError = mysql.ProgrammingError
 
     def _open(self):
@@ -76,4 +78,7 @@ class MySQLDatabase(Database):
                                   passwd=passwd,
                                   db=self.dburi.path.lstrip('/'))
         self._cur = self._con.cursor()
-        self._create_tables()
+        try:
+            self._create_tables()
+        except pymysql.err.InternalError:
+            pass

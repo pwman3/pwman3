@@ -42,7 +42,7 @@ Most commands have a single or two letter alias which is easy to remember.
 
 As for a start you would probably like to store some passwords in your database, all 
 you need to do is type the command ``new`` (or the alias ``n``), and then insert the information
-as promted::
+as prompted::
 
     pwman> new
     Username: oz123
@@ -97,11 +97,11 @@ To see the content of a saved entry, you need to use the ``print`` command::
 
 Notice, that the ``print`` command expects an entry number as an argument. 
 After printing the content of the entry, pwman3 will wait for ``Enter`` to be 
-pressed or 5 seconds until it flushes the screen. This way, unautorized eyes 
+pressed or 5 seconds until it flushes the screen. This way, unauthorized eyes 
 can not browse your screen and see your password. You can always scroll up to 
 see the printed entry or print it again. 
 
-If you don't want to type passwords and urls constantly ``Pwman3`` comes with 
+If you don't want to type passwords and URLs constantly ``Pwman3`` comes with 
 two shortcut commands. The first shortcut is ``open``, when calling it with 
 an entry number it will open the URL in your default browser::
     

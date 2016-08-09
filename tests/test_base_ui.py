@@ -18,10 +18,7 @@
 # ============================================================================
 import os
 import unittest
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO, BytesIO
 
 import sys
 from pwman.util.crypto_engine import CryptoEngine
@@ -72,13 +69,13 @@ class TestBaseUI(unittest.TestCase):
         sys.stdin = sys.__stdin__
 
     def test_1_do_new(self):
-        sys.stdin = StringIO(("alice\nsecret\nexample.com\nsome notes"
-                              "\nfoo bar baz"))
+        sys.stdin = BytesIO((b"alice\nsecret\nexample.com\nsome notes"
+                             b"\nfoo bar baz"))
         _node = self.tester.cli._do_new('')
 
         sys.stdin = sys.__stdin__
-        self.assertListEqual(['foo', 'bar', 'baz'], [t for t
-                                                     in _node.tags])
+        self.assertListEqual([b'foo', b'bar', b'baz'], [t for t
+                                                        in _node.tags])
         nodeid = self.tester.cli._db.listnodes()
         self.assertListEqual([1], nodeid)
         nodes = self.tester.cli._db.getnodes(nodeid)
@@ -92,9 +89,9 @@ class TestBaseUI(unittest.TestCase):
     def test_2_do_list(self):
         self.output = StringIO()
         sys.stdout = self.output
-        self.tester.cli.do_list(u'')
-        self.tester.cli.do_list(u'foo')
-        self.tester.cli.do_list(u'bar')
+        self.tester.cli.do_list('')
+        self.tester.cli.do_list('foo')
+        self.tester.cli.do_list('bar')
         sys.stdout = sys.__stdout__
         self.output.getvalue()
 
@@ -181,7 +178,7 @@ class TestBaseUI(unittest.TestCase):
     def test_10_do_info(self):
         self.output = StringIO()
         sys.stdout = self.output
-        self.tester.cli.do_info('')
+        self.tester.cli.do_info(b'')
         self.assertIn("test.pwman.db", sys.stdout.getvalue())
 
 if __name__ == '__main__':

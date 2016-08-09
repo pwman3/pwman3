@@ -54,6 +54,7 @@ class SQLite(Database):
         self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
         self._sub = '?'
+        self._data_wrapper = lambda x: x
 
     def _open(self):
         self._con = sqlite.connect(self._filename)
@@ -74,7 +75,7 @@ class SQLite(Database):
 
         self._cur.execute("CREATE TABLE TAG"
                           "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                          "DATA BLOB NOT NULL UNIQUE)")
+                          "DATA BLOB NOT NULL)")
 
         self._cur.execute("CREATE TABLE LOOKUP ("
                           "nodeid INTEGER NOT NULL, "

@@ -35,8 +35,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                                        "history")}
                   }
 
-give_key = lambda msg: "12345"
-give_wrong_key = lambda msg: "verywrongtkey"
+give_key = lambda msg: b"12345"
+give_wrong_key = lambda msg: b"verywrongtkey"
 
 salt = b'cUDHNMJdTRxiIDPXuT163UMvi4fd2pXz/bRg2Zm8ajE='
 digest = b'9eaec7dc1ee647338406739c54dbf9c4881c74702008eb978622811cfc46a07f'
@@ -45,13 +45,13 @@ digest = b'9eaec7dc1ee647338406739c54dbf9c4881c74702008eb978622811cfc46a07f'
 class DummyCallback(Callback):
 
     def getinput(self, question):
-        return u'12345'
+        return b'12345'
 
     def getsecret(self, question):
-        return u'12345'
+        return b'12345'
 
     def getnewsecret(self, question):
-        return u'12345'
+        return b'12345'
 
 
 class TestPassGenerator(unittest.TestCase):
@@ -104,8 +104,8 @@ class CryptoEngineTest(unittest.TestCase):
     def test5_e_authenticate(self):
         ce = CryptoEngine.get()
         ce._reader = give_key
-        self.assertFalse(ce.authenticate('verywrong'))
-        self.assertTrue(ce.authenticate('12345'))
+        self.assertFalse(ce.authenticate(b'verywrong'))
+        self.assertTrue(ce.authenticate(b'12345'))
         ce._timeout = -1
         self.assertTrue(ce._is_authenticated())
 
@@ -122,11 +122,11 @@ class CryptoEngineTest(unittest.TestCase):
         ce._reader = give_key
         if not ce._salt:
             ce._salt = salt
-        secret = ce.encrypt("topsecret")
+        secret = ce.encrypt(b"topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
         ce._cipher = None
-        secret = ce.encrypt("topsecret")
+        secret = ce.encrypt(b"topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
 
@@ -134,9 +134,9 @@ class CryptoEngineTest(unittest.TestCase):
         ce = CryptoEngine.get()
         ce._cipher = None
         ce._getsecret = give_wrong_key
-        self.assertRaises(CryptoException, ce.encrypt, "secret")
-        ce._getsecret = lambda x: u'12345'
-        secret = ce.encrypt(u"topsecret")
+        self.assertRaises(CryptoException, ce.encrypt, b"secret")
+        ce._getsecret = lambda x: b'12345'
+        secret = ce.encrypt(b"topsecret")
         decrypt = ce.decrypt(secret)
         self.assertEqual(decrypt.decode(), "topsecret")
 

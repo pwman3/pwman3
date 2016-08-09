@@ -50,11 +50,11 @@ class Database(object):
             self._cur.execute("SELECT 1 from DBVERSION")
             version = self._cur.fetchone()
             return version
-        except self.ProgrammingError:
+        except Exception:
             self._con.rollback()
+            return 0
 
     def _create_tables(self):
-
         if self._check_tables():
             return
         try:
@@ -67,7 +67,7 @@ class Database(object):
 
             self._cur.execute("CREATE TABLE TAG"
                               "(ID  SERIAL PRIMARY KEY,"
-                              "DATA VARCHAR(255) NOT NULL UNIQUE)")
+                              "DATA TEXT NOT NULL)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
                               "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
@@ -84,7 +84,7 @@ class Database(object):
                               (self.dbversion,))
 
             self._con.commit()
-        except self.ProgrammingError:  # pragma: no cover
+        except Exception:  # pragma: no cover
             self._con.rollback()
 
     def get_user_password(self):
@@ -120,17 +120,30 @@ class Database(object):
             self._update_tag_lookup(nodeid, tid)
 
     def _get_tag(self, tagcipher):
-        sql_search = "SELECT ID FROM TAG WHERE DATA = {}".format(self._sub)
-        self._cur.execute(sql_search, ([tagcipher]))
-        rv = self._cur.fetchone()
-        return rv
+        sql_search = "SELECT * FROM TAG"
+        self._cur.execute(sql_search)
+        ce = CryptoEngine.get()
+
+        try:
+            tag = ce.decrypt(tagcipher)
+            encrypted = True
+        except Exception:
+            tag = tagcipher
+            encrypted = False
+
+        rv = self._cur.fetchall()
+        for idx, cipher in rv:
+            if encrypted and tag == ce.decrypt(cipher):
+                return idx
+            elif tag == cipher:
+                return idx
 
     def _get_or_create_tag(self, tagcipher):
         rv = self._get_tag(tagcipher)
         if rv:
-            return rv[0]
+            return rv
         else:
-            self._cur.execute(self._insert_tag_sql, ([tagcipher]))
+            self._cur.execute(self._insert_tag_sql, list(map(self._data_wrapper, (tagcipher,))))  # noqa
             try:
                 return self._cur.fetchone()[0]
             except TypeError:
@@ -150,9 +163,14 @@ class Database(object):
             sql = "SELECT * FROM NODE"
         self._cur.execute(sql, (ids))
         nodes = self._cur.fetchall()
+        if not nodes:
+            return []
+        # sqlite returns nodes as bytes, postgresql returns them as str
+        if isinstance(nodes[0][1], str):
+            nodes = [node for node in nodes]
         nodes_w_tags = []
         for node in nodes:
-            tags = list(self._get_node_tags(node))
+            tags = [t for t in self._get_node_tags(node)]
             nodes_w_tags.append(list(node) + tags)
 
         return nodes_w_tags
@@ -169,7 +187,8 @@ class Database(object):
             if not tagid:
                 return []  # pragma: no cover
 
-            self._cur.execute(self._list_nodes_sql, (tagid))
+            # will this work for many nodes??? with the same tag?
+            self._cur.execute(self._list_nodes_sql, (tagid,))
             self._con.commit()
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
@@ -177,7 +196,7 @@ class Database(object):
     def add_node(self, node):
         node_tags = list(node)
         node, tags = node_tags[:4], node_tags[-1]
-        self._cur.execute(self._add_node_sql, (node))
+        self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
         try:
             nid = self._cur.fetchone()[0]
         except TypeError:
@@ -230,8 +249,9 @@ class Database(object):
         """save the random seed and the digested key"""
         self._cur.execute("DELETE  FROM CRYPTO")
         self._cur.execute("INSERT INTO CRYPTO VALUES({}, {})".format(self._sub,
-                                                                     self._sub),
-                          (seed, digest))
+                                                                     self._sub),  # noqa
+
+                          list(map(self._data_wrapper, (seed, digest))))
         self._con.commit()
 
     def loadkey(self):
@@ -242,18 +262,18 @@ class Database(object):
         try:
             self._cur.execute(sql)
             seed, digest = self._cur.fetchone()
-            return seed + u'$6$' + digest
+            return seed + '$6$' + digest
         except TypeError:  # pragma: no cover
             return None
 
     def savekey(self, key):
         salt, digest = key.split('$6$')
-        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,
-                                                                      self._sub)
+        sql = "INSERT INTO CRYPTO(SEED, DIGEST) VALUES({},{})".format(self._sub,  # noqa
+                                                                      self._sub)  # noqa
         self._cur.execute("DELETE FROM CRYPTO")
-        self._cur.execute(sql, (salt, digest))
-        self._digest = digest.encode('utf-8')
-        self._salt = salt.encode('utf-8')
+        self._cur.execute(sql, list(map(self._data_wrapper, (salt, digest))))
+        self._digest = digest.encode()
+        self._salt = salt.encode()
         self._con.commit()
 
     def close(self):  # pragma: no cover

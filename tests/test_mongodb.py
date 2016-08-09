@@ -84,7 +84,7 @@ class TestMongoDB(unittest.TestCase):
                   [u"bartag", u"footag"]]
 
         kwargs = {
-            "username":innode[0], "password": innode[1],
+            "username": innode[0], "password": innode[1],
             "url": innode[2], "notes": innode[3], "tags": innode[4]
         }
 
@@ -99,17 +99,14 @@ class TestMongoDB(unittest.TestCase):
     def test_6_list_nodes(self):
         ret = self.db.listnodes()
         self.assertEqual(ret, [1])
-        ce = CryptoEngine.get()
-        fltr = ce.encrypt("footag")
-        ret = self.db.listnodes(fltr)
-        self.assertEqual(ret, [1])
+        ret = self.db.listnodes(filter_=b"footag")
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
         ce = CryptoEngine.get()
-        ec_tags = map(ce.encrypt,[u'bartag', u'footag'])
-        for t in ec_tags:
-            self.assertIn(t, ret)
+        tags = list(map(ce.decrypt, ret))
+        for tag in tags:
+            self.assertIn(tag, [b'footag', b'bartag'])
 
     def test_6b_get_nodes(self):
         ret = self.db.getnodes([1])

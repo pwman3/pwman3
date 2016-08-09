@@ -58,30 +58,28 @@ class TestSQLite(unittest.TestCase):
 
     def test_3_add_node(self):
         node = Node(clear_text=True,
-                    **{'username': u"alice", 'password': u"secret",
-                       'url': u"wonderland.com",
-                       'notes': u"a really great place",
-                       'tags': [u'foo', u'bar']})
+                    **{'username': "alice", 'password': "secret",
+                       'url': "wonderland.com",
+                       'notes': "a really great place",
+                       'tags': ['foo', 'bar']})
         self.db.add_node(node)
         rv = self.db._cur.execute("select * from node")
-        # clearly this fails, while alice is not found in clear text in the
-        # database!
         ce = CryptoEngine.get()
         res = rv.fetchone()
-        self.assertIn(ce.encrypt(u'alice'), res[1])
+        self.assertEqual(ce.decrypt(res[1]), b"alice")
 
     def test_4_test_tags(self):
         node = Node(clear_text=True,
                     **{'username': u"alice", 'password': u"secret",
                        'url': u"wonderland.com",
                        'notes': u"a really great place",
-                       'tags': [u'foo', u'bar']})
+                       'tags': ['foo', 'bar']})
         ce = CryptoEngine.get()
         self.db._get_or_create_tag(node._tags[0])
         self.assertEqual(1, self.db._get_or_create_tag(node._tags[0]))
-        rv = self.db._get_or_create_tag(ce.encrypt('baz'))
-        self.db._con.commit()
+        rv = self.db._get_or_create_tag(ce.encrypt(b'baz'))
         self.assertEqual(3, rv)
+        self.db._con.commit()
 
     def test_5_test_lookup(self):
         self.db._cur.execute('SELECT nodeid, tagid FROM LOOKUP')
@@ -104,10 +102,10 @@ class TestSQLite(unittest.TestCase):
         # test_3_add_node
         # test_6_listnodes
 
-        tag = ce.encrypt(u'bar')
+        tag = ce.encrypt(b'bar')
         rv = self.db.listnodes(tag)
         self.assertEqual(len(rv), 2)
-        tag = ce.encrypt(u'baz')
+        tag = ce.encrypt(b'baz')
         # the tag 'baz' is found in a node created in
         # test_6_listnodes
         rv = self.db.listnodes(tag)
@@ -119,36 +117,36 @@ class TestSQLite(unittest.TestCase):
 
     def test_9_editnode(self):
         # delibertly insert clear text into the database
+        ce = CryptoEngine.get()
+        tags = [ce.encrypt("foo"), ce.encrypt("auto")]
         node = {'user': 'transparent', 'password': 'notsecret',
-                'tags': ['foo', 'bank']}
+                'tags': tags}
         self.db.editnode('2', **node)
         self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
-        self.assertEqual(rv, (u'transparent', u'notsecret'))
+        self.assertEqual(rv, ('transparent', 'notsecret'))
         node = {'user': 'modify', 'password': 'notsecret',
-                'tags': ['foo', 'auto']}
+                'tags': tags}
         # now the tags bank and baz are orphan ...
         # what happens? it should be completely removed.
         # To spare IO we only delete orphand tags when
         # db.close is called.
         self.db.editnode('2', **node)
 
-    def test_9_test_orphans(self):
+    def test_9_test_no_orphans(self):
         self.db._clean_orphans()
+        self.db._con.commit()
         ce = CryptoEngine.get()
-        baz_encrypted = ce.encrypt(u'baz').decode()
-
-        self.db._cur.execute('SELECT DATA FROM TAG')
-        rv = self.db._cur.fetchall()
-        for data in rv:
-            if isinstance(data[0], str):
-                self.assertNotIn(u'bank', data[0])
-            else:
-                self.assertNotIn(baz_encrypted, data[0].decode())
+        tags = None
+        while not tags:
+            tags = self.db._cur.execute('SELECT * FROM tag').fetchall()
+        tags_clear = [ce.decrypt(tag[1]) for tag in tags]
+        self.assertNotIn(b"baz", tags_clear)
 
     def test_a10_test_listtags(self):
+        """there should be only 3 tags left"""
         tags = self.db.listtags()
-        self.assertEqual(4, len(list(tags)))
+        self.assertEqual(3, len(list(tags)))
 
     def test_a11_test_rmnodes(self):
         for n in [1, 2]:

@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2014 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2016 Oz Nahum <nahumoz@gmail.com>
 # ============================================================================
 
 from __future__ import print_function
@@ -27,25 +27,29 @@ import string
 import sys
 import time
 
-try:
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
-except ImportError:
-    # PyCryptop not found, we use a compatible implementation
-    # in pure Python.
-    # This is good for Windows where software installation suck
-    # or embeded devices where compilation is a bit harder
-    from pwman.util.crypto import AES
-    from pwman.util.crypto.pypbkdf2 import PBKDF2
-
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from pwman.util.callback import Callback
 
 if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
-EncodeAES = lambda c, s: base64.b64encode(c.encrypt(s))
-DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip()
+
+def encode_AES(cipher, clear_text):
+    if not isinstance(clear_text, bytes):
+        clear_text = clear_text.encode()
+    return base64.b64encode(cipher.encrypt(clear_text))
+
+
+def decode_AES(cipher, encoded_text):
+    if not isinstance(encoded_text, bytes):
+        encoded_text = encoded_text.encode()
+
+    encoded_text = base64.b64decode(encoded_text)
+    return cipher.decrypt(encoded_text).rstrip()
 
 
 def generate_password(pass_len=8, uppercase=True, lowercase=True, digits=True,
@@ -83,23 +87,23 @@ def get_digest(password, salt):
     """
     Get a digest based on clear text password
     """
-    iterations = 5000
-    if isinstance(password, bytes):
-        password = password.decode()
-    try:
-        return PBKDF2(password, salt, dkLen=32, count=iterations)
-    except TypeError:
-        return PBKDF2(password, salt, iterations=iterations).read(32)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=5000,
+        backend=default_backend()
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password))
+    return key
 
 
 def get_cipher(password, salt):
     """
     Create a chiper object from a hashed password
     """
-    iv = os.urandom(AES.block_size)
     dig = get_digest(password, salt)
-    chiper = AES.new(dig, AES.MODE_ECB, iv)
-    return chiper
+    return Fernet(dig)
 
 
 def prepare_data(text, block_size):
@@ -159,10 +163,11 @@ class CryptoEngine(object):  # pagma: no cover
         salt = self._salt
         tries = 0
         while tries < 5:
-            password = self._getsecret("Please type in your master password"
-                                       ).encode('utf-8')
-            if self.authenticate(password):
-                return password, salt
+            passwd = self._getsecret("Please type in your master password")
+            if not isinstance(passwd, bytes):
+                passwd = passwd.encode()
+            if self.authenticate(passwd):
+                return passwd, salt
 
             print("You entered a wrong password...")
             tries += 1
@@ -175,7 +180,7 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return EncodeAES(self._cipher, prepare_data(text, AES.block_size))
+        return encode_AES(self._cipher, text)
 
     def decrypt(self, cipher_text):
         if not self._is_authenticated():
@@ -184,8 +189,7 @@ class CryptoEngine(object):  # pagma: no cover
             self._cipher = cipher
             del(p)
 
-        return DecodeAES(self._cipher, prepare_data(cipher_text,
-                                                    AES.block_size))
+        return decode_AES(self._cipher, cipher_text)
 
     def forget(self):
         """
@@ -239,6 +243,8 @@ class CryptoEngine(object):  # pagma: no cover
         """
         salt = base64.b64encode(os.urandom(32))
         passwd = self._getsecret("Please type in the master password")
+        if not isinstance(passwd, bytes):
+            passwd = passwd.encode()
         key = get_digest(passwd, salt)
         hpk = salt+'$6$'.encode('utf8')+binascii.hexlify(key)
         self._digest = key
