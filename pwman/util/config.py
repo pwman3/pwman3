@@ -40,6 +40,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Readline': {'history': os.path.join(config_dir,
                                                        'history')},
                   'Crypto': {'supress_warning': 'no'},
+
+                  'Updater': {'supress_version_check': 'no'}
                   }
 
 if 'win' in sys.platform:

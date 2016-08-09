@@ -123,10 +123,14 @@ def main():
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
 
-    if config.get_value('Global',
+    if config.get_value('Updater',
                         'supress_version_check').lower() != 'yes':
-        _, latest = is_latest_version(version)
-        if not latest:
+        client_info = config.get_value('Updater', 'client_info')
+        if not client_info:
+            client_info = calculate_client_info()
+            config.set_value('Updater', 'client_info', client_info)
+
+        _, latest = is_latest_version(version, client_info)
             print("A newer version of Pwman3 was release, you should consider updating")  # noqa
 
     if not has_cryptography:
