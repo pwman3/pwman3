@@ -43,7 +43,7 @@ Pwman3 requires the following debian packages:
  xsel - to copy password to clipboard on Linux
 
 It is also recommended to install python-crypto.
-Pwman supports Python 2.7-3.x. 
+Pwman supports Python 3.x. 
 
 To install from source:
 
@@ -53,45 +53,8 @@ You can also install PWMAN3 using python pip:
 
     $ pip install pwman3
 
-### Windows Users:
 
-Pwman3 comes with a pure python implementation of the AES encryptio algorithm based
-of PythonCrypto-Plus.
- 
-Pwman3 can also help you install PyCrypto. To you can install PyCrypto with:
-
-    python setup install_pycrypto
-
-When done, issue:
-    
-    python setup install
-
-If you are more picky then you can compile PyCrypto using the instruction bellow.
-
-After you downloaded the source code of 
-pycrypto and extracted it do the following inisde the source code direcotry:
-
-    C:\Temp\pycrypto> python setup.py build -c mingw32 
-    C:\Temp\pycrypto> python setup.py bdist_wininst
-
-Now you should be able to run pwman3 on Windows.
-
-On Windows 7 64bit: 
-
-PyCrypto builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
-The above setup commands won't work in the Windows command prompt. But they do work in 
-the msys command prompt. 
-You also need to edit the following file:
-
-	C:\Python27\Lib\distutils\cygwinccompiler.py
-
-Before doing anything on this file make sure you create a backup! After that remove all references
-for ``-mno-cygwin`. 
-
-and after all that, if you a security minded person, who is capable of using a command line password:
-Do your self a favor and skip Windows. Try Linux\BSD\*Nix OS. 
-
-    ## User Interface
+## User Interface
    1. When xsel is install on a Linux system, you can copy passwords directly to clipboard with the copy command.
    2. The command 'open' will open the default browser if URL is specified.
    3. An automatic 'clear screen' function is called after printing an entry in the database. 
@@ -165,3 +128,12 @@ The config file  must have the following option:
  
      When launching `pwman` for the first time, it will try and look for 
      `xsel` and write the configuration properly. 
+
+## Supporting
+
+If you find this work useful, you can do one or more of the following:
+
+	* Star this repository.
+	* Tweeter me with a thank you.
+	* Donate me a humlbe sum of 5-10€. (Donations should go to oz dot tiram at gmail dot com), I'll mention you here for supporting my work.
+
