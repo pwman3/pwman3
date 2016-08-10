@@ -75,64 +75,20 @@ know something about security (which is probably more than I know at the moment.
 
 <p>Pwman3 requires the following debian packages:</p>
 
-<p>python-colorama
- python-crypto 
+<p>python3-colorama
+ python3-cryptography
  xsel - to copy password to clipboard on Linux</p>
 
-<p>Pwman3 supports Python 2.7-3.x </p>
-<p>Be advised that if you created your database with Python 2.7 odd stuff will happen if you try to read it with 
-Python 3.x</p>
+<p>Pwman3 supports Python 3.x Only!</p>
 
 <p>To install from source:</p>
 
-<pre><code>$ python setup.py install
-</code></pre>
-
-<p>You can also install PWMAN3 using python pip:</p>
+<p>You can install PWMAN3 using python pip:</p>
 
 <pre><code>$ pip install pwman3
 </code></pre>
 
 <h3>
-<a name="windows-users" class="anchor" href="#windows-users"><span class="octicon octicon-link"></span></a>Windows Users:</h3>
-
-<p>Before installing pwman3 you need to install PyCrypto. To you can install PyCrypto with:</p>
-
-<pre><code>python setup install_pycrypto
-</code></pre>
-
-<p>When done, issue:</p>
-
-<pre><code>python setup install
-</code></pre>
-
-<p>If you are more picky than than than you can compile PyCrypto using the instruction bellow.</p>
-
-<p>After you downloaded the source code of 
-pycrypto and extracted it do the following inisde the source code direcotry:</p>
-
-<pre><code>C:\Temp\pycrypto&gt; python setup.py build -c mingw32 
-C:\Temp\pycrypto&gt; python setup.py bdist_wininst
-</code></pre>
-
-<p>Now you should be able to run pwman3 on Windows.</p>
-
-<p>On Windows 7 64bit: </p>
-
-<p>PyCrypto builds with mingw gcc version 4.6.2. Note that you also need msys installed from mingw. 
-The above setup commands won't work in the Windows command prompt. But they do work in 
-the msys command prompt. 
-You also need to edit the following file:</p>
-
-<pre><code>C:\Python27\Lib\distutils\cygwinccompiler.py
-</code></pre>
-
-<p>Before doing anything on this file make sure you create a backup! After that remove all references
-for `<code>-mno-cygwin</code>. </p>
-
-<p>and after all that, if you a security minded person, who is capable of using a command line password:
-Do your self a favor and skip Windows. Try Linux\BSD*Nix OS. </p>
-
 <h2>
 <a name="user-interface" class="anchor" href="#user-interface"><span class="octicon octicon-link"></span></a>User Interface</h2>
 
