@@ -116,7 +116,7 @@ class PwmanCliWin(PwmanCli):
             flushtimeout = flushtimeout or 10
             print("erasing in {} sec...".format(flushtimeout))
             time.sleep(int(flushtimeout))
-            winSetClipboard("")
+            winSetClipboard(b"")
 
     def do_open(self, args):
         ids = self._get_ids(args)
