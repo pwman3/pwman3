@@ -1,3 +1,7 @@
+2016-August-12 Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release 0.9.1	
+	* Windows fixes
+
 2016-August-09 Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release 0.9.0	
 	* Completely drop Python2 support
