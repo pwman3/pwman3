@@ -10,7 +10,6 @@ import argparse
 from setuptools import setup
 from setuptools import find_packages
 import sys
-from setuptools.command.install import install
 import os
 
 
@@ -294,29 +293,6 @@ class ManPageCreator(object):
 sys.path.insert(0, os.getcwd())
 
 
-class PyCryptoInstallCommand(install):
-
-    """
-    A Custom command to download and install pycrypto26
-    binary from voidspace. Not optimal, but it should work ...
-    """
-    description = ("A Custom command to download and install pycrypto26"
-                   "binary from voidspace.")
-
-    def run(self):
-        base_path = "http://www.voidspace.org.uk/downloads/pycrypto26"
-        if 'win32' in sys.platform:
-            if 'AMD64' not in sys.version:
-                pycrypto = 'pycrypto-2.6.win32-py2.7.exe'
-            else:  # 'for AMD64'
-                pycrypto = 'pycrypto-2.6.win-amd64-py2.7.exe'
-            os.system('easy_install '+base_path+'/'+pycrypto)
-            install.run(self)
-        else:
-            print(('Please use pip or your Distro\'s package manager '
-                   'to install pycrypto ...'))
-
-
 install_requires = ['colorama>=0.2.4', 'cryptography']
 
 if sys.platform.startswith('win'):
@@ -334,7 +310,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.9.0',
+      version='0.9.1',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,
@@ -363,7 +339,6 @@ setup(name='pwman3',
                    ],
       test_suite='tests.test_pwman.suite',
       cmdclass={
-          'install_pycrypto': PyCryptoInstallCommand,
           'build_manpage': BuildManPage
       },
       entry_points={
