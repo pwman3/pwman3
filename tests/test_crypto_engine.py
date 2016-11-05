@@ -106,12 +106,12 @@ class CryptoEngineTest(unittest.TestCase):
         ce._reader = give_key
         self.assertFalse(ce.authenticate(b'verywrong'))
         self.assertTrue(ce.authenticate(b'12345'))
-        ce._timeout = -1
+        ce._expires_at = int(time.time()) + 600
         self.assertTrue(ce._is_authenticated())
 
     def test6_is_timedout(self):
         ce = CryptoEngine.get()
-        ce._timeout = 1
+        ce._expires_at = time.time() - 2
         time.sleep(1.1)
         self.assertTrue(ce._is_timedout())
         self.assertIsNone(ce._cipher)
