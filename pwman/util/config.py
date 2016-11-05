@@ -32,7 +32,8 @@ config_dir = os.path.expanduser("~/.pwman")
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'cls_timeout': '10', 'cp_timeout': '5',
-                             'save': 'True', 'supress_version_check': 'no'
+                             'save': 'True', 'supress_version_check': 'no',
+                             'lock_timeout': '600'
                              },
                   'Database': {
                       'dburi': 'sqlite://' + os.path.join(config_dir,

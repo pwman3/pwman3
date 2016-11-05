@@ -117,7 +117,6 @@ def prepare_data(text, block_size):
 
 
 class CryptoEngine(object):  # pagma: no cover
-    _timeoutcount = 0
     _instance = None
     _callback = None
 
@@ -126,7 +125,7 @@ class CryptoEngine(object):  # pagma: no cover
         if CryptoEngine._instance:
             return CryptoEngine._instance
 
-        CryptoEngine._instance = CryptoEngine(timeout)
+        CryptoEngine._instance = CryptoEngine(timeout=timeout)
         return CryptoEngine._instance
 
     def __init__(self, salt=None, digest=None, algorithm='AES',
@@ -138,6 +137,7 @@ class CryptoEngine(object):  # pagma: no cover
         self._digest = digest if digest else None
         self._salt = salt if salt else None
         self._timeout = timeout
+        self._expires_at = -1
         self._cipher = None
         self._reader = reader
         self._callback = None
@@ -149,8 +149,9 @@ class CryptoEngine(object):  # pagma: no cover
         """
         dig = get_digest(password, self._salt)
         if binascii.hexlify(dig) == self._digest or dig == self._digest:
-            CryptoEngine._timeoutcount = time.time()
             self._cipher = get_cipher(password, self._salt)
+            if self._timeout > 0:
+                self._expires_at = int(time.time()) + self._timeout
             return True
         return False
 
@@ -198,16 +199,17 @@ class CryptoEngine(object):  # pagma: no cover
         self._cipher = None
 
     def _is_authenticated(self):
+        if self._is_timedout():
+            return False
         if not self._digest and not self._salt:
             self._create_password()
-        if not self._is_timedout() and self._cipher is not None:
+        if self._cipher is not None:
             return True
         return False
 
     def _is_timedout(self):
-        if self._timeout > 0:
-            if (time.time() - CryptoEngine._timeoutcount) > self._timeout:
-                self._cipher = None
+        if int(time.time()) > self._expires_at:
+            self._cipher = None
             return True
         return False
 

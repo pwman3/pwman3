@@ -122,7 +122,8 @@ def main():
 
     print(dburi)
     dbver = get_db_version(config, args)
-    CryptoEngine.get()
+    timeout = int(config.get_value('Global', 'lock_timeout'))
+    CryptoEngine.get(timeout)
 
     db = factory.createdb(dburi, dbver)
 
