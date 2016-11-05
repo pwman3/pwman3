@@ -16,3 +16,4 @@ secret.txt
 .tox
 *~
 .vagrant*
+.idea
