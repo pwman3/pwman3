@@ -24,6 +24,7 @@ import os
 import pkg_resources
 import re
 import string
+import shutil
 import sys
 from pwman.util import config
 from pwman.data.factory import check_db_version
@@ -68,16 +69,6 @@ except IOError as E:
     website = 'http://pwman3.github.io/pwman3/'
 
 
-def which(cmd):  # pragma: no cover
-    _, cmdname = os.path.split(cmd)
-
-    for path in os.environ["PATH"].split(os.pathsep):
-        cmd = os.path.join(path, cmdname)
-        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):  # pragma: no cover
-            return cmd
-    return ''
-
-
 config_dir = os.path.expanduser("~/.pwman")
 
 
@@ -106,10 +97,10 @@ def get_conf(args):
 
 def set_xsel(configp, OSX):
     if not OSX:
-        xselpath = which("xsel")
+        xselpath = shutil.which("xsel")
         configp.set_value("Global", "xsel", xselpath)
     elif OSX:
-        pbcopypath = which("pbcopy")
+        pbcopypath = shutil.which("pbcopy")
         configp.set_value("Global", "xsel", pbcopypath)
 
 

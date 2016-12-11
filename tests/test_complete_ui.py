@@ -20,9 +20,9 @@
 from __future__ import print_function
 import pexpect
 import unittest
+import shutil
 import sys
 import os
-from pwman import which
 
 class Ferrum(unittest.TestCase):
     def clean_files(self):
@@ -60,7 +60,7 @@ class Ferrum(unittest.TestCase):
     def test_c_change_pass(self):
         lfile = 'test-chg_passwd.log'
         logfile = open(lfile, 'wb')
-        cmd = which('pwman3')
+        cmd = shutil.which('pwman3')
         db = 'sqlite://' + os.path.join(os.path.dirname(__file__), 'foo.baz.db')
         child = pexpect.spawn(cmd + ' -d ' + db, logfile=logfile)
         if sys.version_info[0] > 2:

@@ -1,6 +1,8 @@
 import os
 import os.path
+import shutil
 import sys
+
 if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:
@@ -8,7 +10,6 @@ else:
 
 from pwman.data import factory
 from pwman.util import config
-from pwman import which
 from pwman.util.callback import Callback
 
 
@@ -105,7 +106,7 @@ class SetupTester(object):
                                )
 
         if not OSX:
-            self.xselpath = which("xsel")
+            self.xselpath = shutil.which("xsel")
             self.configp.set_value("Global", "xsel", self.xselpath)
         else:
             self.xselpath = "xsel"
