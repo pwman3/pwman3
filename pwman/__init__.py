@@ -100,7 +100,7 @@ def set_xsel(configp, OSX):
         xselpath = shutil.which("xsel") or ""
         configp.set_value("Global", "xsel", xselpath)
     elif OSX:
-        pbcopypath = shutil.which("pbcopy")
+        pbcopypath = shutil.which("pbcopy") or ""
         configp.set_value("Global", "xsel", pbcopypath)
 
 
