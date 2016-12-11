@@ -97,7 +97,7 @@ def get_conf(args):
 
 def set_xsel(configp, OSX):
     if not OSX:
-        xselpath = shutil.which("xsel")
+        xselpath = shutil.which("xsel") or ""
         configp.set_value("Global", "xsel", xselpath)
     elif OSX:
         pbcopypath = shutil.which("pbcopy")

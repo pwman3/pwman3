@@ -106,7 +106,7 @@ class SetupTester(object):
                                )
 
         if not OSX:
-            self.xselpath = shutil.which("xsel")
+            self.xselpath = shutil.which("xsel") or ""
             self.configp.set_value("Global", "xsel", self.xselpath)
         else:
             self.xselpath = "xsel"
