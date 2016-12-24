@@ -221,11 +221,7 @@ class BaseUtilsMixin:
 
     def _prep_term(self):
         self.do_cls('')
-        if sys.platform != 'win32':
-            rows, cols = tools.gettermsize()
-        else:  # pragma: no cover
-            rows, cols = 18, 80  # fix this !
-
+        rows, cols = shutil.get_terminal_size()
         return rows, cols
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
