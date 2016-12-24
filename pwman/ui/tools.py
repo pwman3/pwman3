@@ -14,12 +14,12 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2017 Oz Nahum Tiram <oz.tiram@gmail.com>
 # ============================================================================
 """
 Define the CLI interface for pwman3 and the helper functions
 """
-from __future__ import print_function
+
 import subprocess as sp
 import getpass
 import sys
