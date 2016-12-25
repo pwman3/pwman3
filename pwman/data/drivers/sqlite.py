@@ -57,7 +57,12 @@ class SQLite(Database):
         self._data_wrapper = lambda x: x
 
     def _open(self):
-        self._con = sqlite.connect(self._filename)
+        try:
+            self._con = sqlite.connect(self._filename)
+        except sqlite.OperationalError as E:
+            print("could not open %s" % self._fname)
+            raise E
+
         self._cur = self._con.cursor()
         self._create_tables()
 
