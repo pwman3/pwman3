@@ -33,7 +33,7 @@ install:
   - "%PYTHON%/Scripts/pip.exe install -r requirements.txt"
 
 test_script:
-  - C:/mongodb/bin/mongo.exe pwmantest --eval "db.createUser({user: \"tester\", pwd: \"12345678\"});"
+  - C:/mongodb/bin/mongo.exe pwmantest tests/init_mongo.js
   - psql -c "CREATE USER tester WITH PASSWORD '123456';"
   - psql -c "create database pwman"
   - psql -c "grant ALL ON DATABASE pwman to tester"
