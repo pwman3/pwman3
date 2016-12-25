@@ -60,7 +60,7 @@ class SQLite(Database):
         try:
             self._con = sqlite.connect(self._filename)
         except sqlite.OperationalError as E:
-            print("could not open %s" % self._fname)
+            print("could not open %s" % self._filename)
             raise E
 
         self._cur = self._con.cursor()
