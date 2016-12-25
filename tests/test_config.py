@@ -64,7 +64,7 @@ class TestConfig(unittest.TestCase):
     #                                                     'algorithm'))
 
     def test_has_user_history(self):
-        self.assertEqual(os.path.expanduser(os.path.join("pwman", "history")),
+        self.assertEqual(os.path.expanduser(os.path.join("~pwman", "history")),
                          self.conf.get_value('Readline', 'history'))
 
     def test_has_user_db(self):
