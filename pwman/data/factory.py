@@ -74,6 +74,7 @@ def check_db_version(dburi):
 def createdb(dburi, version):
 
     dburi = urlparse(dburi)
+    print("dburi : {}".format(dburi))
     dbtype = dburi.scheme
     try:
         cls = getattr(drivers, create_db_map[dbtype][0])

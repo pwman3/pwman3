@@ -31,6 +31,7 @@ from pwman.data.nodes import Node
 testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       "test-baseui.pwman.db"))
 
+print(testdb)
 
 class dummy_stdin(object):
 
