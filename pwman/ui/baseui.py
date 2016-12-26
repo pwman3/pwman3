@@ -356,9 +356,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         self._db.close()
         return True
 
-    def do_cls(self, args):  # pragma: no cover
-        """clear the screen"""
-        os.system("clear")
+
 
     def do_export(self, args):
         """export the database to a given format"""
@@ -371,6 +369,8 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         delim = args.get('delimiter', ';')
         nodeids = self._db.listnodes()
         nodes = self._db.getnodes(nodeids)
+        print("filename {}".format(filename))
+        print("wd {}".format(os.getcwd()))
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)
             writer.writerow(['Username', 'URL', 'Password', 'Notes',
