@@ -63,6 +63,9 @@ class TestBaseUI(unittest.TestCase):
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()
 
+    def tearDown(self):
+        self.tester.cli.do_exit("")
+
     def test_get_tags(self):
         sys.stdin = StringIO("foo bar baz\n")
         tags = self.tester.cli._get_tags(reader=lambda: "foo bar baz")
