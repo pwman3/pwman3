@@ -103,11 +103,12 @@ class TestBaseUI(unittest.TestCase):
         self.tester.cli.do_export("{'filename':'foo.csv'}")
         with open('foo.csv') as f:
             l = f.readlines()
-
         self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+    def test_3a_do_export(self):
         self.tester.cli.do_export("f")
         with open('pwman-export.csv') as f:
             l = f.readlines()
+
         self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
 
     def test_4_do_forget(self):
