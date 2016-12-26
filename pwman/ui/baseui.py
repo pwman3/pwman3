@@ -351,15 +351,14 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             if re.search(r'^\d{4}$', umask):
                 os.umask(int(umask))
 
-    def do_cls(self, args):
-        pass
+    def do_cls(self, args):  # pragma: no cover
+        """clear the screen"""
+        os.system("clear")
 
     def do_exit(self, args):  # pragma: no cover
         """close the text console"""
         self._db.close()
         return True
-
-
 
     def do_export(self, args):
         """export the database to a given format"""
@@ -388,7 +387,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         with open(filename) as f:
             for line in f.readlines():
-                print(f)
+                print(line)
 
         print("Successfuly exported database to {}".format(
             os.path.join(os.getcwd(), filename)))
