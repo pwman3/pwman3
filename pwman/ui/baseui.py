@@ -369,8 +369,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         delim = args.get('delimiter', ';')
         nodeids = self._db.listnodes()
         nodes = self._db.getnodes(nodeids)
-        print("filename {}".format(filename))
-        print("wd {}".format(os.getcwd()))
+
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)
             writer.writerow(['Username', 'URL', 'Password', 'Notes',
@@ -383,6 +382,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
                 tags = ','.join(t.strip().decode() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
                 writer.writerow(r + [tags])
+
+        with open(filename) as f:
+            for line in f.readlines():
+                print(f)
 
         print("Successfuly exported database to {}".format(
             os.path.join(os.getcwd(), filename)))
