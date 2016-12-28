@@ -64,7 +64,8 @@ class TestBaseUI(unittest.TestCase):
         self.tester.create()
 
     def tearDown(self):
-        self.tester.cli.do_exit("")
+        #self.tester.cli.do_exit("")
+        pass
 
     def test_get_tags(self):
         sys.stdin = StringIO("foo bar baz\n")
@@ -103,13 +104,14 @@ class TestBaseUI(unittest.TestCase):
         self.tester.cli.do_export("{'filename':'foo.csv'}")
         with open('foo.csv') as f:
             l = f.readlines()
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+        # on windows there is an extra empty line in the exported file
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
     def test_3a_do_export(self):
         self.tester.cli.do_export("f")
         with open('pwman-export.csv') as f:
             l = f.readlines()
 
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
 
     def test_4_do_forget(self):
         self.tester.cli.do_forget('')
