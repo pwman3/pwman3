@@ -18,6 +18,8 @@
 # ============================================================================
 import os
 import unittest
+import sys
+
 from collections import namedtuple
 import pwman.data.factory
 from pwman.util.crypto_engine import CryptoEngine
@@ -94,7 +96,11 @@ class TestImporter(unittest.TestCase):
         if os.path.exists('importdummy.db'):
             os.unlink('importdummy.db')
         args = Args(file_delim=['import_file.csv', ';'], db='importdummy.db')
-        db = pwman.data.factory.createdb('sqlite:///' + os.getcwd() +
+        p = os.getcwd()
+        if sys.platform.startswith("win"):
+            p = p.strip("C:\\")
+
+        db = pwman.data.factory.createdb('sqlite:///' + p +
                                          '/importdummy.db', 0.6)
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
