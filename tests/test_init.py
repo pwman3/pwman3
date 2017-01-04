@@ -73,7 +73,7 @@ class TestInit(unittest.TestCase):
         self.tester.create()
 
     def tearDown(self):
-        self.db._conn.close()
+        self.db._con.close()
         os.unlink(self.db._filename)
 
     def test_get_db_version(self):
