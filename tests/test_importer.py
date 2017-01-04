@@ -99,6 +99,7 @@ class TestImporter(unittest.TestCase):
         p = os.getcwd()
         if sys.platform.startswith("win"):
             p = p.strip("C:\\")
+            print(os.getcwd())
 
         db = pwman.data.factory.createdb('sqlite:///' + p +
                                          '/importdummy.db', 0.6)
