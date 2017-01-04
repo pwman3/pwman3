@@ -40,6 +40,9 @@ class SQLite(Database):
         cur = con.cursor()
         cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
         row = cur.fetchone()
+        cur.close()
+        con.close()
+
         try:
             return row[-2]
         except TypeError:
