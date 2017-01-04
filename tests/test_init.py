@@ -73,6 +73,7 @@ class TestInit(unittest.TestCase):
         self.tester.create()
 
     def tearDown(self):
+        del(self.tester)
         os.unlink(self.db._filename)
 
     def test_get_db_version(self):
@@ -80,7 +81,6 @@ class TestInit(unittest.TestCase):
         self.assertEqual(v, u"'0.6'")
         v = get_db_version(self.tester.configp, 'sqlite')
         self.assertEqual(v, u"'0.6'")
-        #os.unlink(testdb)
 
     def test_set_xsel(self):
         Args = namedtuple('args', 'cfile, dbase, algo')

@@ -137,3 +137,6 @@ class SetupTester(object):
         db = factory.createdb(self.dburi, self.dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback,
                                config_parser=self.configp)
+
+    def __del__(self):
+        self.cli.do_exit("")
