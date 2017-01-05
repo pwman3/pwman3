@@ -51,7 +51,7 @@ test-all:
 	tox
 
 coverage-run:
-	coverage run --source pwman setup.py test
+	coverage run -m tests.test_pwman
 	coverage report -m
 	@coverage html
 
