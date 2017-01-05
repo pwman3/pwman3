@@ -18,6 +18,7 @@
 # ============================================================================
 # pylint: disable=I0011
 from __future__ import print_function
+
 import pexpect
 import unittest
 import shutil
