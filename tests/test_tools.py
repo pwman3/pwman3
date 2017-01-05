@@ -65,15 +65,13 @@ class DummyCallback4(Callback):
     def getsecret(self, question):
         return b'newsecret'
 
+db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
 
 config.default_config['Database'] = {'type': 'sqlite',
-                                     'filename':
-                                     os.path.join(os.path.dirname(__file__),
-                                                  "test.pwman.db"),
+                                     'filename': testdb,
                                      'dburi': os.path.join(
-                                         'sqlite:///',
-                                         os.path.dirname(__file__),
-                                         "test.pwman.db")
+                                         'sqlite:///', testdb)
                                      }
 
 dc = """
@@ -86,10 +84,6 @@ cls_timeout = 5
 [Database]
 type = SQLite
 """
-
-
-db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
-testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
 
 
 class SetupTester(object):
@@ -139,6 +133,3 @@ class SetupTester(object):
         db = factory.createdb(self.dburi, self.dbver)
         self.cli = PwmanCliNew(db, self.xselpath, DummyCallback,
                                config_parser=self.configp)
-
-    def __del__(self):
-        self.cli.do_exit("")
