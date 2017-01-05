@@ -20,7 +20,6 @@ import os
 import unittest
 from io import StringIO, BytesIO
 
-import sys
 from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
 from pwman.data.database import __DB_FORMAT__
@@ -28,8 +27,8 @@ from .test_tools import (SetupTester)
 from pwman.data import factory
 from pwman.data.nodes import Node
 
-testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      "test-baseui.pwman.db"))
+db =  ".".join(("test-baseui","pwman", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
 
 print(testdb)
 

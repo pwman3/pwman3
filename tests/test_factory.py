@@ -14,13 +14,14 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2013-2014 Oz Nahum Tiram <nahumoz@gmail.com>
+# Copyright (C) 2013-2017 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 
-import sys
-import unittest
 import os
 import os.path
+import unittest
+import sys
+
 from pwman.data import factory
 from pwman.data.database import DatabaseException
 from pwman.data.drivers.sqlite import SQLite
@@ -28,8 +29,9 @@ from pwman.data.drivers.postgresql import PostgresqlDatabase
 from pwman.data.database import __DB_FORMAT__
 from .test_tools import (SetupTester)
 
-testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      "test.pwman.db"))
+db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
+
 _saveconfig = False
 
 
