@@ -18,6 +18,7 @@
 # ============================================================================
 import os
 import unittest
+import sys
 from io import StringIO, BytesIO
 
 from pwman.util.crypto_engine import CryptoEngine
