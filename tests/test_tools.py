@@ -113,11 +113,14 @@ class SetupTester(object):
     def clean(self):
         dbfile = self.configp.get_value('Database', 'filename')
         dburi = urlparse(self.configp.get_value('Database', 'dburi')).path
-        if os.path.exists(dbfile):
-            os.remove(dbfile)
+        try:
+            if os.path.exists(dbfile):
+                os.remove(dbfile)
 
-        if os.path.exists(dburi):
-            os.remove(dburi)
+            if os.path.exists(dburi):
+                os.remove(dburi)
+        except PermissionError:
+            pass
 
         if os.path.exists(os.path.join(os.path.dirname(__file__),
                                        'testing_config')):

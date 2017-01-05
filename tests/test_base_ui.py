@@ -132,7 +132,6 @@ class TestBaseUI(unittest.TestCase):
         for t in ['foo', 'bar', 'baz']:
             t in v
         sys.stdout = sys.__stdout__
-        print(v)
 
     def test_7_get_ids(self):
         # used by do_cp or do_open,
