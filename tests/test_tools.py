@@ -88,6 +88,10 @@ type = SQLite
 """
 
 
+db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
+
+
 class SetupTester(object):
 
     def __init__(self, dbver=None, filename=None, dburi=None):
@@ -100,9 +104,7 @@ class SetupTester(object):
                                      config.default_config)
 
         self.configp.set_value('Database', 'dburi',
-                               'sqlite://' + os.path.join(
-                                   os.path.abspath(os.path.dirname(__file__)),
-                                   "test.pwman.db")
+                               'sqlite://' + testdb
                                )
 
         if not OSX:
