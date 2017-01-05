@@ -65,7 +65,7 @@ class TestInit(unittest.TestCase):
         for item in ('dummy.cfg', testdb):
             try:
                 os.unlink(item)
-            except OSError:
+            except (OSError, PermissionError):
                 continue
 
     def setUp(self):
@@ -78,7 +78,10 @@ class TestInit(unittest.TestCase):
 
     def tearDown(self):
         del(self.tester)
-        os.unlink(self.db._filename)
+        try:
+            os.unlink(self.db._filename)
+        except PermissionError:
+            pass
 
     def test_get_db_version(self):
         v = get_db_version(self.tester.configp, 'sqlite')
