@@ -51,21 +51,3 @@ class PwmanCliMac(PwmanCli):
             print("erasing in {} sec...".format(flushtimeout))
             time.sleep(int(flushtimeout))
             tools.text_to_mcclipboard("")
-
-    def do_open(self, args):
-        ids = self._get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print("Can open only 1 link at a time ...")
-            return None
-
-        ce = CryptoEngine.get()
-        nodes = self._db.getnodes(ids)
-
-        for node in nodes:
-            url = ce.decrypt(node[3])
-            if not url.startswith(("http://", "https://")):
-                url = "https://" + url
-            tools.open_url(url, macosx=True)

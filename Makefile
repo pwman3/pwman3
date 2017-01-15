@@ -43,7 +43,7 @@ pre-test:
 	$(shell sudo service mysql start)
 	$(shell sudo service mongodb start)
 
-test: install clean
+test: clean install
 	python setup.py test
 	@rm -f tests/test.conf
 
@@ -51,7 +51,7 @@ test-all:
 	tox
 
 coverage-run:
-	coverage run --source pwman setup.py test
+	coverage run -m tests.test_pwman
 	coverage report -m
 	@coverage html
 
@@ -75,5 +75,4 @@ dist: clean
 	ls -l dist
 
 install:
-	pip uninstall -y pwman3
 	pip install -e .

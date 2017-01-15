@@ -67,7 +67,7 @@ def winGetClipboard():
 
 
 def winSetClipboard(text):
-    
+
     GMEM_DDESHARE = 0x2000
     ctypes.windll.user32.OpenClipboard(0)
     ctypes.windll.user32.EmptyClipboard()
@@ -118,24 +118,6 @@ class PwmanCliWin(PwmanCli):
             print("erasing in {} sec...".format(flushtimeout))
             time.sleep(int(flushtimeout))
             winSetClipboard(b"")
-
-    def do_open(self, args):
-        ids = self._get_ids(args)
-        if not args:
-            self.help_open()
-            return
-        if len(ids) > 1:
-            print ("Can open only 1 link at a time ...")
-            return None
-
-        ce = CryptoEngine.get()
-        nodes = self._db.getnodes(ids)
-
-        for node in nodes:
-            url = ce.decrypt(node[3])
-            if not url.startswith(("http://", "https://")):
-                url = "https://" + url
-            os.system("start "+url)
 
     def do_cls(self, args):
         os.system('cls')

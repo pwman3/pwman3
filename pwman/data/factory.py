@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012-2015 Oz Nahum Tiram <nahumoz@gmail.com>
+# Copyright (C) 2012-2016 Oz Nahum Tiram <oz.tiram@gmail.com>
 # ============================================================================
 
 import sys
@@ -30,6 +30,9 @@ from pwman.data import drivers
 
 
 def parse_sqlite_uri(dburi):
+    """return dburi.netloc if on windows, because this was someone break"""
+    if not dburi.path:
+        return dburi.netloc
     filename = os.path.abspath(dburi.path)
     return filename
 

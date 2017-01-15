@@ -53,7 +53,8 @@ _saveconfig = False
 from .test_tools import (SetupTester)  # DummyCallback2,
                          #  DummyCallback3, DummyCallback4)
 
-testdb = os.path.join(os.path.dirname(__file__), "test.pwman.db")
+db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
 
 
 class CLITests(unittest.TestCase):

@@ -8,7 +8,7 @@ echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "LANG=en_US.UTF-8" >> /etc/environment
 
 PACKAGES="python-psycopg2 sqlite3 git postgresql-server-dev-9.3 \
-python-dev python3-dev \
+python-dev python3-dev libffi-dev \
 postgresql-9.3 python3-psycopg2 mysql-server-5.6 build-essential"
 
 

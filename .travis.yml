@@ -1,6 +1,6 @@
 language: python
 python:
-  - 3.4 
+  - 3.4
   - 3.5
 
 services:
@@ -10,7 +10,7 @@ before_script:
   - psql -c "CREATE USER tester WITH PASSWORD '123456';" -U postgres
   - psql -c 'create database pwman;' -U postgres
   - psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
-  - mysql -e 'create database pwmantest' -uroot 
+  - mysql -e 'create database pwmantest' -uroot
   - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'" -uroot
   - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';" -uroot
   - mongo pwmantest --eval 'db.addUser("tester", "12345678");'
@@ -20,15 +20,15 @@ before_install:
   - sudo apt-get install python-psycopg2 python3-psycopg2
   - sudo apt-get install python-mysqldb
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: 
-  - "pip install pymongo==2.8"  
-  - "pip install pymysql"   
+install:
+  - "pip install pymongo==2.8"
+  - "pip install pymysql"
   - "pip install -r requirements.txt -r test_requirements.txt"
   - "pip install coveralls"
   - "pip install ."
 # command to run tests, e.g. python setup.py test
-script:  
-  python setup.py develop && coverage run --source=pwman setup.py test
-    
+script:
+  python setup.py develop && coverage run -m tests.test_pwman
+
 after_success:
   coveralls
