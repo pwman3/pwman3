@@ -37,6 +37,7 @@ class Node(object):
                           kwargs.get('tags', '')]
 
     def __str__(self):
+        tags =",".join(self.tags) if len(self.tags) > 1 else self.tags[0].decode()  # noqa
         p = "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Username:', Fore.RED),
             width=10, entry=str(self.username))
@@ -51,7 +52,8 @@ class Node(object):
             width=10, entry=str(self.notes))
         p += "{entry_title:>{width}} {entry:<{width}}\n".format(
             entry_title=pwman.ui.tools.typeset('Tags:', Fore.RED),
-            width=10, entry=str(self.tags))
+            width=10,
+            entry=tags)
         return p
 
     def to_encdict(self):
