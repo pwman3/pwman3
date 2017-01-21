@@ -204,6 +204,8 @@ class BaseUtilsMixin:
                 ids.append(int(begin))
         else:
             print("Could not understand your input...")
+            return ids
+
         return ids
 
     def _get_tags(self, default=None, reader=raw_input):
@@ -480,11 +482,13 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_delete(self, args):
         ids = self._get_ids(args)
+        if not ids:
+            return
         ans = tools.getinput("Are you sure you want to delete node{} {}"
                              " [y/N]?".format("s" if len(ids) > 1 else "",
                                               ",".join(ids) if len(ids) > 1 else ids[0]))  # noqa
         if ans.lower() == 'y':
-            self._do_rm(args)
+            self._do_rm(ids)
 
     def do_info(self, args):
         print("Currently connected to: {}".format(
