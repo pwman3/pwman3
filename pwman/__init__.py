@@ -151,6 +151,8 @@ def is_latest_version(version, client_info):  # pragma: no cover
                          version, sys.platform, client_info))
         r = conn.getresponse()
         data = r.read()  # This will return entire content.
+        if r.status != 200:
+            return None, True
         if data.decode().split(".") > version.split("."):
             return None, False
         else:
