@@ -64,7 +64,8 @@ class TestCommand(Command):
         pass
 
     def run(self):
-        import sys, subprocess
+        import sys
+        import subprocess
 
         raise SystemExit(
             subprocess.call([sys.executable,
@@ -307,6 +308,7 @@ class ManPageCreator(object):
         return '.SH NAME\n%s \\- %s\n' % (distribution.get_name(),
                                           distribution.get_description())
 
+
 sys.path.insert(0, os.getcwd())
 
 
@@ -327,7 +329,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.9.4',
+      version='0.9.5',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,
