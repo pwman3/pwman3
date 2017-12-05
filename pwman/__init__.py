@@ -19,7 +19,7 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 import argparse
-import http.client
+import urllib.request
 import os
 import pkg_resources
 import re
@@ -55,6 +55,7 @@ class PkgMetadata(object):
         self.author_email = lines[6].split(':')[-1].strip()
         self.author = lines[5].split(':')[-1].strip()
         self.home_page = lines[4].split(':')[-1].strip()
+
 
 try:
     pkg_meta = PkgMetadata()
@@ -145,13 +146,13 @@ def calculate_client_info():  # pragma: no cover
 def is_latest_version(version, client_info):  # pragma: no cover
     """check current version againt latest version"""
     try:
-        conn = http.client.HTTPSConnection("pwman.tiram.it", timeout=0.5)
-        conn.request("GET",
-                     "/is_latest/?current_version={}&os={}&hash={}".format(
-                         version, sys.platform, client_info))
-        r = conn.getresponse()
-        data = r.read()  # This will return entire content.
-        if r.status != 200:
+        url = ("https://pwman.tiram.it/is_latest/?"
+               "current_version={}&os={}&hash={}".format(
+                version, sys.platform, client_info))
+        res = urllib.request.urlopen(url, timeout=0.5)
+        data = res.read()  # This will return entire content.
+
+        if res.status != 200:
             return None, True
         if data.decode().split(".") > version.split("."):
             return None, False
