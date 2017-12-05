@@ -1,6 +1,8 @@
 import os
 import os.path
+import shutil
 import sys
+
 if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:
@@ -8,7 +10,6 @@ else:
 
 from pwman.data import factory
 from pwman.util import config
-from pwman import which
 from pwman.util.callback import Callback
 
 
@@ -64,15 +65,13 @@ class DummyCallback4(Callback):
     def getsecret(self, question):
         return b'newsecret'
 
+db =  ".".join(("pwman","test", sys.version.split(" " ,1)[0], "db"))
+testdb = os.path.abspath(os.path.join(os.path.dirname(__file__), db))
 
 config.default_config['Database'] = {'type': 'sqlite',
-                                     'filename':
-                                     os.path.join(os.path.dirname(__file__),
-                                                  "test.pwman.db"),
+                                     'filename': testdb,
                                      'dburi': os.path.join(
-                                         'sqlite:///',
-                                         os.path.dirname(__file__),
-                                         "test.pwman.db")
+                                         'sqlite:///', testdb)
                                      }
 
 dc = """
@@ -99,13 +98,11 @@ class SetupTester(object):
                                      config.default_config)
 
         self.configp.set_value('Database', 'dburi',
-                               'sqlite://' + os.path.join(
-                                   os.path.abspath(os.path.dirname(__file__)),
-                                   "test.pwman.db")
+                               'sqlite://' + testdb
                                )
 
         if not OSX:
-            self.xselpath = which("xsel")
+            self.xselpath = shutil.which("xsel") or ""
             self.configp.set_value("Global", "xsel", self.xselpath)
         else:
             self.xselpath = "xsel"
@@ -116,11 +113,14 @@ class SetupTester(object):
     def clean(self):
         dbfile = self.configp.get_value('Database', 'filename')
         dburi = urlparse(self.configp.get_value('Database', 'dburi')).path
-        if os.path.exists(dbfile):
-            os.remove(dbfile)
+        try:
+            if os.path.exists(dbfile):
+                os.remove(dbfile)
 
-        if os.path.exists(dburi):
-            os.remove(dburi)
+            if os.path.exists(dburi):
+                os.remove(dburi)
+        except PermissionError:
+            pass
 
         if os.path.exists(os.path.join(os.path.dirname(__file__),
                                        'testing_config')):

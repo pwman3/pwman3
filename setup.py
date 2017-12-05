@@ -54,6 +54,23 @@ add to your ```setup.cfg``` the following::
 
 # build.sub_commands.append(('build_manpage', None))
 
+class TestCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys, subprocess
+
+        raise SystemExit(
+            subprocess.call([sys.executable,
+                             '-m',
+                             'tests.test_pwman']))
+
 
 class BuildManPage(Command):
 
@@ -310,7 +327,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.9.2',
+      version='0.9.4',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,
@@ -337,9 +354,9 @@ setup(name='pwman3',
                    'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
                    ],
-      test_suite='tests.test_pwman.suite',
       cmdclass={
-          'build_manpage': BuildManPage
+          'build_manpage': BuildManPage,
+          'test': TestCommand
       },
       entry_points={
           'console_scripts': ['pwman3 = pwman.ui.cli:main']

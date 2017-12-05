@@ -18,18 +18,15 @@
 # ============================================================================
 import os
 import unittest
+import sys
 from io import StringIO, BytesIO
 
-import sys
 from pwman.util.crypto_engine import CryptoEngine
 from .test_crypto_engine import give_key, DummyCallback
 from pwman.data.database import __DB_FORMAT__
-from .test_tools import (SetupTester)
+from .test_tools import (SetupTester, testdb)
 from pwman.data import factory
 from pwman.data.nodes import Node
-
-testdb = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      "test-baseui.pwman.db"))
 
 
 class dummy_stdin(object):
@@ -61,6 +58,10 @@ class TestBaseUI(unittest.TestCase):
         self.db = factory.createdb('sqlite://' + testdb, dbver)
         self.tester = SetupTester(dbver, testdb)
         self.tester.create()
+
+    def tearDown(self):
+        #self.tester.cli.do_exit("")
+        pass
 
     def test_get_tags(self):
         sys.stdin = StringIO("foo bar baz\n")
@@ -99,12 +100,14 @@ class TestBaseUI(unittest.TestCase):
         self.tester.cli.do_export("{'filename':'foo.csv'}")
         with open('foo.csv') as f:
             l = f.readlines()
-
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+        # on windows there is an extra empty line in the exported file
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
+    def test_3a_do_export(self):
         self.tester.cli.do_export("f")
         with open('pwman-export.csv') as f:
             l = f.readlines()
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz', l[1])
+
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
 
     def test_4_do_forget(self):
         self.tester.cli.do_forget('')
@@ -129,7 +132,6 @@ class TestBaseUI(unittest.TestCase):
         for t in ['foo', 'bar', 'baz']:
             t in v
         sys.stdout = sys.__stdout__
-        print(v)
 
     def test_7_get_ids(self):
         # used by do_cp or do_open,
@@ -179,7 +181,7 @@ class TestBaseUI(unittest.TestCase):
         self.output = StringIO()
         sys.stdout = self.output
         self.tester.cli.do_info(b'')
-        self.assertIn("test.pwman.db", sys.stdout.getvalue())
+        self.assertIn(testdb, sys.stdout.getvalue())
 
 if __name__ == '__main__':
 

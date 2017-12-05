@@ -14,16 +14,17 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2013, 2014 Oz Nahum Tiram <nahumoz@gmail.com>
+# Copyright (C) 2013-2017 Oz Nahum Tiram <oz.tiram@gmail.com>
 # ============================================================================
-from __future__ import print_function
-import sys
-import os
 import ast
 import csv
-import time
+import os
 import re
 import select as uselect
+import shutil
+import sys
+import time
+
 from colorama import Fore
 from pwman.data.nodes import Node
 from pwman.ui import tools
@@ -203,6 +204,8 @@ class BaseUtilsMixin:
                 ids.append(int(begin))
         else:
             print("Could not understand your input...")
+            return ids
+
         return ids
 
     def _get_tags(self, default=None, reader=raw_input):
@@ -221,11 +224,7 @@ class BaseUtilsMixin:
 
     def _prep_term(self):
         self.do_cls('')
-        if sys.platform != 'win32':
-            rows, cols = tools.gettermsize()
-        else:  # pragma: no cover
-            rows, cols = 18, 80  # fix this !
-
+        rows, cols = shutil.get_terminal_size()
         return rows, cols
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
@@ -354,14 +353,14 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             if re.search(r'^\d{4}$', umask):
                 os.umask(int(umask))
 
+    def do_cls(self, args):  # pragma: no cover
+        """clear the screen"""
+        os.system("clear")
+
     def do_exit(self, args):  # pragma: no cover
         """close the text console"""
         self._db.close()
         return True
-
-    def do_cls(self, args):  # pragma: no cover
-        """clear the screen"""
-        os.system("clear")
 
     def do_export(self, args):
         """export the database to a given format"""
@@ -374,6 +373,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         delim = args.get('delimiter', ';')
         nodeids = self._db.listnodes()
         nodes = self._db.getnodes(nodeids)
+
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)
             writer.writerow(['Username', 'URL', 'Password', 'Notes',
@@ -386,6 +386,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
                 tags = ','.join(t.strip().decode() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
                 writer.writerow(r + [tags])
+
+        with open(filename) as f:
+            for line in f.readlines():
+                print(line)
 
         print("Successfuly exported database to {}".format(
             os.path.join(os.getcwd(), filename)))
@@ -478,11 +482,13 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_delete(self, args):
         ids = self._get_ids(args)
+        if not ids:
+            return
         ans = tools.getinput("Are you sure you want to delete node{} {}"
                              " [y/N]?".format("s" if len(ids) > 1 else "",
                                               ",".join(ids) if len(ids) > 1 else ids[0]))  # noqa
         if ans.lower() == 'y':
-            self._do_rm(args)
+            self._do_rm(ids)
 
     def do_info(self, args):
         print("Currently connected to: {}".format(

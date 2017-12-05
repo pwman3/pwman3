@@ -24,6 +24,7 @@ import os
 import pkg_resources
 import re
 import string
+import shutil
 import sys
 from pwman.util import config
 from pwman.data.factory import check_db_version
@@ -40,7 +41,7 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.9.1"
+    version = "0.9.4"
 
 
 class PkgMetadata(object):
@@ -66,16 +67,6 @@ except IOError as E:
     # this should only happen once when installing the package
     description = "a command line password manager with support for multiple databases."  # noqa
     website = 'http://pwman3.github.io/pwman3/'
-
-
-def which(cmd):  # pragma: no cover
-    _, cmdname = os.path.split(cmd)
-
-    for path in os.environ["PATH"].split(os.pathsep):
-        cmd = os.path.join(path, cmdname)
-        if os.path.isfile(cmd) and os.access(cmd, os.X_OK):  # pragma: no cover
-            return cmd
-    return ''
 
 
 config_dir = os.path.expanduser("~/.pwman")
@@ -106,10 +97,10 @@ def get_conf(args):
 
 def set_xsel(configp, OSX):
     if not OSX:
-        xselpath = which("xsel")
+        xselpath = shutil.which("xsel") or ""
         configp.set_value("Global", "xsel", xselpath)
     elif OSX:
-        pbcopypath = which("pbcopy")
+        pbcopypath = shutil.which("pbcopy") or ""
         configp.set_value("Global", "xsel", pbcopypath)
 
 
@@ -154,12 +145,14 @@ def calculate_client_info():  # pragma: no cover
 def is_latest_version(version, client_info):  # pragma: no cover
     """check current version againt latest version"""
     try:
-        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+        conn = http.client.HTTPSConnection("pwman.tiram.it", timeout=0.5)
         conn.request("GET",
                      "/is_latest/?current_version={}&os={}&hash={}".format(
                          version, sys.platform, client_info))
         r = conn.getresponse()
         data = r.read()  # This will return entire content.
+        if r.status != 200:
+            return None, True
         if data.decode().split(".") > version.split("."):
             return None, False
         else:

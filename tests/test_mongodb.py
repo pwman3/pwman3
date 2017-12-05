@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2015 Oz Nahum Tiram <nahumoz@gmail.com>
+# Copyright (C) 2015-2017 Oz Nahum Tiram <oz.tiram@gmail.com>
 # ============================================================================
 
 import unittest
