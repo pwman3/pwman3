@@ -41,7 +41,7 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.9.3"
+    version = "0.9.4"
 
 
 class PkgMetadata(object):
@@ -145,12 +145,14 @@ def calculate_client_info():  # pragma: no cover
 def is_latest_version(version, client_info):  # pragma: no cover
     """check current version againt latest version"""
     try:
-        conn = http.client.HTTPConnection("pwman.tiram.it", timeout=0.5)
+        conn = http.client.HTTPSConnection("pwman.tiram.it", timeout=0.5)
         conn.request("GET",
                      "/is_latest/?current_version={}&os={}&hash={}".format(
                          version, sys.platform, client_info))
         r = conn.getresponse()
         data = r.read()  # This will return entire content.
+        if r.status != 200:
+            return None, True
         if data.decode().split(".") > version.split("."):
             return None, False
         else:
