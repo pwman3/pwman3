@@ -1,0 +1,21 @@
+[[source]]
+
+verify_ssl = true
+url = "https://pypi.python.org/simple"
+name = "pypi"
+
+
+[dev-packages]
+
+"psycopg2" = "*"
+PyMySQL = "*"
+pymongo = "==2.8"
+pexpect = "*"
+coverage = "*"
+"unittest2" = "*"
+
+
+[packages]
+
+cryptography = "*"
+colorama = ">=0.2.4"
