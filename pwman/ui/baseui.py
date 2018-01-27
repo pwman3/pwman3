@@ -481,6 +481,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         self.do_cls('')
 
     def do_delete(self, args):
+
+        ce = CryptoEngine.get()
+        ce.encrypt("")
+
         ids = self._get_ids(args)
         if not ids:
             return
