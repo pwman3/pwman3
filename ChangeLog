@@ -1,3 +1,7 @@
+2018-Januar-28 Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release version 0.9.6
+	* bug fix, could remove node without authentication
+
 2017-December-5 Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release 0.9.5
 	* Use urllib.request instead of http.client.HTTPSconnection
