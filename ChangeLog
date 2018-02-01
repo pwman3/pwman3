@@ -1,3 +1,7 @@
+2018-Februar-01 Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release version 0.9.7
+	* bug fix, crash when node has no tags
+
 2018-Januar-28 Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release version 0.9.6
 	* bug fix, could remove node without authentication
