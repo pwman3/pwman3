@@ -67,12 +67,12 @@ You can also install PWMAN3 using python pip:
       ...
       cls_timeout = 10
       ```
-      To disable the automatic 'clear screen' functionality set `cls_timeout` to a negative integer. 
+      To disable the automatic 'clear screen' functionality set `cls_timeout` to 0. 
 
       ```
       [Global]
       ...
-      cls_timeout = -1
+      cls_timeout = 0
       ```
  * making a password from the numeric character and the alphabet character ([A-Za-z0-9]).
 
