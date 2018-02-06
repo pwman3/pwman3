@@ -54,7 +54,7 @@ Following is a table describing the parameters and their meanings:
     ---------------------    -----------
     cp_timeout               Number of seconds before the clipboard is erased.
     ---------------------    -----------
-    cls_timeout              Number of seconds before the screen is clean after a print.
+    cls_timeout              Number of seconds before the screen is clean after a print. Set to 0 to disable.
     ---------------------    -----------
     umask                    The umask in which database and configuration files are written.
     ---------------------    -----------
