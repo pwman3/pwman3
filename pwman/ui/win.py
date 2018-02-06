@@ -94,12 +94,14 @@ class PwmanCliWin(PwmanCli):
         node = self._db_entries_to_nodes(nodes)[0]
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
-        flushtimeout = flushtimeout or 10
+        flushtimeout = int(flushtimeout) if flushtimeout else 10
 
-        print("Type Enter to flush screen or wait %s sec. " % flushtimeout)
+        if flushtimeout > 0:
+            flushtimeout = flushtimeout or 10
+            print("Type Enter to flush screen or wait %d sec. " % flushtimeout)
 
-        _wait_until_enter(heardEnterWin, float(flushtimeout))
-        self.do_cls('')
+            _wait_until_enter(heardEnterWin, flushtimeout)
+            self.do_cls('')
 
     def do_copy(self, args):
         ids = self._get_ids(args)
