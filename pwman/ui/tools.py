@@ -217,10 +217,11 @@ def set_selection(new_node, items, selection, reader):  # pragma: no cover
         new_node.notes = getinput("Notes :", new_node.notes)
         items[3].getter = new_node.notes
     elif selection == 4:
-        taglist = getinput("Tags:", " ".join(new_node.tags))
+        taglist = getinput(
+            "Tags:", " ".join(t.encode() for t in new_node.tags))
         tags = taglist.split()
         new_node.tags = tags
-        items[4].getter = ','.join(new_node.tags)
+        items[4].getter = ','.join(t.encode() for t in new_node.tags)
 
 
 class CMDLoop(object):
