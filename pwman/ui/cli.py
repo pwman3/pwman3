@@ -134,6 +134,10 @@ def main():
 
     cli = PwmanCli(db, xselpath, CLICallback, config)
 
+    if args.cmd == "p":
+        cli.onecmd("p %s" % args.node)
+        sys.exit(1)
+
     try:
         cli.cmdloop()
     except KeyboardInterrupt as e:

@@ -83,6 +83,10 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
                         help="Specify the file name and the delimeter type")
+    subparsers = parser.add_subparsers(help='commands', dest="cmd")
+
+    printer = subparsers.add_parser('p', help='print password entry')
+    printer.add_argument("node", type=int)
     return parser
 
 
