@@ -135,7 +135,11 @@ def main():
     cli = PwmanCli(db, xselpath, CLICallback, config)
 
     if args.cmd == "p":
-        cli.onecmd("p %s" % args.node)
+        cli.onecmd("pp %s" % args.node)
+        sys.exit(1)
+
+    if args.cmd == "cp":
+        cli.onecmd("cp %s" % args.node)
         sys.exit(1)
 
     try:
