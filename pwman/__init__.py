@@ -70,9 +70,6 @@ except IOError as E:
     website = 'http://pwman3.github.io/pwman3/'
 
 
-config_dir = os.path.expanduser("~/.pwman")
-
-
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     parser = argparse.ArgumentParser(prog='pwman3',
                                      description=description,
@@ -94,7 +91,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
 
 
 def get_conf(args):
-    config_dir = os.path.expanduser("~/.pwman")
+    config_dir = config.find_config_dir('pwman')
 
     if not os.path.isdir(config_dir):  # pragma: no cover
         os.mkdir(config_dir)

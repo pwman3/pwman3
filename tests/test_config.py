@@ -20,6 +20,7 @@
 import os
 import sys
 import unittest
+import unittest.mock
 from pwman.util import config
 
 
@@ -41,6 +42,50 @@ type = SQLite
 """)
 
 
+class TestFindConfigWindows(unittest.TestCase):
+
+    def test_windows_platfrom(self):
+
+        with unittest.mock.patch('platform.system') as pl:
+            pl.return_value = 'Windows'
+            os.environ['APPDATA'] = 'balls'
+            cdir = config.find_config_dir('zzzz')
+
+            self.assertEqual(
+                os.path.expandvars(os.path.join('$APPDATA', 'zzzz')),
+                cdir)
+
+
+class TestFindConfigCompat(unittest.TestCase):
+
+    c_path = os.path.expanduser("~/.zzzz_compat_posix")
+
+    def setUp(self):
+        if not os.path.exists(self.c_path):
+            os.mkdir(self.c_path)
+
+    def tearDown(self):
+        os.rmdir(self.c_path)
+
+    def test_compat(self):
+        cdir = config.find_config_dir('zzzz_compat_posix')
+        self.assertEqual(self.c_path, cdir)
+
+
+class TestFindConfigXDG(unittest.TestCase):
+
+    c_path = os.path.expanduser("~/.zzzz_posix")
+
+    def setUp(self):
+        if os.path.exists(self.c_path):
+            os.rmdir(self.c_path)
+
+    def test_new_scheme(self):
+        # assert we get xdg_fine with Linux
+        cdir = config.find_config_dir('zzzz_posix')
+        self.assertEqual(cdir, os.path.expanduser("~/.config/zzzz_posix"))
+
+
 class TestConfig(unittest.TestCase):
 
     @classmethod
@@ -59,13 +104,9 @@ class TestConfig(unittest.TestCase):
     def test_has_defaults(self):
         self.assertTrue(self.conf.parser.has_section('Readline'))
 
-    #def test_has_blowfish(self):
-    #    self.assertEqual('Blowfish', self.conf.get_value('Encryption',
-    #                                                     'algorithm'))
-
     def test_has_user_history(self):
         path = os.path.expanduser(os.path.join("~/.pwman", "history"))
-        config =self.conf.get_value('Readline', 'history')
+        config = self.conf.get_value('Readline', 'history')
         self.assertEqual(path, config)
 
     def test_has_user_db(self):
