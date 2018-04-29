@@ -22,6 +22,7 @@ import sys
 import unittest
 import unittest.mock
 from pwman.util import config
+from pwman.util.config import find_config_dir
 
 
 if sys.version_info.major > 2:
@@ -105,12 +106,13 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(self.conf.parser.has_section('Readline'))
 
     def test_has_user_history(self):
-        path = os.path.expanduser(os.path.join("~/.pwman", "history"))
+        cdir = find_config_dir('pwman')
+        path = os.path.join(cdir, "history")
         config = self.conf.get_value('Readline', 'history')
         self.assertEqual(path, config)
 
     def test_has_user_db(self):
-        self.assertNotEqual(os.path.expanduser('~/.pwman/pwman.db'),
+        self.assertNotEqual(os.path.join(config.find_config_dir("pwman"),'pwman.db'),
                             self.conf.get_value('Database', 'filename'))
 
     def test_wrong_config(self):

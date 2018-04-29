@@ -75,7 +75,9 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
                                      description=description,
                                      formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
-                        default=os.path.expanduser("~/.pwman/config"),
+                        default=os.path.join(
+                                             config.find_config_dir('pwman'),
+                                             'config'),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
@@ -94,7 +96,7 @@ def get_conf(args):
     config_dir = config.find_config_dir('pwman')
 
     if not os.path.isdir(config_dir):  # pragma: no cover
-        os.mkdir(config_dir)
+        os.makedirs(config_dir, exist_ok=True)
 
     configp = config.Config(args.cfile, config.default_config)
     return configp
