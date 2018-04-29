@@ -24,11 +24,7 @@ import unittest.mock
 from pwman.util import config
 from pwman.util.config import find_config_dir
 
-
-if sys.version_info.major > 2:
-    from configparser import NoSectionError
-else:
-    from ConfigParser import NoSectionError
+from configparser import NoSectionError
 
 with open('testfile.conf', 'w') as f:
     f.write("""
