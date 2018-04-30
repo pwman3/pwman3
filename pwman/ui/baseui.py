@@ -417,7 +417,17 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_passwd(self, args):  # pragma: no cover
         """change the master password of the database"""
-        pass
+        """old_enc = CryptoEngine.get()
+        CryptoEngine._instance = None
+        new_enc = CryptoEngine.get()
+
+        TODO: backup tables: NODE, TAG, CRYPTO, LOOKUP
+        TODO: create new tables
+        TODO: Iterate on old entries, create new entries with new crypto
+        TODO: If no errors encountered remove backup tables.
+
+        TODO: expand list nodes to accept table name
+        """
 
     def do_tags(self, args):
         """
