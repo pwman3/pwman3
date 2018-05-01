@@ -76,9 +76,10 @@ def find_config_dir(appname):
     config_dir = os.path.expanduser("~/.%s" % appname)
 
     if os.path.exists(config_dir):
-        return config_dir
+        return config_dir, config_dir
     elif platform.system() == 'Windows':
-        return os.path.expandvars(os.path.join('$APPDATA', appname))
+        app_data = os.path.expandvars(os.path.join('$APPDATA', appname))
+        return app_data, app_data
     else:
         return (os.path.join(XDG_CONFIG_HOME, appname),
                 os.path.join(XDG_DATA_HOME, appname))

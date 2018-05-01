@@ -102,13 +102,13 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(self.conf.parser.has_section('Readline'))
 
     def test_has_user_history(self):
-        cdir = find_config_dir('pwman')
+        cdir = find_config_dir('pwman')[0]
         path = os.path.join(cdir, "history")
         config = self.conf.get_value('Readline', 'history')
         self.assertEqual(path, config)
 
     def test_has_user_db(self):
-        self.assertNotEqual(os.path.join(config.find_config_dir("pwman"),'pwman.db'),
+        self.assertNotEqual(os.path.join(config.find_config_dir("pwman")[1],'pwman.db'),
                             self.conf.get_value('Database', 'filename'))
 
     def test_wrong_config(self):
