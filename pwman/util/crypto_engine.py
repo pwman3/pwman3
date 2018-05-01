@@ -116,7 +116,7 @@ def prepare_data(text, block_size):
     return text.ljust(newdatasize)
 
 
-class CryptoEngine(object):  # pagma: no cover
+class CryptoEngine(object):
     _instance = None
     _callback = None
 
