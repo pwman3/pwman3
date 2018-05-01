@@ -18,10 +18,7 @@
 # ============================================================================
 
 import sys
-if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse
-else:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 import os
 

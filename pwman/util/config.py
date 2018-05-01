@@ -80,10 +80,11 @@ def find_config_dir(appname):
     elif platform.system() == 'Windows':
         return os.path.expandvars(os.path.join('$APPDATA', appname))
     else:
-        return os.path.join(XDG_CONFIG_HOME, appname)
+        return (os.path.join(XDG_CONFIG_HOME, appname),
+                os.path.join(XDG_DATA_HOME, appname))
 
 
-config_dir = find_config_dir('pwman')
+config_dir, data_dir = find_config_dir('pwman')
 
 
 default_config = {'Global': {'umask': '0100', 'colors': 'yes',
@@ -92,9 +93,9 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                              'lock_timeout': '600'
                              },
                   'Database': {
-                      'dburi': 'sqlite://' + os.path.join(config_dir,
+                      'dburi': 'sqlite://' + os.path.join(data_dir,
                                                           'pwman.db')},
-                  'Readline': {'history': os.path.join(config_dir,
+                  'Readline': {'history': os.path.join(data_dir,
                                                        'history')},
                   'Crypto': {'supress_warning': 'no'},
 
