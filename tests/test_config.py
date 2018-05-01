@@ -46,7 +46,7 @@ class TestFindConfigWindows(unittest.TestCase):
         with unittest.mock.patch('platform.system') as pl:
             pl.return_value = 'Windows'
             os.environ['APPDATA'] = 'balls'
-            cdir = config.find_config_dir('zzzz')
+            cdir, data_dir = config.find_config_dir('zzzz')
 
             self.assertEqual(
                 os.path.expandvars(os.path.join('$APPDATA', 'zzzz')),
@@ -65,7 +65,7 @@ class TestFindConfigCompat(unittest.TestCase):
         os.rmdir(self.c_path)
 
     def test_compat(self):
-        cdir = config.find_config_dir('zzzz_compat_posix')
+        cdir, data_dir = config.find_config_dir('zzzz_compat_posix')
         self.assertEqual(self.c_path, cdir)
 
 
@@ -79,7 +79,7 @@ class TestFindConfigXDG(unittest.TestCase):
 
     def test_new_scheme(self):
         # assert we get xdg_fine with Linux
-        cdir = config.find_config_dir('zzzz_posix')
+        cdir, data_dir = config.find_config_dir('zzzz_posix')
         self.assertEqual(cdir, os.path.expanduser("~/.config/zzzz_posix"))
 
 
