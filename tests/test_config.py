@@ -102,8 +102,8 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(self.conf.parser.has_section('Readline'))
 
     def test_has_user_history(self):
-        cdir = find_config_dir('pwman')[0]
-        path = os.path.join(cdir, "history")
+        ddir = find_config_dir('pwman')[1]
+        path = os.path.join(ddir, "history")
         config = self.conf.get_value('Readline', 'history')
         self.assertEqual(path, config)
 
