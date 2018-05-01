@@ -19,6 +19,7 @@ before_script:
   - mongo pwmantest --eval 'db.createUser({user:"tester",pwd:"12345678",roles:["readWrite"]});'
 
 before_install:
+  - test -d ~/.pwman && rm -vR ~/.pwman 
   - sudo apt-get update -qq
   - sudo apt-get install python-psycopg2 python3-psycopg2
   - sudo apt-get install python-mysqldb
