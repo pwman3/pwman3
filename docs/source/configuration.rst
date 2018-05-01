@@ -1,11 +1,11 @@
 Configuring Pwman3
 ==================
 
-By default Pwman3 will read the configuration file from the following path::
+By default Pwman3 will read the configuration file from the following path on Unix like systems::
 
-    ~/.pwman/config
+    ~/.config/pwman/config
 
-This is the ``PWMAN_CONFIG`` following.
+On windows the configuration is found in ``%APPDATA/pwman/%``
 
 You can override this by giving the ``-c <Config File>`` at the commnad line
 when starting Pwman3.
@@ -18,7 +18,7 @@ The configuration file has the following structure::
 The following is an example default config file::
 
     [Readline]
-    history = <PWMAN_CONFIG>/history
+    history = <PWMAN_DATA_DIR>/history
 
     [Global]
     save = True
@@ -30,12 +30,14 @@ The following is an example default config file::
     lock_timeout = 60
 
     [Database]
-    filename = sqlite:///<PWMAN_CONFIG>/pwman.db`
+    filename = sqlite:///<PWMAN_DATA_DIR>/pwman.db`
 
     [Updater]
     supress_version_check = no
     client_info = ee5cd64310568736b971e3fb7c7064a4459b99a2b78672515fd0f06c82f65d5
 
+On Windows ``PWMAN_DATA_DIR`` is ``%APPDATA/pwman/%`` on Unix like systems it is
+``~/.local/share/pwman/``.
 
 Following is a table describing the parameters and their meanings:
 
