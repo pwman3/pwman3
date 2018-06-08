@@ -34,10 +34,6 @@ from pwman.ui.tools import CliMenuItem
 from pwman.ui.tools import CMDLoop, get_or_create_pass
 
 
-if sys.version_info.major > 2:  # pragma: no cover
-    raw_input = input
-
-
 def _heard_enter():  # pragma: no cover
     i, o, e = uselect.select([sys.stdin], [], [], 0.0001)
     for s in i:
@@ -208,7 +204,7 @@ class BaseUtilsMixin:
 
         return ids
 
-    def _get_tags(self, default=None, reader=raw_input):
+    def _get_tags(self, default=None, reader=input):
         """
         Read tags from user input.
         Tags are simply returned as a list
