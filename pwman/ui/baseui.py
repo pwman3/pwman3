@@ -350,17 +350,14 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         nodes = self._db.getnodes(ids)
         ce = CryptoEngine.get()
-
         for node in nodes:
-            url = ce.decrypt(node[3])
+            url = ce.decrypt(node[3]).decode()
             if not url.startswith(("http://", "https://")):
                 url = "https://" + url
-            os.umask(22)
-            tools.open_url(url)
-
-            umask = self.config.get_value("Global", "umask")
-            if re.search(r'^\d{4}$', umask):
-                os.umask(int(umask))
+            if url:
+                mask = os.umask(22)
+                tools.open_url(url)
+                os.umask(mask)
 
     def do_cls(self, args):  # pragma: no cover
         """clear the screen"""
