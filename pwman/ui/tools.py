@@ -23,11 +23,7 @@ Define the CLI interface for pwman3 and the helper functions
 import subprocess as sp
 import getpass
 import sys
-import struct
-import shlex
-import platform
 import colorama
-import os
 import ast
 from pwman.util.callback import Callback
 from pwman.util.crypto_engine import generate_password
@@ -37,8 +33,8 @@ if sys.version_info.major > 2:  # pragma: no cover
     raw_input = input
 
 if not sys.platform.startswith('win'):
-    import termios
-    import fcntl
+    import termios  # noqa
+    import fcntl    # noqa
     import readline
     _readline_available = True
 else:  # pragma: no cover
@@ -47,7 +43,7 @@ else:  # pragma: no cover
         _readline_available = True
     except ImportError as e:
         try:
-            import pyreadline as readrline
+            import pyreadline as readrline  # noqa
             _readline_available = True
         except ImportError as e:
             _readline_available = False
@@ -102,8 +98,8 @@ def text_to_clipboards(text):  # pragma: no cover
         xsel_proc = sp.Popen(['xsel', '-bi'], stdin=sp.PIPE)
         xsel_proc.communicate(text)
     except OSError as e:
-        print (e, "\nExecuting xsel failed, is it installed ?\n \
-               please check your configuration file ... ")
+        print(e, "\nExecuting xsel failed, is it installed ?\n \
+              please check your configuration file ... ")
 
 
 def text_to_mcclipboard(text):  # pragma: no cover
@@ -117,7 +113,7 @@ def text_to_mcclipboard(text):  # pragma: no cover
         pbcopy_proc = sp.Popen(['pbcopy'], stdin=sp.PIPE)
         pbcopy_proc.communicate(text)
     except OSError as e:
-        print (e, "\nExecuting pbcoy failed...")
+        print(e, "\nExecuting pbcoy failed...")
 
 
 def open_url(link, macosx=False,):  # pragma: no cover
@@ -128,7 +124,7 @@ def open_url(link, macosx=False,):  # pragma: no cover
     try:
         webbrowser.open(link)
     except webbrowser.Error as E:
-         print("Executing open_url failed with:\n", e)
+        print("Executing open_url failed with:\n", E)
 
 
 def getinput(question, default="", reader=raw_input,
@@ -221,10 +217,11 @@ def set_selection(new_node, items, selection, reader):  # pragma: no cover
         new_node.notes = getinput("Notes :", new_node.notes)
         items[3].getter = new_node.notes
     elif selection == 4:
-        taglist = getinput("Tags:", " ".join(new_node.tags))
+        taglist = getinput(
+            "Tags:", " ".join(t.encode() for t in new_node.tags))
         tags = taglist.split()
         new_node.tags = tags
-        items[4].getter = ','.join(new_node.tags)
+        items[4].getter = ','.join(t.encode() for t in new_node.tags)
 
 
 class CMDLoop(object):
@@ -244,13 +241,13 @@ class CMDLoop(object):
     def run(self, new_node=None, reader=raw_input):
         while True:
             for i, x in enumerate(self.items):
-                print ("%s - %s: %s" % (i + 1, x.name, x.getter))
+                print("%s - %s: %s" % (i + 1, x.name, x.getter))
 
             print("X - Finish editing")
             # read just the first character entered
             option = reader("Enter your choice:")[0]
             try:
-                print ("Selection, ", option)
+                print("Selection, ", option)
                 # substract 1 because array subscripts start at 0
                 selection = int(option) - 1
                 set_selection(new_node, self.items, selection, reader)

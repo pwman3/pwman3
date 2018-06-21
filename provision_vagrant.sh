@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
-export DEBIAN_FRONTEND=noninteractive
-
 sudo locale-gen "en_US.UTF-8"
-sudo dpkg-reconfigure locales
+sudo dpkg-reconfigure --frontend=noninteractiv locales
 
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "LANG=en_US.UTF-8" >> /etc/environment
 
-PACKAGES="python-psycopg2 sqlite3 git postgresql-server-dev-9.3 \
+PACKAGES="python-psycopg2 sqlite3 git \
+postgresql-server-dev-9.5 postgresql \
+postgresql-contrib \
 python-dev python3-dev libffi-dev \
-postgresql-9.3 python3-psycopg2 mysql-server-5.6 build-essential"
+postgresql python3-psycopg2 build-essential \
+mysql-server-5.7
+"
 
+set -x
 
 apt-get update
 apt-get install -y ${PACKAGES}
@@ -26,21 +29,18 @@ fi
 
 sudo mysqladmin -u root password toor
 
-PYTHON_PACKAGES="psycopg2 pymysql pymongo==2.8 pexpect coverage unittest2 \
-virtualenvwrapper"
+PYTHON_PACKAGES="psycopg2 pymysql pymongo pexpect coverage pew"
 
 sudo pip3 install ${PYTHON_PACKAGES}
-sudo pip install ${PYTHON_PACKAGES}
 
 # install mongodb
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo "deb http://repo.mongodb.org/apt/ubuntu \
-	"$(lsb_release -sc)"/mongodb-org/3.0 multiverse" \
-	| sudo tee /etc/apt/sources.list.d/mongodb-org-3.1.list
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 sudo apt-get update
 sudo apt-get install -y mongodb-org
+sudo systemctl start mongod
 
 cd /home/vagrant
 if [ ! -d pwman3 ]; then

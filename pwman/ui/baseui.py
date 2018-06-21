@@ -292,6 +292,19 @@ class BaseUtilsMixin:
         for i in nodes:
             self._db.removenodes([i])
 
+    def _get_node(self, nodeid):
+        if not nodeid.isdigit():
+            print("print accepts only a single ID ...")
+            return
+
+        nodes = self._db.getnodes([nodeid])
+        if not nodes:  # pragma: no cover
+            print("Node not found ...")
+            return
+
+        node = self._db_entries_to_nodes(nodes)[0]
+        return node
+
 
 class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
@@ -404,7 +417,17 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_passwd(self, args):  # pragma: no cover
         """change the master password of the database"""
-        pass
+        """old_enc = CryptoEngine.get()
+        CryptoEngine._instance = None
+        new_enc = CryptoEngine.get()
+
+        TODO: backup tables: NODE, TAG, CRYPTO, LOOKUP
+        TODO: create new tables
+        TODO: Iterate on old entries, create new entries with new crypto
+        TODO: If no errors encountered remove backup tables.
+
+        TODO: expand list nodes to accept table name
+        """
 
     def do_tags(self, args):
         """
@@ -461,24 +484,26 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         # should call _do_* method which is testable
         self._do_new(args)
 
-    def do_print(self, args):
-        if not args.isdigit():
-            print("print accepts only a single ID ...")
-            return
-        nodes = self._db.getnodes([args])
-        if not nodes:  # pragma: no cover
-            print("Node not found ...")
-            return
+    def do_pp(self, args):
 
-        node = self._db_entries_to_nodes(nodes)[0]
+        node = self._get_node(args)
+
+        print(node.password)
+
+    def do_print(self, args):
+
+        node = self._get_node(args)
+
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
-        flushtimeout = flushtimeout or 10
+        flushtimeout = int(flushtimeout) if flushtimeout else 10
 
-        print("Type Enter to flush screen or wait %s sec. " % flushtimeout)
+        if flushtimeout > 0:
+            flushtimeout = flushtimeout or 10
+            print("Type Enter to flush screen or wait %d sec. " % flushtimeout)
 
-        _wait_until_enter(_heard_enter, float(flushtimeout))
-        self.do_cls('')
+            _wait_until_enter(_heard_enter, flushtimeout)
+            self.do_cls('')
 
     def do_delete(self, args):
 

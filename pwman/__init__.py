@@ -70,27 +70,33 @@ except IOError as E:
     website = 'http://pwman3.github.io/pwman3/'
 
 
-config_dir = os.path.expanduser("~/.pwman")
-
-
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     parser = argparse.ArgumentParser(prog='pwman3',
                                      description=description,
                                      formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
-                        default=os.path.expanduser("~/.pwman/config"),
+                        default=os.path.join(
+                                             config.find_config_dir('pwman'),
+                                             'config'),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
                         help="Specify the file name and the delimeter type")
+    subparsers = parser.add_subparsers(help='commands', dest="cmd")
+
+    printer = subparsers.add_parser('p', help='print password entry')
+    printer.add_argument("node", type=int)
+
+    copy = subparsers.add_parser('cp', help='print password entry')
+    copy.add_argument("node", type=int)
     return parser
 
 
 def get_conf(args):
-    config_dir = os.path.expanduser("~/.pwman")
+    config_dir = config.find_config_dir('pwman')
 
     if not os.path.isdir(config_dir):  # pragma: no cover
-        os.mkdir(config_dir)
+        os.makedirs(config_dir, exist_ok=True)
 
     configp = config.Config(args.cfile, config.default_config)
     return configp
