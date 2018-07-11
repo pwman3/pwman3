@@ -127,15 +127,15 @@ def open_url(link, macosx=False,):  # pragma: no cover
         print("Executing open_url failed with:\n", E)
 
 
-def getinput(question, default="", reader=raw_input,
+def getinput(question, default="", reader=input,
              completer=None, width=_defaultwidth):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
     """
-    if reader == raw_input:
+    if reader == input:
         if not _readline_available:
-            val = raw_input(question.ljust(width))
+            val = input(question.ljust(width))
             if val:
                 return val
             else:
