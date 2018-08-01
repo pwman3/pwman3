@@ -8,7 +8,7 @@ name = "pypi"
 [dev-packages]
 
 "psycopg2" = "*"
-PyMySQL = "*"
+pymysql = "*"
 pymongo = "==2.8"
 pexpect = "*"
 coverage = "*"
@@ -17,5 +17,5 @@ coverage = "*"
 
 [packages]
 
-cryptography = "*"
+cryptography = ">=2.3"
 colorama = ">=0.2.4"
