@@ -127,16 +127,18 @@ def open_url(link, macosx=False,):  # pragma: no cover
         print("Executing open_url failed with:\n", E)
 
 
-def getinput(question, default="", reader=raw_input,
-             completer=None, width=_defaultwidth):  # pragma: no cover
+def getinput(question, default="", reader=input,
+             completer=None, width=_defaultwidth, drop="drop"):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
     """
-    if reader == raw_input:
+    if reader == input:
         if not _readline_available:
-            val = raw_input(question.ljust(width))
-            if val:
+            val = input(question.ljust(width))
+            if val == "drop":
+                return ""
+            elif val:
                 return val
             else:
                 return default
@@ -150,11 +152,16 @@ def getinput(question, default="", reader=raw_input,
                 readline.get_completer()
                 readline.set_completer(completer)
 
-            x = raw_input(question.ljust(width))
+            x = input(question.ljust(width))
 
             if _readline_available:
                 readline.set_startup_hook()
-            return x if x else default
+            if x == "drop":
+                return ""
+            elif x:
+                return x
+            else:
+                return default
 
     else:
         return reader()
@@ -218,10 +225,10 @@ def set_selection(new_node, items, selection, reader):  # pragma: no cover
         items[3].getter = new_node.notes
     elif selection == 4:
         taglist = getinput(
-            "Tags:", " ".join(t.encode() for t in new_node.tags))
+            "Tags:", " ".join(map(bytes.decode, new_node.tags)))
         tags = taglist.split()
         new_node.tags = tags
-        items[4].getter = ','.join(t.encode() for t in new_node.tags)
+        items[4].getter = ','.join(t for t in tags)
 
 
 class CMDLoop(object):
