@@ -73,6 +73,25 @@ class TestCommand(Command):
                              'tests.test_pwman']))
 
 
+class IntegrationTestCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys
+        import subprocess
+
+        raise SystemExit(
+            subprocess.call([sys.executable,
+                             '-m',
+                             'tests.test_integration']))
+
+
 class BuildManPage(Command):
 
     description = 'Generate man page from an ArgumentParser instance.'
@@ -358,7 +377,8 @@ setup(name='pwman3',
                    ],
       cmdclass={
           'build_manpage': BuildManPage,
-          'test': TestCommand
+          'test': TestCommand,
+          'integration': IntegrationTestCommand
       },
       entry_points={
           'console_scripts': ['pwman3 = pwman.ui.cli:main']

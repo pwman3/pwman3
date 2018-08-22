@@ -24,9 +24,6 @@ import unittest
 from .test_crypto_engine import CryptoEngineTest, TestPassGenerator
 from .test_config import TestConfig
 from .test_sqlite import TestSQLite
-from .test_postgresql import TestPostGresql
-from .test_mysql import TestMySQLDatabase
-from .test_mongodb import TestMongoDB
 from .test_importer import TestImporter
 from .test_factory import TestFactory
 from .test_base_ui import TestBaseUI
@@ -52,9 +49,6 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestPassGenerator))
     suite.addTest(loader.loadTestsFromTestCase(TestConfig))
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
-    suite.addTest(loader.loadTestsFromTestCase(TestPostGresql))
-    suite.addTest(loader.loadTestsFromTestCase(TestMySQLDatabase))
-    suite.addTest(loader.loadTestsFromTestCase(TestMongoDB))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     suite.addTest(loader.loadTestsFromTestCase(TestFactory))
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
@@ -64,5 +58,8 @@ def suite():
         suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
 
+
 if __name__ == '__main__':
-    unittest.main(verbosity=2, failfast=True)
+    test_suite = suite()
+    unittest.TextTestRunner(verbosity=2,
+                            failfast=True, buffer=False).run(test_suite)
