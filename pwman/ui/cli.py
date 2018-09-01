@@ -14,17 +14,13 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012-2016 Oz N Tiram <oz.tiram@gmail.com>
+# Copyright (C) 2012-2018 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 # pylint: disable=I0011
 
 
 import cmd
 import sys
-
-
-if sys.version_info.major > 2:
-    raw_input = input
 
 try:
     import readline
@@ -136,11 +132,11 @@ def main():
 
     if args.cmd == "p":
         cli.onecmd("pp %s" % args.node)
-        sys.exit(1)
+        sys.exit(0)
 
     if args.cmd == "cp":
         cli.onecmd("cp %s" % args.node)
-        sys.exit(1)
+        sys.exit(0)
 
     try:
         cli.cmdloop()
