@@ -89,23 +89,24 @@ def get_ui_platform(platform):  # pragma: no cover
     return PwmanCli, OSX
 
 
+def check_version(version, client_info):
+    _, latest = is_latest_version(version, client_info)
+    if not latest:
+        print("A newer version of Pwman3 was release, you should consider updating")  # noqa
+    return latest
+
+
 def main():
     args = parser_options().parse_args()
     PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
     dburi = config.get_value('Database', 'dburi')
 
-    if config.get_value('Updater',
-                        'supress_version_check').lower() != 'yes':
-        client_info = config.get_value('Updater', 'client_info')
-        if not client_info:
-            client_info = calculate_client_info()
-            config.set_value('Updater', 'client_info', client_info)
+    client_info = config.get_value('Updater', 'client_info')
 
-        _, latest = is_latest_version(version, client_info)
-
-        if not latest:
-            print("A newer version of Pwman3 was release, you should consider updating")  # noqa
+    if not client_info:
+        client_info = calculate_client_info()
+        config.set_value('Updater', 'client_info', client_info)
 
     if not has_cryptography:
         import colorama
@@ -115,6 +116,15 @@ def main():
                   "perfomance\nWARNING: You can supress this warning by editing "  # noqa
                   "pwman config file.{}".format(colorama.Fore.RED,
                                                 colorama.Style.RESET_ALL))
+
+    if args.cmd == "version":
+        latest = check_version(version, client_info)
+        print("version: %s is latest: %s" % (version, latest))
+        sys.exit(0)
+
+    elif config.get_value('Updater',
+                          'supress_version_check').lower() != 'yes':
+        check_version(version, client_info)
 
     print(dburi)
     dbver = get_db_version(config, args)
