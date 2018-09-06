@@ -92,7 +92,7 @@ def get_ui_platform(platform):  # pragma: no cover
 def check_version(version, client_info):
     _, latest = is_latest_version(version, client_info)
     if not latest:
-        print("A newer version of Pwman3 was release, you should consider updating")  # noqa
+        print("A newer version of Pwman3 was released, you should consider updating")  # noqa
     return latest
 
 
