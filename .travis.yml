@@ -31,7 +31,8 @@ install:
   - "pip install ."
 
 script:
-  - python setup.py develop && coverage run setup.py integration
+  - python setup.py develop
+  - coverage run -m tests.test_integration
 
 after_success:
   - coveralls
