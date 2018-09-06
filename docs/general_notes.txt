@@ -9,16 +9,16 @@ when priniting nodes, decrypt is first called by:
 this initializes CryptoEngine instance,
 and sets the following instance properties:
     - _callback
-    - _instance 
+    - _instance
     - _keycrypted
     - _timeout
     - _cypher
 
 this initialization asks the user for the decryption key
-of the database. 
+of the database.
 
 the action that user does called the respective db function which
-returns an ENCRYPTED STRING!, 
+returns an ENCRYPTED STRING!,
 which is then given to decryption via nodes.py or tags.py which do the
 actual decryption on each decrypted string returned from the DB.
 
@@ -29,79 +29,84 @@ initializing a _db instance, then we call _db.open()
 calling do_print(10) calls _db.getnodes([i]) at this point
 the database is still not decrypted ... e.g. _cypher is still empty
 
-when _db.getnodes([i]) is done node inside  print_node is containing 
+when _db.getnodes([i]) is done node inside  print_node is containing
 alot of encrypted string.
 
 now print_node will be called, at which point the different methods
 of node instance will decrypt their respective string:
 
 e.g. get_username(self) instide nodes.py:
-     
+
      self._username -> OexYH7vT/WVpXO0ZBM93RF/l8+o8/QU8ykgDB4qY8+BxBaKylAOeJWEQ+edjpLTU\n
-     enc = CryptoEngine.get() 
+     enc = CryptoEngine.get()
      enc.decrypt(self._username) -> nahum.oz@gmail.com
 
 
 to see this in work:
-insert 
+insert
         import ipdb; ipdb.set_trace()
 to def getnodes(self, ids) in "pwman/data/drivers/sqlite.py.
 
 continue to pwman3/pwman/ui/cli.py(382) self.print_node(node[0])
-and then step into this function. 
-continue further into  def print_node(self, node) inside pwman3/pwman/ui/cli.py, 
+and then step into this function.
+continue further into  def print_node(self, node) inside pwman3/pwman/ui/cli.py,
 finally you should step into:
 
     node.get_username()
 
 # New features to implement:
   1. Password expiry date - register password date,  remind when password is about to expire.
-  2. Make new passwords according to user defined rules. 
+  2. Make new passwords according to user defined rules.
 
-# build the package with 
+# build the package with
 
   python setup.py sdist
 
-# upload  
-  
+# upload
+
   twine upload dist/pwman.tar.gz
-   
+
+# update version on the server
+
+update the version numer
+restart the service pwman.app
+
 # db ... https://github.com/coleifer/peewee
          http://sqlobject.org/
          http://www.sqlalchemy.org/
 
-  
-# when developing pwman3 you might be using a debugger. if so add the following 
+
+# when developing pwman3 you might be using a debugger. if so add the following
   pre-commit hook to your .git/ :
 
-    $ cat .git/hooks/pre-commit 
+    $ cat .git/hooks/pre-commit
     #!/bin/bash
     VAR=$(git diff --cached | grep "\+*import i*pdb; i*pdb.set_trace")
     if [ ! -z "$VAR" ]; then
       echo "You've left a BREAK POINT in one of your files! Aborting commit..."
       exit 1
-    fi 
+    fi
 
     make test || exit 1
     exit 0
 
 ### testing :
 
-Each class should have at least 95% coverage. 
+Each class should have at least 95% coverage.
 Each module should be tested as a stand alone with:
 
-  foo.py 
-  test_foo.py 
+  foo.py
+  test_foo.py
 
 The test module test_foo.py should contain at the bottom:
 
     if __name__ == '__main__':
-        
-        # prepare everything for testing 
+
+        # prepare everything for testing
         try:
             unittest.main(verbosity=2)
         except SystemExit:
-            # clean everything after test was run 
+            # clean everything after test was run
 
 You should be able to run the module testing with:
 
@@ -110,7 +115,7 @@ You should be able to run the module testing with:
 But you should also run the tests as part of a larger scheme with:
 
 
-    from test_foo import TestFoo 
+    from test_foo import TestFoo
     ...
     ...
     loader = unittest.TestLoader()
