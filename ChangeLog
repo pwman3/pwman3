@@ -1,3 +1,7 @@
+2018-Aug-23  Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release version 0.9.11
+	* A small fix for the unit test suite
+
 2018-Aug-22  Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release version 0.9.10
 	* Fix depedency on older version of cryptography

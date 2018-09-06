@@ -41,7 +41,7 @@ appname = "pwman3"
 try:
     version = pkg_resources.get_distribution('pwman3').version
 except pkg_resources.DistributionNotFound:  # pragma: no cover
-    version = "0.9.10"
+    version = "0.9.11"
 
 
 class PkgMetadata(object):
@@ -76,8 +76,8 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
                                      formatter_class=formatter_class)
     parser.add_argument('-c', '--config', dest='cfile',
                         default=os.path.join(
-                                             config.find_config_dir('pwman')[0],
-                                             'config'),
+                                             config.find_config_dir(
+                                                 'pwman')[0], 'config'),
                         help='cofiguration file to read')
     parser.add_argument('-d', '--database', dest='dbase')
     parser.add_argument('-i', '--import', nargs=2, dest='file_delim',
@@ -89,6 +89,9 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
 
     copy = subparsers.add_parser('cp', help='print password entry')
     copy.add_argument("node", type=int)
+
+    version = subparsers.add_parser('version', help='version')
+    version.add_argument("--latest", action='store_true')
     return parser
 
 
