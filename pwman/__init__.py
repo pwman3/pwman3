@@ -87,7 +87,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     printer = subparsers.add_parser('p', help='print password entry')
     printer.add_argument("node", type=int)
 
-    copy = subparsers.add_parser('cp', help='print password entry')
+    copy = subparsers.add_parser('cp', help='copy password entry to clipboard')
     copy.add_argument("node", type=int)
 
     version = subparsers.add_parser('version', help='version')
