@@ -26,6 +26,9 @@ import re
 import string
 import shutil
 import sys
+
+from pkg_resources import parse_version
+
 from pwman.util import config
 from pwman.data.factory import check_db_version
 
@@ -162,7 +165,7 @@ def is_latest_version(version, client_info):  # pragma: no cover
 
         if res.status != 200:
             return None, True
-        if data.decode().split(".") > version.split("."):
+        if parse_version(data.decode()) > parse_version(version):
             return None, False
         else:
             return None, True
