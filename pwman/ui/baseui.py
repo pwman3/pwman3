@@ -204,7 +204,7 @@ class BaseUtilsMixin:
 
         return ids
 
-    def _get_tags(self, default=None, reader=input):
+    def _get_tags(self, default=None, reader=input, tag_IFS=","):
         """
         Read tags from user input.
         Tags are simply returned as a list
@@ -214,9 +214,9 @@ class BaseUtilsMixin:
         print("Tags: ", end="")
         sys.stdout.flush()
         taglist = sys.stdin.readline()
-        tagstrings = taglist.split()
-        tags = [tn for tn in tagstrings]
-        return tags
+        if isinstance(taglist, bytes):
+            taglist = taglist.decode()
+        return re.split(r'(?<!\\)%s' % tag_IFS, taglist)
 
     def _prep_term(self):
         self.do_cls('')

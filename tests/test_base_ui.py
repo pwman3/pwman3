@@ -60,18 +60,17 @@ class TestBaseUI(unittest.TestCase):
         self.tester.create()
 
     def tearDown(self):
-        #self.tester.cli.do_exit("")
         pass
 
     def test_get_tags(self):
-        sys.stdin = StringIO("foo bar baz\n")
-        tags = self.tester.cli._get_tags(reader=lambda: "foo bar baz")
+        sys.stdin = StringIO("foo,bar,baz")
+        tags = self.tester.cli._get_tags(reader=lambda: "foo,bar,baz")
         self.assertListEqual(['foo', 'bar', 'baz'], tags)
         sys.stdin = sys.__stdin__
 
     def test_1_do_new(self):
         sys.stdin = BytesIO((b"alice\nsecret\nexample.com\nsome notes"
-                             b"\nfoo bar baz"))
+                             b"\nfoo,bar,baz"))
         _node = self.tester.cli._do_new('')
 
         sys.stdin = sys.__stdin__
@@ -99,15 +98,18 @@ class TestBaseUI(unittest.TestCase):
     def test_3_do_export(self):
         self.tester.cli.do_export("{'filename':'foo.csv'}")
         with open('foo.csv') as f:
-            l = f.readlines()
+            lines = f.readlines()
         # on windows there is an extra empty line in the exported file
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n',
+                      lines)
+
     def test_3a_do_export(self):
         self.tester.cli.do_export("f")
         with open('pwman-export.csv') as f:
-            l = f.readlines()
+            lines = f.readlines()
 
-        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n', l)
+        self.assertIn('alice;example.com;secret;some notes;foo,bar,baz\n',
+                      lines)
 
     def test_4_do_forget(self):
         self.tester.cli.do_forget('')
@@ -182,6 +184,7 @@ class TestBaseUI(unittest.TestCase):
         sys.stdout = self.output
         self.tester.cli.do_info(b'')
         self.assertIn(testdb, sys.stdout.getvalue())
+
 
 if __name__ == '__main__':
 
