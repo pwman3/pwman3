@@ -150,6 +150,9 @@ class AliasesMixin(object):  # pragma: no cover
     def do_EOF(self, args):  # pragma: no cover
         self.do_exit(args)
 
+    def do_l(self, args):
+        self.do_list(args)
+
     def do_ls(self, args):
         self.do_list(args)
 
