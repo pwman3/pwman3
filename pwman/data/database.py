@@ -203,6 +203,7 @@ class Database(object):
             nid = self._cur.lastrowid
         self._setnodetags(nid, tags)
         self._con.commit()
+        return nid
 
     def listtags(self):
         self._clean_orphans()

@@ -300,7 +300,8 @@ class BaseUtilsMixin:
         node['notes'] = self._get_input("Notes: ")
         node['tags'] = self._get_tags()
         node = Node(clear_text=True, **node)
-        self._db.add_node(node)
+        nid = self._db.add_node(node)
+        node.id = nid
         return node
 
     def _do_rm(self, nodes):
@@ -501,7 +502,8 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         # else than None ...
         # This is bad for testing, so everything that is do_*
         # should call _do_* method which is testable
-        self._do_new(args)
+        node = self._do_new(args)
+        print(node.id)
 
     def do_pp(self, args):
 
