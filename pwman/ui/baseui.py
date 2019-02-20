@@ -230,10 +230,15 @@ class BaseUtilsMixin:
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
                      tags="TAGS"):
+
+        user_pad = int(self.config.get_value("UI", "URL_pad"))
+        url_pad = int(self.config.get_value("UI", "user_pad"))
+        tag_pad = int(self.config.get_value("UI", "tag_pad"))
+
         return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
                 "".format(ID=nid, USER=user,
-                          URL=url, Tags=tags, us=25,
-                          ur=25, tg=20))
+                          URL=url, Tags=tags, us=user_pad,
+                          ur=url_pad, tg=tag_pad))
 
     def _print_node_line(self, node, rows, cols, url_filter):
         if url_filter != "" and node.url.find(url_filter) == -1:
