@@ -77,9 +77,11 @@ class HelpUIMixin(object):  # pragma: no cover
         print("Clear the Screen from information.")
 
     def help_list(self):
-        self._usage("list|ls <tag> ...")
-        print("List nodes that match current or specified filter.",
-              " ls is an alias.")
+        self._usage("list|ls|l [[u:<url>] [<tag>]] ...")
+        print("List nodes that match current or specified filter.")
+        print("You can also limit the search by a url prefixed ",
+              "with `u`.\nFor example `ls u:example.com work`.",
+              "\nl or ls are aliases.")
 
     def help_delete(self):
         self._usage("delete|rm <ID|tag> ...")
@@ -233,11 +235,19 @@ class BaseUtilsMixin:
                           URL=url, Tags=tags, us=25,
                           ur=25, tg=20))
 
-    def _print_node_line(self, node, rows, cols):
+    def _print_node_line(self, node, rows, cols, url_filter):
+        if url_filter != "" and node.url.find(url_filter) == -1:
+            return
+
         tagstring = ','.join([t.decode() for t in node.tags])
+
+        if len(node.url) > int(self.config.get_value("UI", "URL_length")):
+            node_url = node.url[:int(self.config.get_value("UI", "URL_length"))] + "..." # noqa
+        else:
+            node_url = node.url
+
         fmt = self._format_line(cols, node._id, node.username,
-                                node.url[:20] + '...' if (len(node.url) > 22)
-                                else node.url,
+                                node_url,
                                 tagstring)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
@@ -465,13 +475,20 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         list all existing nodes in database
         """
         rows, cols = self._prep_term()
+        url_filter = ""
+        m = re.search('^u:([^ ]+) ?(.*)$', args)
+
+        if m:
+            url_filter, args = m.groups()
+
         nodeids = self._get_node_ids(args)
         raw_nodes = self._db.getnodes(nodeids)
         _nodes_inst = self._db_entries_to_nodes(raw_nodes)
         head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
+
         for idx, node in enumerate(_nodes_inst):
-            self._print_node_line(node, rows, cols)
+            self._print_node_line(node, rows, cols, url_filter)
 
     def do_new(self, args):  # pragma: no cover
         # The cmd module stops if any of do_* return something

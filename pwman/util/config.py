@@ -100,7 +100,8 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                                                        'history')},
                   'Crypto': {'supress_warning': 'no'},
 
-                  'Updater': {'supress_version_check': 'no'}
+                  'Updater': {'supress_version_check': 'no'},
+                  'UI': {'URL_Length': '22'}
                   }
 
 if 'win' in sys.platform:
