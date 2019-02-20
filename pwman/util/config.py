@@ -134,10 +134,7 @@ class Config(object):
         try:
             with open(self.filename) as f:
                 try:
-                    try:
-                        parser.read_file(f)
-                    except AttributeError:
-                        parser.readfp(f)
+                    parser.read_file(f)
                 except (ParsingError, MissingSectionHeaderError) as e:
                     raise ConfigException(e)
         except IOError:
