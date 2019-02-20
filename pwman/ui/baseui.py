@@ -125,7 +125,8 @@ class HelpUIMixin(object):  # pragma: no cover
 
     def help_passwd(self):
         self._usage("passwd")
-        print("Changes the password on the database. ")
+        print("Changes the password on the database. (Not implemented!)")
+        print("To change the password, export and re-import the database.")
 
     def help_forget(self):
         self._usage("forget")
