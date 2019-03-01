@@ -1,11 +1,12 @@
 version: '3'
 services:
   pwman:
+    depends_on:
+     - mysql
     build: .
   mysql:
-    image: "redis:alpine"
+    image: "mysql:5.7"
   postgresql:
-    image: "postgresql:alpine"
+    image: "postgres:alpine"
   mongodb:
-    image: "mongodb:3-strech"
-
+    image: "mongo:3.6"
