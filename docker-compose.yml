@@ -1,0 +1,11 @@
+version: '3'
+services:
+  pwman:
+    build: .
+  mysql:
+    image: "redis:alpine"
+  postgresql:
+    image: "postgresql:alpine"
+  mongodb:
+    image: "mongodb:3-strech"
+
