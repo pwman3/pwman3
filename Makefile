@@ -43,6 +43,9 @@ pre-test:
 	$(shell sudo service mysql start)
 	$(shell sudo service mongodb start)
 
+integration-test: clean install
+	coverage run -m tests.test_integration
+
 test: clean install
 	python setup.py test
 	@rm -f tests/test.conf
@@ -76,3 +79,9 @@ dist: clean
 
 install:
 	pip install -e .
+
+test-compose:
+	docker-compose down -v
+	docker-compose build
+	docker-compose up --abort-on-container-exit
+	docker-compose down -v
