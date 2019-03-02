@@ -23,6 +23,7 @@ if sys.version_info.major > 2:  # pragma: no cover
     from urllib.parse import urlparse
 else:  # pragma: no cover
     from urlparse import urlparse
+
 import psycopg2 as pg
 from pwman.data.drivers.postgresql import PostgresqlDatabase
 from pwman.util.crypto_engine import CryptoEngine
@@ -35,12 +36,14 @@ from pwman.util.crypto_engine import CryptoEngine
 #
 ##
 
+DBURI = "postgresql://tester:123456@postgresql/pwman"
+
 
 class TestPostGresql(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        u = "postgresql://tester:123456@localhost/pwman"
+        u = DBURI
         u = urlparse(u)
         # password required, for all hosts
         # u = "postgresql://<user>:<pass>@localhost/pwman"
@@ -118,7 +121,7 @@ class TestPostGresql(unittest.TestCase):
 
     def test_9_check_db_version(self):
 
-        dburi = "postgresql://tester:123456@localhost/pwman"
+        dburi = DBURI
         v = self.db.check_db_version(dburi)
         self.assertEqual(str(v), '0.6')
         self.db._cur.execute("DROP TABLE DBVERSION")

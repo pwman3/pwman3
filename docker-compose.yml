@@ -6,7 +6,16 @@ services:
     build: .
   mysql:
     image: "mysql:5.7"
+    environment:
+     -  MYSQL_ROOT_PASSWORD=toor
+     -  MYSQL_DATABASE=pwmantest
+     -  MYSQL_USER=pwman
+     -  MYSQL_PASSWORD=123456
   postgresql:
     image: "postgres:alpine"
+    environment:
+     - POSTGRES_USER=tester
+     - POSTGRES_PASSWORD=123456
+     - POSTGRES_DB=pwman
   mongodb:
     image: "mongo:3.6"
