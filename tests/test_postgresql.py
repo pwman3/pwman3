@@ -17,12 +17,8 @@
 # Copyright (C) 2015-2017 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 import unittest
-import sys
 from .test_crypto_engine import give_key, DummyCallback
-if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse
-else:  # pragma: no cover
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 import psycopg2 as pg
 from pwman.data.drivers.postgresql import PostgresqlDatabase
