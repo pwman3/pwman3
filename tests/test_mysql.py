@@ -39,12 +39,14 @@ import pymysql
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
 
+DBURI = "mysql://pwman:123456@mysql:3306/pwmantest"
+
 
 class TestMySQLDatabase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        u = "mysql://pwman:123456@localhost:3306/pwmantest"
+        u = DBURI
         u = urlparse(u)
         # password required, for all hosts
         # u = "mysql://<user>:<pass>@localhost/pwmantest"
@@ -122,7 +124,7 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_9_check_db_version(self):
 
-        dburi = "mysql://pwman:123456@localhost:3306/pwmantest"
+        dburi = DBURI
         v = self.db.check_db_version(urlparse(dburi))
         self.assertEqual(v, '0.6')
         self.db._cur.execute("DROP TABLE DBVERSION")
