@@ -45,6 +45,8 @@ pre-test:
 
 integration-test: clean install
 	coverage run -m tests.test_integration
+	coverage report
+	coverage html
 
 test: clean install
 	python setup.py test
