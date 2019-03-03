@@ -36,12 +36,14 @@ from pwman.data.nodes import Node
 #               { role: "readWrite", db: "pwmantest" },]
 #    })
 
+DBURI = "mongodb://tester:12345678@mongodb:27017/pwmantest"
+
 
 class TestMongoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        u = u"mongodb://tester:12345678@localhost:27017/pwmantest"
+        u = DBURI
         cls.db = MongoDB(urlparse(u))
         cls.db._open()
 

@@ -3,7 +3,9 @@ services:
   pwman:
     depends_on:
      - mysql
-    build: .
+    image: oz123/pwman3
+    volumes:
+    - .:/code
   mysql:
     image: "mysql:5.7"
     environment:
@@ -19,3 +21,8 @@ services:
      - POSTGRES_DB=pwman
   mongodb:
     image: "mongo:3.6"
+    environment:
+     - MONGO_INITDB_DATABASE=pwmantest
+    volumes:
+    - ./tests/init_mongo.js:/docker-entrypoint-initdb.d/init.js
+
