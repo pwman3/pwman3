@@ -18,16 +18,14 @@
 # ============================================================================
 
 import unittest
-import sys
-if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse
-else:  # pragma: no cover
-    from urlparse import urlparse
+from urllib.parse import urlparse
+
 import pymongo
 from .test_crypto_engine import give_key, DummyCallback
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.data.drivers.mongodb import MongoDB
 from pwman.data.nodes import Node
+
 # use pwmantest
 
 # db.createUser(
