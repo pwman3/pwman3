@@ -28,12 +28,8 @@ mysql > GRANT ALL on pwmantest.* to 'pwman'@'localhost';
 """
 
 import unittest
-import sys
 from .test_crypto_engine import give_key, DummyCallback
-if sys.version_info.major > 2:  # pragma: no cover
-    from urllib.parse import urlparse
-else:  # pragma: no cover
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 import pymysql
 from pwman.data.drivers.mysql import MySQLDatabase
