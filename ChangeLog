@@ -1,3 +1,18 @@
+2019-Mar-04  Oz Nahum Tiram <oz.tiram@gmail.com>
+	* Release version 0.10.0
+	* Show entry id after adding new password (issue #62)
+	* Document how to change the DB password (issue #49)
+	* Make line formatting customizable (issue #63)
+	* New: Search passwords by url (issue #64)
+	* Restore `l` shortcut for list (issue #61)
+	* Allow tags to be more than one word #65)
+	* Fix a subtle bug in pwman version detection
+	* Add option to print a password entry in the shell
+	* Add option to cp a password to the clipboard in the shell
+	* Add option to print the version and exit
+	* Multiple Python2 clean ups
+	* Migrate testing to docker-compose (issue #56)
+
 2018-Aug-23  Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release version 0.9.11
 	* A small fix for the unit test suite
