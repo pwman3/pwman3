@@ -16,6 +16,7 @@
 # ============================================================================
 # Copyright (C) 2015-2017 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
+import os
 import unittest
 from .test_crypto_engine import give_key, DummyCallback
 from urllib.parse import urlparse
@@ -32,7 +33,8 @@ from pwman.util.crypto_engine import CryptoEngine
 #
 ##
 
-DBURI = "postgresql://tester:123456@postgresql/pwman"
+POSTGRESHOST = os.getenv("POSTGRESHOST", "localhost")
+DBURI = "postgresql://tester:123456@%s/pwman" % POSTGRESHOST
 
 
 class TestPostGresql(unittest.TestCase):

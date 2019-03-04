@@ -6,6 +6,10 @@ services:
     image: oz123/pwman3
     volumes:
     - .:/code
+    environment:
+     - MONGOHOST=mongodb
+     - MYSQLHOST=mysql
+     - POSTGRESHOST=postgresql
   mysql:
     image: "mysql:5.7"
     environment:

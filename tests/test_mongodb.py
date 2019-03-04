@@ -16,7 +16,7 @@
 # ============================================================================
 # Copyright (C) 2015-2017 Oz Nahum Tiram <oz.tiram@gmail.com>
 # ============================================================================
-
+import os
 import unittest
 from urllib.parse import urlparse
 
@@ -36,7 +36,8 @@ from pwman.data.nodes import Node
 #               { role: "readWrite", db: "pwmantest" },]
 #    })
 
-DBURI = "mongodb://tester:12345678@mongodb:27017/pwmantest"
+MONGOHOST = os.getenv("MONGOHOST", "localhost")
+DBURI = "mongodb://tester:12345678@%s:27017/pwmantest" % MONGOHOST
 
 
 class TestMongoDB(unittest.TestCase):
