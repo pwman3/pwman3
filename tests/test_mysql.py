@@ -26,7 +26,7 @@ mysql > CREATE DATABASE pwmantest;
 mysql > CREATE USER pwman IDENTIFIED BY '123456';
 mysql > GRANT ALL on pwmantest.* to 'pwman'@'localhost';
 """
-
+import os
 import unittest
 from .test_crypto_engine import give_key, DummyCallback
 from urllib.parse import urlparse
@@ -35,7 +35,9 @@ import pymysql
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
 
-DBURI = "mysql://pwman:123456@mysql:3306/pwmantest"
+
+MYSQLHOST = os.getenv("MYSQLHOST", "localhost")
+DBURI = "mysql://pwman:123456@%s:3306/pwmantest" % MYSQLHOST
 
 
 class TestMySQLDatabase(unittest.TestCase):
@@ -130,6 +132,7 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db._cur.execute("CREATE TABLE DBVERSION("
                              "VERSION TEXT NOT NULL) ")
         self.db._con.commit()
+
 
 if __name__ == '__main__':
 
