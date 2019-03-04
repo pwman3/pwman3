@@ -6,9 +6,9 @@ services:
 
 environment:
   matrix:
-    - PYTHON: "C:/Python34"
     - PYTHON: "C:/Python35"
     - PYTHON: "C:/Python36"
+    - PYTHON: "C:/Python37"
 
   # postgres
   POSTGRES_PATH: C:\Program Files\PostgreSQL\9.4
