@@ -191,7 +191,7 @@ class BaseUtilsMixin:
         e.g. 1-3 , will get 1 to 3.
         """
         ids = []
-        rex = re.compile("^(?P<begin>\d+)(?:-(?P<end>\d+))?$")
+        rex = re.compile("^(?P<begin>\\d+)(?:-(?P<end>\\d+))?$")
         rex = rex.match(args)
         if hasattr(rex, 'groupdict'):
             try:
@@ -235,11 +235,11 @@ class BaseUtilsMixin:
         user_pad = int(self.config.get_value("UI", "URL_pad"))
         url_pad = int(self.config.get_value("UI", "user_pad"))
         tag_pad = int(self.config.get_value("UI", "tag_pad"))
+        line = self.config.get_value("UI", "line_format")
 
-        return ("{ID:<3} {USER:<{us}}{URL:<{ur}}{Tags:<{tg}}"
-                "".format(ID=nid, USER=user,
-                          URL=url, Tags=tags, us=user_pad,
-                          ur=url_pad, tg=tag_pad))
+        return (line.format(ID=nid, USER=user,
+                            URL=url, Tags=tags, user_pad=user_pad,
+                            url_pad=url_pad, tag_pad=tag_pad))
 
     def _print_node_line(self, node, rows, cols, url_filter):
         if url_filter != "" and node.url.find(url_filter) == -1:

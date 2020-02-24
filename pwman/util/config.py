@@ -101,8 +101,13 @@ default_config = {'Global': {'umask': '0100', 'colors': 'yes',
                   'Crypto': {'supress_warning': 'no'},
 
                   'Updater': {'supress_version_check': 'no'},
-                  'UI': {'URL_Length': '22', "URL_pad": '25',
-                         "user_pad": '25', 'tag_pad': '20'}
+                  'UI': {"URL_Length": '22',
+                         "URL_pad": '25',
+                         "user_pad": '25',
+                         "tag_pad": '20',
+                         "line_format":
+                         "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",
+                         }
                   }
 
 if 'win' in sys.platform:
