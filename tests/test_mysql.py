@@ -28,12 +28,16 @@ mysql > GRANT ALL on pwmantest.* to 'pwman'@'localhost';
 """
 import os
 import unittest
-from .test_crypto_engine import give_key, DummyCallback
+import time
+
 from urllib.parse import urlparse
 
 import pymysql
+
 from pwman.data.drivers.mysql import MySQLDatabase
 from pwman.util.crypto_engine import CryptoEngine
+
+from .test_crypto_engine import give_key, DummyCallback
 
 
 MYSQLHOST = os.getenv("MYSQLHOST", "localhost")
@@ -48,8 +52,12 @@ class TestMySQLDatabase(unittest.TestCase):
         u = urlparse(u)
         # password required, for all hosts
         # u = "mysql://<user>:<pass>@localhost/pwmantest"
-        self.db = MySQLDatabase(u)
-        self.db._open()
+        for i in range(60):
+            try:
+                self.db = MySQLDatabase(u)
+                self.db._open()
+            except:
+                time.sleep(1)
 
     @classmethod
     def tearDownClass(self):
