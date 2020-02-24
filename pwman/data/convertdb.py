@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2013 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2020 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 from __future__ import print_function
 import os
@@ -121,5 +121,5 @@ class PwmanConvertKey(DBConverter):
     def save_old_key(self):
         CryptoEngine._instance = None
         enc = CryptoEngine.get(0.5)
-        self.oldkey = enc.get_cryptedkey()
+        self.oldkey = enc.get_salt_digest()
         self.newdb.savekey(self.oldkey)

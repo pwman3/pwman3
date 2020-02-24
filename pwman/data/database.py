@@ -41,7 +41,7 @@ class Database(object):
         enc = CryptoEngine.get()
         key = self.loadkey()
         if key is not None:
-            enc.set_cryptedkey(key)
+            enc.set_salt_digest(key)
         else:
             self.get_user_password()
 

@@ -156,8 +156,8 @@ class TestSQLite(unittest.TestCase):
 
     def test_a12_test_savekey(self):
         ce = CryptoEngine.get()
-        self.db.savekey(ce.get_cryptedkey())
-        self.assertEqual(ce.get_cryptedkey(), self.db.loadkey())
+        self.db.savekey(ce.get_salt_digest())
+        self.assertEqual(ce.get_salt_digest(), self.db.loadkey())
 
 
 if __name__ == '__main__':
