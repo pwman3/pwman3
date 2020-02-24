@@ -3,6 +3,7 @@ services:
   pwman:
     depends_on:
      - mysql
+     - mongodb
     image: oz123/pwman3
     volumes:
     - .:/code
