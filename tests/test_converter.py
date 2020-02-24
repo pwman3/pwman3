@@ -368,14 +368,14 @@ class CreateTestDataBases(object):
         enc1.callback = DummyCallback4()
         key = self.db1.loadkey()
         if key is not None:
-            enc1.set_cryptedkey(key)
+            enc1.set_salt_digest(key)
         else:
             newkey = enc1.changepassword()
             self.db1.savekey(newkey)
 
         enc1c = copy.copy(enc1)
         if key is not None:
-            enc1.set_cryptedkey(key)
+            enc1.set_salt_digest(key)
 
         self.add_nodes_to_db1()
         CryptoEngine._instance = None

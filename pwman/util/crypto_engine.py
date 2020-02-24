@@ -216,7 +216,7 @@ class CryptoEngine(object):
         # if you change the password of the database you have to Change
         # all the cipher texts in the databse!!!
         self._keycrypted = self._create_password()
-        self.set_cryptedkey(self._keycrypted)
+        self.set_salt_digest(self._keycrypted)
         return self._keycrypted
 
     @property
@@ -250,15 +250,8 @@ class CryptoEngine(object):
         self._cipher = get_cipher(passwd, salt)
         return hpk.decode('utf-8')
 
-    def set_cryptedkey(self, key):
-        # TODO: rename this method!
-        salt, digest = key.split('$6$')
-        self._digest = digest.encode('utf-8')
-        self._salt = salt.encode('utf-8')
+    def set_salt_digest(self, key):
+        self._salt, self._digest = (i.encode('utf-8') for i in key.split('$6$'))  # noqa
 
-    def get_cryptedkey(self):
-        # TODO: rename this method!
-        """
-        return _keycrypted
-        """
+    def get_salt_digest(self):
         return self._salt.decode() + u'$6$' + self._digest.decode()
