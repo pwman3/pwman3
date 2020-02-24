@@ -14,10 +14,9 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2016 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2012 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 
-from __future__ import print_function
 import base64
 import binascii
 import ctypes
@@ -33,9 +32,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from pwman.util.callback import Callback
-
-if sys.version_info.major > 2:  # pragma: no cover
-    raw_input = input
 
 
 def encode_AES(cipher, clear_text):
@@ -213,7 +209,7 @@ class CryptoEngine(object):
             return True
         return False
 
-    def changepassword(self, reader=raw_input):
+    def changepassword(self, reader=input):
         if self._callback is None:
             raise CryptoException("No callback class has been specified")
 
