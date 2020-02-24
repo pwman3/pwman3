@@ -21,22 +21,20 @@ from __future__ import print_function
 import sys
 import os
 sys.path.insert(0, os.getcwd())
+
 from pwman.data.database import Database, DatabaseException
 from pwman.data.drivers.sqlite import SQLiteDatabaseNewForm
 from pwman.data.nodes import Node
-from pwman.data.nodes import NewNode
 from pwman.util.crypto_engine import CryptoEngine
 from pwman.data.tags import Tag
 from db_tests import node_factory
-from pwman.util.callback import CLICallback
 import sqlite3 as sqlite
 import pwman.util.config as config
 from pwman import default_config
 import cPickle
-from test_tools import SetupTester, DummyCallback4
+from test_tools import DummyCallback4
 from pwman.data.convertdb import DBConverter
 import copy
-import unittest
 
 
 class SQLiteDatabase(Database):
@@ -341,7 +339,7 @@ class CreateTestDataBases(object):
 
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
-                assert attr == getattr(new_node, key)
+            assert attr == getattr(new_node, key)
         self.db1.close()
 
     def add_nodes_to_db2(self):
@@ -357,7 +355,7 @@ class CreateTestDataBases(object):
 
         for key, attr in {'password': password, 'username': username,
                           'url': url, 'notes': notes}.iteritems():
-                assert attr == getattr(new_node, key)
+            assert attr == getattr(new_node, key)
         self.db2.close()
 
     def run(self):
@@ -385,23 +383,19 @@ class CreateTestDataBases(object):
         enc2.callback = DummyCallback4()
         key = self.db2.loadkey()
         if key is not None:
-            enc2.set_cryptedkey(key)
+            enc2.set_salt_digest(key)
         else:
             newkey = enc2.changepassword()
             self.db2.savekey(newkey)
 
         enc2c = copy.copy(enc2)
         if key is not None:
-            enc2.set_cryptedkey(key)
+            enc2.set_salt_digest(key)
 
         self.add_nodes_to_db2()
         assert enc1 is not enc2
         assert enc1c is not enc2c
 
-
-class TestConverter(unittest.TestCase):
-
-    pass
 
 if __name__ == '__main__':
     tester = CreateTestDataBases()
