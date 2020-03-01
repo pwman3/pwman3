@@ -267,6 +267,15 @@ class BaseUtilsMixin:
         nodeids = self._db.listnodes(filter=filter)
         return nodeids
 
+    def _lazy_get_node_ids(self, args):
+        filter = None
+        if args:
+            filter = args.split()[0]
+            ce = CryptoEngine.get()
+            filter = ce.encrypt(filter)
+        for node in self._db.lazy_list_nodes(filter=filter):
+            yield node
+
     def _db_entries_to_nodes(self, raw_nodes):
         _nodes_inst = []
         # user, pass, url, notes
@@ -345,10 +354,17 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         if not args.isdigit():
             print("Copy accepts only IDs ...")
             return
-        ids = args.split()
-        if len(ids) > 1:
-            print("Can copy only 1 password at a time...")
-            return
+
+        url_filter = ""
+        m = re.search('^u:([^ ]+) ?(.*)$', args)
+
+        if m:
+            url_filter, args = m.groups()
+        else:
+            ids = args.split()
+            if len(ids) > 1:
+                print("Can copy only 1 password at a time...")
+                return
 
         ce = CryptoEngine.get()
         nodes = self._db.getnodes(ids)
@@ -490,6 +506,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         nodeids = self._get_node_ids(args)
         raw_nodes = self._db.getnodes(nodeids)
+        # TODO: this gets all nodes in memory, a lazy iterator would be better
         _nodes_inst = self._db_entries_to_nodes(raw_nodes)
         head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
@@ -506,7 +523,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         print(node.id)
 
     def do_pp(self, args):
-
+        """print the password only"""
         node = self._get_node(args)
 
         print(node.password)

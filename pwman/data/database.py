@@ -14,11 +14,15 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2012 Oz Nahum <nahumoz@gmail.com>
+# Copyright (C) 2020 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
+import inspect
+
 from pwman.util.crypto_engine import CryptoEngine
+
+
 __DB_FORMAT__ = 0.6
 
 
@@ -156,6 +160,9 @@ class Database(object):
         self._con.commit()
 
     def getnodes(self, ids):
+        if inspect.isgenerator(ids):
+            self.lazy_get_nodes(ids)
+
         if ids:
             sql = ("SELECT * FROM NODE WHERE ID IN ({})"
                    "".format(','.join(self._sub for i in ids)))
@@ -175,6 +182,12 @@ class Database(object):
 
         return nodes_w_tags
 
+    def lazy_get_nodes(self, ids):
+        """
+        iterates thought ids and yield a node for each id
+        """
+        raise NotImplementedError
+
     def listnodes(self, filter=None):
         """return a list of node ids"""
         if not filter:
@@ -192,6 +205,22 @@ class Database(object):
             self._con.commit()
             ids = self._cur.fetchall()
             return [id[0] for id in ids]
+
+    def lazy_list_nodes(self, filter=None):
+        """return a generator that yields the node ids"""
+        if not filter:
+            sql_all = "SELECT ID FROM NODE"
+            self._cur.execute(sql_all)
+        else:
+            tagid = self._get_tag(filter)
+            if not tagid:
+                yield []  # pragma: no cover
+            self._cur.execute(self._list_nodes_sql, (tagid,))
+        nodes = self._cur.fetchmany()
+        while nodes:
+            for node in nodes:
+                yield node[0]
+            nodes = self._cur.fetchmany()
 
     def add_node(self, node):
         node_tags = list(node)
