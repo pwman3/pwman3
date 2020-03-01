@@ -67,7 +67,7 @@ try:
     authoremail = pkg_meta.author_email
     description = pkg_meta.summary
     long_description = pkg_meta.description
-except IOError as E:
+except IOError:
     # this should only happen once when installing the package
     description = "a command line password manager with support for multiple databases."  # noqa
     website = 'http://pwman3.github.io/pwman3/'
@@ -91,7 +91,7 @@ def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
     printer.add_argument("node", type=int)
 
     copy = subparsers.add_parser('cp', help='copy password entry to clipboard')
-    copy.add_argument("node", type=int)
+    copy.add_argument("node", type=str)
 
     version = subparsers.add_parser('version', help='version')
     version.add_argument("--latest", action='store_true')
