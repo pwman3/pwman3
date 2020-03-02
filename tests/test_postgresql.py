@@ -86,10 +86,10 @@ class TestPostGresql(unittest.TestCase):
         self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
     def test_6_list_nodes(self):
-        ret1 = self.db.listnodes()
-        self.assertEqual(ret1, [1])
-        ret2 = self.db.listnodes(b"footag")
-        self.assertEqual(ret2, [1])
+        ret1 = self.db.lazy_list_node_ids()
+        self.assertEqual(list(ret1), [1])
+        ret2 = self.db.lazy_list_node_ids(b"footag")
+        self.assertEqual(list(ret2), [1])
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
@@ -114,8 +114,8 @@ class TestPostGresql(unittest.TestCase):
 
     def test_8_remove_node(self):
         self.db.removenodes([1])
-        n = self.db.listnodes()
-        self.assertEqual(len(n), 0)
+        nids = list(self.db.lazy_list_node_ids())
+        self.assertEqual(len(nids), 0)
 
     def test_9_check_db_version(self):
 

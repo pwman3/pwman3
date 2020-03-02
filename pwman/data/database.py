@@ -18,7 +18,6 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
-import inspect
 
 from pwman.util.crypto_engine import CryptoEngine
 
@@ -160,53 +159,28 @@ class Database(object):
         self._con.commit()
 
     def getnodes(self, ids):
-        if inspect.isgenerator(ids):
-            self.lazy_get_nodes(ids)
-
-        if ids:
-            sql = ("SELECT * FROM NODE WHERE ID IN ({})"
-                   "".format(','.join(self._sub for i in ids)))
-        else:
-            sql = "SELECT * FROM NODE"
-        self._cur.execute(sql, (ids))
-        nodes = self._cur.fetchall()
-        if not nodes:
-            return []
-        # sqlite returns nodes as bytes, postgresql returns them as str
-        if isinstance(nodes[0][1], str):
-            nodes = [node for node in nodes]
-        nodes_w_tags = []
-        for node in nodes:
+        g = self.lazy_get_nodes(ids)
+        for node in g:
             tags = [t for t in self._get_node_tags(node)]
-            nodes_w_tags.append(list(node) + tags)
+            yield list(node[0:]) + tags
 
-        return nodes_w_tags
+    def get_node(self, id):
+        node = next(self.lazy_get_nodes([id]))
+        tags = [t for t in self._get_node_tags(node)]
+        return list(node[0:]) + tags
 
     def lazy_get_nodes(self, ids):
         """
         iterates thought ids and yield a node for each id
         """
-        raise NotImplementedError
+        query = self._get_node_sql
+        for id_ in ids:
+            if id_:
+                self._cur.execute(query, (str(id_),))
+                node = self._cur.fetchone()
+                yield node
 
-    def listnodes(self, filter=None):
-        """return a list of node ids"""
-        if not filter:
-            sql_all = "SELECT ID FROM NODE"
-            self._cur.execute(sql_all)
-            ids = self._cur.fetchall()
-            return [id[0] for id in ids]
-        else:
-            tagid = self._get_tag(filter)
-            if not tagid:
-                return []  # pragma: no cover
-
-            # will this work for many nodes??? with the same tag?
-            self._cur.execute(self._list_nodes_sql, (tagid,))
-            self._con.commit()
-            ids = self._cur.fetchall()
-            return [id[0] for id in ids]
-
-    def lazy_list_nodes(self, filter=None):
+    def lazy_list_node_ids(self, filter=None):
         """return a generator that yields the node ids"""
         if not filter:
             sql_all = "SELECT ID FROM NODE"

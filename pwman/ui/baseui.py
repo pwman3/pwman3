@@ -264,8 +264,7 @@ class BaseUtilsMixin:
             filter = args.split()[0]
             ce = CryptoEngine.get()
             filter = ce.encrypt(filter)
-        nodeids = self._db.listnodes(filter=filter)
-        return nodeids
+        return self._db.listnodes(filter=filter)
 
     def _lazy_get_node_ids(self, args):
         filter = None
@@ -273,21 +272,18 @@ class BaseUtilsMixin:
             filter = args.split()[0]
             ce = CryptoEngine.get()
             filter = ce.encrypt(filter)
-        for node in self._db.lazy_list_nodes(filter=filter):
+        for node in self._db.lazy_list_node_ids(filter=filter):
             yield node
 
-    def _db_entries_to_nodes(self, raw_nodes):
-        _nodes_inst = []
+    def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes
-        for node in raw_nodes:
-            _nodes_inst.append(Node.from_encrypted_entries(
-                node[1],
-                node[2],
-                node[3],
-                node[4],
-                node[5:]))
-            _nodes_inst[-1]._id = node[0]
-        return _nodes_inst
+        node_inst = Node.from_encrypted_entries(raw_node[1],
+                                                raw_node[2],
+                                                raw_node[3],
+                                                raw_node[4],
+                                                raw_node[5:])
+        node_inst._id = raw_node[0]
+        return node_inst
 
     def _get_input(self, prompt):
         print(prompt, end="")
@@ -322,12 +318,12 @@ class BaseUtilsMixin:
             print("print accepts only a single ID ...")
             return
 
-        nodes = self._db.getnodes([nodeid])
-        if not nodes:  # pragma: no cover
+        node = self._db.get_node(nodeid)
+        if not node:  # pragma: no cover
             print("Node not found ...")
             return
 
-        node = self._db_entries_to_nodes(nodes)[0]
+        node = self._db_entry_to_node(node)
         return node
 
 
@@ -413,8 +409,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         filename = args.get('filename', 'pwman-export.csv')
         delim = args.get('delimiter', ';')
-        nodeids = self._db.listnodes()
-        nodes = self._db.getnodes(nodeids)
+        nodes = self._db.getnodes(list(self._db.lazy_list_node_ids()))
 
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)
@@ -472,11 +467,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         ids = self._get_ids(args)
         for i in ids:
             i = int(i)
-            node = self._db.getnodes([i])
+            node = self._db.get_node(i)
             if not node:
                 print("Node not found ...")
                 return
-            node = node[0]
             node = node[1:5] + [node[5:]]
             node = Node.from_encrypted_entries(*node)
             if not menu:
@@ -504,15 +498,13 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         if m:
             url_filter, args = m.groups()
 
-        nodeids = self._get_node_ids(args)
-        raw_nodes = self._db.getnodes(nodeids)
-        # TODO: this gets all nodes in memory, a lazy iterator would be better
-        _nodes_inst = self._db_entries_to_nodes(raw_nodes)
+        nodeids_gen = self._lazy_get_node_ids(args)
         head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
 
-        for idx, node in enumerate(_nodes_inst):
-            self._print_node_line(node, rows, cols, url_filter)
+        for node in self._db.getnodes(nodeids_gen):
+            self._print_node_line(self._db_entry_to_node(node), rows, cols,
+                                  url_filter)
 
     def do_new(self, args):  # pragma: no cover
         # The cmd module stops if any of do_* return something
@@ -525,11 +517,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
     def do_pp(self, args):
         """print the password only"""
         node = self._get_node(args)
-
         print(node.password)
 
     def do_print(self, args):
-
         node = self._get_node(args)
 
         print(node)
