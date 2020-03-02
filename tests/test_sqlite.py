@@ -93,8 +93,8 @@ class TestSQLite(unittest.TestCase):
                        'notes': u"a really great place",
                        'tags': [u'baz', u'bar']})
         self.db.add_node(node)
-        ids = self.db.listnodes()
-        self.assertEqual(2, len(ids))
+        ids = self.db.lazy_list_node_ids()
+        self.assertEqual(2, len(list(ids)))
 
     def test_7_listnodes_w_filter(self):
         ce = CryptoEngine.get()
@@ -103,13 +103,13 @@ class TestSQLite(unittest.TestCase):
         # test_6_listnodes
 
         tag = ce.encrypt(b'bar')
-        rv = self.db.listnodes(tag)
-        self.assertEqual(len(rv), 2)
+        rv = self.db.lazy_list_node_ids(filter=tag)
+        self.assertEqual(len(list(rv)), 2)
         tag = ce.encrypt(b'baz')
         # the tag 'baz' is found in a node created in
         # test_6_listnodes
-        rv = self.db.listnodes(tag)
-        self.assertEqual(len(rv), 1)
+        rv = self.db.lazy_list_node_ids(filter=tag)
+        self.assertEqual(len(list(rv)), 1)
 
     def test_8_getnodes(self):
         nodes = self.db.getnodes([1, 2])

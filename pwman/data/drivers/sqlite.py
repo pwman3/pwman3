@@ -56,6 +56,7 @@ class SQLite(Database):
                               "VALUES(?, ?, ?, ?)")
         self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
+        self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
         self._sub = '?'
         self._data_wrapper = lambda x: x
 

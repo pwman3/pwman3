@@ -69,6 +69,7 @@ class PostgresqlDatabase(Database):
         self._add_node_sql = ('INSERT INTO NODE(USERNAME, PASSWORD, URL, '
                               'NOTES) VALUES(%s, %s, %s, %s) RETURNING ID')
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(%s) RETURNING ID"
+        self._get_node_sql = "SELECT * FROM NODE WHERE ID = %s"
         self.ProgrammingError = pg.ProgrammingError
         self._data_wrapper = lambda x: pg.Binary(x)
 

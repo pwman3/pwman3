@@ -76,13 +76,13 @@ class TestBaseUI(unittest.TestCase):
         sys.stdin = sys.__stdin__
         self.assertListEqual([b'foo', b'bar', b'baz'], [t for t
                                                         in _node.tags])
-        nodeid = self.tester.cli._db.listnodes()
-        self.assertListEqual([1], nodeid)
-        nodes = self.tester.cli._db.getnodes(nodeid)
+        node_ids = self.tester.cli._db.lazy_list_node_ids()
+        self.assertListEqual([1], list(node_ids))
+        nodes = list(self.tester.cli._db.getnodes([1]))
         ce = CryptoEngine.get()
         user = ce.decrypt(nodes[0][1])
         self.assertTrue(user, 'alice')
-        tags = nodes[0][5:]
+        tags = nodes[-1]
         for idx, t in enumerate(['foo', 'bar', 'baz']):
             self.assertTrue(t, tags[idx])
 
@@ -146,7 +146,7 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual([], self.tester.cli._get_ids('5\\'))
 
     def test_8_do_edit_1(self):
-        node = self.tester.cli._db.getnodes([1])[0]
+        node = list(self.tester.cli._db.getnodes([1]))[0]
         node = node[1:5] + [node[5:]]
         node = Node.from_encrypted_entries(*node)
         sys.stdin = StringIO(("1\nfoo\nx\n"))
@@ -158,7 +158,7 @@ class TestBaseUI(unittest.TestCase):
         self.assertIn('\x1b[31mUsername:\x1b[0m foo', v.getvalue())
 
     def test_8_do_edit_2(self):
-        node = self.tester.cli._db.getnodes([1])[0]
+        node = list(self.tester.cli._db.getnodes([1]))[0]
         node = node[1:5] + [node[5:]]
         node = Node.from_encrypted_entries(*node)
         sys.stdin = StringIO(("2\ns3kr3t\nx\n"))
@@ -191,4 +191,4 @@ if __name__ == '__main__':
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-    unittest.main(verbosity=2, failfast=True)
+    unittest.main(verbosity=3, failfast=True)

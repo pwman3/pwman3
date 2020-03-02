@@ -97,10 +97,10 @@ class TestMySQLDatabase(unittest.TestCase):
         self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
 
     def test_6_list_nodes(self):
-        ret = self.db.listnodes()
-        self.assertEqual(ret, [1])
-        ret = self.db.listnodes("footag")
-        self.assertEqual(ret, [1])
+        ret = self.db.lazy_list_node_ids()
+        self.assertEqual(list(ret), [1])
+        ret = self.db.lazy_list_node_ids("footag")
+        self.assertEqual(list(ret), [1])
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
@@ -108,8 +108,9 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_6b_get_nodes(self):
         ret = self.db.getnodes([1])
-        retb = self.db.getnodes([])
-        self.assertListEqual(ret, retb)
+        self.assertListEqual(ret[0], [1, "TBONE", "S3K43T", "example.org",
+                                      "some note",
+                                      "bartag", "footag"])
 
     def test_7_get_or_create_tag(self):
         s = self.db._get_or_create_tag("SECRET")
@@ -125,7 +126,7 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_8_remove_node(self):
         self.db.removenodes([1])
-        n = self.db.listnodes()
+        n = list(self.db.lazy_list_node_ids())
         self.assertEqual(len(n), 0)
 
     def test_9_check_db_version(self):
