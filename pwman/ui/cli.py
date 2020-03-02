@@ -96,7 +96,7 @@ def check_version(version, client_info):
     return latest
 
 
-def main():
+def main():  # pragma: no cover
     args = parser_options().parse_args()
     PwmanCli, OSX = get_ui_platform(sys.platform)
     xselpath, dbtype, config = get_conf_options(args, OSX)
