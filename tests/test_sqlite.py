@@ -113,7 +113,7 @@ class TestSQLite(unittest.TestCase):
 
     def test_8_getnodes(self):
         nodes = self.db.getnodes([1, 2])
-        self.assertEqual(len(nodes), 2)
+        self.assertEqual(len(list(nodes)), 2)
 
     def test_9_editnode(self):
         # delibertly insert clear text into the database

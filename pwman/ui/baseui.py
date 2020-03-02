@@ -344,11 +344,10 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             print("Error: {0} ".format(exception))
 
     def do_copy(self, args):  # pragma: no cover
-        """copy item to clipboard"""
+        """copy item to clipboard. Accepts an id or `u:<URL substring>`"""
         if not self.hasxsel:
             return
-        if not args.isdigit():
-            print("Copy accepts only IDs ...")
+        if not args.isdigit() and not args.startswith("u:"):
             return
 
         url_filter = ""
@@ -356,23 +355,23 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         if m:
             url_filter, args = m.groups()
+            ids = self._db.lazy_list_node_ids()
         else:
             ids = args.split()
             if len(ids) > 1:
                 print("Can copy only 1 password at a time...")
                 return
 
-        ce = CryptoEngine.get()
         nodes = self._db.getnodes(ids)
 
+        ce = CryptoEngine.get()
         for node in nodes:
-            password = ce.decrypt(node[2])
-            tools.text_to_clipboards(password)
-            flushtimeout = self.config.get_value('Global', 'cp_timeout')
-            flushtimeout = flushtimeout or 10
-            print("erasing in {} sec...".format(flushtimeout))
-            time.sleep(int(flushtimeout))
-            tools.text_to_clipboards("")
+            if ce.decrypt(node[3]).find(url_filter.encode()) != -1:
+                password = ce.decrypt(node[2])
+                tools.text_to_clipboards(password)
+                flushtimeout = self.config.get_value('Global', 'cp_timeout')
+                flushtimeout = flushtimeout or 10
+                print("erasing in {} sec...".format(flushtimeout))
 
     def do_open(self, args):  # pragma: no cover
         ids = self._get_ids(args)
