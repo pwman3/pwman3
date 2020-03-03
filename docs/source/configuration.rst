@@ -37,6 +37,7 @@ The following is an example default config file::
     client_info = ee5cd64310568736b971e3fb7c7064a4459b99a2b78672515fd0f06c82f65d5
 
 On Windows ``PWMAN_DATA_DIR`` is ``%APPDATA/pwman/%`` on Unix like systems it is
+
 ``~/.local/share/pwman/``.
 
 Following is a table describing the parameters and their meanings:
@@ -52,7 +53,7 @@ Following is a table describing the parameters and their meanings:
     ---------------------    -----------
     save                     True or False - whether the Configuring file should be saved
     ---------------------    -----------
-    colors                   yes or no - If set to *no*, no colors used in output. This is useful for breil terminals. 
+    colors                   yes or no - If set to *no*, no colors used in output. This is useful for breil terminals.
     ---------------------    -----------
     cp_timeout               Number of seconds before the clipboard is erased.
     ---------------------    -----------
@@ -66,7 +67,7 @@ Following is a table describing the parameters and their meanings:
     ---------------------    -----------
     **Section**              *Database*
     ---------------------    -----------
-    dburi                    Database URI conforming to `RFC3986`_. SQLite, Postgreql, 
+    dburi                    Database URI conforming to `RFC3986`_. SQLite, Postgreql,
                              MySQL and MongoDB are currently supported.
 
                              SQLite example: `sqlite:///path/to/your/db`
@@ -82,8 +83,19 @@ Following is a table describing the parameters and their meanings:
     supress_version_check    yes or no - check for newer versions of pwman3
     ---------------------    -----------
     client_info              sha256 digest of host name and username, used for identifying the client
+    ---------------------    -----------
+    **Section**              *UI*
+    ---------------------    -----------
+    URL_length               22  - the max length of URL to show. Longer URLs are trimmed
+    ---------------------    -----------
+    URL_pad                  25  - the padding of the URL in `line_format`
+    ---------------------    -----------
+    user_pad                 25  - the padding of the user name in `line_format`
+    ---------------------    -----------
+    tag_pad                  20  - the padding of tags in the `line_format`
+    ---------------------    -----------
+    line_format              `{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}`
     =====================    ===========
-
 
 .. _RFC3986: http://www.ietf.org/rfc/rfc3986.txt
 
