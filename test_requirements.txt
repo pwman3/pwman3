@@ -3,4 +3,3 @@ pymysql
 pymongo==2.8
 pexpect
 coverage
-unittest2
