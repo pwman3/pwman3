@@ -500,7 +500,6 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         nodeids_gen = self._lazy_get_node_ids(args)
         head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
-
         for node in self._db.getnodes(nodeids_gen):
             self._print_node_line(self._db_entry_to_node(node), rows, cols,
                                   url_filter)
