@@ -272,8 +272,8 @@ class BaseUtilsMixin:
             filter = args.split()[0]
             ce = CryptoEngine.get()
             filter = ce.encrypt(filter)
-        for node in self._db.lazy_list_node_ids(filter=filter):
-            yield node
+        for node_id in self._db.lazy_list_node_ids(filter=filter):
+            yield node_id
 
     def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes
