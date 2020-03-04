@@ -178,10 +178,12 @@ class Database(object):
             if id_:
                 self._cur.execute(query, (str(id_),))
                 node = self._cur.fetchone()
-                yield node
+                if node:
+                    yield node
 
     def lazy_list_node_ids(self, filter=None):
         """return a generator that yields the node ids"""
+        # self._con.set_trace_callback(print)
         if not filter:
             sql_all = "SELECT ID FROM NODE"
             self._cur.execute(sql_all)
@@ -190,11 +192,9 @@ class Database(object):
             if not tagid:
                 yield []  # pragma: no cover
             self._cur.execute(self._list_nodes_sql, (tagid,))
-        nodes = self._cur.fetchmany()
-        while nodes:
-            for node in nodes:
-                yield node[0]
-            nodes = self._cur.fetchmany()
+
+        for node_id in self._cur.fetchall():
+            yield node_id[0]
 
     def add_node(self, node):
         node_tags = list(node)
