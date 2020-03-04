@@ -2,16 +2,15 @@
 """
 script to install pwman3
 """
-
+import argparse
 import datetime
+import os
+import sys
+
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
-import argparse
 from setuptools import setup
 from setuptools import find_packages
-import sys
-import os
-
 
 # The BuildManPage code is distributed
 # under the same License of Python
@@ -258,12 +257,54 @@ class ManPageFormatter(argparse.HelpFormatter):
 
         return '\n'.join(footer)
 
+    def _mk_configuration(self):
+        from pwman.util.config import default_config
+        from textwrap import dedent
+        base_table = ".TS\nll.\n{}\n.TE"
+
+        option_base = dedent("""
+        T{{
+        {option}
+        T}}\tT{{
+        {explanation}
+        T}}""")
+
+        section_base = dedent("""
+        T{{
+        \\fISection\\fP
+        T}}\tT{{
+        \\fI{section}\\fP
+        T}}
+        """)
+
+        body = ""
+        import pdb; pdb.set_trace()
+
+        for section, options in default_config.items():
+            body = body + section_base.format_map(dict(section=section))
+            for option, explanation in options.items():
+                body = body + option_base.format_map(
+                    dict(option=option, explanation=explanation.replace("#", "-")))
+        body = base_table.format(body)
+        prefix = """
+The configuration of pwman is done with an \\fIini\\fP file found in XDG_CONFIG_HOME
+on Unix systems.
+.br
+On windows the configuration is found in \\fB%APPDATA/pwman/%\\fP
+.br
+The following describe the possible sections in the file and the default values
+.br
+of each parameter:"""
+
+        return f".SH CONFIGURATION\n..{prefix}\n{body}\n"
+
     def format_man_page(self, parser):
         page = []
         page.append(self._mk_title(self._prog))
         page.append(self._mk_synopsis(parser))
         page.append(self._mk_description())
         page.append(self._mk_options(parser))
+        page.append(self._mk_configuration())
         page.append(self._mk_footer(self._ext_sections))
 
         return ''.join(page)
@@ -311,7 +352,7 @@ class ManPageFormatter(argparse.HelpFormatter):
             return ', '.join(parts)
 
 
-class ManPageCreator(object):
+class ManPageCreator:
 
     """
     This class takes a little different approach. Instead of relying on
@@ -360,6 +401,7 @@ setup(name='pwman3',
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
+      setup_requires=["docutils"],
       keywords="password-manager crypto cli",
       classifiers=['Environment :: Console',
                    'Intended Audience :: End Users/Desktop',

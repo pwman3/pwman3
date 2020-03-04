@@ -10,16 +10,17 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-    
+
    install
    tutorial
-   configuration  
+   configuration
    packaging
+   pwman
 
 About pwman3:
-^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^
 
-Pwman3 is a command line password manager for Python3 with support for 
+Pwman3 is a command line password manager for Python3 with support for
 multiple databases.
 
 

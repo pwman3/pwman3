@@ -88,27 +88,35 @@ def find_config_dir(appname):
 config_dir, data_dir = find_config_dir('pwman')
 
 
-default_config = {'Global': {'umask': '0100', 'colors': 'yes',
-                             'cls_timeout': '10', 'cp_timeout': '5',
-                             'save': 'True', 'supress_version_check': 'no',
-                             'lock_timeout': '600'
-                             },
+default_config = {'Global':
+                  {'umask': '0100 # The umask in which database and configuration files are written.',
+                   'colors': 'yes # set to *no to supress color in output. This is useful for breil terminals',
+                   'cls_timeout': '5 # Number of seconds before the screen is clean after a print. Set to 0 to disable.',
+                   'cp_timeout': '10 # number of seconds before the clipboard is erased.',
+                   'save': 'True #  whether the Configuring file should be saved',
+                   'lock_timeout': '600'
+                   },
                   'Database': {
                       'dburi': 'sqlite://' + os.path.join(data_dir,
                                                           'pwman.db')},
                   'Readline': {'history': os.path.join(data_dir,
                                                        'history')},
                   'Crypto': {'supress_warning': 'no'},
-
-                  'Updater': {'supress_version_check': 'no'},
-                  'UI': {"URL_Length": '22',
-                         "URL_pad": '25',
-                         "user_pad": '25',
-                         "tag_pad": '20',
+                  'Updater': {
+                      'supress_version_check':
+                      'no # set to yes to supress check for newer versions of pwman3',
+                      'client_info':
+                      '"" #  sha256 digest of host name and username, used for identifying the client'
+                  },
+                  'UI': {"URL_Length": '22 # the max length of URL to show. Longer URLs are trimmed',
+                         "URL_pad": '25 # the padding of the URL in `line_format`',
+                         "user_pad": '25 # the padding of the user name in `line_format`',
+                         "tag_pad": '20 # the padding of tags in the `line_format',
                          "line_format":
-                         "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",
+                         "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",  # noqa
                          }
                   }
+
 
 if 'win' in sys.platform:
     default_config['Database']['dburi'] = default_config['Database']['dburi'].replace("\\", "/")  # noqa
@@ -128,7 +136,69 @@ class ConfigNoConfigException(ConfigException):
     pass
 
 
-class Config(object):
+class Config:
+
+    """
+    The configuration of pwman is done with an `ini` file found in XDG_CONFIG_HOME
+    on Unix systems.
+    On windows the configuration is found in ``%APPDATA/pwman/%``
+    The following describe the possible sections in the file and the default values
+    of each parameter:
+
+    =====================    ===========
+    **Section**              *Readline*
+    ---------------------    -----------
+                             *Global*
+    history                  path to the file containing history of commands typed
+    ---------------------    -----------
+    **Section**              *Global*
+    ---------------------    -----------
+    save                     True or False - whether the Configuring file should be saved
+    ---------------------    -----------
+    colors                   yes or no - If set to *no*, no colors used in output. This is useful for breil terminals.
+    ---------------------    -----------
+    cp_timeout               Number of seconds before the clipboard is erased.
+    ---------------------    -----------
+    cls_timeout              Number of seconds before the screen is clean after a print. Set to 0 to disable.
+    ---------------------    -----------
+    umask                    The umask in which database and configuration files are written.
+    ---------------------    -----------
+    xsel                     path to the xsel binary (Linux\BSD only).
+    ---------------------    -----------
+    lock_timeout             set the period (in secods) after which the database is locked.
+    ---------------------    -----------
+    **Section**              *Database*
+    ---------------------    -----------
+    dburi                    Database URI conforming to `RFC3986`. SQLite, Postgreql,
+                             MySQL and MongoDB are currently supported.
+
+                             SQLite example: `sqlite:///path/to/your/db`
+
+                             Postgreql example: `postgresql://<user>:<pass>@<host[:port]>/<database>`
+
+                             MySQL example:     `mysql://<user>:<pass>@<host[:port]>/<database>`
+
+                             MongoDB example:   `mongodb://<user>:<pass>@<host[:port]>/<database>`
+    ---------------------    -----------
+    **Section**              *Updater*
+    ---------------------    -----------
+    supress_version_check    yes or no - check for newer versions of pwman3
+    ---------------------    -----------
+    client_info              sha256 digest of host name and username, used for identifying the client
+    ---------------------    -----------
+    **Section**              *UI*
+    ---------------------    -----------
+    URL_length               22  - the max length of URL to show. Longer URLs are trimmed
+    ---------------------    -----------
+    URL_pad                  25  - the padding of the URL in `line_format`
+    ---------------------    -----------
+    user_pad                 25  - the padding of the user name in `line_format`
+    ---------------------    -----------
+    tag_pad                  20  - the padding of tags in the `line_format`
+    ---------------------    -----------
+    line_format              `{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}`
+    =====================    ===========
+    """
 
     def __init__(self, filename=None, defaults=None, **kwargs):
 

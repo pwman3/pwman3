@@ -7,7 +7,6 @@ util Package
 .. automodule:: pwman.util.callback
     :members:
     :undoc-members:
-    :show-inheritance:
 
 :mod:`config` Module
 --------------------
@@ -15,7 +14,6 @@ util Package
 .. automodule:: pwman.util.config
     :members:
     :undoc-members:
-    :show-inheritance:
 
 :mod:`crypto_engine` Module
 ---------------------------
@@ -23,5 +21,3 @@ util Package
 .. automodule:: pwman.util.crypto_engine
     :members:
     :undoc-members:
-    :show-inheritance:
-
