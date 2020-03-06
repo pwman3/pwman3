@@ -278,23 +278,23 @@ class ManPageFormatter(argparse.HelpFormatter):
         """)
 
         body = ""
-        import pdb; pdb.set_trace()
 
         for section, options in default_config.items():
             body = body + section_base.format_map(dict(section=section))
             for option, explanation in options.items():
                 body = body + option_base.format_map(
-                    dict(option=option, explanation=explanation.replace("#", "-")))
+                    dict(option=option,
+                         explanation=explanation.replace("#", "-")))
         body = base_table.format(body)
         prefix = """
-The configuration of pwman is done with an \\fIini\\fP file found in XDG_CONFIG_HOME
-on Unix systems.
+The configuration of pwman is done with an \\fIini\\fP file found in
+XDG_CONFIG_HOME on Unix systems.
 .br
 On windows the configuration is found in \\fB%APPDATA/pwman/%\\fP
 .br
-The following describe the possible sections in the file and the default values
-.br
-of each parameter:"""
+The following table describes the possible sections in the file and the
+default values of each parameter:
+.br"""
 
         return f".SH CONFIGURATION\n..{prefix}\n{body}\n"
 

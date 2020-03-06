@@ -88,35 +88,42 @@ def find_config_dir(appname):
 config_dir, data_dir = find_config_dir('pwman')
 
 
-default_config = {'Global':
-                  {'umask': '0100 # The umask in which database and configuration files are written.',
-                   'colors': 'yes # set to *no to supress color in output. This is useful for breil terminals',
-                   'cls_timeout': '5 # Number of seconds before the screen is clean after a print. Set to 0 to disable.',
-                   'cp_timeout': '10 # number of seconds before the clipboard is erased.',
-                   'save': 'True #  whether the Configuring file should be saved',
-                   'lock_timeout': '600'
-                   },
-                  'Database': {
-                      'dburi': 'sqlite://' + os.path.join(data_dir,
-                                                          'pwman.db')},
-                  'Readline': {'history': os.path.join(data_dir,
-                                                       'history')},
-                  'Crypto': {'supress_warning': 'no'},
-                  'Updater': {
-                      'supress_version_check':
-                      'no # set to yes to supress check for newer versions of pwman3',
-                      'client_info':
-                      '"" #  sha256 digest of host name and username, used for identifying the client'
-                  },
-                  'UI': {"URL_Length": '22 # the max length of URL to show. Longer URLs are trimmed',
-                         "URL_pad": '25 # the padding of the URL in `line_format`',
-                         "user_pad": '25 # the padding of the user name in `line_format`',
-                         "tag_pad": '20 # the padding of tags in the `line_format',
-                         "line_format":
-                         "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",  # noqa
-                         }
-                  }
-
+default_config = {
+    'Global':
+    {'umask': ('0100 # The umask in which database and '
+               'configuration files are written.'),
+     'colors': ('yes # set to `no` to supress color in output. '
+                'This is useful for breil terminals'),
+     'cls_timeout': ('5 # Number of seconds before the screen is'
+                     ' clean after a print. '
+                     'Set to 0 to disable.'),
+     'cp_timeout': ('10 # number of seconds before the clipboard'
+                    ' is erased.'),
+     'save': ('True #  whether the Configuring file should be '
+              'saved'),
+     'lock_timeout': '600'
+     },
+    'Database': {'dburi': ('sqlite://$XDG_DATA_HOME/pwman.db # ')},
+    'Readline': {'history': os.path.join(data_dir,
+                                         'history')},
+    'Crypto': {'supress_warning': 'no'},
+    'Updater': {'supress_version_check': ('no # set to `yes` to supress check '
+                                          'for newer versions of pwman3'),
+                'client_info': ('"" #  sha256 digest of host name and '
+                                'username, used for identifying the client'),
+                },
+    'UI': {"URL_Length":
+           '22 # the max length of URL to show. Longer URLs are trimmed',
+           "URL_pad":
+               '25 # the padding of the URL in `line_format`',
+           "user_pad":
+               '25 # the padding of the user name in `line_format`',
+           "tag_pad":
+               '20 # the padding of tags in the `line_format',
+           "line_format":
+               "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",
+           }
+    }
 
 if 'win' in sys.platform:
     default_config['Database']['dburi'] = default_config['Database']['dburi'].replace("\\", "/")  # noqa
@@ -210,7 +217,7 @@ class Config:
     ---------------------    -----------
     tag_pad                  20  - the padding of tags in the `line_format`
     ---------------------    -----------
-    line_format              `{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}`
+    line_format              `{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}`  # noqa
     =====================    ===========
     """
 
