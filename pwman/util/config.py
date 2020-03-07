@@ -247,7 +247,7 @@ class Config:
         loc_defaults.update({'Database':
                              {
                               'dburi':  'sqlite://' + os.path.join(data_dir,
--                                                                  'pwman.db')},  # noqa
+                                                                   'pwman.db')},  # noqa
                               'Readline': {'history': os.path.join(data_dir,
                                                                    'history')}})  # noqa
         for section, options in loc_defaults.items():

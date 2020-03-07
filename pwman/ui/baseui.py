@@ -232,9 +232,9 @@ class BaseUtilsMixin:
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
                      tags="TAGS"):
 
-        user_pad = int(self.config.get_value("UI", "URL_pad"))
-        url_pad = int(self.config.get_value("UI", "user_pad"))
-        tag_pad = int(self.config.get_value("UI", "tag_pad"))
+        user_pad = int(self.config.get_value("UI", "URL_pad").split('#')[0])
+        url_pad = int(self.config.get_value("UI", "user_pad").split('#')[0])
+        tag_pad = int(self.config.get_value("UI", "tag_pad").split('#')[0])
         line = self.config.get_value("UI", "line_format")
 
         return (line.format(ID=nid, USER=user,
@@ -247,8 +247,9 @@ class BaseUtilsMixin:
 
         tagstring = ','.join([t.decode() for t in node.tags])
 
-        if len(node.url) > int(self.config.get_value("UI", "URL_length")):
-            node_url = node.url[:int(self.config.get_value("UI", "URL_length"))] + "..." # noqa
+        if len(node.url) > int(self.config.get_value(
+                "UI", "URL_length").split("#")[0]):
+            node_url = node.url[:int(self.config.get_value("UI", "URL_length").split("#")[0])] + "..." # noqa
         else:
             node_url = node.url
 
