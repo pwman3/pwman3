@@ -29,9 +29,6 @@ from pwman.util.callback import Callback
 from pwman.util.crypto_engine import generate_password
 
 
-if sys.version_info.major > 2:  # pragma: no cover
-    raw_input = input
-
 if not sys.platform.startswith('win'):
     import termios  # noqa
     import fcntl    # noqa
@@ -41,11 +38,11 @@ else:  # pragma: no cover
     try:
         import readline
         _readline_available = True
-    except ImportError as e:
+    except ImportError:
         try:
             import pyreadline as readrline  # noqa
             _readline_available = True
-        except ImportError as e:
+        except ImportError:
             _readline_available = False
 
 _defaultwidth = 10
@@ -128,7 +125,8 @@ def open_url(link, macosx=False,):  # pragma: no cover
 
 
 def getinput(question, default="", reader=input,
-             completer=None, width=_defaultwidth, drop="drop"):  # pragma: no cover
+             completer=None, width=_defaultwidth,
+             drop="drop"):  # pragma: no cover
     """
     http://stackoverflow.com/questions/2617057/\
             supply-inputs-to-python-unittests
@@ -245,7 +243,7 @@ class CMDLoop(object):
         if isinstance(item, CliMenuItem):
             self.items.append(item)
 
-    def run(self, new_node=None, reader=raw_input):
+    def run(self, new_node=None, reader=input):
         while True:
             for i, x in enumerate(self.items):
                 print("%s - %s: %s" % (i + 1, x.name, x.getter))
@@ -274,7 +272,7 @@ class CliMenuItem(object):
 class CLICallback(Callback):  # pragma: no cover
 
     def getinput(self, question):
-        return raw_input(question)
+        return input(question)
 
     def getsecret(self, question):
         return getpass.getpass(question + ":")

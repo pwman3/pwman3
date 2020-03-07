@@ -24,12 +24,8 @@ import sys
 from functools import lru_cache
 
 
-if sys.version_info.major > 2:  # pragma: no cover
-    from configparser import (ConfigParser, ParsingError, NoOptionError,
-                              NoSectionError, MissingSectionHeaderError)
-else:                           # pragma: no cover
-    from ConfigParser import (ConfigParser, ParsingError, NoOptionError,
-                              NoSectionError, MissingSectionHeaderError)
+from configparser import (ConfigParser, ParsingError, NoOptionError,
+                          NoSectionError, MissingSectionHeaderError)
 
 # XDG code taken from xdg.py
 # https://github.com/srstevenson/xdg/blob/master/xdg.py
