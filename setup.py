@@ -389,7 +389,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.10.0',
+      version='0.11.0',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,
