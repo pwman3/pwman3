@@ -6,7 +6,6 @@ services:
 
 environment:
   matrix:
-    - PYTHON: "C:/Python35"
     - PYTHON: "C:/Python36"
     - PYTHON: "C:/Python37"
 
