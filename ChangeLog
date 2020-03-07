@@ -1,3 +1,10 @@
+2020-Mar-07 Oz N Tiram <oz.tiram@gmail.com>
+	* Relese version 0.11.0
+	* Allow customize list output
+	* Copy passwords by url in addition to ID
+	* Improve man page generator and documentation
+	* Drop support for Python3.5
+
 2019-Mar-04  Oz Nahum Tiram <oz.tiram@gmail.com>
 	* Release version 0.10.0
 	* Show entry id after adding new password (issue #62)
