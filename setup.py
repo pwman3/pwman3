@@ -7,10 +7,10 @@ import datetime
 import os
 import sys
 
-from distutils.core import Command
-from distutils.errors import DistutilsOptionError
 from setuptools import setup
 from setuptools import find_packages
+from distutils.core import Command
+from distutils.errors import DistutilsOptionError
 
 # The BuildManPage code is distributed
 # under the same License of Python
@@ -389,7 +389,7 @@ packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
 
 
 setup(name='pwman3',
-      version='0.11.0',
+      version='0.11.1',
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,
@@ -401,7 +401,6 @@ setup(name='pwman3',
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
-      setup_requires=["docutils"],
       keywords="password-manager crypto cli",
       classifiers=['Environment :: Console',
                    'Intended Audience :: End Users/Desktop',
