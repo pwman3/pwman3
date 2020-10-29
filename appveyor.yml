@@ -9,7 +9,6 @@ environment:
     - PYTHON: "C:/Python36"
     - PYTHON: "C:/Python37"
     - PYTHON: "C:/Python38"
-    - PYTHON: "C:/Python39"
 
   # postgres
   POSTGRES_PATH: C:\Program Files\PostgreSQL\9.4
