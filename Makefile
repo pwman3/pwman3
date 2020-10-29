@@ -82,11 +82,28 @@ dist: clean
 install:
 	pip install -e .
 
-docker/build: TAG ?= latest
-docker/build:
+docker/build:: TAG ?= latest
+docker/build::
 	docker build -t oz123/pwman3:$(TAG) .
-test-compose:
+
+test-compose::
 	docker-compose down -v
 	docker-compose build
 	docker-compose up --abort-on-container-exit
 	docker-compose down -v
+
+release/start::
+	make -f release.mk $@  # $@ is the name of the target
+
+release/complete:
+	make -f release.mk do-release
+	sleep 2 # this is required because if we don't wait, GL api will miss running jobs
+	make -f release.mk abort-pipeline
+	make -f release.mk finish-release
+	sleep 2 # this is required because if we don't wait, GL api will miss running jobs
+	make -f release.mk abort-pipeline
+
+
+release/abort::
+	make -f release.mk $@
+
