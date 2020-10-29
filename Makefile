@@ -82,6 +82,9 @@ dist: clean
 install:
 	pip install -e .
 
+docker/build: TAG ?= latest
+docker/build:
+	docker build -t oz123/pwman3:$(TAG) .
 test-compose:
 	docker-compose down -v
 	docker-compose build
