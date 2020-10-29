@@ -37,7 +37,7 @@ do-release: do-bump
 	git push origin master --tags
 
 
-release/complete: do-release finish-release
+release/complete:: do-release release/finish
 	echo "finished release"
 
 release/finish: check-env
