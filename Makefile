@@ -97,11 +97,7 @@ release/start::
 
 release/complete:
 	make -f release.mk do-release
-	sleep 2 # this is required because if we don't wait, GL api will miss running jobs
-	make -f release.mk abort-pipeline
-	make -f release.mk finish-release
-	sleep 2 # this is required because if we don't wait, GL api will miss running jobs
-	make -f release.mk abort-pipeline
+	make -f release.mk release/finish
 
 
 release/abort::

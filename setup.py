@@ -385,11 +385,12 @@ It allows one to store passwords in database locked by master password which
 is AES encrypted.
 Pwman3 supports MySQL, Postgresql and SQLite and even MongoDB"""
 
-packages = find_packages(exclude=['tests', 'pwman/ui/templates'])
+packages = find_packages(exclude=['tests'])
 
+import pwman
 
 setup(name='pwman3',
-      version='0.11.1',
+      version=pwman.version,
       description=("a command line password manager with support for multiple"
                    " databases."),
       long_description=long_description,

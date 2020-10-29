@@ -27,7 +27,7 @@ import string
 import shutil
 import sys
 
-from pkg_resources import parse_version
+from pkg_resources import parse_version, DistributionNotFound
 
 from pwman.util import config
 from pwman.data.factory import check_db_version
@@ -43,7 +43,7 @@ appname = "pwman3"
 
 try:
     version = pkg_resources.get_distribution('pwman3').version
-except pkg_resources.DistributionNotFound:  # pragma: no cover
+except DistributionNotFound:  # pragma: no cover
     version = '0.12.0'
 
 
@@ -67,7 +67,7 @@ try:
     authoremail = pkg_meta.author_email
     description = pkg_meta.summary
     long_description = pkg_meta.description
-except IOError:
+except (IOError, DistributionNotFound):
     # this should only happen once when installing the package
     description = "a command line password manager with support for multiple databases."  # noqa
     website = 'http://pwman3.github.io/pwman3/'
