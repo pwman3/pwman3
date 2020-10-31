@@ -91,7 +91,7 @@ class TestPassGenerator(unittest.TestCase):
 class CryptoEngineTest(unittest.TestCase):
 
     def test4_d_get_crypto(self):
-        ce = CryptoEngine.get()
+        ce = CryptoEngine.get(timeout=10)
         ce.callback = DummyCallback()
         secret2 = ce.changepassword(reader=give_key)
         secret1 = ce.changepassword(reader=give_key)
@@ -116,6 +116,25 @@ class CryptoEngineTest(unittest.TestCase):
         self.assertTrue(ce._is_timedout())
         self.assertIsNone(ce._cipher)
         self.assertFalse(ce._is_authenticated())
+
+    def test7_timeout_reset(self):
+        ce = CryptoEngine.get()
+        ce._expires_at = int(time.time()) + 10
+        ce._reader = give_key
+        self.assertTrue(ce.authenticate(b'12345'))
+        self.assertTrue(ce._is_authenticated())
+        expiry = ce._expires_at
+        time.sleep(1)
+        self.assertFalse(ce._is_timedout())
+        expiry_new = ce._expires_at
+        self.assertGreater(expiry_new, expiry)
+
+    def test8_never_timeout(self):
+        ce = CryptoEngine.get()
+        ce._timout = -1
+        self.assertFalse(ce._is_timedout())
+        time.sleep(1)
+        self.assertFalse(ce._is_timedout())
 
     def test_f_encrypt_decrypt(self):
         ce = CryptoEngine.get()

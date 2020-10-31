@@ -204,9 +204,16 @@ class CryptoEngine(object):
         return False
 
     def _is_timedout(self):
-        if int(time.time()) > self._expires_at:
+
+        if self._timeout < 0:
+            return False
+
+        now = int(time.time())
+        if now > self._expires_at:
             self._cipher = None
             return True
+        # reset the time
+        self._expires_at = int(time.time()) + self._timeout
         return False
 
     def changepassword(self, reader=input):
