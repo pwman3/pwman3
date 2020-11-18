@@ -18,6 +18,7 @@
 # ============================================================================
 import ast
 import csv
+import datetime
 import os
 import re
 import select as uselect
@@ -52,7 +53,7 @@ def _wait_until_enter(predicate, timeout, period=0.25):  # pragma: no cover
         time.sleep(period)
 
 
-class HelpUIMixin(object):  # pragma: no cover
+class HelpUIMixin:  # pragma: no cover
 
     """
     this class holds all the UI help functionality.
@@ -141,7 +142,7 @@ class HelpUIMixin(object):  # pragma: no cover
         print("Show information about the current database.")
 
 
-class AliasesMixin(object):  # pragma: no cover
+class AliasesMixin:  # pragma: no cover
 
     """
     Define all the alias you want here...
@@ -438,6 +439,18 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         """
         enc = CryptoEngine.get()
         enc.forget()
+
+    def do_lock_info(self, args):
+        enc = CryptoEngine.get()
+        if enc._cipher is None:
+            print("The database is locked!")
+            return
+
+        lock = enc.lock_info()
+        if lock == datetime.MAXYEAR:
+            print("Never locks automatically. Use 'forget' to lock the database manually.")
+        else:
+            print(f"Automatic lock at: {lock.strftime('%Y-%m-%d %H:%M:%S')}.")
 
     def do_passwd(self, args):  # pragma: no cover
         """change the master password of the database"""

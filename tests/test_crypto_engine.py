@@ -130,6 +130,7 @@ class CryptoEngineTest(unittest.TestCase):
         self.assertGreater(expiry_new, expiry)
 
     def test8_never_timeout(self):
+        # TODO: replace this with mock of time instead of sleeping
         ce = CryptoEngine.get()
         ce._timout = -1
         self.assertFalse(ce._is_timedout())

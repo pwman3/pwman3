@@ -233,7 +233,6 @@ class Config:
                     raise ConfigException(e)
         except IOError:
             self._self_write_new_conf(self.filename, defaults, parser)
-
         self._add_defaults(defaults, parser)
         return parser
 

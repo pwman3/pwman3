@@ -20,6 +20,7 @@
 import base64
 import binascii
 import ctypes
+import datetime
 import os
 import random
 import string
@@ -193,6 +194,7 @@ class CryptoEngine(object):
         discard cipher
         """
         self._cipher = None
+        self._expires_at = -1
 
     def _is_authenticated(self):
         if self._is_timedout():
@@ -204,10 +206,8 @@ class CryptoEngine(object):
         return False
 
     def _is_timedout(self):
-
         if self._timeout < 0:
             return False
-
         now = int(time.time())
         if now > self._expires_at:
             self._cipher = None
@@ -215,6 +215,13 @@ class CryptoEngine(object):
         # reset the time
         self._expires_at = int(time.time()) + self._timeout
         return False
+
+    def lock_info(self):
+        if self._expires_at < 0:
+            return datetime.MAXYEAR
+
+        self._expires_at = int(time.time()) + self._timeout
+        return datetime.datetime.fromtimestamp(self._expires_at)
 
     def changepassword(self, reader=input):
         if self._callback is None:
