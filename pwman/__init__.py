@@ -25,7 +25,9 @@ import pkg_resources
 import re
 import string
 import shutil
+import ssl
 import sys
+
 
 from pkg_resources import parse_version, DistributionNotFound
 
@@ -157,10 +159,16 @@ def calculate_client_info():  # pragma: no cover
 def is_latest_version(version, client_info):  # pragma: no cover
     """check current version againt latest version"""
     try:
-        url = ("https://pwman.tiram.it/is_latest/?"
-               "current_version={}&os={}&hash={}".format(
-                version, sys.platform, client_info))
-        res = urllib.request.urlopen(url, timeout=0.5)
+        hostname = os.getenv("PWMAN_HOSTNAME", "pwman.tiram.it")
+        url = (f"https://{hostname}/is_latest/?"
+               f"current_version={version}&os={sys.platform}&hash={client_info}")
+        ctx = None
+        if os.getenv("TEST") == '1':
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+        res = urllib.request.urlopen(url, timeout=0.5, context=ctx)
         data = res.read()  # This will return entire content.
 
         if res.status != 200:
