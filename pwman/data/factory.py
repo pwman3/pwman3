@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 import os
 
-from pwman.data.database import DatabaseException
+from pwman.data.database import DatabaseException, __DB_FORMAT__
 from pwman.data import drivers
 
 
@@ -82,9 +82,19 @@ def createdb(dburi, version):
     dbtype = dburi.scheme
     try:
         cls = getattr(drivers, create_db_map[dbtype][0])
-        return cls(create_db_map[dbtype][1](dburi))
+        dbinst = cls(create_db_map[dbtype][1](dburi))
     except AttributeError:
         raise DatabaseException(
             '%s not installed? ' % class_db_map[dbtype][-1])
     except KeyError:
         raise DatabaseException('Unknown database [%s] given ...' % (dbtype))
+
+    if version != __DB_FORMAT__:
+        print("Should migrate!")
+
+        from pwman.data.migration import migrations
+
+        for migration in migrations[str(__DB_FORMAT__)]:
+            migration().apply()
+
+    return dbinst

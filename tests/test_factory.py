@@ -53,7 +53,7 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
         self.assertEqual(
-            factory.check_db_version('sqlite://'+testdb), u"'0.6'")
+            factory.check_db_version('sqlite://'+testdb), u"'0.7'")
 
     @unittest.skip("not supported at the moment")
     def test_factory_check_db_file(self):
@@ -65,7 +65,7 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_create(self):
         fn = os.path.join(os.path.dirname(__file__), 'foo.db')
-        db = factory.createdb('sqlite://'+os.path.abspath(fn), 0.6)
+        db = factory.createdb('sqlite://'+os.path.abspath(fn), 0.7)
         db._open()
         self.assertTrue(os.path.exists(fn))
         db.close()
@@ -75,7 +75,7 @@ class TestFactory(unittest.TestCase):
                           *('UNKNOWN', __DB_FORMAT__))
 
     def test_factory_createdb(self):
-        db = factory.createdb("sqlite:///test.db", 0.6)
+        db = factory.createdb("sqlite:///test.db", 0.7)
         self.assertIsInstance(db, SQLite)
         del db
         db = factory.createdb("sqlite:///test.db", 0.7)
@@ -84,7 +84,7 @@ class TestFactory(unittest.TestCase):
 
     @unittest.skipUnless(has_psycopg, "requires psycopg")
     def test_factory_createdb_postgresql(self):
-        db = factory.createdb("postgresql:///pwman", 0.6)
+        db = factory.createdb("postgresql:///pwman", 0.7)
         self.assertIsInstance(db, PostgresqlDatabase)
         del db
         db = factory.createdb("postgresql:///pwman", 0.7)

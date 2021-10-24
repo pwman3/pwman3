@@ -147,7 +147,7 @@ class TestBaseUI(unittest.TestCase):
 
     def test_8_do_edit_1(self):
         node = list(self.tester.cli._db.getnodes([1]))[0]
-        node = node[1:5] + [node[5:]]
+        node = node[1:5] + [node[6:]]
         node = Node.from_encrypted_entries(*node)
         sys.stdin = StringIO(("1\nfoo\nx\n"))
         self.tester.cli.do_edit('1')
@@ -159,7 +159,7 @@ class TestBaseUI(unittest.TestCase):
 
     def test_8_do_edit_2(self):
         node = list(self.tester.cli._db.getnodes([1]))[0]
-        node = node[1:5] + [node[5:]]
+        node = node[1:5] + [node[6:]]
         node = Node.from_encrypted_entries(*node)
         sys.stdin = StringIO(("2\ns3kr3t\nx\n"))
         self.tester.cli.do_edit('1')

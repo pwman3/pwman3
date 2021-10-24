@@ -283,7 +283,7 @@ class BaseUtilsMixin:
                                                 raw_node[2],
                                                 raw_node[3],
                                                 raw_node[4],
-                                                raw_node[5:])
+                                                raw_node[6:])
         node_inst._id = raw_node[0]
         return node_inst
 
@@ -419,7 +419,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             for node in nodes:
                 n = Node.from_encrypted_entries(node[1], node[2], node[3],
                                                 node[4],
-                                                node[5:])
+                                                node[6:])
                 tags = n.tags
                 tags = ','.join(t.strip().decode() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
@@ -484,7 +484,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             if not node:
                 print("Node not found ...")
                 return
-            node = node[1:5] + [node[5:]]
+            node = node[1:5] + [node[6:]]
             node = Node.from_encrypted_entries(*node)
             if not menu:
                 menu = CMDLoop(self.config)

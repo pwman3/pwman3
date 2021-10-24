@@ -80,7 +80,9 @@ class SQLite(Database):
                           "USER TEXT NOT NULL, "
                           "PASSWORD TEXT NOT NULL, "
                           "URL TEXT NOT NULL,"
-                          "NOTES TEXT NOT NULL)")
+                          "NOTES TEXT NOT NULL, "
+                          "MDATE TEXT"
+                          ")")
 
         self._cur.execute("CREATE TABLE TAG"
                           "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
