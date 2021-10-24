@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "generic/ubuntu1604"
+  config.vm.box = "generic/ubuntu1804"
   config.vm.box_version = "1.5.0"
   config.vm.hostname = "pwman-dev"
   config.vm.provision :shell, path: "provision_vagrant.sh"
