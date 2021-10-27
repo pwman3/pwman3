@@ -53,7 +53,7 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
         self.assertEqual(
-            factory.check_db_version('sqlite://'+testdb), u"'0.7'")
+            factory.check_db_version('sqlite://'+testdb), "0.7")
 
     @unittest.skip("not supported at the moment")
     def test_factory_check_db_file(self):
@@ -90,6 +90,31 @@ class TestFactory(unittest.TestCase):
         db = factory.createdb("postgresql:///pwman", 0.7)
         self.assertIsInstance(db, PostgresqlDatabase)
         del db
+
+
+class TestSQLiteMigration(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        "test that the right db instance was created"
+        cls.dbtype = 'sqlite'
+        cls.db = factory.createdb('sqlite:///'+testdb, __DB_FORMAT__)
+        cls.db._open()
+        cls.db.execute("")
+        cls.db.execute("ALTER TABLE NODE DROP COLUMN MDATE")
+        cls.db.execute("UPDATE DBVERSION SET VERSION = '0.6'")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.db.close()
+        for item in ('test.db',):
+            try:
+                os.remove(item)
+            except OSError:
+                continue
+
+    def test_database_is_migrated(self):
+        factory.migratedb(self.db)
+        self.assertEqual("0.7", factory.check_db_version(f"sqlite:///{self.db.dburi}"))
 
 
 if __name__ == '__main__':
