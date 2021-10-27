@@ -38,18 +38,22 @@ class SQLite(Database):
             print("could not open %s" % fname)
             raise E
         cur = con.cursor()
-        cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
+        cur.execute("SELECT * FROM DBVERSION LIMIT 1")
         row = cur.fetchone()
         cur.close()
         con.close()
 
         try:
-            return row[-2]
+            return row[-1]
         except TypeError:
             return str(__DB_FORMAT__)
 
+    def execute(self, query):
+        self._cur.execute(query)
+        self._con.commit()
+
     def __init__(self, filename, dbformat=__DB_FORMAT__):
-        """Initialise SQLitePwmanDatabase instance."""
+        """Initialize SQLitePwmanDatabase instance."""
         self._filename = filename
         self.dbformat = dbformat
         self._add_node_sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
@@ -59,6 +63,11 @@ class SQLite(Database):
         self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
         self._sub = '?'
         self._data_wrapper = lambda x: x
+        self.dburi = filename
+
+    def connect(self, dburi):
+        self._con = sqlite.connect(dburi)
+        self._cur = self._con.cursor()
 
     def _open(self):
         try:

@@ -76,6 +76,14 @@ def check_db_version(dburi):
             '%s not installed? ' % class_db_map[dbtype][-1])
 
 
+def migratedb(dbinst):
+    from pwman.data.migration import migrations
+
+    for migration in migrations[str(__DB_FORMAT__)]:
+        m = migration(dbinst)
+        m.apply()
+
+
 def createdb(dburi, version):
 
     dburi = urlparse(dburi)
@@ -89,12 +97,7 @@ def createdb(dburi, version):
     except KeyError:
         raise DatabaseException('Unknown database [%s] given ...' % (dbtype))
 
-    if version != __DB_FORMAT__:
-        print("Should migrate!")
-
-        from pwman.data.migration import migrations
-
-        for migration in migrations[str(__DB_FORMAT__)]:
-            migration().apply()
+    if version != str(__DB_FORMAT__):
+        migratedb(dbinst)
 
     return dbinst

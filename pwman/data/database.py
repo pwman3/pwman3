@@ -31,6 +31,15 @@ class DatabaseException(Exception):
 
 class Database(object):
 
+    def connect(self, dburi):
+        raise NotImplementedError
+
+    def execute(self, query):
+        raise NotImplementedError
+
+    def execute_many(self, queries):
+        raise NotImplementedError
+
     def open(self, dbver=None):
         """
         Open the database, by calling the _open method of the

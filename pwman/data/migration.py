@@ -27,11 +27,13 @@ class MigrateZeroSixToZeroSeven:
     Add column MDATE to the Nodes.
     """
 
-    def __init__(self):
-        pass
-    
-    def apply(self):
+    def __init__(self, dbinst):
+        dbinst.connect(dbinst._filename)
+        self.dbinst = dbinst
+        self.migration_sql = "ALTER TABLE NODE ADD COLUMN MDATE TEXT;"
 
-        print("Will Apply some SQL magic")
+    def apply(self):
+        self.dbinst.execute(self.migration_sql)
+        self.dbinst.execute("UPDATE DBVERSION SET VERSION = '0.7'")
 
 migrations = {"0.7": (MigrateZeroSixToZeroSeven,)}
