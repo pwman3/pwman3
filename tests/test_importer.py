@@ -81,6 +81,7 @@ class TestImporter(unittest.TestCase):
 
     def test_4_runner(self):
         # test the whole procees:
+        self.importer._open_db()
         """
           open csv
           open db
@@ -102,7 +103,7 @@ class TestImporter(unittest.TestCase):
             print(os.getcwd())
 
         db = pwman.data.factory.createdb('sqlite:///' + p +
-                                         '/importdummy.db', 0.6)
+                                         '/importdummy.db', 0.7)
         importer = Importer((args, '', db))
         importer.importer.run(callback=DummyCallback)
 
