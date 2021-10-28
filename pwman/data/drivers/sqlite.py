@@ -38,15 +38,17 @@ class SQLite(Database):
             print("could not open %s" % fname)
             raise E
         cur = con.cursor()
-        cur.execute("SELECT * FROM DBVERSION LIMIT 1")
-        row = cur.fetchone()
-        cur.close()
-        con.close()
-
+        try:
+            cur.execute("SELECT * FROM DBVERSION LIMIT 1")
+            row = cur.fetchone()
+            cur.close()
+            con.close()
+        except sqlite.OperationalError:
+            row = ""
         try:
             return row[-1]
-        except TypeError:
-            return str(__DB_FORMAT__)
+        except (TypeError, IndexError):
+            return ""
 
     def execute(self, query):
         self._cur.execute(query)

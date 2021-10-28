@@ -97,7 +97,10 @@ def createdb(dburi, version):
     except KeyError:
         raise DatabaseException('Unknown database [%s] given ...' % (dbtype))
 
-    if str(version) != str(__DB_FORMAT__):
+    if version == "":
+        return dbinst
+
+    elif str(version) != str(__DB_FORMAT__):
         migratedb(dbinst)
 
     return dbinst
