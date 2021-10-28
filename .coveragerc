@@ -1,4 +1,4 @@
 [run]
 omit = pwman/tests/*.py, pwman/util/crypto/*.py, pwman/ui/mac.py, pwman/ui/win.py, \
-       pwman/data/convertdb.py, \
+       pwman/data/convertdb.py
 source = pwman
