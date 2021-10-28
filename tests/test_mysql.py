@@ -94,7 +94,8 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db.add_node(innode)
 
         outnode = list(self.db.getnodes([1]))[0]
-        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
+        # None here stands for still unused timestamp column
+        self.assertEqual(innode[:-1] + [None] + [t for t in innode[-1]], outnode[1:])
 
     def test_6_list_nodes(self):
         ret = self.db.lazy_list_node_ids()
@@ -109,7 +110,7 @@ class TestMySQLDatabase(unittest.TestCase):
     def test_6b_get_nodes(self):
         ret = list(self.db.getnodes([1]))
         self.assertListEqual(ret[0], [1, "TBONE", "S3K43T", "example.org",
-                                      "some note",
+                                      "some note", None,
                                       "bartag", "footag"])
 
     def test_7_get_or_create_tag(self):
@@ -133,11 +134,11 @@ class TestMySQLDatabase(unittest.TestCase):
 
         dburi = DBURI
         v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, '0.6')
+        self.assertEqual(v, '0.7')
         self.db._cur.execute("DROP TABLE DBVERSION")
         self.db._con.commit()
         v = self.db.check_db_version(urlparse(dburi))
-        self.assertEqual(v, '0.6')
+        self.assertEqual(v, '0.7')
         self.db._cur.execute("CREATE TABLE DBVERSION("
                              "VERSION TEXT NOT NULL) ")
         self.db._con.commit()
