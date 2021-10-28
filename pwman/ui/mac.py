@@ -19,7 +19,6 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 # pylint: disable=I0011
-from __future__ import print_function
 
 import time
 # all mac os  related classes

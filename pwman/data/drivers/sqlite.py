@@ -20,7 +20,6 @@
 # ============================================================================
 
 """SQLite Database implementation."""
-from __future__ import print_function
 from ..database import Database, __DB_FORMAT__
 import sqlite3 as sqlite
 

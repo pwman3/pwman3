@@ -16,7 +16,6 @@
 # ============================================================================
 # Copyright (C) 2020 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
-from __future__ import print_function
 import os
 import shutil
 import time

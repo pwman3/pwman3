@@ -22,7 +22,6 @@
 Windows UI components
 """
 
-from __future__ import print_function
 import ctypes
 import os
 import time
