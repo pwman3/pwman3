@@ -24,7 +24,7 @@ from pwman.util.crypto_engine import CryptoEngine
 import pwman.ui.tools
 
 
-class Node(object):
+class Node:
 
     def __init__(self, clear_text=True, **kwargs):
         if clear_text:

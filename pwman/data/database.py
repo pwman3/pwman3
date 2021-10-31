@@ -29,7 +29,7 @@ class DatabaseException(Exception):
     pass  # pragma: no cover
 
 
-class Database(object):
+class Database:
 
     def __init__(self, dburi, **kwargs):
 
