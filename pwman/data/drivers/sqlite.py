@@ -26,6 +26,21 @@ import sqlite3 as sqlite
 
 class SQLite(Database):
 
+    def __init__(self, filename, dbformat=__DB_FORMAT__):
+
+        super().__init__(filename)
+
+        """Initialize SQLitePwmanDatabase instance."""
+        self._filename = filename
+        self.dbformat = dbformat
+        self._add_node_sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
+                              "VALUES(?, ?, ?, ?)")
+        self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
+        self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
+        self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
+        self._sub = '?'
+        self._data_wrapper = lambda x: x
+
     @classmethod
     def check_db_version(cls, fname):
         """
@@ -53,19 +68,6 @@ class SQLite(Database):
         self._cur.execute(query)
         self._con.commit()
 
-    def __init__(self, filename, dbformat=__DB_FORMAT__):
-        """Initialize SQLitePwmanDatabase instance."""
-        self._filename = filename
-        self.dbformat = dbformat
-        self._add_node_sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
-                              "VALUES(?, ?, ?, ?)")
-        self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
-        self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
-        self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
-        self._sub = '?'
-        self._data_wrapper = lambda x: x
-        self.dburi = filename
-
     def connect(self, dburi):
         self._con = sqlite.connect(dburi)
         self._cur = self._con.cursor()
@@ -73,6 +75,7 @@ class SQLite(Database):
     def _open(self):
         try:
             self._con = sqlite.connect(self._filename)
+            self._con.row_factory = sqlite.Row
         except sqlite.OperationalError as E:
             print("could not open %s" % self._filename)
             raise E

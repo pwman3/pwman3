@@ -124,7 +124,7 @@ class TestSQLite(unittest.TestCase):
         self.db.editnode('2', **node)
         self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
-        self.assertEqual(rv, ('transparent', 'notsecret'))
+        self.assertEqual(tuple(rv), ('transparent', 'notsecret'))
         node = {'user': 'modify', 'password': 'notsecret',
                 'tags': tags}
         # now the tags bank and baz are orphan ...

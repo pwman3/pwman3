@@ -31,6 +31,12 @@ class DatabaseException(Exception):
 
 class Database(object):
 
+    def __init__(self, dburi, **kwargs):
+
+        self.dburi = dburi
+        self._cur = None
+        self._conn = None
+
     def connect(self, dburi):
         raise NotImplementedError
 
