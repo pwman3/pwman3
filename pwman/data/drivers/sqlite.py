@@ -90,7 +90,7 @@ class SQLite(Database):
 
         self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "
                           "AUTOINCREMENT, "
-                          "USER TEXT NOT NULL, "
+                          "USERNAME TEXT NOT NULL, "
                           "PASSWORD TEXT NOT NULL, "
                           "URL TEXT NOT NULL,"
                           "NOTES TEXT NOT NULL, "

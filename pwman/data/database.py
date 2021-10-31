@@ -35,7 +35,7 @@ class Database(object):
 
         self.dburi = dburi
         self._cur = None
-        self._conn = None
+        self._con = None
 
     def connect(self, dburi):
         raise NotImplementedError
@@ -122,7 +122,7 @@ class Database(object):
 
     def _get_node_tags(self, node):
         sql = "SELECT tagid FROM LOOKUP WHERE NODEID = {}".format(self._sub)
-        self._cur.execute(sql, (str(node[0]),))
+        self._cur.execute(sql, (str(node["ID"]),))
         tagids = self._cur.fetchall()
         if tagids:
             sql = ("SELECT DATA FROM TAG WHERE ID IN"
@@ -178,12 +178,14 @@ class Database(object):
         g = self.lazy_get_nodes(ids)
         for node in g:
             tags = [t for t in self._get_node_tags(node)]
-            yield list(node[0:]) + tags
+            node.update({"tags": tags})
+            yield node
 
     def get_node(self, id):
         node = next(self.lazy_get_nodes([id]))
         tags = [t for t in self._get_node_tags(node)]
-        return list(node[0:]) + tags
+        node.update({"tags": tags})
+        return node
 
     def lazy_get_nodes(self, ids):
         """
@@ -195,7 +197,7 @@ class Database(object):
                 self._cur.execute(query, (str(id_),))
                 node = self._cur.fetchone()
                 if node:
-                    yield node
+                    yield dict(node)
 
     def lazy_list_node_ids(self, filter=None):
         """return a generator that yields the node ids"""
