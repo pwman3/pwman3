@@ -31,11 +31,12 @@ class DatabaseException(Exception):
 
 class Database:
 
-    def __init__(self, dburi, **kwargs):
+    def __init__(self, dburi, sub, **kwargs):
 
         self.dburi = dburi
         self._cur = None
         self._con = None
+        self._sub = sub
 
     def connect(self, dburi):
         raise NotImplementedError
@@ -44,6 +45,9 @@ class Database:
         raise NotImplementedError
 
     def execute_many(self, queries):
+        raise NotImplementedError
+
+    def _open(self):
         raise NotImplementedError
 
     def open(self, dbver=None):
@@ -142,7 +146,6 @@ class Database:
         sql_search = "SELECT * FROM TAG"
         self._cur.execute(sql_search)
         ce = CryptoEngine.get()
-
         try:
             tag = ce.decrypt(tagcipher)
             encrypted = True

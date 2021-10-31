@@ -28,7 +28,9 @@ class SQLite(Database):
 
     def __init__(self, filename, dbformat=__DB_FORMAT__):
 
-        super().__init__(filename)
+        _sub = "?"
+
+        super().__init__(filename, _sub)
 
         """Initialize SQLitePwmanDatabase instance."""
         self._filename = filename
@@ -38,7 +40,6 @@ class SQLite(Database):
         self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
         self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
-        self._sub = '?'
         self._data_wrapper = lambda x: x
 
     @classmethod
