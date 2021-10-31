@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-apt-get install -y debconf-utils
+set -x -e
+
 export TERM=linux
 export DEBIAN_FRONTEND=noninteractive
+
+apt-get install -y debconf-utils
+
 echo 'debconf debconf/frontend select noninteractive' | debconf-set-selections
 
 locale-gen "en_US.UTF-8"
@@ -16,11 +20,11 @@ echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "LANG=en_US.UTF-8" >> /etc/environment
 
 PACKAGES="python-psycopg2 sqlite3 git \
-postgresql-server-dev-9.5 postgresql \
+postgresql-server-dev-all postgresql \
 postgresql-contrib \
 python-dev python3-dev libffi-dev \
 postgresql python3-psycopg2 build-essential \
-mysql-server-5.7
+mariadb-server mongodb
 "
 
 apt-get update
@@ -35,14 +39,7 @@ PYTHON_PACKAGES="psycopg2 pymysql pymongo pexpect coverage pew"
 
 sudo pip3 install ${PYTHON_PACKAGES}
 
-# install mongodb
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-
-apt-get update
-apt-get install -y mongodb-org
-systemctl start mongod
+systemctl start mongodb
 
 cd /home/vagrant
 if [ ! -d pwman3 ]; then
