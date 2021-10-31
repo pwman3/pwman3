@@ -20,7 +20,7 @@
 # ============================================================================
 
 from pwman.util.crypto_engine import CryptoEngine
-
+import sqlite3
 
 __DB_FORMAT__ = 0.7
 
@@ -217,7 +217,12 @@ class Database:
     def add_node(self, node):
         node_tags = list(node)
         node, tags = node_tags[:4], node_tags[-1]
-        self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
+        try:
+            self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
+        # TODO: check other databases here too
+        except sqlite3.OperationalError:
+            updated_query = self._add_node_sql.replace("USER", "USERNAME")
+            self._cur.execute(updated_query, list(map(self._data_wrapper, (node))))  # noqa
         try:
             nid = self._cur.fetchone()[0]
         except TypeError:
@@ -242,7 +247,13 @@ class Database:
             ','.join(['{}={}'.format(k, self._sub) for k in list(kwargs)]),
             self._sub))
 
-        self._cur.execute(sql, (list(kwargs.values()) + [nid]))
+        try:
+            self._cur.execute(sql, (list(kwargs.values()) + [nid]))
+        except sqlite3.OperationalError:
+            updated_query = sql.replace("USER", "USERNAME")
+            updated_query = sql.replace("user", "username")
+            self._cur.execute(updated_query, (list(kwargs.values()) + [nid]))
+
         if tags:
             # update all old node entries in lookup
             # create new entries

@@ -17,7 +17,9 @@
 # Copyright (C) 2012-2017 Oz Nahum Tiram <nahumoz@gmail.com>
 # ============================================================================
 import os
+import sqlite3
 import unittest
+
 from pwman.data.drivers.sqlite import SQLite
 from pwman.data.nodes import Node
 from pwman.util.crypto_engine import CryptoEngine
@@ -122,7 +124,12 @@ class TestSQLite(unittest.TestCase):
         node = {'user': 'transparent', 'password': 'notsecret',
                 'tags': tags}
         self.db.editnode('2', **node)
-        self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
+
+        try:
+            self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
+        except sqlite3.OperationalError:
+            self.db._cur.execute('SELECT USERNAME, PASSWORD FROM NODE WHERE ID=2')
+
         rv = self.db._cur.fetchone()
         self.assertEqual(tuple(rv), ('transparent', 'notsecret'))
         node = {'user': 'modify', 'password': 'notsecret',
