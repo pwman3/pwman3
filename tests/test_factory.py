@@ -20,6 +20,7 @@
 import os
 import os.path
 import unittest
+import sqlite3
 import sys
 
 from pwman.data import factory
@@ -100,7 +101,18 @@ class TestSQLiteMigration(unittest.TestCase):
         cls.db = factory.createdb('sqlite:///'+testdb, __DB_FORMAT__)
         cls.db._open()
         cls.db.execute("")
-        cls.db.execute("ALTER TABLE NODE DROP COLUMN MDATE")
+        # DROP column does not work on older sqlite3
+        if sqlite3.sqlite_version_info[0] >= 3 and sqlite3.sqlite_version_info[1] <= 34:
+            cls.db.execute("DROP TABLE NODE")
+            cls.db.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
+                            "USERNAME TEXT NOT NULL, "
+                            "PASSWORD TEXT NOT NULL, "
+                            "URL TEXT NOT NULL, "
+                            "NOTES TEXT NOT NULL"
+                            ")")
+        else:
+            cls.db.execute("ALTER TABLE NODE DROP COLUMN MDATE")
+
         cls.db.execute("UPDATE DBVERSION SET VERSION = '0.6'")
 
     @classmethod
