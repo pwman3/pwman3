@@ -74,16 +74,16 @@ class Node:
         return d
 
     @classmethod
-    def from_encrypted_entries(cls, username, password, url, notes, tags):
+    def from_encrypted_entries(cls, USERNAME, PASSWORD, URL, NOTES, tags, **kwargs):
         """
         We use this alternatively, to create a node instance when reading
         the encrypted entities from the database
         """
         node = Node(clear_text=False)
-        node._username = username.strip()
-        node._password = password.strip()
-        node._url = url.strip()
-        node._notes = notes.strip()
+        node._username = USERNAME.strip()
+        node._password = PASSWORD.strip()
+        node._url = URL.strip()
+        node._notes = NOTES.strip()
         node._tags = [t.strip() for t in tags]
         return node
 

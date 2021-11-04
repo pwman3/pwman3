@@ -412,15 +412,14 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         filename = args.get('filename', 'pwman-export.csv')
         delim = args.get('delimiter', ';')
         nodes = self._db.getnodes(list(self._db.lazy_list_node_ids()))
-
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)
             writer.writerow(['Username', 'URL', 'Password', 'Notes',
                              'Tags'])
             for node in nodes:
-                n = Node.from_encrypted_entries(node[1], node[2], node[3],
-                                                node[4],
-                                                node[6:])
+                n = Node.from_encrypted_entries(node['USERNAME'], node['PASSWORD'], node['URL'], 
+                                                node['NOTES'],
+                                                node['tags'])
                 tags = n.tags
                 tags = ','.join(t.strip().decode() for t in tags)
                 r = list([n.username, n.url, n.password, n.notes])
@@ -485,8 +484,7 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
             if not node:
                 print("Node not found ...")
                 return
-            node = node[1:5] + [node[6:]]
-            node = Node.from_encrypted_entries(*node)
+            node = Node.from_encrypted_entries(**node)
             if not menu:
                 menu = CMDLoop(self.config)
                 print("Editing node %d." % (i))
