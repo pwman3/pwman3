@@ -22,7 +22,7 @@ function prepare() {
 function install_deps() {
     local PACKAGES="python-psycopg2 sqlite3 git \
     postgresql-server-dev-all postgresql \
-    postgresql-contrib \
+    postgresql-contrib python3-venv \
     python-dev python3-dev libffi-dev \
     postgresql python3-psycopg2 build-essential \
     mariadb-server mongodb
@@ -79,7 +79,6 @@ function main(){
     install_deps
     install_python_packages
     start_databases
-    clone_pwman3
     setup_databases
 }
 
