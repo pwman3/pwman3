@@ -126,8 +126,15 @@ class Database:
 
     def _get_node_tags(self, node):
         sql = "SELECT tagid FROM LOOKUP WHERE NODEID = {}".format(self._sub)
-        self._cur.execute(sql, (str(node["ID"]),))
+        try:
+            _id = str(node["ID"])
+        except KeyError:
+            # This is here because postgres coverts columns to lower case
+            # if not quoted
+            _id = str(node['id'])
+        self._cur.execute(sql, (_id,))
         tagids = self._cur.fetchall()
+
         if tagids:
             sql = ("SELECT DATA FROM TAG WHERE ID IN"
                    " ({})".format(','.join([self._sub]*len(tagids))))
@@ -167,9 +174,12 @@ class Database:
         else:
             self._cur.execute(self._insert_tag_sql, list(map(self._data_wrapper, (tagcipher,))))  # noqa
             try:
-                return self._cur.fetchone()[0]
+                tid = self._cur.fetchone()
+                return tid[0]
             except TypeError:
                 return self._cur.lastrowid
+            except KeyError:
+                return tid["id"]
 
     def _update_tag_lookup(self, nodeid, tid):
         sql_lookup = "INSERT INTO LOOKUP(nodeid, tagid) VALUES({}, {})".format(
@@ -226,10 +236,15 @@ class Database:
         except sqlite3.OperationalError:
             updated_query = self._add_node_sql.replace("USER", "USERNAME")
             self._cur.execute(updated_query, list(map(self._data_wrapper, (node))))  # noqa
+        nid = self._cur.fetchone()
+
         try:
-            nid = self._cur.fetchone()[0]
+            nid = nid[0]
         except TypeError:
             nid = self._cur.lastrowid
+        except KeyError:  # probably postgres
+            nid = nid["id"]
+
         self._setnodetags(nid, tags)
         self._con.commit()
         return nid

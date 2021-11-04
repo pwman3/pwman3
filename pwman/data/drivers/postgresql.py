@@ -20,7 +20,9 @@
 # ============================================================================
 
 """Postgresql Database implementation."""
+import binascii
 import psycopg2 as pg
+import psycopg2.extras
 
 from pwman.data.database import Database, __DB_FORMAT__
 from pwman.util.crypto_engine import CryptoEngine
@@ -76,7 +78,7 @@ class PostgresqlDatabase(Database):
     def _open(self):
 
         self._con = pg.connect(self._pgsqluri.geturl())
-        self._cur = self._con.cursor()
+        self._cur = self._con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         self._create_tables()
 
     def _get_tag(self, tagcipher):
@@ -87,27 +89,50 @@ class PostgresqlDatabase(Database):
         try:
             tag = ce.decrypt(tagcipher)
             encrypted = True
-        except Exception:
+        except binascii.Error:
             tag = tagcipher
             encrypted = False
 
         rv = self._cur.fetchall()
-        for idx, cipher in rv:
-            cipher = cipher.tobytes()
+        for value in rv:
+            cipher = value['data'].tobytes()
             if encrypted and tag == ce.decrypt(cipher):
-                return idx
+                return value['id']
             elif tag == cipher:
-                return idx
+                return value['id']
+
+    def _get_node_tags(self, node):
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = {}".format(self._sub)
+        try:
+            _id = str(node["ID"])
+        except KeyError:
+            # This is here because postgres coverts columns to lower case
+            # if not quoted
+            _id = str(node['id'])
+        self._cur.execute(sql, (_id,))
+        tagids = self._cur.fetchall()
+
+        if tagids:
+            sql = ("SELECT DATA FROM TAG WHERE ID IN"
+                   " ({})".format(','.join([self._sub]*len(tagids))))
+            tagids = [str(t["tagid"]) for t in tagids]
+            self._cur.execute(sql, (tagids))
+            tags = self._cur.fetchall()
+            for t in tags:
+                yield t['data'].tobytes()
 
     def _create_tables(self):
         if self._check_tables():
             return
         try:
+            # note: future versions should quote column names
+            # USERNAME -> \"USERNAME\" BYTEA NOT NULL
             self._cur.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
                               "USERNAME BYTEA NOT NULL, "
                               "PASSWORD BYTEA NOT NULL, "
                               "URL BYTEA NOT NULL, "
-                              "NOTES BYTEA NOT NULL"
+                              "NOTES BYTEA NOT NULL,"
+                              "MDATE BYTEA"
                               ")")
 
             self._cur.execute("CREATE TABLE TAG"
@@ -154,10 +179,27 @@ class PostgresqlDatabase(Database):
         sql = "SELECT * FROM CRYPTO"
         try:
             self._cur.execute(sql)
-            seed, digest = self._cur.fetchone()
-            return seed.tobytes() + b'$6$' + digest.tobytes()
+            rec = self._cur.fetchone()
+            return rec['seed'].tobytes() + b'$6$' + rec['digest'].tobytes()
         except TypeError:  # pragma: no cover
             return None
+
+    def lazy_list_node_ids(self, filter=None):
+        """return a generator that yields the node ids"""
+        # self._con.set_trace_callback(print)
+        if not filter:
+            sql_all = "SELECT ID FROM NODE"
+            self._cur.execute(sql_all)
+            for node_id in self._cur.fetchall():
+                yield node_id.get("id")
+        else:
+            tagid = self._get_tag(filter)
+            if not tagid:
+                yield []  # pragma: no cover
+
+            self._cur.execute(self._list_nodes_sql, (tagid,))
+            for node_id in self._cur.fetchall():
+                 yield node_id.get("nodeid")
 
     def getnodes(self, ids):
         if ids:
@@ -171,9 +213,19 @@ class PostgresqlDatabase(Database):
             return []
 
         nodes_w_tags = []
+
         for node in nodes:
-            tags = [t.tobytes() for t in self._get_node_tags(node)]
-            nodes_w_tags.append([node[0]] + [item.tobytes() for item in node[1:]] + tags)
+            _n = {k: node[k] for k in node.keys()}
+            tags = [t for t in self._get_node_tags(node)]
+            dn = {}
+            for k, v in node.items():
+                if isinstance(v, memoryview,):
+                    dn[k] = v.tobytes()
+                else:
+                    dn[k] = v
+
+            dn['tags'] = tags
+            nodes_w_tags.append(dn)
 
         return nodes_w_tags
 
@@ -183,5 +235,5 @@ class PostgresqlDatabase(Database):
         self._cur.execute(get_tags)
         tags = self._cur.fetchall()
         if tags:
-            return [t[0].tobytes() for t in tags]
+            return [t['data'].tobytes() for t in tags]
         return []  # pragma: no cover

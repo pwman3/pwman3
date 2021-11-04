@@ -75,15 +75,15 @@ class TestPostGresql(unittest.TestCase):
         secretkey = self.db.loadkey()
         self.assertEqual(secretkey, b'TOP$6$SECRET')
         row = self.db.fetch_crypto_info()
-        self.assertEqual(list(map(bytearray, row)),
-                         [bytearray(b'TOP'), bytearray(b'SECRET')])
+        self.assertEqual(row["seed"].tobytes(), b'TOP')
+        self.assertEqual(row["digest"].tobytes(), b'SECRET')
 
     def test_5_add_node(self):
-        innode = [b"TBONE", b"S3K43T", b"example.org", b"some note",
+        innode = [b"TBONE", b"S3K43T", b"example.org", b"some note", None,
                   [b"footag", b"bartag"]]
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
-        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
+        self.assertEqual(list(outnode.values()), [1] + innode)
 
     def test_6_list_nodes(self):
         ret1 = self.db.lazy_list_node_ids()
