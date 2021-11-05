@@ -83,7 +83,14 @@ class TestPostGresql(unittest.TestCase):
                   [b"footag", b"bartag"]]
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
-        self.assertEqual(list(outnode.values()), [1] + innode)
+
+        self.assertSequenceEqual({'id': 1,
+                                 'username': b'TBONE',
+                                 'password': b'S3K43T',
+                                 'url': b'example.org',
+                                 'notes': b'some note',
+                                 'mdate': None,
+                                 'tags': [b'footag', b'bartag']}, outnode)
 
     def test_6_list_nodes(self):
         ret1 = self.db.lazy_list_node_ids()

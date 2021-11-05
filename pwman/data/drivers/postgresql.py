@@ -81,6 +81,16 @@ class PostgresqlDatabase(Database):
         self._cur = self._con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         self._create_tables()
 
+    def add_node(self, node):
+        node_tags = list(node)
+        node, tags = node_tags[:4], node_tags[-1]
+
+        self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
+        self._con.commit()
+        nid = self._cur.fetchone()["id"]
+        self._setnodetags(nid, tags)
+        return nid
+
     def _get_tag(self, tagcipher):
         sql_search = "SELECT * FROM TAG"
         self._cur.execute(sql_search)

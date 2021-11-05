@@ -234,13 +234,12 @@ class Database:
         node, tags = node_tags[:4], node_tags[-1]
         try:
             self._cur.execute(self._add_node_sql, list(map(self._data_wrapper, (node))))  # noqa
-        # TODO: check other databases here too
         except sqlite3.OperationalError:
             updated_query = self._add_node_sql.replace("USER", "USERNAME")
             self._cur.execute(updated_query, list(map(self._data_wrapper, (node))))  # noqa
-            self._con.commit()
-            nid = self._cur.lastrowid
 
+        self._con.commit()
+        nid = self._cur.lastrowid
         self._setnodetags(nid, tags)
         return nid
 
