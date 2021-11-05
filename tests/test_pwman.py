@@ -51,10 +51,10 @@ def suite():
     suite.addTest(loader.loadTestsFromTestCase(TestSQLite))
     suite.addTest(loader.loadTestsFromTestCase(TestImporter))
     suite.addTest(loader.loadTestsFromTestCase(TestFactory))
-    suite.addTest(loader.loadTestsFromTestCase(TestSQLiteMigration))
     suite.addTest(loader.loadTestsFromTestCase(TestBaseUI))
     suite.addTest(loader.loadTestsFromTestCase(TestInit))
     suite.addTest(loader.loadTestsFromTestCase(TestNode))
+    suite.addTest(loader.loadTestsFromTestCase(TestSQLiteMigration))
     if 'win' not in sys.platform:
         suite.addTest(loader.loadTestsFromTestCase(Ferrum))
     return suite
