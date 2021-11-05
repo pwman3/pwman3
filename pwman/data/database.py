@@ -212,20 +212,22 @@ class Database:
                 if node:
                     yield dict(node)
 
-    def lazy_list_node_ids(self, filter=None):
-        """return a generator that yields the node ids"""
-        # self._con.set_trace_callback(print)
-        if not filter:
-            sql_all = "SELECT ID FROM NODE"
-            self._cur.execute(sql_all)
+    def lazy_list_node_ids_with_filter(self, filter):
+        tagid = self._get_tag(filter)
+        if not tagid:
+            yield []
         else:
-            tagid = self._get_tag(filter)
-            if not tagid:
-                yield []  # pragma: no cover
             self._cur.execute(self._list_nodes_sql, (tagid,))
+            for node in self._cur.fetchall():
+                yield node["NODEID"]
 
-        for node_id in self._cur.fetchall():
-            yield node_id[0]
+    def lazy_list_node_ids(self):
+        """return a generator that yields the node ids"""
+        sql_all = "SELECT ID FROM NODE"
+        self._cur.execute(sql_all)
+        for node in self._cur.fetchall():
+            v = node["ID"]
+            yield v
 
     def add_node(self, node):
         node_tags = list(node)
@@ -236,17 +238,10 @@ class Database:
         except sqlite3.OperationalError:
             updated_query = self._add_node_sql.replace("USER", "USERNAME")
             self._cur.execute(updated_query, list(map(self._data_wrapper, (node))))  # noqa
-        nid = self._cur.fetchone()
-
-        try:
-            nid = nid[0]
-        except TypeError:
+            self._con.commit()
             nid = self._cur.lastrowid
-        except KeyError:  # probably postgres
-            nid = nid["id"]
 
         self._setnodetags(nid, tags)
-        self._con.commit()
         return nid
 
     def listtags(self):

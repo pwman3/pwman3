@@ -105,12 +105,12 @@ class TestSQLite(unittest.TestCase):
         # test_6_listnodes
 
         tag = ce.encrypt(b'bar')
-        rv = self.db.lazy_list_node_ids(filter=tag)
+        rv = self.db.lazy_list_node_ids_with_filter(tag)
         self.assertEqual(len(list(rv)), 2)
         tag = ce.encrypt(b'baz')
         # the tag 'baz' is found in a node created in
         # test_6_listnodes
-        rv = self.db.lazy_list_node_ids(filter=tag)
+        rv = self.db.lazy_list_node_ids_with_filter(tag)
         self.assertEqual(len(list(rv)), 1)
 
     def test_8_getnodes(self):

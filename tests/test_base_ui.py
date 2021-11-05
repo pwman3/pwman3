@@ -71,11 +71,10 @@ class TestBaseUI(unittest.TestCase):
     def test_1_do_new(self):
         sys.stdin = BytesIO((b"alice\nsecret\nexample.com\nsome notes"
                              b"\nfoo,bar,baz"))
-        _node = self.tester.cli._do_new('')
-
+        node = self.tester.cli._do_new('')
         sys.stdin = sys.__stdin__
         self.assertListEqual([b'foo', b'bar', b'baz'], [t for t
-                                                        in _node.tags])
+                                                        in node.tags])
         node_ids = self.tester.cli._db.lazy_list_node_ids()
         self.assertListEqual([1], list(node_ids))
         nodes = list(self.tester.cli._db.getnodes([1]))

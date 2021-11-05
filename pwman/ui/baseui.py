@@ -269,13 +269,15 @@ class BaseUtilsMixin:
         return self._db.listnodes(filter=filter)
 
     def _lazy_get_node_ids(self, args):
-        filter = None
         if args:
             filter = args.split()[0]
             ce = CryptoEngine.get()
             filter = ce.encrypt(filter)
-        for node_id in self._db.lazy_list_node_ids(filter=filter):
-            yield node_id
+            for node_id in self._db.lazy_list_node_ids_with_filter(filter):
+                yield node_id
+        else:
+            for node_id in self._db.lazy_list_node_ids():
+                yield node_id
 
     def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes

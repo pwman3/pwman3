@@ -58,6 +58,7 @@ class Ferrum(unittest.TestCase):
         # if successfully converted, reset the converted database
         # todo - add test to run auto_convert
 
+    @unittest.skip("not implemented")
     def test_c_change_pass(self):
         lfile = 'test-chg_passwd.log'
         logfile = open(lfile, 'wb')
