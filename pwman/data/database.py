@@ -18,9 +18,10 @@
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
+import binascii
+import sqlite3
 
 from pwman.util.crypto_engine import CryptoEngine
-import sqlite3
 
 __DB_FORMAT__ = 0.7
 
@@ -156,12 +157,13 @@ class Database:
         try:
             tag = ce.decrypt(tagcipher)
             encrypted = True
-        except Exception:
+        except binascii.Error:
             tag = tagcipher
             encrypted = False
 
         rv = self._cur.fetchall()
-        for idx, cipher in rv:
+        for row in rv:
+            idx, cipher = row["ID"], row["DATA"]
             if encrypted and tag == ce.decrypt(cipher):
                 return idx
             elif tag == cipher:
@@ -249,7 +251,7 @@ class Database:
         self._cur.execute(get_tags)
         tags = self._cur.fetchall()
         if tags:
-            return [t[0] for t in tags]
+            return [t["DATA"] for t in tags]
         return []  # pragma: no cover
 
     # TODO: add this to test of postgresql and mysql!
@@ -288,7 +290,10 @@ class Database:
     def fetch_crypto_info(self):
         self._cur.execute("SELECT * FROM CRYPTO")
         row = self._cur.fetchone()
-        return row
+        try:
+            return row["SEED"], row["DIGEST"]
+        except KeyError: # probably postgresql
+            return row["seed"].tobytes(), row["digest"].tobytes()
 
     def save_crypto_info(self, seed, digest):
         """save the random seed and the digested key"""
@@ -306,8 +311,8 @@ class Database:
         sql = "SELECT * FROM CRYPTO"
         try:
             self._cur.execute(sql)
-            seed, digest = self._cur.fetchone()
-            return seed + '$6$' + digest
+            rv = self._cur.fetchone()
+            return rv['SEED'] + '$6$' + rv['DIGEST']
         except TypeError:  # pragma: no cover
             return None
 

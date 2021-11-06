@@ -75,8 +75,8 @@ class TestPostGresql(unittest.TestCase):
         secretkey = self.db.loadkey()
         self.assertEqual(secretkey, b'TOP$6$SECRET')
         row = self.db.fetch_crypto_info()
-        self.assertEqual(row["seed"].tobytes(), b'TOP')
-        self.assertEqual(row["digest"].tobytes(), b'SECRET')
+        self.assertEqual(row[0], b'TOP')
+        self.assertEqual(row[1], b'SECRET')
 
     def test_5_add_node(self):
         innode = [b"TBONE", b"S3K43T", b"example.org", b"some note", None,
@@ -84,7 +84,7 @@ class TestPostGresql(unittest.TestCase):
         self.db.add_node(innode)
         outnode = self.db.getnodes([1])[0]
 
-        self.assertSequenceEqual({'id': 1,
+        self.assertSequenceEqual({'id': 1, 
                                  'username': b'TBONE',
                                  'password': b'S3K43T',
                                  'url': b'example.org',

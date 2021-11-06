@@ -22,10 +22,11 @@
 # grant all on pwmantest.* to 'pwman'@'localhost';
 
 """MySQL Database implementation."""
-from pwman.data.database import Database, __DB_FORMAT__
-
 import pymysql
 import pymysql as mysql
+
+from pwman.data.database import Database, __DB_FORMAT__
+
 mysql.install_as_MySQLdb()
 
 
@@ -77,9 +78,31 @@ class MySQLDatabase(Database):
 
         self._con = mysql.connect(host=host, port=port, user=user,
                                   passwd=passwd,
-                                  db=self.dburi.path.lstrip('/'))
+                                  db=self.dburi.path.lstrip('/'),
+                                  cursorclass=pymysql.cursors.DictCursor
+                                  )
         self._cur = self._con.cursor()
         try:
             self._create_tables()
         except pymysql.err.InternalError:
             pass
+
+    def _get_node_tags(self, node):
+        sql = "SELECT tagid FROM LOOKUP WHERE NODEID = {}".format(self._sub)
+        try:
+            _id = str(node["ID"])
+        except KeyError:
+            # This is here because postgres coverts columns to lower case
+            # if not quoted
+            _id = str(node['id'])
+        self._cur.execute(sql, (_id,))
+        tagids = self._cur.fetchall()
+
+        if tagids:
+            sql = ("SELECT DATA FROM TAG WHERE ID IN"
+                   " ({})".format(','.join([self._sub]*len(tagids))))
+            tagids = [str(id["tagid"]) for id in tagids]
+            self._cur.execute(sql, (tagids))
+            tags = self._cur.fetchall()
+            for t in tags:
+                yield t["DATA"]

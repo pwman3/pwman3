@@ -94,13 +94,18 @@ class TestMySQLDatabase(unittest.TestCase):
         self.db.add_node(innode)
 
         outnode = list(self.db.getnodes([1]))[0]
-        # None here stands for still unused timestamp column
-        self.assertEqual(innode[:-1] + [None] + [t for t in innode[-1]], outnode[1:])
+        self.assertDictEqual({'ID': 1, 
+                              'USERNAME': 'TBONE',
+                              'PASSWORD': 'S3K43T',
+                              'URL': 'example.org',
+                              'NOTES': 'some note',
+                              'MDATE': None,
+                              'tags': ['bartag', 'footag']}, outnode)
 
     def test_6_list_nodes(self):
         ret = self.db.lazy_list_node_ids()
         self.assertEqual(list(ret), [1])
-        ret = self.db.lazy_list_node_ids("footag")
+        ret = self.db.lazy_list_node_ids_with_filter("footag")
         self.assertEqual(list(ret), [1])
 
     def test_6a_list_tags(self):
@@ -109,9 +114,14 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_6b_get_nodes(self):
         ret = list(self.db.getnodes([1]))
-        self.assertListEqual(ret[0], [1, "TBONE", "S3K43T", "example.org",
-                                      "some note", None,
-                                      "bartag", "footag"])
+        self.assertDictEqual(ret[0], 
+                             {'ID': 1, 
+                             'USERNAME': 'TBONE',
+                             'PASSWORD': 'S3K43T',
+                             'URL': 'example.org',
+                             'NOTES': 'some note',
+                             'MDATE': None,
+                             'tags': ['bartag', 'footag']})
 
     def test_7_get_or_create_tag(self):
         s = self.db._get_or_create_tag("SECRET")
