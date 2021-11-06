@@ -69,7 +69,7 @@ GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO tester;
 EOSQL
 
 ## setup mongodb
-mongo < tests/init_mongo.js
+mongo pwmantest < tests/init_mongo.js
 }
 #
 

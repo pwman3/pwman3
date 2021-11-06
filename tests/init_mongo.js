@@ -5,4 +5,4 @@ if ( !  db.getUser("tester") ) {
                    roles: [{role: "dbAdmin", db: "pwmantest"},
                       {role: "readWrite", db: "pwmantest"},]
                    })
-}
+};
