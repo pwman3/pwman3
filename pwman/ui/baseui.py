@@ -282,6 +282,8 @@ class BaseUtilsMixin:
     def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes
         # TODO: apparently old database versions might have a user and newer might have username ...
+        print("type ", type(raw_node) )
+        print("p ", print(raw_node) )
         node_inst = Node.from_encrypted_entries(raw_node.get("USER", raw_node.get("USERNAME")),
                                                 raw_node["PASSWORD"],
                                                 raw_node["URL"],

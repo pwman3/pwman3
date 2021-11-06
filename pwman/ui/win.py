@@ -91,8 +91,8 @@ class PwmanCliWin(PwmanCli):
         if not args.isdigit():
             print("print accepts only a single ID ...")
             return
-        nodes = self._db.getnodes([args])
-        node = self._db_entries_to_nodes(nodes)[0]
+        node_id = self._db.get_node(args)
+        node = self._db_entry_to_node(node_id)
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
         flushtimeout = int(flushtimeout) if flushtimeout else 10
