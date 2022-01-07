@@ -231,7 +231,7 @@ class BaseUtilsMixin:
         return rows, cols
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
-                     tags="TAGS"):
+                     tags="TAGS", mdate="DATE"):
 
         user_pad = int(self.config.get_value("UI", "URL_pad").split('#')[0])
         url_pad = int(self.config.get_value("UI", "user_pad").split('#')[0])
@@ -240,7 +240,7 @@ class BaseUtilsMixin:
 
         return (line.format(ID=nid, USER=user,
                             URL=url, Tags=tags, user_pad=user_pad,
-                            url_pad=url_pad, tag_pad=tag_pad))
+                            url_pad=url_pad, tag_pad=tag_pad, MDATE=mdate))
 
     def _print_node_line(self, node, rows, cols, url_filter):
         if url_filter != "" and node.url.find(url_filter) == -1:
@@ -282,8 +282,8 @@ class BaseUtilsMixin:
     def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes
         # TODO: apparently old database versions might have a user and newer might have username ...
-        print("type ", type(raw_node) )
-        print("p ", print(raw_node) )
+        #print("type ", type(raw_node) )
+        #print("p ", print(raw_node) )
         node_inst = Node.from_encrypted_entries(raw_node.get("USER", raw_node.get("USERNAME")),
                                                 raw_node["PASSWORD"],
                                                 raw_node["URL"],

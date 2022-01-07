@@ -14,7 +14,7 @@
 # along with Pwman3; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ============================================================================
-# Copyright (C) 2018 Oz N Tiram <nahumoz@gmail.com>
+# Copyright (C) 2021 Oz N Tiram <oz.tiram@gmail.com>
 # ============================================================================
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
@@ -117,7 +117,7 @@ default_config = {
            "tag_pad":
                '20 # the padding of tags in the `line_format',
            "line_format":
-               "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}",
+               "{ID:<3} {USER:<{user_pad}}{URL:<{url_pad}}{Tags:<{tag_pad}}{MDATE}",
            }
     }
 
