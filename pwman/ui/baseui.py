@@ -322,7 +322,6 @@ class BaseUtilsMixin:
 
         node = self._db.get_node(nodeid)
         if not node:  # pragma: no cover
-            print("Node not found ...")
             return
 
         node = self._db_entry_to_node(node)
@@ -533,6 +532,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_print(self, args):
         node = self._get_node(args)
+        if not node:
+            print("Node not found ...")
+            return
 
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
