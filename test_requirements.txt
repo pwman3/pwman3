@@ -1,5 +1,5 @@
 psycopg2
 pymysql
-pymongo==2.8
+#pymongo==4.3.3
 pexpect
 coverage
