@@ -28,7 +28,7 @@ environment:
   MONGOPATH: C:/mongodb
 
 init:
-  - "ECHO %PYTHON%"
+  #- "ECHO %PYTHON%"
   - ps: "ls C:/Python*"
   - SET PATH=%MONGOPATH\bin%;%MYSQL_PATH\bin%;%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
 
