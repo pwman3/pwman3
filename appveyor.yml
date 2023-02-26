@@ -29,8 +29,9 @@ environment:
 
 init:
   #- "ECHO %PYTHON%"
-  - ps: "ls C:/Python*"
-  - ps: "ls 'C:/Program Files/PostgreSQL'"
+  #- ps: "ls C:/Python*"
+  #- ps: "ls 'C:/Program Files/PostgreSQL'"
+  - ps: "ls 'C:/Program Files/MySql'"
   - SET PATH=%MONGOPATH\bin%;%MYSQL_PATH\bin%;%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
 
 install:
