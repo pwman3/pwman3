@@ -375,7 +375,7 @@ sys.path.insert(0, os.getcwd())
 install_requires = ['colorama>=0.2.4', 'cryptography']
 
 if sys.platform.startswith('win'):
-    install_requires.append('pyreadline')
+    install_requires.append('pyreadline3')
 
 
 long_description = u"""\
