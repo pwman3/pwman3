@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM python:3.11-alpine
 RUN apk update && apk add alpine-sdk python3-dev libressl-dev linux-headers py3-cryptography libffi-dev make postgresql-dev
 ADD requirements.txt /usr/src/
 ADD test_requirements.txt /usr/src
