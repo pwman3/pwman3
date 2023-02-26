@@ -49,6 +49,5 @@ test_script:
   - mysql -e "create database pwmantest" -uroot
   - mysql -e "create user 'pwman'@'localhost' IDENTIFIED BY '123456'" -uroot
   - mysql -e "grant all on pwmantest.* to 'pwman'@'localhost';" -uroot
-  - "%PYTHON%/Scripts/pip.exe --version"
-  - "%PYTHON%/python.exe setup.py test"
+  - python setup.py test"
 
