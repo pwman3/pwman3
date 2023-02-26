@@ -33,17 +33,17 @@ class MongoDB(Database):
         self.uri = mongodb_uri.geturl()
 
     def _open(self):
-        self._con = pymongo.Connection(self.uri)
+        self._con = pymongo.MongoClient(self.uri)
         self._db = self._con.get_default_database()
 
-        counters = self._db.counters.find()
-        if not counters.count():
-            self._db.counters.insert({'_id': 'nodeid', 'seq': 0})
+        counters = self._db.counters.count_documents({})
+        if not counters:
+            self._db.counters.insert_one({'_id': 'nodeid', 'seq': 0})
 
     def _get_next_node_id(self):
         # for newer pymongo versions ...
         # return_document=ReturnDocument.AFTER
-        nodeid = self._db.counters.find_and_modify(
+        nodeid = self._db.counters.find_one_and_update(
             {'_id': 'nodeid'}, {'$inc': {'seq': 1}}, new=True,
             fields={'seq': 1, '_id': 0})
         return nodeid['seq']
@@ -85,7 +85,7 @@ class MongoDB(Database):
         nid = self._get_next_node_id()
         node = node.to_encdict()
         node['_id'] = nid
-        self._db.nodes.insert(node)
+        self._db.nodes.insert_one(node)
         return nid
 
     def listtags(self):
@@ -93,11 +93,11 @@ class MongoDB(Database):
         return tags
 
     def editnode(self, nid, **kwargs):
-        self._db.nodes.find_and_modify({'_id': nid}, kwargs)
+        self._db.nodes.find_one_and_update({'_id': nid}, kwargs)
 
     def removenodes(self, nid):
         nid = list(map(int, nid))
-        self._db.nodes.remove({'_id': {'$in': nid}})
+        self._db.nodes.delete_one({'_id': {'$in': nid}})
 
     def fetch_crypto_info(self):
         pass
@@ -105,7 +105,7 @@ class MongoDB(Database):
     def savekey(self, key):
         coll = self._db['crypto']
         salt, digest = key.split('$6$')
-        coll.insert({'salt': salt, 'key': digest})
+        coll.insert_one({'salt': salt, 'key': digest})
 
     def loadkey(self):
         coll = self._db['crypto']
