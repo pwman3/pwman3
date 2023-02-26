@@ -1,3 +1,5 @@
+version: 1.0.{build}
+image: Visual Studio 2019
 build: false
 services:
   - postgresql
@@ -6,10 +8,12 @@ services:
 
 environment:
   matrix:
-    - PYTHON: "C:/Python37"
-    - PYTHON: "C:/Python38"
-    - PYTHON: "C:/Python39"
-    - PYTHON: "C:/Python311"
+   - python: 311
+   - python: 311-x64
+   - python: 310
+   - python: 310-x64
+   - python: 39
+   - python: 39-x64
 
   # postgres
   POSTGRES_PATH: C:\Program Files\PostgreSQL\9.4
