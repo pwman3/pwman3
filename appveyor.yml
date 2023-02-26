@@ -16,7 +16,7 @@ environment:
    - python: 39-x64
 
   # postgres
-  POSTGRES_PATH: C:\Program Files\PostgreSQL\9.4
+  POSTGRES_PATH: C:\Program Files\PostgreSQL\9.6
   PGUSER: postgres
   PGPASSWORD: Password12!
 
@@ -30,6 +30,7 @@ environment:
 init:
   #- "ECHO %PYTHON%"
   - ps: "ls C:/Python*"
+  - ps: "ls 'C:/Program Files/PostgreSQL'"
   - SET PATH=%MONGOPATH\bin%;%MYSQL_PATH\bin%;%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
 
 install:
