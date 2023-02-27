@@ -59,7 +59,6 @@ class ANSI(enum.Enum):
     Underscore = 2
 
 
-
 def typeset(text, color, bold=False, underline=False,
             has_colorama=True):  # pragma: no cover
     """
