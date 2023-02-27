@@ -15,7 +15,7 @@ debconf-set-selections <<< 'mysql-server-5.6 mysql-server/root_password_again pa
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "LANG=en_US.UTF-8" >> /etc/environment
 
-PACKAGES="python-psycopg2 sqlite3 git \
+PACKAGES="python-psycopg2 sqlite3 git python3-pip \
 postgresql-server-dev-9.5 postgresql \
 postgresql-contrib \
 python-dev python3-dev libffi-dev \
@@ -26,19 +26,14 @@ mysql-server-5.7
 apt-get update
 apt-get install -y ${PACKAGES}
 
-if [ ! -f  /usr/local/bin/pip3 ]; then
-    wget https://bootstrap.pypa.io/get-pip.py
-    sudo python3 get-pip.py
-fi
-
 PYTHON_PACKAGES="psycopg2 pymysql pymongo pexpect coverage pew"
 
 sudo pip3 install ${PYTHON_PACKAGES}
 
 # install mongodb
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
 
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
 apt-get update
 apt-get install -y mongodb-org
@@ -62,3 +57,4 @@ sudo -u postgres psql -c 'grant ALL ON DATABASE pwman to tester' -U postgres
 
 # setup mongodb
 mongo < /home/vagrant/pwman3/tests/init_mongo.js
+
