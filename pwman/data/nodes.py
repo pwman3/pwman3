@@ -24,7 +24,8 @@ from pwman.util.crypto_engine import CryptoEngine
 import pwman.ui.tools
 
 
-class Node(object):
+class Node:
+    """Represents a password or a secret in the database"""
 
     def __init__(self, clear_text=True, **kwargs):
         if clear_text:
@@ -33,6 +34,7 @@ class Node(object):
             self._password = enc.encrypt(kwargs.get('password')).strip()
             self._url = enc.encrypt(kwargs.get('url')).strip()
             self._notes = enc.encrypt(kwargs.get('notes')).strip()
+            self._mdate = kwargs.get('mdate')
             self._tags = [enc.encrypt(t).strip() for t in
                           kwargs.get('tags', '')]
 
@@ -70,28 +72,37 @@ class Node(object):
         d['password'] = self._password
         d['notes'] = self._notes
         d['url'] = self._url
+        d['mdate'] = self._mdate
         d['tags'] = self._tags
         return d
 
     @classmethod
-    def from_encrypted_entries(cls, username, password, url, notes, tags):
+    def from_encrypted_entries(cls,
+                               username,
+                               password,
+                               url,
+                               notes,
+                               mdate,
+                               tags):
         """
         We use this alternatively, to create a node instance when reading
         the encrypted entities from the database
         """
         node = Node(clear_text=False)
-        if type(username) == bytes:
+        if isinstance(username, bytes):
             node._username = username.strip()
             node._password = password.strip()
             node._url = url.strip()
             node._notes = notes.strip()
-            node._tags = [t.strip() for t in tags]
+            node._mdate = mdate.strip()
+            node._tags = [t.strip() for t in filter(None, tags)]
         else:
             node._username = bytes(username, 'utf8').strip()
             node._password = bytes(password, 'utf8').strip()
             node._url = bytes(url, 'utf8').strip()
             node._notes = bytes(notes, 'utf8').strip()
-            node._tags = [bytes(t, 'utf8').strip() for t in tags]
+            node._mdate = bytes(mdate, 'utf8').strip()
+            node._tags = [bytes(t, 'utf8').strip() for t in filter(None, tags)]
         return node
 
     def __iter__(self):
@@ -165,3 +176,8 @@ class Node(object):
         """Set the Notes."""
         enc = CryptoEngine.get()
         self._notes = enc.encrypt(value).strip()
+
+    @property
+    def mdate(self):
+        """Return last modification date"""
+        return self._mdate

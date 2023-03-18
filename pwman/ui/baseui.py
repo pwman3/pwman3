@@ -231,7 +231,7 @@ class BaseUtilsMixin:
         return rows, cols
 
     def _format_line(self, tag_pad, nid="ID", user="USER", url="URL",
-                     tags="TAGS"):
+                     tags="TAGS", last_mod="LAST MODIFIED"):
 
         user_pad = int(self.config.get_value("UI", "URL_pad").split('#')[0])
         url_pad = int(self.config.get_value("UI", "user_pad").split('#')[0])
@@ -240,7 +240,8 @@ class BaseUtilsMixin:
 
         return (line.format(ID=nid, USER=user,
                             URL=url, Tags=tags, user_pad=user_pad,
-                            url_pad=url_pad, tag_pad=tag_pad))
+                            url_pad=url_pad, tag_pad=tag_pad,
+                            mdate=last_mod))
 
     def _print_node_line(self, node, rows, cols, url_filter):
         if url_filter != "" and node.url.find(url_filter) == -1:
@@ -256,7 +257,8 @@ class BaseUtilsMixin:
 
         fmt = self._format_line(cols, node._id, node.username,
                                 node_url,
-                                tagstring)
+                                tagstring,
+                                node.mdate)
         formatted_entry = tools.typeset(fmt, Fore.YELLOW, False)
         print(formatted_entry)
 
@@ -279,11 +281,21 @@ class BaseUtilsMixin:
 
     def _db_entry_to_node(self, raw_node):
         # user, pass, url, notes
-        node_inst = Node.from_encrypted_entries(raw_node[1],
-                                                raw_node[2],
-                                                raw_node[3],
-                                                raw_node[4],
-                                                raw_node[5:])
+        try:
+            node_inst = Node.from_encrypted_entries(raw_node[1],
+                                                    raw_node[2],
+                                                    raw_node[3],
+                                                    raw_node[4],
+                                                    "",
+                                                    raw_node[5:])
+        except AttributeError:
+            # new db format has tags after last modified field
+            node_inst = Node.from_encrypted_entries(raw_node[1],
+                                                    raw_node[2],
+                                                    raw_node[3],
+                                                    raw_node[4],
+                                                    raw_node[6:])
+
         node_inst._id = raw_node[0]
         return node_inst
 
@@ -322,7 +334,6 @@ class BaseUtilsMixin:
 
         node = self._db.get_node(nodeid)
         if not node:  # pragma: no cover
-            print("Node not found ...")
             return
 
         node = self._db_entry_to_node(node)
@@ -533,6 +544,9 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
     def do_print(self, args):
         node = self._get_node(args)
+        if not node:
+            print("Node not found ...")
+            return
 
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')

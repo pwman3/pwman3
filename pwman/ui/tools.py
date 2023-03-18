@@ -20,11 +20,14 @@
 Define the CLI interface for pwman3 and the helper functions
 """
 
+import ast
+import enum
 import subprocess as sp
 import getpass
 import sys
+
 import colorama
-import ast
+
 from pwman.util.callback import Callback
 from pwman.util.crypto_engine import generate_password
 
@@ -48,23 +51,12 @@ else:  # pragma: no cover
 _defaultwidth = 10
 
 
-class ANSI(object):
+class ANSI(enum.Enum):
 
     """
     ANSI Colors
     """
-    Reset = 0
-    Bold = 1
     Underscore = 2
-
-    Black = 30
-    Red = 31
-    Green = 32
-    Yellow = 33
-    Blue = 34
-    Magenta = 35
-    Cyan = 36
-    White = 37
 
 
 def typeset(text, color, bold=False, underline=False,
@@ -77,7 +69,7 @@ def typeset(text, color, bold=False, underline=False,
     if bold:
         text = colorama.Style.BRIGHT + text
     if underline and 'win32' not in sys.platform:
-        text = ANSI.Underscore + text
+        text = ANSI.Underscore.value + text
     return color + text + colorama.Style.RESET_ALL
 
 

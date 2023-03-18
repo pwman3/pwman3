@@ -6,16 +6,14 @@ name = "pypi"
 
 
 [dev-packages]
-
-"psycopg2" = "*"
+psycopg = "*"
 pymysql = "*"
-pymongo = "==2.8"
+pymongo = ">=4.3"
 pexpect = "*"
 coverage = "*"
-"unittest2" = "*"
 
 
 [packages]
 
-cryptography = ">=2.3"
-colorama = ">=0.2.4"
+cryptography = "==39.0.1"
+colorama = "==0.4.6"

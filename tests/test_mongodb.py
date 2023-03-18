@@ -57,7 +57,7 @@ class TestMongoDB(unittest.TestCase):
         cls.db.close()
 
     def test_1_con(self):
-        self.assertIsInstance(self.db._con, pymongo.Connection)
+        self.assertIsInstance(self.db._con, pymongo.MongoClient)
 
     @unittest.skip("MongoDB creates collections on the fly")
     def test_2_create_collections(self):

@@ -375,7 +375,7 @@ sys.path.insert(0, os.getcwd())
 install_requires = ['colorama>=0.2.4', 'cryptography']
 
 if sys.platform.startswith('win'):
-    install_requires.append('pyreadline')
+    install_requires.append('pyreadline3')
 
 
 long_description = u"""\
@@ -412,8 +412,9 @@ setup(name='pwman3',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.6',
-                   'Programming Language :: Python :: 3.7',
+                   'Programming Language :: Python :: 3.9',
+                   'Programming Language :: Python :: 3.10',
+                   'Programming Language :: Python :: 3.11',
                    ],
       cmdclass={
           'build_manpage': BuildManPage,

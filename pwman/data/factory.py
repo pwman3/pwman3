@@ -65,7 +65,7 @@ def check_db_version(dburi):
 
     if not dbtype:
         print("Your URI seems incorrect ...")
-        sys.exit(0)
+        sys.exit(1)
 
     try:
         cls = getattr(drivers, class_db_map[dbtype][0])

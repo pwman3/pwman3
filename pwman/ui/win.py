@@ -89,11 +89,11 @@ class PwmanCliWin(PwmanCli):
     windows ui class
     """
     def do_print(self, args):
-        if not args.isdigit():
-            print("print accepts only a single ID ...")
+        node = self._get_node(args)
+        if not node:
+            print("Node not found ...")
             return
-        nodes = self._db.getnodes([args])
-        node = self._db_entries_to_nodes(nodes)[0]
+
         print(node)
         flushtimeout = self.config.get_value('Global', 'cls_timeout')
         flushtimeout = int(flushtimeout) if flushtimeout else 10
