@@ -279,7 +279,7 @@ class BaseUtilsMixin:
         for node_id in self._db.lazy_list_node_ids(filter=filter):
             yield node_id
 
-    def _db_entry_to_node(self, raw_node):
+    def _db_entry_to_node(self, raw_node, tags):
         # user, pass, url, notes
         try:
             node_inst = Node.from_encrypted_entries(raw_node[1],
@@ -287,14 +287,14 @@ class BaseUtilsMixin:
                                                     raw_node[3],
                                                     raw_node[4],
                                                     "",
-                                                    raw_node[5:])
+                                                    tags)
         except AttributeError:
             # new db format has tags after last modified field
             node_inst = Node.from_encrypted_entries(raw_node[1],
                                                     raw_node[2],
                                                     raw_node[3],
                                                     raw_node[4],
-                                                    raw_node[6:])
+                                                    tags)
 
         node_inst._id = raw_node[0]
         return node_inst
@@ -332,11 +332,11 @@ class BaseUtilsMixin:
             print("print accepts only a single ID ...")
             return
 
-        node = self._db.get_node(nodeid)
+        node, tags = self._db.get_node(nodeid)
         if not node:  # pragma: no cover
             return
 
-        node = self._db_entry_to_node(node)
+        node = self._db_entry_to_node(node, tags)
         return node
 
 
@@ -491,12 +491,12 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         ids = self._get_ids(args)
         for i in ids:
             i = int(i)
-            node = self._db.get_node(i)
+            node, tags = self._db.get_node(i)
             if not node:
                 print("Node not found ...")
                 return
-            node = node[1:5] + [node[5:]]
-            node = Node.from_encrypted_entries(*node)
+            node = node[1:]
+            node = Node.from_encrypted_entries(*node, tags)
             if not menu:
                 menu = CMDLoop(self.config)
                 print("Editing node %d." % (i))
@@ -525,8 +525,8 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
         nodeids_gen = self._lazy_get_node_ids(args)
         head = self._format_line(cols - 32)
         print(tools.typeset(head, Fore.YELLOW, False))
-        for node in self._db.getnodes(nodeids_gen):
-            self._print_node_line(self._db_entry_to_node(node), rows, cols,
+        for node, tags in self._db.getnodes(nodeids_gen):
+            self._print_node_line(self._db_entry_to_node(node, tags), rows, cols,
                                   url_filter)
 
     def do_new(self, args):  # pragma: no cover

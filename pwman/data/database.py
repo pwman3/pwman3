@@ -162,12 +162,12 @@ class Database(object):
         g = self.lazy_get_nodes(ids)
         for node in g:
             tags = [t for t in self._get_node_tags(node)]
-            yield list(node[0:]) + tags
+            yield list(node[0:]), tags
 
     def get_node(self, id):
         node = next(self.lazy_get_nodes([id]))
         tags = [t for t in self._get_node_tags(node)]
-        return list(node[0:]) + tags
+        return list(node[0:]), tags
 
     def lazy_get_nodes(self, ids):
         """
@@ -179,6 +179,7 @@ class Database(object):
                 self._cur.execute(query, (str(id_),))
                 node = self._cur.fetchone()
                 if node:
+                    node = list(map(lambda x: x if x else b'', node))
                     yield node
 
     def lazy_list_node_ids(self, filter=None):
