@@ -15,5 +15,5 @@ coverage = "*"
 
 [packages]
 
-cryptography = "==42.0.2"
+cryptography = "==42.0.4"
 colorama = "==0.4.6"
