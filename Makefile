@@ -49,7 +49,7 @@ integration-test: clean install
 	coverage html
 
 test: clean install
-	python setup.py test
+	python -m tests.test_pwman
 	@rm -f tests/test.conf
 
 test-all:
