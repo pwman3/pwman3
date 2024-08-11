@@ -7,8 +7,9 @@ dynamic = ["version"]
 description = "a command line password manager with support for multiple databases."
 authors = [{name = "Oz N Tiram", email = "oz.tiram@gmail.com"}]
 license = {text = "GNU GPL"}
-readme = "README.rst" # Adjust if your long description is in a different file
+readme = "README.rst"
 keywords = ["password-manager", "crypto", "cli"]
+
 
 classifiers = [
     "Environment :: Console",
@@ -29,6 +30,10 @@ dependencies = [
     "colorama",
     "pyreadline;platform_system=='Windows'",
 ]
+
+[project.urls]
+homepage = "http://pwman3.github.io/pwman3/"
+documentation = "https://pwman3.readthedocs.io/en/latest/"
 
 [project.scripts]
 pwman3 = "pwman.ui.cli:main"

@@ -19,17 +19,15 @@
 # Copyright (C) 2006 Ivan Kelly <ivan@ivankelly.net>
 # ============================================================================
 import argparse
-import urllib.request
 import os
-import pkg_resources
 import re
 import string
 import shutil
 import ssl
 import sys
+import urllib.request
 
-
-from pkg_resources import parse_version, DistributionNotFound
+from importlib.metadata import PackageNotFoundError, version, distribution
 
 from pwman.util import config
 from pwman.data.factory import check_db_version
@@ -44,38 +42,27 @@ except ImportError:
 appname = "pwman3"
 
 try:
-    version = pkg_resources.get_distribution('pwman3').version
-except DistributionNotFound:  # pragma: no cover
+    version = version('pwman3')
+except PackageNotFoundError:
     version = '0.12.2'
 
 
 class PkgMetadata(object):
 
     def __init__(self):
-        p = pkg_resources.get_distribution('pwman3')
-        f = open(os.path.join(p.location+'-info', 'PKG-INFO'))
-        lines = f.readlines()
-        self.summary = lines[3].split(':')[-1].strip()
-        self.description = ''.join(map(string.strip, lines[9:14]))
-        self.author_email = lines[6].split(':')[-1].strip()
-        self.author = lines[5].split(':')[-1].strip()
-        self.home_page = lines[4].split(':')[-1].strip()
+        d = distribution("pwman3")
+        self.summary = d.metadata.get("summary")
+        self.author_email = d.metadata.get("author-email")
+        self.home_page = d.metadata.get("project-url")
+        self.home_page = d.metadata.get("project-url").split(", ")[-1]
 
 
-try:
-    pkg_meta = PkgMetadata()
-    website = pkg_meta.home_page
-    author = pkg_meta.author
-    authoremail = pkg_meta.author_email
-    description = pkg_meta.summary
-    long_description = pkg_meta.description
-except (IOError, DistributionNotFound):
-    # this should only happen once when installing the package
-    description = "a command line password manager with support for multiple databases."  # noqa
-    website = 'http://pwman3.github.io/pwman3/'
 
 
 def parser_options(formatter_class=argparse.HelpFormatter):  # pragma: no cover
+    pkg_meta = PkgMetadata()
+    description = pkg_meta.summary
+
     parser = argparse.ArgumentParser(prog='pwman3',
                                      description=description,
                                      formatter_class=formatter_class)
