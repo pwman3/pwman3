@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+
+[project]
+name = "pwman3"
+dynamic = ["version"]
+description = "a command line password manager with support for multiple databases."
+authors = [{name = "Oz N Tiram", email = "oz.tiram@gmail.com"}]
+license = {text = "GNU GPL"}
+readme = "README.rst" # Adjust if your long description is in a different file
+keywords = ["password-manager", "crypto", "cli"]
+
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "cryptography",
+    "colorama",
+    "pyreadline;platform_system=='Windows'",
+]
+
+[project.scripts]
+pwman3 = "pwman.ui.cli:main"
+
+[tool.setuptools_scm]
+write_to = "pwman/_version.py"
