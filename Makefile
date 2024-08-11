@@ -55,6 +55,9 @@ test: clean install
 test-all:
 	tox
 
+build-manpage:
+	python man-page-builder.py
+
 coverage-run:
 	coverage run -m tests.test_pwman
 	coverage report -m
@@ -102,4 +105,3 @@ release/complete:
 
 release/abort::
 	make -f release.mk $@
-
