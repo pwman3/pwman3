@@ -78,11 +78,12 @@ class TestBaseUI(unittest.TestCase):
                                                         in _node.tags])
         node_ids = self.tester.cli._db.lazy_list_node_ids()
         self.assertListEqual([1], list(node_ids))
-        nodes = list(self.tester.cli._db.getnodes([1]))
+        node_tags  = list(self.tester.cli._db.getnodes([1]))
+        nodes = node_tags[0]
+        tags = nodes[-1]
         ce = CryptoEngine.get()
         user = ce.decrypt(nodes[0][1])
         self.assertTrue(user, 'alice')
-        tags = nodes[-1]
         for idx, t in enumerate(['foo', 'bar', 'baz']):
             self.assertTrue(t, tags[idx])
 
