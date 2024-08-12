@@ -82,8 +82,8 @@ class Node:
                                password,
                                url,
                                notes,
-                               mdate,
-                               tags):
+                               tags,
+                               mdate=""):
         """
         We use this alternatively, to create a node instance when reading
         the encrypted entities from the database
@@ -94,15 +94,16 @@ class Node:
             node._password = password.strip()
             node._url = url.strip()
             node._notes = notes.strip()
-            node._mdate = mdate.strip()
             node._tags = [t.strip() for t in filter(None, tags)]
         else:
             node._username = bytes(username, 'utf8').strip()
             node._password = bytes(password, 'utf8').strip()
             node._url = bytes(url, 'utf8').strip()
             node._notes = bytes(notes, 'utf8').strip()
-            node._mdate = bytes(mdate, 'utf8').strip()
             node._tags = [bytes(t, 'utf8').strip() for t in filter(None, tags)]
+
+        node._mdate = bytes(mdate, 'utf8').strip()
+
         return node
 
     def __iter__(self):
