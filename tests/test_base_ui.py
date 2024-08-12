@@ -173,9 +173,11 @@ class TestBaseUI(unittest.TestCase):
         sys.stdout = sys.__stdout__
 
     def test_8_do_edit_2(self):
-        node = list(self.tester.cli._db.getnodes([1]))[0]
-        node = node[1:5] + [node[5:]]
-        node = Node.from_encrypted_entries(*node)
+        node_tags = list(self.tester.cli._db.getnodes([1]))[0]
+
+        node, tags = node_tags[0], node_tags[-1]
+        node = Node.from_encrypted_entries(node[1], node[2], node[3],
+                                           node[4], tags)
         sys.stdin = StringIO(("2\ns3kr3t\nx\n"))
         self.tester.cli.do_edit('1')
         v = StringIO()
