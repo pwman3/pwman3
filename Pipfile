@@ -1,9 +1,7 @@
 [[source]]
-
 verify_ssl = true
 url = "https://pypi.python.org/simple"
 name = "pypi"
-
 
 [dev-packages]
 psycopg = "*"
@@ -12,8 +10,6 @@ pymongo = ">=4.3"
 pexpect = "*"
 coverage = "*"
 
-
 [packages]
-
-cryptography = "==42.0.2"
+cryptography = "==42.*"
 colorama = "==0.4.6"
