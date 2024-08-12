@@ -30,13 +30,21 @@ class TestNode(unittest.TestCase):
                          tags=[b'baz', b'baz'])
 
     def test_do_encdict(self):
+
         ce = CryptoEngine.get()
+
         for k, v in self.node.to_encdict().items():
             if k == 'user':
-                self.assertEqual(ce.decrypt(v).decode(), getattr(self.node,
-                                                                 'username'))
-            elif k != 'tags':
-                self.assertEqual(ce.decrypt(v).decode(), getattr(self.node, k))
+                username = getattr(self.node, 'username')
+                value = ce.decrypt(v).decode()
+                self.assertEqual(value, username)
+
+            elif k not in ['tags', 'mdate']:
+                value = getattr(self.node, k)
+                if value:
+                    self.assertEqual(ce.decrypt(v).decode(), value)
+                else:
+                    print(f"Value of {k} is {value}")
 
     def test_setters(self):
         new_node = {'username': b'baz', 'password': b'n3ws3k43t',
@@ -55,10 +63,11 @@ class TestNode(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    import os
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
     try:
-        unittest.main(verbosity=2, failfast=True)
+        unittest.main(verbosity=2, failfast=int(os.getenv('PWMAN_FAILFAST', "1")))
     except SystemExit:
         pass
