@@ -76,14 +76,25 @@ class TestBaseUI(unittest.TestCase):
         sys.stdin = sys.__stdin__
         self.assertListEqual([b'foo', b'bar', b'baz'], [t for t
                                                         in _node.tags])
+        sys.stdin = BytesIO((b"harry\nsecret\nexample.com\nsome notes"
+                             b"\nfoo,bar,baz"))
+        _node = self.tester.cli._do_new('')
         node_ids = self.tester.cli._db.lazy_list_node_ids()
-        self.assertListEqual([1], list(node_ids))
+        self.assertListEqual([1, 2], list(node_ids))
         node_tags  = list(self.tester.cli._db.getnodes([1]))
         nodes = node_tags[0]
         tags = nodes[-1]
         ce = CryptoEngine.get()
         user = ce.decrypt(nodes[0][1])
         self.assertTrue(user, 'alice')
+        for idx, t in enumerate(['foo', 'bar', 'baz']):
+            self.assertTrue(t, tags[idx])
+
+        node_tags  = list(self.tester.cli._db.getnodes([1, 2]))
+        nodes = node_tags[1]
+        user = ce.decrypt(nodes[0][1])
+        self.assertTrue(user, 'harry')
+
         for idx, t in enumerate(['foo', 'bar', 'baz']):
             self.assertTrue(t, tags[idx])
 

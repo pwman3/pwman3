@@ -421,7 +421,8 @@ class BaseCommands(HelpUIMixin, AliasesMixin, BaseUtilsMixin):
 
         filename = args.get('filename', 'pwman-export.csv')
         delim = args.get('delimiter', ';')
-        nodes = self._db.getnodes(list(self._db.lazy_list_node_ids()))
+        node_ids = list(self._db.lazy_list_node_ids())
+        nodes = list(self._db.getnodes(node_ids))
 
         with open(filename, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=delim)

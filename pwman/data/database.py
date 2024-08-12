@@ -159,10 +159,10 @@ class Database(object):
         self._con.commit()
 
     def getnodes(self, ids):
-        g = self.lazy_get_nodes(ids)
+        g = list(self.lazy_get_nodes(ids))
         for node in g:
             tags = [t for t in self._get_node_tags(node)]
-            yield list(node[0:]), tags
+            yield node[0:], tags
 
     def get_node(self, id):
         node = next(self.lazy_get_nodes([id]))
