@@ -73,15 +73,6 @@ docs:
 	$(MAKE) -C docs html
 	xdg-open docs/build/html/index.html
 
-release: clean
-	python setup.py sdist
-	twine upload --skip-existing dist/*
-
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
-
 install:
 	pip install -e .
 
@@ -95,13 +86,7 @@ test-compose::
 	docker-compose up --abort-on-container-exit
 	docker-compose down -v
 
-release/start::
-	make -f release.mk $@  # $@ is the name of the target
+release:
+	python -m build
 
-release/complete:
-	make -f release.mk do-release
-	make -f release.mk release/finish
-
-
-release/abort::
-	make -f release.mk $@
+# vim: tabstop=4 shiftwidth=4
