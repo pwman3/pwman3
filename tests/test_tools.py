@@ -101,6 +101,8 @@ class SetupTester(object):
                                'sqlite://' + testdb
                                )
 
+        self.configp.set_value('Global', 'cls_timeout', "-1")
+
         if not OSX:
             self.xselpath = shutil.which("xsel") or ""
             self.configp.set_value("Global", "xsel", self.xselpath)
