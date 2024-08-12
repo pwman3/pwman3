@@ -62,4 +62,5 @@ def suite():
 if __name__ == '__main__':
     test_suite = suite()
     unittest.TextTestRunner(verbosity=2,
-                            failfast=True, buffer=False).run(test_suite)
+                            failfast=int(os.getenv("PWMAN_FAILFAST", "1")),
+                            buffer=False).run(test_suite)

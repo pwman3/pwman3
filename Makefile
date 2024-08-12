@@ -48,7 +48,8 @@ integration-test: clean install
 	coverage report
 	coverage html
 
-test: clean install
+test-unit: PWMAN_FAILFAST=1 #? stop on first failure
+test-unit: clean install ## run the unit tests
 	python -m tests.test_pwman
 	@rm -f tests/test.conf
 
