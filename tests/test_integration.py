@@ -17,5 +17,7 @@ def complete_suite(suite):
 
 
 if __name__ == '__main__':
+    import os
     test_suite = complete_suite(suite())
-    unittest.TextTestRunner(verbosity=2, failfast=True).run(test_suite)
+    unittest.TextTestRunner(verbosity=2,
+                            failfast=int(os.getenv("PWMAN_FAILFAST", "1"))).run(test_suite)

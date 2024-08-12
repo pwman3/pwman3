@@ -43,7 +43,8 @@ pre-test:
 	$(shell sudo service mysql start)
 	$(shell sudo service mongodb start)
 
-integration-test: clean install
+test-integration: PWMAN_FAILFAST=1 #? stop on first failure
+test-integration: clean install
 	coverage run -m tests.test_integration
 	coverage report
 	coverage html
