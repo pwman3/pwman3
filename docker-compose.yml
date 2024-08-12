@@ -1,6 +1,9 @@
 version: '3'
 services:
   pwman:
+    profiles:
+    - test
+    - infra
     depends_on:
      - mysql
      - mongodb
@@ -12,22 +15,33 @@ services:
      - MYSQLHOST=mysql
      - POSTGRESHOST=postgresql
   mysql:
+    profiles:
+    - infra
     image: "mysql:5.7"
     environment:
      -  MYSQL_ROOT_PASSWORD=toor
      -  MYSQL_DATABASE=pwmantest
      -  MYSQL_USER=pwman
      -  MYSQL_PASSWORD=123456
+    ports:
+    - "3306:3306"
   postgresql:
+    ports:
+    - "5432:5432"
     image: "postgres:alpine"
+    profiles:
+    - infra
     environment:
      - POSTGRES_USER=tester
      - POSTGRES_PASSWORD=123456
      - POSTGRES_DB=pwman
   mongodb:
+    ports:
+    - "27017:27017"
+    profiles:
+    - infra
     image: "mongo:3.6"
     environment:
      - MONGO_INITDB_DATABASE=pwmantest
     volumes:
     - ./tests/init_mongo.js:/docker-entrypoint-initdb.d/init.js
-

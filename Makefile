@@ -80,11 +80,14 @@ docker/build:: TAG ?= latest
 docker/build::  ## build a docker image for pwman3 tests
 	docker build -t oz123/pwman3:$(TAG) .
 
-test-compose::  # run all tests in docker-compose
-	docker-compose down -v
-	docker-compose build
-	docker-compose up --abort-on-container-exit
-	docker-compose down -v
+infra-compose::  ## start the infrastructure for the tests
+	docker compose --profile infra  up -d
+
+test-compose::  ## run all tests in docker-compose
+	docker compose down -v
+	docker compose build
+	docker compose up --profile test --abort-on-container-exit
+	docker compose down -v
 
 release:
 	python -m build
