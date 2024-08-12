@@ -1,15 +1,15 @@
 .PHONY: clean-pyc clean-build docs clean test coverage coverage-run clean_all
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help:
+	@mh -f $(MAKEFILE_LIST) $(target) || echo "Please install mh from https://github.com/oz123/mh/releases"
+ifndef target
+	@(which mh > /dev/null 2>&1 && echo -e "\nUse \`make help target=foo\` to learn more about foo.")
+endif
 
 help:
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
-	@echo "lint - check style with flake8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package"
 
 clean_all:
 	clean
@@ -77,10 +77,10 @@ install:
 	pip install -e .
 
 docker/build:: TAG ?= latest
-docker/build::
+docker/build::  ## build a docker image for pwman3 tests
 	docker build -t oz123/pwman3:$(TAG) .
 
-test-compose::
+test-compose::  # run all tests in docker-compose
 	docker-compose down -v
 	docker-compose build
 	docker-compose up --abort-on-container-exit
