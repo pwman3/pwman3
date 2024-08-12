@@ -7,7 +7,7 @@ dynamic = ["version"]
 description = "a command line password manager with support for multiple databases."
 authors = [{name = "Oz N Tiram", email = "oz.tiram@gmail.com"}]
 license = {text = "GNU GPL"}
-readme = "README.rst"
+readme = "README.md"
 keywords = ["password-manager", "crypto", "cli"]
 
 
