@@ -40,6 +40,7 @@ except ImportError:
 
 
 appname = "pwman3"
+website = 'http://pwman3.github.io/pwman3/'
 
 try:
     version = version('pwman3')
