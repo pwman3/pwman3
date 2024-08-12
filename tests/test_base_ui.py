@@ -158,9 +158,11 @@ class TestBaseUI(unittest.TestCase):
         self.assertListEqual([], self.tester.cli._get_ids('5\\'))
 
     def test_8_do_edit_1(self):
-        node = list(self.tester.cli._db.getnodes([1]))[0]
-        node = node[1:5] + [node[5:]]
-        node = Node.from_encrypted_entries(*node)
+        node_tags = list(self.tester.cli._db.getnodes([1]))[0]
+        node, tags = node_tags[0], node_tags[-1]
+
+        node = Node.from_encrypted_entries(node[1], node[2], node[3],
+                                           node[4], tags)
         sys.stdin = StringIO(("1\nfoo\nx\n"))
         self.tester.cli.do_edit('1')
         v = StringIO()
@@ -168,6 +170,7 @@ class TestBaseUI(unittest.TestCase):
         sys.stdout = v
         self.tester.cli.do_print('1')
         self.assertIn('\x1b[31mUsername:\x1b[0m foo', v.getvalue())
+        sys.stdout = sys.__stdout__
 
     def test_8_do_edit_2(self):
         node = list(self.tester.cli._db.getnodes([1]))[0]

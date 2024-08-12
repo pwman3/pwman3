@@ -221,6 +221,7 @@ class Database(object):
     # TODO: add this to test of postgresql and mysql!
     def editnode(self, nid, **kwargs):
         tags = kwargs.pop('tags', None)
+        mdate = kwargs.pop('mdate', None)
         sql = ("UPDATE NODE SET {} WHERE ID = {} ".format(
             ','.join(['{}={}'.format(k, self._sub) for k in list(kwargs)]),
             self._sub))

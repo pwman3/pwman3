@@ -148,4 +148,4 @@ if __name__ == '__main__':
     ce = CryptoEngine.get()
     ce.callback = DummyCallback()
     ce.changepassword(reader=give_key)
-    unittest.main(verbosity=2, failfast=True)
+    unittest.main(verbosity=2, failfast=int(os.getenv("PWMAN_FAILFAST", 1)))

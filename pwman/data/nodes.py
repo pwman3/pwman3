@@ -89,6 +89,9 @@ class Node:
         the encrypted entities from the database
         """
         node = Node(clear_text=False)
+
+        assert isinstance(username, (bytes, str)), f"Expected bytes or str, got {type(username)}"
+
         if isinstance(username, bytes):
             node._username = username.strip()
             node._password = password.strip()
