@@ -13,3 +13,4 @@ coverage = "*"
 [packages]
 cryptography = "==42.*"
 colorama = "==0.4.6"
+pymongo = "==4.6.*"
