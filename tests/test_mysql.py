@@ -92,25 +92,27 @@ class TestMySQLDatabase(unittest.TestCase):
         innode = ["TBONE", "S3K43T", "example.org", "some note",
                   ["bartag", "footag"]]
         self.db.add_node(innode)
+        node, tags = list(self.db.getnodes([1]))[0]
 
-        outnode = list(self.db.getnodes([1]))[0]
-        self.assertEqual(innode[:-1] + [t for t in innode[-1]], outnode[1:])
+        self.assertEqual(innode[:-1] + [t for t in innode[-1]], node[1:] + tags)
 
     def test_6_list_nodes(self):
         ret = self.db.lazy_list_node_ids()
         self.assertEqual(list(ret), [1])
         ret = self.db.lazy_list_node_ids("footag")
-        self.assertEqual(list(ret), [1])
+        ret = list(ret)
+        self.assertEqual(ret, [1])
 
     def test_6a_list_tags(self):
         ret = self.db.listtags()
         self.assertListEqual(ret, ['bartag', 'footag'])
 
     def test_6b_get_nodes(self):
-        ret = list(self.db.getnodes([1]))
-        self.assertListEqual(ret[0], [1, "TBONE", "S3K43T", "example.org",
-                                      "some note",
-                                      "bartag", "footag"])
+        node_tags = list(self.db.getnodes([1]))
+        self.assertTupleEqual(node_tags[0],
+                             ([1, "TBONE", "S3K43T", "example.org", "some note"],
+                              ["bartag", "footag"])
+                             )
 
     def test_7_get_or_create_tag(self):
         s = self.db._get_or_create_tag("SECRET")
