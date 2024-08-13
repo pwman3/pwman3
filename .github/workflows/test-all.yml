@@ -27,11 +27,11 @@ jobs:
     - name: Install dependencies
       run: make install-unittest-deps
 
-    - name: Start services
-      run: make infra-compose
-
     - name: Run unit tests
       run: make test-unit
+
+    - name: Start services
+      run: make infra-compose
 
     - name: Install integration test dependencies
       run: make install-integrationtest-deps

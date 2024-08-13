@@ -3,7 +3,6 @@ services:
   pwman:
     profiles:
     - test
-    - infra
     depends_on:
      - mysql
      - mongodb
@@ -17,6 +16,7 @@ services:
   mysql:
     profiles:
     - infra
+    - test
     image: "mysql:5.7"
     environment:
      -  MYSQL_ROOT_PASSWORD=toor
@@ -31,6 +31,7 @@ services:
     image: "postgres:alpine"
     profiles:
     - infra
+    - test
     environment:
      - POSTGRES_USER=tester
      - POSTGRES_PASSWORD=123456
@@ -40,6 +41,7 @@ services:
     - "27017:27017"
     profiles:
     - infra
+    - test
     image: "mongo:3.6"
     environment:
      - MONGO_INITDB_DATABASE=pwmantest
