@@ -49,13 +49,23 @@ test-integration: clean install
 	coverage report
 	coverage html
 
+install-integrationtest-deps:
+	pip install -r requirements-integration.txt
+
+install-unittest-deps:
+	pip install -r requirements-unittest.txt
+
 test-unit: PWMAN_FAILFAST=1 #? stop on first failure
 test-unit: clean install ## run the unit tests
 	python -m tests.test_pwman
 	@rm -f tests/test.conf
 
+test-all: OPTS ?="--parallel -o" #? options to pass to tox
 test-all:
-	tox
+	tox $(OPTS)
+
+test-integration:
+	python -m tests.test_integration
 
 build-manpage:
 	python man-page-builder.py
@@ -85,7 +95,7 @@ docker/build::  ## build a docker image for pwman3 tests
 infra-compose::  ## start the infrastructure for the tests
 	docker compose --profile infra  up -d
 
-test-compose::  ## run all tests in docker-compose
+test-compose::  ## run all tests in docker compose
 	docker compose down -v
 	docker compose build
 	docker compose up --profile test --abort-on-container-exit
