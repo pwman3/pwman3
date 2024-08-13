@@ -36,7 +36,7 @@ jobs:
     - name: Install integration test dependencies
       run: make install-integrationtest-deps
 
-    - name: Run unit tests
+    - name: Run integration tests
       run: make test-integration
 
     - name: Stop services
