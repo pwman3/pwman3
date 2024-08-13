@@ -45,9 +45,7 @@ pre-test:
 
 test-integration: PWMAN_FAILFAST=1 #? stop on first failure
 test-integration: clean install
-	coverage run -m tests.test_integration
-	coverage report
-	coverage html
+	python -m tests.test_integration
 
 install-integrationtest-deps:
 	pip install -r requirements-integration.txt
@@ -64,14 +62,12 @@ test-all: OPTS ?="--parallel -o" #? options to pass to tox
 test-all:
 	tox $(OPTS)
 
-test-integration:
-	python -m tests.test_integration
-
 build-manpage:
 	python man-page-builder.py
 
 coverage-run:
-	coverage run -m tests.test_pwman
+	coverage run --append -m tests.test_pwman
+	coverage run --append -m tests.test_integration
 	coverage report -m
 	@coverage html
 
