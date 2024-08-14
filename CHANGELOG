@@ -1,3 +1,9 @@
+2024-Aug-14 Oz N Tiram <oz.tiram@gmail.com>
+	* Bump version to 0.13.0
+	* Modernize python build tools
+	* Drop setup.py
+        * Support python3.12	
+
 2020-Mar-07 Oz N Tiram <oz.tiram@gmail.com>
 	* Relese version 0.11.0
 	* Allow customize list output
