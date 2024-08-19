@@ -73,7 +73,7 @@ Database versions
 ----------------- 
 
 The current version of Pwman3 is tested with Postgresql-9.3, MySQL-5.5,
-MongoDB 2.6.X and SQLite3. 
+MongoDB 2.6.X and SQLite3. MariaDB 5.5 is equivalent to MySQL 5.5. 
 
 The required python drivers are:
  

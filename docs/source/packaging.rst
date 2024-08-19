@@ -6,8 +6,8 @@ Requirements and suggested packages
 The most basic install of pwman requires Python 2.7.x or Python 3.x with 
 SQLite support.
 Some users might be interested in working with a network database such as 
-MySQL or Postgreql, in this case the package should suggest to install but not 
-depend on the following components:
+MariaDB, MySQL or Postgreql, in this case the package should suggest to 
+install but not depend on the following components:
 
     * `python-psycopg2`_
     * `python-pymysql`_
