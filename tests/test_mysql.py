@@ -65,8 +65,10 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_2_create_tables(self):
         self.db._create_tables()
+        self.assertTrue(self.db._check_tables())
         # invoking this method a second time should not raise an exception
         self.db._create_tables()
+        self.assertTrue(self.db._check_tables())
 
     def test_3_load_key(self):
         self.db.savekey('SECRET$6$KEY')
