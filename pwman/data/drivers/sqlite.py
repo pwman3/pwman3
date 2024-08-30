@@ -71,8 +71,7 @@ class SQLite(Database):
         self._create_tables()
 
     def _create_tables(self):
-        self._cur.execute("PRAGMA TABLE_INFO(NODE)")
-        if self._cur.fetchone() is not None:
+        if self._check_tables():
             return
 
         self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "

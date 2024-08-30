@@ -21,7 +21,6 @@
 
 from pwman.util.crypto_engine import CryptoEngine
 
-
 __DB_FORMAT__ = 0.6
 
 
@@ -53,9 +52,16 @@ class Database(object):
             self._cur.execute("SELECT 1 from DBVERSION")
             version = self._cur.fetchone()
             return version
-        except Exception:
-            self._con.rollback()
-            return 0
+        except Exception as e:
+            msg = str(e)
+            for i in ("no such table: DBVERSION",  # sqlite
+                      """relation "dbversion" does not exist""",  # postgresql
+                      "Table 'pwmantest.DBVERSION' doesn't exist"  # mysql
+                      ):
+                if i in msg:
+                    self._con.rollback()
+                    return 0
+            raise e
 
     def _create_tables(self):
         if self._check_tables():
