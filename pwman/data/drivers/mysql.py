@@ -65,6 +65,8 @@ class MySQLDatabase(Database):
         self._get_node_sql = "SELECT * FROM NODE WHERE ID = %s"
         self._data_wrapper = lambda x: x
         self.ProgrammingError = mysql.ProgrammingError
+        self.autoincr = "AUTO_INCREMENT"
+        self.integer = "INT"
 
     def _open(self):
 

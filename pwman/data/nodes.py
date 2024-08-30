@@ -68,7 +68,7 @@ class Node:
         Return a dictionary of encrypted records
         """
         d = {}
-        d['user'] = self._username
+        d['username'] = self._username
         d['password'] = self._password
         d['notes'] = self._notes
         d['url'] = self._url

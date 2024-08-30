@@ -52,13 +52,19 @@ class SQLite(Database):
         """Initialise SQLitePwmanDatabase instance."""
         self._filename = filename
         self.dbformat = dbformat
-        self._add_node_sql = ("INSERT INTO NODE(USER, PASSWORD, URL, NOTES)"
+        ##### WARNING #####
+        # The following code changes the column name from USER to USERNAME
+        # in NODE table for SQLITE.
+
+        self._add_node_sql = ("INSERT INTO NODE(USERNAME, PASSWORD, URL, NOTES)"
                               "VALUES(?, ?, ?, ?)")
         self._list_nodes_sql = "SELECT NODEID FROM LOOKUP WHERE TAGID = ? "
         self._insert_tag_sql = "INSERT INTO TAG(DATA) VALUES(?)"
         self._get_node_sql = "SELECT * FROM NODE WHERE ID = ?"
         self._sub = '?'
         self._data_wrapper = lambda x: x
+        self.integer = "INTEGER"
+        self.autoincr = "AUTOINCREMENT"
 
     def _open(self):
         try:
@@ -74,12 +80,11 @@ class SQLite(Database):
         if self._check_tables():
             return
 
-        self._cur.execute("CREATE TABLE NODE (ID INTEGER PRIMARY KEY "
-                          "AUTOINCREMENT, "
-                          "USER TEXT NOT NULL, "
-                          "PASSWORD TEXT NOT NULL, "
-                          "URL TEXT NOT NULL,"
-                          "NOTES TEXT NOT NULL)")
+        ##### WARNING #####
+        # The following code changes the column name from USER to USERNAME
+        # in NODE table for SQLITE.
+
+        self._create_node_table()
 
         self._cur.execute("CREATE TABLE TAG"
                           "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"

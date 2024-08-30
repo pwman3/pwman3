@@ -57,7 +57,7 @@ class MongoDB(Database):
         nodes = []
         for node in node_dicts:
             n = [node['_id'],
-                 node['user'],
+                 node['username'],
                  node['password'],
                  node['url'],
                  node['notes']]

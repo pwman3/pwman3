@@ -119,13 +119,13 @@ class TestSQLite(unittest.TestCase):
         # delibertly insert clear text into the database
         ce = CryptoEngine.get()
         tags = [ce.encrypt("foo"), ce.encrypt("auto")]
-        node = {'user': 'transparent', 'password': 'notsecret',
+        node = {'username': 'transparent', 'password': 'notsecret',
                 'tags': tags}
         self.db.editnode('2', **node)
-        self.db._cur.execute('SELECT USER, PASSWORD FROM NODE WHERE ID=2')
+        self.db._cur.execute('SELECT USERNAME, PASSWORD FROM NODE WHERE ID=2')
         rv = self.db._cur.fetchone()
         self.assertEqual(rv, ('transparent', 'notsecret'))
-        node = {'user': 'modify', 'password': 'notsecret',
+        node = {'username': 'modify', 'password': 'notsecret',
                 'tags': tags}
         # now the tags bank and baz are orphan ...
         # what happens? it should be completely removed.

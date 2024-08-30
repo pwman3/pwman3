@@ -63,20 +63,24 @@ class Database(object):
                     return 0
             raise e
 
+    def _create_node_table(self):
+        self._cur.execute("CREATE TABLE NODE "
+                          f"(ID {self.integer} PRIMARY KEY {self.autoincr}, "  # noqa
+                          "USERNAME TEXT NOT NULL, "
+                          "PASSWORD TEXT NOT NULL, "
+                          "URL TEXT NOT NULL, "
+                          "NOTES TEXT NOT NULL"
+                          ")")
+        self._con.commit()
+
     def _create_tables(self):
         if self._check_tables():
             return
         try:
-            self._cur.execute("CREATE TABLE NODE "
-                              "(ID INT PRIMARY KEY AUTO_INCREMENT, "
-                              "USERNAME TEXT NOT NULL, "
-                              "PASSWORD TEXT NOT NULL, "
-                              "URL TEXT NOT NULL, "
-                              "NOTES TEXT NOT NULL"
-                              ")")
+            self._create_node_table()
 
             self._cur.execute("CREATE TABLE TAG"
-                              "(ID  INT PRIMARY KEY AUTO_INCREMENT,"
+                              f"(ID  {self.integer} PRIMARY KEY {self.autoincr},"  # noqa
                               "DATA TEXT NOT NULL)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("
