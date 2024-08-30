@@ -38,15 +38,15 @@ class SQLite(Database):
             print("could not open %s" % fname)
             raise E
         cur = con.cursor()
-        cur.execute("SELECT VERSION FROM DBVERSION")
-        row = cur.fetchone()
-        cur.close()
-        con.close()
-
         try:
+            cur.execute("SELECT VERSION FROM DBVERSION")
+            row = cur.fetchone()
+            cur.close()
+            con.close()
             return row[-1]
-        except TypeError:
-            return str(__DB_FORMAT__)
+        except sqlite.OperationalError as E:
+            if "no such table" in str(E):
+                return str(__DB_FORMAT__)
 
     def __init__(self, filename, dbformat=__DB_FORMAT__):
         """Initialise SQLitePwmanDatabase instance."""
