@@ -73,33 +73,42 @@ class Database(object):
                           ")")
         self._con.commit()
 
+    def _create_tag_table(self):
+        self._cur.execute("CREATE TABLE TAG"
+                          f"(ID  {self.integer} PRIMARY KEY {self.autoincr},"  # noqa
+                          "DATA TEXT NOT NULL)")
+        self._con.commit()
+
+    def _create_lookup_table(self):
+        self._cur.execute("CREATE TABLE LOOKUP ("
+                          "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
+                          "tagid INTEGER NOT NULL REFERENCES TAG(ID)"
+                          ")")
+        self._con.commit()
+
+    def _create_crypto_table(self):
+        self._cur.execute("CREATE TABLE CRYPTO "
+                          "(SEED TEXT, DIGEST TEXT)")
+
+    def _create_dbversion_table(self):
+        self._cur.execute("CREATE TABLE DBVERSION (VERSION TEXT NOT NULL)")
+        self._cur.execute("INSERT INTO DBVERSION (VERSION) VALUES('%s')" %
+                          self.dbversion)
+        self._con.commit()
+
     def _create_tables(self):
         if self._check_tables():
             return
         try:
             self._create_node_table()
-
-            self._cur.execute("CREATE TABLE TAG"
-                              f"(ID  {self.integer} PRIMARY KEY {self.autoincr},"  # noqa
-                              "DATA TEXT NOT NULL)")
-
-            self._cur.execute("CREATE TABLE LOOKUP ("
-                              "nodeid INTEGER NOT NULL REFERENCES NODE(ID),"
-                              "tagid INTEGER NOT NULL REFERENCES TAG(ID)"
-                              ")")
-
-            self._cur.execute("CREATE TABLE CRYPTO "
-                              "(SEED TEXT, DIGEST TEXT)")
-
-            self._cur.execute("CREATE TABLE DBVERSION("
-                              "VERSION TEXT NOT NULL)")
-
-            self._cur.execute("INSERT INTO DBVERSION VALUES(%s)",
-                              (self.dbversion,))
-
+            self._create_tag_table()
+            self._create_lookup_table()
+            self._create_crypto_table()
+            self._create_dbversion_table()
             self._con.commit()
-        except Exception:  # pragma: no cover
+        except Exception as e:  # pragma: no cover
             self._con.rollback()
+            raise e
 
     def get_user_password(self):
         """

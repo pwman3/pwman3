@@ -38,20 +38,20 @@ class SQLite(Database):
             print("could not open %s" % fname)
             raise E
         cur = con.cursor()
-        cur.execute("PRAGMA TABLE_INFO(DBVERSION)")
+        cur.execute("SELECT VERSION FROM DBVERSION")
         row = cur.fetchone()
         cur.close()
         con.close()
 
         try:
-            return row[-2]
+            return row[-1]
         except TypeError:
             return str(__DB_FORMAT__)
 
     def __init__(self, filename, dbformat=__DB_FORMAT__):
         """Initialise SQLitePwmanDatabase instance."""
         self._filename = filename
-        self.dbformat = dbformat
+        self.dbversion = dbformat
         ##### WARNING #####
         # The following code changes the column name from USER to USERNAME
         # in NODE table for SQLITE.
@@ -75,39 +75,3 @@ class SQLite(Database):
 
         self._cur = self._con.cursor()
         self._create_tables()
-
-    def _create_tables(self):
-        if self._check_tables():
-            return
-
-        ##### WARNING #####
-        # The following code changes the column name from USER to USERNAME
-        # in NODE table for SQLITE.
-
-        self._create_node_table()
-
-        self._cur.execute("CREATE TABLE TAG"
-                          "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                          "DATA BLOB NOT NULL)")
-
-        self._cur.execute("CREATE TABLE LOOKUP ("
-                          "nodeid INTEGER NOT NULL, "
-                          "tagid INTEGER NOT NULL, "
-                          "FOREIGN KEY(nodeid) REFERENCES NODE(ID),"
-                          "FOREIGN KEY(tagid) REFERENCES TAG(ID))")
-
-        self._cur.execute("CREATE TABLE CRYPTO"
-                          "(SEED TEXT,"
-                          " DIGEST TEXT)")
-
-        # create a table to hold DB version info
-        self._cur.execute("CREATE TABLE DBVERSION"
-                          "(VERSION TEXT NOT NULL DEFAULT '%s')" %
-                          self.dbformat)
-        self._cur.execute("INSERT INTO DBVERSION VALUES('%s')" %
-                          self.dbformat)
-        try:
-            self._con.commit()
-        except Exception as e:  # pragma: no cover
-            self._con.rollback()
-            raise e

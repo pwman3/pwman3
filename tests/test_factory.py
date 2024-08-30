@@ -53,7 +53,7 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_check_db_ver(self):
         self.assertEqual(
-            factory.check_db_version('sqlite://'+testdb), u"'0.6'")
+            factory.check_db_version('sqlite://'+testdb), '0.6')
 
     @unittest.skip("not supported at the moment")
     def test_factory_check_db_file(self):
