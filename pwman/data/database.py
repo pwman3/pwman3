@@ -61,7 +61,8 @@ class Database(object):
         if self._check_tables():
             return
         try:
-            self._cur.execute("CREATE TABLE NODE(ID SERIAL PRIMARY KEY, "
+            self._cur.execute("CREATE TABLE NODE "
+                              "(ID INT PRIMARY KEY AUTO_INCREMENT, "
                               "USERNAME TEXT NOT NULL, "
                               "PASSWORD TEXT NOT NULL, "
                               "URL TEXT NOT NULL, "
@@ -69,7 +70,7 @@ class Database(object):
                               ")")
 
             self._cur.execute("CREATE TABLE TAG"
-                              "(ID  SERIAL PRIMARY KEY,"
+                              "(ID  INT PRIMARY KEY AUTO_INCREMENT,"
                               "DATA TEXT NOT NULL)")
 
             self._cur.execute("CREATE TABLE LOOKUP ("

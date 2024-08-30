@@ -2,7 +2,7 @@ import unittest
 
 from .test_postgresql import TestPostGresql
 from .test_mongodb import TestMongoDB
-from .test_mysql import TestMySQLDatabase
+from .test_mysql import TestMySQLDatabase, TestMariaDBDatabase
 from .test_pwman import suite
 
 
@@ -11,6 +11,7 @@ def complete_suite(suite):
     loader = unittest.TestLoader()
     suite.addTest(loader.loadTestsFromTestCase(TestPostGresql))
     suite.addTest(loader.loadTestsFromTestCase(TestMySQLDatabase))
+    suite.addTest(loader.loadTestsFromTestCase(TestMariaDBDatabase))
     suite.addTest(loader.loadTestsFromTestCase(TestMongoDB))
 
     return suite

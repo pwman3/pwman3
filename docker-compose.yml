@@ -4,14 +4,19 @@ services:
     profiles:
     - test
     depends_on:
-     - mysql
-     - mongodb
+      mysql:
+       condition: service_healthy
+      mongodb:
+       condition: service_started
+      mariadb:
+       condition: service_healthy
     image: oz123/pwman3
     volumes:
     - .:/code
     environment:
      - MONGOHOST=mongodb
      - MYSQLHOST=mysql
+     - MARIADBHOST=mariadb
      - POSTGRESHOST=postgresql
   mysql:
     profiles:
@@ -23,8 +28,33 @@ services:
      -  MYSQL_DATABASE=pwmantest
      -  MYSQL_USER=pwman
      -  MYSQL_PASSWORD=123456
+    healthcheck:
+      test: ["CMD", "mysqladmin", "--protocol=tcp", "--password=toor", "ping"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
     ports:
     - "3306:3306"
+  mariadb:
+    profiles:
+    - infra
+    - test
+    image: "mariadb:lts"
+    command: --port 3308
+    environment:
+     -  MARIADB_ROOT_PASSWORD=toor
+     -  MARIADB_DATABASE=pwmantest
+     -  MARIADB_USER=pwman
+     -  MARIADB_PASSWORD=123456
+    ports:
+    - "3308:3308"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
   postgresql:
     ports:
     - "5432:5432"

@@ -41,23 +41,15 @@ from .test_crypto_engine import give_key, DummyCallback
 
 
 MYSQLHOST = os.getenv("MYSQLHOST", "localhost")
-DBURI = "mysql://pwman:123456@%s:3306/pwmantest" % MYSQLHOST
 
 
 class TestMySQLDatabase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        u = DBURI
-        u = urlparse(u)
-        # password required, for all hosts
-        # u = "mysql://<user>:<pass>@localhost/pwmantest"
-        for i in range(60):
-            try:
-                self.db = MySQLDatabase(u)
-                self.db._open()
-            except:
-                time.sleep(1)
+        self.DBURI = "mysql://pwman:123456@%s:3306/pwmantest" % MYSQLHOST
+        self.db = MySQLDatabase(urlparse(self.DBURI))
+        self.db._open()
 
     @classmethod
     def tearDownClass(self):
@@ -73,8 +65,10 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_2_create_tables(self):
         self.db._create_tables()
+        self.assertTrue(self.db._check_tables())
         # invoking this method a second time should not raise an exception
         self.db._create_tables()
+        self.assertTrue(self.db._check_tables())
 
     def test_3_load_key(self):
         self.db.savekey('SECRET$6$KEY')
@@ -133,7 +127,7 @@ class TestMySQLDatabase(unittest.TestCase):
 
     def test_9_check_db_version(self):
 
-        dburi = DBURI
+        dburi = self.DBURI
         v = self.db.check_db_version(urlparse(dburi))
         self.assertEqual(v, '0.6')
         self.db._cur.execute("DROP TABLE DBVERSION")
@@ -144,6 +138,15 @@ class TestMySQLDatabase(unittest.TestCase):
                              "VERSION TEXT NOT NULL) ")
         self.db._con.commit()
 
+MARIADBHOST = os.getenv("MARIADBHOST", "localhost")
+
+class TestMariaDBDatabase(TestMySQLDatabase):
+
+    @classmethod
+    def setUpClass(self):
+        self.DBURI = "mysql://pwman:123456@%s:3308/pwmantest" % MARIADBHOST
+        self.db = MySQLDatabase(urlparse(self.DBURI))
+        self.db._open()
 
 if __name__ == '__main__':
 
