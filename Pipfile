@@ -11,6 +11,6 @@ pexpect = "*"
 coverage = "*"
 
 [packages]
-cryptography = "==43.*"
+cryptography = "==44.*"
 colorama = "==0.4.6"
 pymongo = "==4.6.*"
